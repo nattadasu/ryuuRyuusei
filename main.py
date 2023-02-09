@@ -49,6 +49,7 @@ bot = interactions.Client(
         status=interactions.StatusType.IDLE
     )
 )
+
 database = r"database.csv"
 
 jikan = AioJikan()
@@ -699,7 +700,7 @@ async def admin_register(ctx: interactions.CommandContext, dc_username: int, mal
     "malJoined": {malJoined},
     "registeredAt": {registeredAt},
     "registeredGuild": {registeredGuild},
-    "registeredBy": {registeredBy}
+    "registeredBy": {registeredBy} // it's you, {ctx.author.username}#{ctx.author.discriminator}!
 }}```"""
             saveToDatabase(discordId, f'{discordUsername}#{discordDiscriminator}', discordJoined, str(
                 malUname), malUid, malJoined, registeredAt, registeredGuild, registeredBy)
