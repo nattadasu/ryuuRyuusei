@@ -1,5 +1,5 @@
 aiohttp==3.8.3
-discord_py_interactions==4.3.4
+discord_py_interactions==4.4.0
 jikanpy==4.3.2
 jikanpy_v4==1.0.1
 pandas==1.5.3
