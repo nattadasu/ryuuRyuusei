@@ -1363,20 +1363,20 @@ Joined to {ctx.guild.name}: <t:{userJoined}:F>"""
             required=False
         ),
         interactions.Option(
-            name="minify",
-            description="Minify embed result, only show your biodata and anime/manga links",
+            name="extended",
+            description="Extend embed result, show your anime/manga stats and useful links",
             type=interactions.OptionType.BOOLEAN,
             required=False
         )
     ]
 )
-async def profile(ctx: interactions.CommandContext, user: int = None, mal_username: str = None, minify: bool = False):
+async def profile(ctx: interactions.CommandContext, user: int = None, mal_username: str = None, extended: bool = False):
     await ctx.defer()
 
     userRegistered = f"{EMOJI_DOUBTING} **You are looking at your own profile!**\nYou can also use </profile:1072608801334755529> without any arguments to get your own profile!"
     httpErr = "If you get HTTP 503 or HTTP 408 error, resubmit command again!\nUsually, first time use on Jikan would take a time to fetch your data"
 
-    def generate_embed(uname: str, uid: int, malAnime: dict, malManga: dict, lastOnline: int, joined: int, bday: int = None, mini: bool = False):
+    def generate_embed(uname: str, uid: int, malAnime: dict, malManga: dict, lastOnline: int, joined: int, bday: int = None, extend: bool = False):
         bbd = ""
         if bday is not None:
             # convert bday from timestamp back to datetime
@@ -1398,8 +1398,8 @@ Last online: <t:{lastOnline}:R>{bbd}""",
             )
         ]
         img = None
-        foo = "Powered by MyAnimeList (via Jikan). Data may be inaccurate due to Jikan caching."
-        if mini is not True:
+        foo = "Powered by MyAnimeList (via Jikan). Data may be inaccurate due to Jikan caching. To see more information, append \"extended: True\" argument!"
+        if extend is True:
             desc += f"\nSee also on 3rd party sites: [MAL Badges](https://mal-badges.com/users/{uname}), [anime.plus malgraph](https://anime.plus/{uname})"
             fds += [
                 interactions.EmbedField(
@@ -1489,7 +1489,7 @@ Last online: <t:{lastOnline}:R>{bbd}""",
                             dtJoin = malProfile['joined'].replace("+00:00", "+0000")
                             dtJoin = int(datetime.datetime.strptime(dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
 
-                            dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man, lastOnline=lstOnline, joined=dtJoin, bday=bth, mini=minify)
+                            dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man, lastOnline=lstOnline, joined=dtJoin, bday=bth, extend=extended)
                             if user is None:
                                 sendMessages = ""
                             elif ctx.author.id == uid:
@@ -1551,7 +1551,7 @@ Last online: <t:{lastOnline}:R>{bbd}""",
             dtJoin = malProfile['joined'].replace("+00:00", "+0000")
             dtJoin = int(datetime.datetime.strptime(dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
 
-            dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man, lastOnline=lstOnline, joined=dtJoin, bday=bth, mini=minify)
+            dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man, lastOnline=lstOnline, joined=dtJoin, bday=bth, extend=extended)
         except Exception as e:
             sendMessages = ""
             dcEm = interactions.Embed(
