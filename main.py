@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# cspell:disable
 
 from dotenv import load_dotenv
 from jikanpy import AioJikan
 from json import loads as jload
 from zoneinfo import ZoneInfo
-import aiohttp, csv, datetime, interactions, json, os, time, pytz
+import aiohttp
+import csv
+import datetime
+import interactions
+import json
+import os
+import time
+import pytz
 import pandas as pd
 import regex as re
 
@@ -348,11 +356,14 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
 
     pdta = []
     if (smk['allcin'] is not None) and (smId != 0):
-        pdta += [f"[<:allcinema:1079493870326403123>](http://www.allcinema.net/prog/show_c.php?num_c={smk['allcin']})"]
+        pdta += [
+            f"[<:allcinema:1079493870326403123>](http://www.allcinema.net/prog/show_c.php?num_c={smk['allcin']})"]
     if aa['aniDb'] is not None:
-        pdta += [f"[<:aniDb:1073439145067806801>](<https://anidb.net/anime/{aa['aniDb']}>)"]
+        pdta += [
+            f"[<:aniDb:1073439145067806801>](<https://anidb.net/anime/{aa['aniDb']}>)"]
     if aa['aniList'] is not None:
-        pdta += [f"[<:aniList:1073445700689465374>](<https://anilist.co/anime/{aa['aniList']}>)"]
+        pdta += [
+            f"[<:aniList:1073445700689465374>](<https://anilist.co/anime/{aa['aniList']}>)"]
     if aa['animePlanet'] is not None:
         pdta += [
             f"[<:animePlanet:1073446927447891998>](<https://www.anime-planet.com/anime/{aa['animePlanet']}>)"]
@@ -363,20 +374,26 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
         pdta += [
             f"[<:animeNewsNetwork:1079377192951230534>](<https://www.animenewsnetwork.com/encyclopedia/anime.php?id={smk['ann']}>)"]
     if (smk['imdb'] is not None) and (smId != 0):
-        pdta += [f"[<:IMDb:1079376998880784464>](<https://www.imdb.com/title/{smk['imdb']}>)"]
+        pdta += [
+            f"[<:IMDb:1079376998880784464>](<https://www.imdb.com/title/{smk['imdb']}>)"]
     if aniApi['kaize'] is not None:
-        pdta += [f"[<:kaize:1073441859910774784>](<https://kaize.io/anime/{aniApi['kaize']}>)"]
+        pdta += [
+            f"[<:kaize:1073441859910774784>](<https://kaize.io/anime/{aniApi['kaize']}>)"]
     if aniApi['kitsu'] is not None:
-        pdta += [f"[<:kitsu:1073439152462368950>](<https://kitsu.io/anime/{aniApi['kitsu']}>)"]
+        pdta += [
+            f"[<:kitsu:1073439152462368950>](<https://kitsu.io/anime/{aniApi['kitsu']}>)"]
     if aniApi['liveChart'] is not None:
         pdta += [
             f"[<:liveChart:1073439158883844106>](<https://livechart.me/anime/{aniApi['liveChart']}>)"]
     if aniApi['notifyMoe'] is not None:
-        pdta += [f"[<:notifyMoe:1073439161194905690>](<https://notify.moe/anime/{aniApi['notifyMoe']}>)"]
+        pdta += [
+            f"[<:notifyMoe:1073439161194905690>](<https://notify.moe/anime/{aniApi['notifyMoe']}>)"]
     if aniApi['myAnimeList'] is not None:
-        pdta += [f"[<:shikimori:1073441855645155468>](<https://shikimori.one/animes/{m}>)"]
+        pdta += [
+            f"[<:shikimori:1073441855645155468>](<https://shikimori.one/animes/{m}>)"]
     if smId != 0:
-        pdta += [f"[<:simkl:1073630754275348631>](<https://simkl.com/anime/{smId}>)"]
+        pdta += [
+            f"[<:simkl:1073630754275348631>](<https://simkl.com/anime/{smId}>)"]
     if aa['silverYasha'] is not None:
         pdta += [
             f"[<:silverYasha:1079380182059733052>](<https://db.silveryasha.web.id/anime/{aa['silverYasha']}>)"]
@@ -385,7 +402,8 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
             aniType = "tv"
         else:
             aniType = "movie"
-        pdta += [f"[<:tmdb:1079379319920529418>](<https://www.themoviedb.org/tv/{smk['tmdb']}>)"]
+        pdta += [
+            f"[<:tmdb:1079379319920529418>](<https://www.themoviedb.org/tv/{smk['tmdb']}>)"]
     if (smk['tvdb'] is not None) and (smId != 0):
         if smk['aniType'] == "tv":
             aniType = "series"
@@ -694,7 +712,7 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
                 break
             else:
                 ent = rot
-        enChkMark = '\*'
+        enChkMark = '\\*'
     else:
         enChkMark = ''
     nat = alm['title']['native']
@@ -763,7 +781,7 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
             '<b>', '**').replace('</b>', '**').replace('<strong>', '**').replace(
             '</strong>', '**').replace('<em>', '*').replace('</em>', '*').replace(
             '<u>', '__').replace('</u>', '__').replace('<strike>', '~~').replace('</strike>',
-            '~~').replace('<s>', '~~').replace('</s>', '~~').replace('<BR>', '\n')
+                                                                                 '~~').replace('<s>', '~~').replace('</s>', '~~').replace('<BR>', '\n')
         cyno = cyno.split('\n')
         cynl = len(cyno)
 
@@ -781,8 +799,10 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
 
     pdta = []
     if m is not None:
-        pdta += [f"[<:myAnimeList:1073442204921643048> MyAnimeList](<https://myanimelist.net/manga/{m}>)"]
-        pdta += [f"[<:shikimori:1073441855645155468> Шикимори](<https://shikimori.one/mangas/{m}>)"]
+        pdta += [
+            f"[<:myAnimeList:1073442204921643048> MyAnimeList](<https://myanimelist.net/manga/{m}>)"]
+        pdta += [
+            f"[<:shikimori:1073441855645155468> Шикимори](<https://shikimori.one/mangas/{m}>)"]
 
     if len(pdta) > 0:
         pdta = ", ".join(pdta)
@@ -1021,7 +1041,7 @@ async def getNekomimi(gender: str = None):
 async def ping(ctx: interactions.CommandContext):
     # create a time var when the command invoked
     start = time.perf_counter()
-    await ctx.defer() # to make sure if benchmark reflects other commands with .defer()
+    await ctx.defer()  # to make sure if benchmark reflects other commands with .defer()
     # send a message to the channel
     await ctx.send(f"{EMOJI_ATTENTIVE} Pong!")
     # get the time when the message was sent
@@ -1216,9 +1236,9 @@ async def whois(ctx: interactions.CommandContext, user: int):
                 for row in reader:
                     if row[0] == user.id:
                         # escape markdown
-                        row[1] = row[1].replace("*", "\*").replace("_", "\_").replace("~", "\~").replace("`", "\`").replace(
-                            "|", "\|").replace(">", "\>").replace("<", "\<").replace("@", "\@").replace("#", "\#").replace(":", "\:")
-                        row[3] = row[3].replace("_", "\_")
+                        row[1] = row[1].replace("*", "\\*").replace("_", "\\_").replace("~", "\\~").replace("`", "\\`").replace(
+                            "|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("@", "\\@")
+                        row[3] = row[3].replace("_", "\\_")
                         if row[8] != user.id:
                             assistedRegister = f"\nRegistered by: <@!{row[8]}>"
                         else:
@@ -1341,14 +1361,99 @@ Joined to {ctx.guild.name}: <t:{userJoined}:F>"""
             description="The user to get data from using MAL username",
             type=interactions.OptionType.STRING,
             required=False
+        ),
+        interactions.Option(
+            name="minify",
+            description="Minify embed result, only show your biodata and anime/manga links",
+            type=interactions.OptionType.BOOLEAN,
+            required=False
         )
     ]
 )
-async def profile(ctx: interactions.CommandContext, user: int = None, mal_username: str = None):
+async def profile(ctx: interactions.CommandContext, user: int = None, mal_username: str = None, minify: bool = False):
     await ctx.defer()
 
     userRegistered = f"{EMOJI_DOUBTING} **You are looking at your own profile!**\nYou can also use </profile:1072608801334755529> without any arguments to get your own profile!"
     httpErr = "If you get HTTP 503 or HTTP 408 error, resubmit command again!\nUsually, first time use on Jikan would take a time to fetch your data"
+
+    def generate_embed(uname: str, uid: int, malAnime: dict, malManga: dict, lastOnline: int, joined: int, bday: int = None, mini: bool = False):
+        bbd = ""
+        if bday is not None:
+            # convert bday from timestamp back to datetime
+            bdayRaw = datetime.datetime.fromtimestamp(int(bday))
+            today = datetime.datetime.now(tz=pytz.UTC)
+            currYear = today.year
+            upcoming = bdayRaw.replace(year=currYear)
+            if int(upcoming.timestamp()) < int(today.timestamp()):
+                upcoming = upcoming.replace(year=currYear + 1)
+            bbd = f"\nBirthday: <t:{int(bday)}:D> <t:{int(bday)}:R> (next birthday <t:{int(upcoming.timestamp())}:R>)"
+        desc = f"[Anime List](https://myanimelist.net/animelist/{uname}) | [Manga List](https://myanimelist.net/mangalist/{uname})"
+        fds = [
+            interactions.EmbedField(
+                name="Profile",
+                value=f"""User ID: `{malProfile['mal_id']}`
+Account created: <t:{joined}:D> (<t:{joined}:R>)
+Last online: <t:{lastOnline}:R>{bbd}""",
+                inline=False
+            )
+        ]
+        img = None
+        foo = "Powered by MyAnimeList (via Jikan). Data may be inaccurate due to Jikan caching."
+        if mini is not True:
+            desc += f"\nSee also on 3rd party sites: [MAL Badges](https://mal-badges.com/users/{uname}), [anime.plus malgraph](https://anime.plus/{uname})"
+            fds += [
+                interactions.EmbedField(
+                    name="Anime Stats",
+                    value=f"""• Days watched: {malAnime['days_watched']}
+• Mean score: {malAnime['mean_score']}
+• Total entries: {malAnime['total_entries']}
+👀 {malAnime['watching']} | ✅ {malAnime['completed']} | ⏸️ {malAnime['on_hold']} | 🗑️ {malAnime['dropped']} | ⏰ {malAnime['plan_to_watch']}
+*Episodes watched: {malAnime['episodes_watched']}""",
+                    inline=True
+                ),
+                interactions.EmbedField(
+                    name="Manga Stats",
+                    value=f"""• "Days" read: {malManga['days_read']}
+• Mean score: {malManga['mean_score']}
+• Total entries: {malManga['total_entries']}
+👀 {malManga['reading']} | ✅ {malManga['completed']} | ⏸️ {malManga['on_hold']} | 🗑️ {malManga['dropped']} | ⏰ {malManga['plan_to_read']}
+*Chapters read: {malManga['chapters_read']}*
+*Volumes read: {malManga['volumes_read']}*""",
+                    inline=True
+                )
+            ]
+            img = interactions.EmbedImageStruct(
+                url=f"https://malheatmap.com/users/{uname}/signature"
+            )
+            foo = "Powered by MyAnimeList (via Jikan) and MAL Heatmap. Data may be inaccurate due to Jikan caching."
+        else:
+            desc += f"\nTotal Anime: {malAnime['total_entries']} (⭐ {malAnime['mean_score']}) | Total Manga: {malManga['total_entries']} (⭐ {malManga['mean_score']})"
+
+        if re.search(r"s$", uname):
+            ttl = f"{uname}' MAL Profile"
+        else:
+            ttl = f"{uname}'s MAL Profile"
+
+        embed = interactions.Embed(
+            author=interactions.EmbedAuthor(
+                name="MyAnimeList Profile",
+                url="https://myanimelist.net",
+                icon_url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"
+            ),
+            title=ttl,
+            url=f"https://myanimelist.net/profile/{uname}",
+            description=desc,
+            thumbnail=interactions.EmbedImageStruct(
+                url=f"https://cdn.myanimelist.net/images/userimages/{uid}.jpg"
+            ),
+            color=0x2E51A2,
+            fields=fds,
+            image=img,
+            footer=interactions.EmbedFooter(
+                text=foo
+            )
+        )
+        return embed
 
     if user and mal_username:
         sendMessages = ""
@@ -1371,82 +1476,26 @@ async def profile(ctx: interactions.CommandContext, user: int = None, mal_userna
                         if row[0] == uid:
                             jikanStats = await jikan.users(username=row[3], extension='full')
                             malProfile = jikanStats['data']
-                            malUname = malProfile['username'].replace(
-                                "_", "\_")
-                            malAnime = malProfile['statistics']['anime']
-                            malManga = malProfile['statistics']['manga']
-                            bbd = ""
+                            mun = malProfile['username'].replace("_", "\\_")
+                            mid = malProfile['mal_id']
+                            ani = malProfile['statistics']['anime']
+                            man = malProfile['statistics']['manga']
+                            bth = None
                             if malProfile['birthday'] is not None:
-                                malProfile['birthday'] = malProfile['birthday'].replace(
-                                    "+00:00", "+0000")
-                                birthday = datetime.datetime.strptime(
-                                    malProfile['birthday'], "%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=pytz.UTC)
-                                todayTime = datetime.datetime.now(tz=pytz.UTC)
-                                currYear = todayTime.year
-                                upcoming = birthday.replace(year=currYear)
-                                bbd = f"\nBirthday: <t:{int(birthday.timestamp())}:D> <t:{int(birthday.timestamp())}:R> (next birthday <t:{int(upcoming.timestamp())}:R>)"
-                            malProfile['last_online'] = malProfile['last_online'].replace(
-                                "+00:00", "+0000")
-                            lastOnline = int(datetime.datetime.strptime(
-                                malProfile['last_online'], "%Y-%m-%dT%H:%M:%S%z").timestamp())
-                            malProfile['joined'] = malProfile['joined'].replace(
-                                "+00:00", "+0000")
-                            joined = int(datetime.datetime.strptime(
-                                malProfile['joined'], "%Y-%m-%dT%H:%M:%S%z").timestamp())
+                                bth = malProfile['birthday'].replace("+00:00", "+0000")
+                                bth = int(datetime.datetime.strptime(bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+                            lstOnline = malProfile['last_online'].replace("+00:00", "+0000")
+                            lstOnline = int(datetime.datetime.strptime(lstOnline, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+                            dtJoin = malProfile['joined'].replace("+00:00", "+0000")
+                            dtJoin = int(datetime.datetime.strptime(dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+
+                            dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man, lastOnline=lstOnline, joined=dtJoin, bday=bth, mini=minify)
                             if user is None:
                                 sendMessages = ""
                             elif ctx.author.id == uid:
                                 sendMessages = userRegistered
                             else:
                                 sendMessages = f"<@{uid}> data:"
-                            dcEm = interactions.Embed(
-                                author=interactions.EmbedAuthor(
-                                    name="MyAnimeList Profile",
-                                    url="https://myanimelist.net",
-                                    icon_url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"
-                                ),
-                                title=f"{malUname}'s MAL Profile",
-                                url=f"https://myanimelist.net/profile/{row[3]}",
-                                description=f"""[Anime List](https://myanimelist.net/animelist/{row[3]}) | [Manga List](https://myanimelist.net/mangalist/{row[3]})
-See also on 3rd party sites: [MAL Badges](https://mal-badges.com/users/{row[3]}), [anime.plus malgraph](https://anime.plus/{row[3]})""",
-                                thumbnail=interactions.EmbedImageStruct(
-                                    url=f"https://cdn.myanimelist.net/images/userimages/{row[4]}.jpg"),
-                                color=0x2E51A2,
-                                fields=[
-                                    interactions.EmbedField(
-                                        name="Profile",
-                                        value=f"""User ID: `{malProfile['mal_id']}`
-Account created: <t:{joined}:D> (<t:{joined}:R>)
-Last online: <t:{lastOnline}:R>{bbd}""",
-                                        inline=False
-                                    ),
-                                    interactions.EmbedField(
-                                        name="Anime Stats",
-                                        value=f"""• Days watched: {malAnime['days_watched']}
-• Mean score: {malAnime['mean_score']}
-• Total entries: {malAnime['total_entries']}
-👀 {malAnime['watching']} | ✅ {malAnime['completed']} | ⏸️ {malAnime['on_hold']} | 🗑️ {malAnime['dropped']} | ⏰ {malAnime['plan_to_watch']}
-*Episodes watched: {malAnime['episodes_watched']}*""",
-                                        inline=True
-                                    ),
-                                    interactions.EmbedField(
-                                        name="Manga Stats",
-                                        value=f"""• "Days" read: {malManga['days_read']}
-• Mean score: {malManga['mean_score']}
-• Total entries: {malManga['total_entries']}
-👀 {malManga['reading']} | ✅ {malManga['completed']} | ⏸️ {malManga['on_hold']} | 🗑️ {malManga['dropped']} | ⏰ {malManga['plan_to_read']}
-*Chapters read: {malManga['chapters_read']}*
-*Volumes read: {malManga['volumes_read']}*""",
-                                        inline=True
-                                    )
-                                ],
-                                image=interactions.EmbedImageStruct(
-                                    url=f"https://malheatmap.com/users/{row[3]}/signature"
-                                ),
-                                footer=interactions.EmbedFooter(
-                                    text=f"Powered by MyAnimeList (via Jikan) and MAL Heatmap. Data may be inaccurate due to Jikan caching."
-                                )
-                            )
             else:
                 if user is None:
                     regAccount = f"{EMOJI_USER_ERROR} Sorry, but to use standalone command, you need to `/register` your account. Or, you can use `/profile mal_username:<yourUsername>` instead"
@@ -1479,88 +1528,30 @@ Last online: <t:{lastOnline}:R>{bbd}""",
             with open(database, "r") as f:
                 reader = csv.reader(f, delimiter="\t")
                 for row in reader:
-                    if (row[3] == uname) and (ctx.author.id == row[0]):
+                    if (str(row[3]).lower() == str(uname).lower()) and (ctx.author.id == row[0]):
                         sendMessages = userRegistered
                         break
-                    elif (row[3] == uname) and (ctx.author.id != row[0]):
+                    elif (str(row[3]).lower() == str(uname).lower()) and (ctx.author.id != row[0]):
                         sendMessages = f"{EMOJI_ATTENTIVE} This MAL account is registered on this bot, you could use `/profile user:<@!{row[0]}>` instead"
                         break
                     else:
                         sendMessages = ""
-            jikanUid = await jikan.users(username=uname)
-            jikanUid = jikanUid['data']['mal_id']
             jikanStats = await jikan.users(username=uname, extension='full')
             malProfile = jikanStats['data']
-            uname = malProfile['username']
-            malUname = uname.replace("_", "\_")
-            malAnime = malProfile['statistics']['anime']
-            malManga = malProfile['statistics']['manga']
-            bbd = ""
+            mun = malProfile['username'].replace("_", "\\_")
+            mid = malProfile['mal_id']
+            ani = malProfile['statistics']['anime']
+            man = malProfile['statistics']['manga']
+            bth = None
             if malProfile['birthday'] is not None:
-                malProfile['birthday'] = malProfile['birthday'].replace(
-                    "+00:00", "+0000")
-                birthday = datetime.datetime.strptime(
-                    malProfile['birthday'], "%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=pytz.UTC)
-                todayTime = datetime.datetime.now(tz=pytz.UTC)
-                currYear = todayTime.year
-                upcoming = birthday.replace(year=currYear)
-                bbd = f"\nBirthday: <t:{int(birthday.timestamp())}:D> <t:{int(birthday.timestamp())}:R> (next birthday <t:{int(upcoming.timestamp())}:R>)"
-            malProfile['last_online'] = malProfile['last_online'].replace(
-                '+00:00', '+0000')
-            lastOnline = int(datetime.datetime.strptime(
-                malProfile['last_online'], "%Y-%m-%dT%H:%M:%S%z").timestamp())
-            malProfile['joined'] = malProfile['joined'].replace(
-                "+00:00", "+0000")
-            joined = int(datetime.datetime.strptime(
-                malProfile['joined'], "%Y-%m-%dT%H:%M:%S%z").timestamp())
+                bth = malProfile['birthday'].replace("+00:00", "+0000")
+                bth = int(datetime.datetime.strptime(bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+            lstOnline = malProfile['last_online'].replace("+00:00", "+0000")
+            lstOnline = int(datetime.datetime.strptime(lstOnline, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+            dtJoin = malProfile['joined'].replace("+00:00", "+0000")
+            dtJoin = int(datetime.datetime.strptime(dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
 
-            dcEm = interactions.Embed(
-                author=interactions.EmbedAuthor(
-                    name="MyAnimeList Profile",
-                    url="https://myanimelist.net",
-                    icon_url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"
-                ),
-                title=f"{malUname}'s MAL Profile",
-                url=f"https://myanimelist.net/profile/{uname}",
-                description=f"[Anime List](https://myanimelist.net/animelist/{uname}) | [Manga List](https://myanimelist.net/mangalist/{uname})\nSee also on 3rd party sites: [MAL Badges](https://mal-badges.com/users/{uname}), [anime.plus malgraph](https://anime.plus/{uname})",
-                thumbnail=interactions.EmbedImageStruct(
-                    url=f"https://cdn.myanimelist.net/images/userimages/{jikanUid}.jpg"),
-                color=0x2E51A2,
-                fields=[
-                    interactions.EmbedField(
-                        name="Profile",
-                        value=f"""User ID: `{malProfile['mal_id']}`
-Account created: <t:{joined}:D> (<t:{joined}:R>)
-Last online: <t:{lastOnline}:R>{bbd}""",
-                        inline=False
-                    ),
-                    interactions.EmbedField(
-                        name="Anime Stats",
-                        value=f"""• Days watched: {malAnime['days_watched']}
-• Mean score: {malAnime['mean_score']}
-• Total entries: {malAnime['total_entries']}
-👀 {malAnime['watching']} | ✅ {malAnime['completed']} | ⏸️ {malAnime['on_hold']} | 🗑️ {malAnime['dropped']} | ⏰ {malAnime['plan_to_watch']}
-*Episodes watched: {malAnime['episodes_watched']}*""",
-                        inline=True
-                    ),
-                    interactions.EmbedField(
-                        name="Manga Stats",
-                        value=f"""• "Days" read: {malManga['days_read']}
-• Mean score: {malManga['mean_score']}
-• Total entries: {malManga['total_entries']}
-👀 {malManga['reading']} | ✅ {malManga['completed']} | ⏸️ {malManga['on_hold']} | 🗑️ {malManga['dropped']} | ⏰ {malManga['plan_to_read']}
-*Chapters read: {malManga['chapters_read']}*
-*Volumes read: {malManga['volumes_read']}*""",
-                        inline=True
-                    )
-                ],
-                image=interactions.EmbedImageStruct(
-                    url=f"https://malheatmap.com/users/{uname}/signature"
-                ),
-                footer=interactions.EmbedFooter(
-                    text=f"Powered by MyAnimeList (via Jikan) and MAL Heatmap. Data may be inaccurate due to Jikan caching."
-                )
-            )
+            dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man, lastOnline=lstOnline, joined=dtJoin, bday=bth, mini=minify)
         except Exception as e:
             sendMessages = ""
             dcEm = interactions.Embed(
@@ -2224,7 +2215,7 @@ async def info(ctx: interactions.CommandContext, id: int):
 async def invite(ctx: interactions.CommandContext):
     invLink = f"https://discord.com/api/oauth2/authorize?client_id={BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands"
     dcEm = interactions.Embed(
-        title = f"{EMOJI_ATTENTIVE} Thanks for your interest in inviting me to your server!",
+        title=f"{EMOJI_ATTENTIVE} Thanks for your interest in inviting me to your server!",
         color=0x996422,
         description="To invite me, simply press \"**Invite me!**\" button below!\nFor any questions, please join my support server!",
         fields=[
@@ -2241,16 +2232,16 @@ async def invite(ctx: interactions.CommandContext):
         ]
     )
     invBotton = interactions.Button(
-        type = interactions.ComponentType.BUTTON,
-        style = interactions.ButtonStyle.LINK,
-        label = "Invite me!",
-        url = invLink
+        type=interactions.ComponentType.BUTTON,
+        style=interactions.ButtonStyle.LINK,
+        label="Invite me!",
+        url=invLink
     )
     servBotton = interactions.Button(
-        type = interactions.ComponentType.BUTTON,
-        style = interactions.ButtonStyle.LINK,
-        label = "Support server",
-        url = BOT_SUPPORT_SERVER
+        type=interactions.ComponentType.BUTTON,
+        style=interactions.ButtonStyle.LINK,
+        label="Support server",
+        url=BOT_SUPPORT_SERVER
     )
     await ctx.send(embeds=dcEm, components=[invBotton, servBotton])
 
@@ -2272,6 +2263,7 @@ If you have any questions (or more payment channels), please join my [support se
 
     await ctx.send(sendMessages)
 
+
 @bot.command(
     name="lastfm",
     description="Show Last.FM information about user!",
@@ -2286,7 +2278,7 @@ If you have any questions (or more payment channels), please join my [support se
             name="maximum",
             description="Maximum scrobbled tracks to show",
             type=interactions.OptionType.INTEGER,
-            min_value=1,
+            min_value=0,
             max_value=9,
             required=False
         )
@@ -2297,12 +2289,13 @@ async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int =
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user={username}&api_key={LASTFM_API_KEY}&format=json') as resp:
-                    if resp.status == 404:
-                        raise Exception("User can not be found on Last.fm. Check the name or register?")
-                    else:
-                        jsonText = await resp.text()
-                        jsonFinal = jload(jsonText)
-                        ud = jsonFinal['user']
+                if resp.status == 404:
+                    raise Exception(
+                        "User can not be found on Last.fm. Check the name or register?")
+                else:
+                    jsonText = await resp.text()
+                    jsonFinal = jload(jsonText)
+                    ud = jsonFinal['user']
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user={username}&api_key={LASTFM_API_KEY}&format=json&limit=9') as resp:
                 jsonText = await resp.text()
@@ -2310,32 +2303,42 @@ async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int =
                 scb = jsonFinal['recenttracks']['track']
         tracks = []
         # trim scb if items more than {maximum}
-        if len(scb) > maximum:
-            scb = scb[:maximum]
-        for tr in scb:
-            try:
-                if tr['@attr']['nowplaying'] is not None:
-                    np = jload(tr['@attr']['nowplaying'].lower())
-            except:
-                np = False
-            # sanitize title to be markdown compatible
-            tr['name'] = str(tr['name']).replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace("|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/")
-            tr['artist']['#text'] = str(tr['artist']['#text']).replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace("|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/")
-            tr['album']['#text'] = str(tr['album']['#text']).replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace("|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/")
-            if np is True:
-                title = f"▶️ {tr['name']}"
-                dt = "*Currently playing*"
+        if maximum > 0:
+            if maximum > 1:
+                rpt = "\n**Recently played tracks**"
             else:
-                title = tr['name']
-                dt = int(tr['date']['uts'])
-                dt = f"<t:{dt}:R>"
-            tracks += [interactions.EmbedField(
-                name=title,
-                value=f"""{tr['artist']['#text']}
+                rpt = "\n**Recently played track**"
+            if len(scb) > maximum:
+                scb = scb[:maximum]
+            for tr in scb:
+                try:
+                    if tr['@attr']['nowplaying'] is not None:
+                        np = jload(tr['@attr']['nowplaying'].lower())
+                except:
+                    np = False
+                # sanitize title to be markdown compatible
+                tr['name'] = str(tr['name']).replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace("|", "\\|").replace(
+                    ">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/")
+                tr['artist']['#text'] = str(tr['artist']['#text']).replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace(
+                    "|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/")
+                tr['album']['#text'] = str(tr['album']['#text']).replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace(
+                    "|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/")
+                if np is True:
+                    title = f"▶️ {tr['name']}"
+                    dt = "*Currently playing*"
+                else:
+                    title = tr['name']
+                    dt = int(tr['date']['uts'])
+                    dt = f"<t:{dt}:R>"
+                tracks += [interactions.EmbedField(
+                    name=title,
+                    value=f"""{tr['artist']['#text']}
 {tr['album']['#text']}
 {dt}, [Link]({tr['url']})""",
-                inline=True
-            )]
+                    inline=True
+                )]
+        else:
+            rpt = ""
         # read ud['images'], and grab latest one
         imgLen = len(ud['image'])
         img = ud['image'][imgLen - 1]['#text']
@@ -2359,9 +2362,7 @@ async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int =
             description=f"""{lfmpro}Real name: {ud['realname']}
 Account created: <t:{ud['registered']['#text']}:D> (<t:{ud['registered']['#text']}:R>)
 Total scrobbles: {ud['playcount']}
-🧑‍🎤 {ud['artist_count']}  💿 {ud['album_count']} 🎶 {ud['track_count']}
-
-**Recently played tracks**""",
+🧑‍🎤 {ud['artist_count']}  💿 {ud['album_count']} 🎶 {ud['track_count']}{rpt}""",
             thumbnail=interactions.EmbedImageStruct(
                 url=img
             ),
@@ -2373,6 +2374,7 @@ Total scrobbles: {ud['playcount']}
         dcEm = None
 
     await ctx.send(sendMessages, embeds=dcEm)
+
 
 @bot.command(
     name="admin_register",
