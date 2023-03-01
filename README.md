@@ -69,6 +69,8 @@ cd ryuuRyuusei
 pip install -r requirements.txt
 ```
 
+Next, you need to do an initial setup for the bot. Open `firstRun.py` and let the bot create the required files and install dependencies that hosted in GitHub instead of PyPI.
+
 Then, when `pip` finished installing all of required modules, copy `.env.example` to `.env` and fill the required fields.
 
 ```bash

@@ -1,7 +1,10 @@
 .env
 jikan4snek_cache
-database*
-nekomimiDb*
+database/**
+cache/**
+!database/.gitkeep
+!cache/.gitkeep
+jikanpy/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
