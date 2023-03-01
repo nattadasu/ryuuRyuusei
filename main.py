@@ -2305,9 +2305,9 @@ async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int =
         # trim scb if items more than {maximum}
         if maximum > 0:
             if maximum > 1:
-                rpt = "\n**Recently played tracks**"
+                rpt = "\n\n**Recently played tracks**"
             else:
-                rpt = "\n**Recently played track**"
+                rpt = "\n\n**Recently played track**"
             if len(scb) > maximum:
                 scb = scb[:maximum]
             for tr in scb:
