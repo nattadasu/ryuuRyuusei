@@ -557,12 +557,14 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
         syns += [s['title']]
     ogt = [j['title_english'], j['title_japanese'], j['title']]
     syns = [x for x in syns if x not in ogt]
+    # sort
+    syns = sorted(set(syns))
     synsl = len(syns)
 
-    if synsl > 5:
-        syns = syns[:5]
+    if synsl > 8:
+        syns = syns[:8]
         syns = ", ".join(syns)
-        syns += f", *and {synsl} more*"
+        syns += f", *and {synsl - 8} more*"
     elif synsl > 1:
         syns = ", ".join(syns)
     elif synsl == 1:
@@ -713,12 +715,14 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
 
     ogt = [rot, ent, nat]
     syns = [x for x in syns if x not in ogt]
+    # sort
+    syns = sorted(set(syns))
     synsl = len(syns)
 
-    if synsl > 5:
-        syns = syns[:5]
+    if synsl > 8:
+        syns = syns[:8]
         syns = ", ".join(syns)
-        syns += f", *and {synsl - 5} more*"
+        syns += f", *and {synsl - 8} more*"
     elif synsl > 1:
         syns = ", ".join(syns)
     elif synsl == 1:
