@@ -398,21 +398,21 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
         pdta += [
             f"[<:silverYasha:1079380182059733052>](<https://db.silveryasha.web.id/anime/{aa['silverYasha']}>)"]
     if (smk['tmdb'] is not None) and (smId != 0):
-        if smk['aniType'] == "tv":
+        if j['type'] == "TV":
             aniType = "tv"
         else:
             aniType = "movie"
         pdta += [
             f"[<:tmdb:1079379319920529418>](<https://www.themoviedb.org/tv/{smk['tmdb']}>)"]
     if (smk['tvdb'] is not None) and (smId != 0):
-        if smk['aniType'] == "tv":
+        if j['type'] == "TV":
             aniType = "series"
         else:
             aniType = "movies"
         pdta += [
             f"[<:tvdb:1079378495064510504>](<https://www.thetvdb.com/?tab={aniType}&id={smk['tvdb']}>)"]
     elif (smk['tvdbslug'] is not None) and (smId != 0):
-        if smk['aniType'] == "tv":
+        if j['type'] == "TV":
             aniType = "series"
         else:
             aniType = "movies"
