@@ -1377,7 +1377,7 @@ async def profile(ctx: interactions.CommandContext, user: int = None, mal_userna
         if bday is not None:
             # convert bday from timestamp back to datetime
             bdayRaw = datetime.datetime.fromtimestamp(int(bday))
-            today = datetime.datetime.now(tz=pytz.UTC)
+            today = datetime.datetime.now(tz=datetime.timezone.utc)
             currYear = today.year
             upcoming = bdayRaw.replace(year=currYear)
             if int(upcoming.timestamp()) < int(today.timestamp()):
