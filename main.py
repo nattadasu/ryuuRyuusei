@@ -562,20 +562,16 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
     ogt = [j['title_english'], j['title_japanese'], j['title']]
     syns = [x for x in syns if x not in ogt]
     synsl = len(syns)
-    # syns = list(dict.fromkeys(syns))
-    # if ogt in syns:
-    #     # Remove duplicates if in synonyms includes title_english and title_japanese
-    #     syns.remove(ogt)
 
-    if len(syns) > 5:
+    if synsl > 5:
         syns = syns[:5]
         syns = ", ".join(syns)
         syns += f", *and {synsl} more*"
-    elif len(syns) > 1:
+    elif synsl > 1:
         syns = ", ".join(syns)
-    elif len(syns) == 1:
+    elif synsl == 1:
         syns = syns[0]
-    elif len(syns) == 0:
+    elif synsl == 0:
         syns = "*None*"
 
     # format people voted for to be more readable (1,000 instead of 1000)
@@ -723,13 +719,13 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
     syns = [x for x in syns if x not in ogt]
     synsl = len(syns)
 
-    if len(syns) > 5:
+    if synsl > 5:
         syns = syns[:5]
         syns = ", ".join(syns)
-        syns += f", *and {len(synsl) - 5} more*"
-    elif len(syns) > 1:
+        syns += f", *and {synsl - 5} more*"
+    elif synsl > 1:
         syns = ", ".join(syns)
-    elif len(syns) == 1:
+    elif synsl == 1:
         syns = syns[0]
     else:
         syns = "*None*"
