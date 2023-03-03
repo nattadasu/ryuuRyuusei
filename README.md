@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD033 MD013 MD041 -->
+
 <p align="center">
   <a href="" rel="noopener">
  <img width=200px height=200px src="https://cdn.discordapp.com/avatars/811887256368840744/20591f3bde09a33594eec07dc4a54ce9.webp" alt="Bot logo"></a>
@@ -7,10 +9,9 @@
 
 ---
 
-<p align="center"> 🤖 A CLI-like Discord Bot to verify MAL club members and MAL simple utility commands.
-    <br> 
+<p align="center"> 🤖 A Discord Bot to verify MAL club members and MAL simple utility commands.
+    <br>
 </p>
-
 
 ## 🧐 About <a name = "about"></a>
 
@@ -28,27 +29,52 @@ Next, go to the channel you want to use the bot in and type `/` to see the list 
 
 Currently the bot was self-hosted, so it's might not available 24/7, but it get the job done. Although, I'll try to keep it online as much as possible.
 
-All data invoked from `/register` will be stored in [database.csv](database.csv), user is able to delete their data by using `/unregister` command. Most commands can be used without `/register` command, although it may limit your experience using it.
+All data invoked from `/register` will be stored in [database.csv](database/database.csv), user is able to delete their data by using `/unregister` command. Most commands can be used without `/register` command, although it may limit your experience using it.
 
 If you have any questions, feel free to join the [support server](https://nttds.my.id/discord) and ask there.
 
 ## 📣 Available Commands <a name = "commands"></a>
 
-- `/about` - Get information about the bot
+### Anime Commands
+
+> Utilize MyAnimeList via Jikan
+
+- `/anime info` - Get information about an anime using direct MyAnimeList ID
+- `/anime relation` - Show external links for an anime, powered by [nattadasu's AnimeApi relation](https://nttds.my.id/discord)
+- `/anime search` - Search for an anime, using AniList's search API
+
+### Manga Commands
+
+> Utilize AniList
+
+- `/manga info` - Get information about a manga using direct AniList ID
+- `/manga search` - Search for a manga
+
+### Last.FM Integration
+
+- `/lastfm` - Get your last.fm profile and the scrobble summary
+
+### Data Control
+
 - `/admin_register` - Register a user's MAL account to the bot (admin only), used for backup process if the user can't register their account
 - `/admin_unregister` - Unregister a user's MAL account from the bot (admin only), used for backup process if the user can't unregister their account
-- `/anime` - Get information about an anime
 - `/export_data` - Export your data from the bot in JSON or Python dictionary format
-- `/heatmap` - Get your MAL Heatmap. (Note: this command is still in beta testing, so it may not work as expected)
-- `/invite` - Get the bot's invite link.
-- `/ping` - Check the bot if it's online or not (latency checker soon:tm:)
-- `/privacy` - Get information about the bot's privacy policy
-- `/profile` - Get your MAL profile and the stats
-- `/random_nekomimi` - Get a random nekomimi image from the database, powered by [nattadasu/nekomimiDb](https://github.com/nattadasu/nekomimiDb)
+- `/profile` - Get your MAL profile, statistic available on extended view (passed from option/argument)
 - `/register` - Register your MAL account to the bot
 - `/unregister` - Unregister your MAL account from the bot
 - `/verify` - Verify your MAL account to the server that host the bot (you may need to join the club first)
 - `/whois` - Get information about a user, including their MAL account (if any)
+
+### Miscellaneous Commands
+
+- `/random_nekomimi` - Get a random nekomimi image from the database, powered by [nattadasu/nekomimiDb](https://github.com/nattadasu/nekomimiDb)
+
+### Bot Commands
+
+- `/about` - Get information about the bot
+- `/invite` - Get the bot's invite link
+- `/ping` - Check the bot latency
+- `/privacy` - Get information about the bot's privacy policy
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
@@ -69,7 +95,21 @@ cd ryuuRyuusei
 pip install -r requirements.txt
 ```
 
-Next, you need to do an initial setup for the bot. Open `firstRun.py` and let the bot create the required files and install dependencies that hosted in GitHub instead of PyPI.
+> **Note**
+> If you're using Termux, you may need to modify `pip` line to:
+>
+> ```bash
+> MATHLIB="m" pip install -r requirements.txt
+> ```
+
+> **Note**
+> You can also run `firstRun.py` to install all of required modules automatically.
+
+Next, you need to do an initial setup for the bot. Run `firstRun.py` and let the bot create the required files and install dependencies that hosted in GitHub instead of PyPI:
+
+```bash
+python ./firstRun.py
+```
 
 Then, when `pip` finished installing all of required modules, copy `.env.example` to `.env` and fill the required fields.
 
@@ -83,7 +123,7 @@ Finally, run the bot using `python` command:
 python ./main.py
 ```
 
-**Note**: You can also use `python3` instead of `python` if you have multiple versions of Python installed.
+**Note**: You can also use `python3` instead of `python` if you have multiple versions of Python installed. By default (and also `firstRun.py` behavior), the bot will use `python3`/`python` that is currently in your `PATH` environment variable.
 
 **Also a note**: Personally, I haven't test the bot on another OS other than Windows... but, it *should* work on any machine with latest `python` installed, since most of packages are OS agnostic.
 
