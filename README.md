@@ -40,7 +40,8 @@ If you have any questions, feel free to join the [support server](https://nttds.
 > Utilize MyAnimeList via Jikan
 
 - `/anime info` - Get information about an anime using direct MyAnimeList ID
-- `/anime relation` - Show external links for an anime, powered by [nattadasu's AnimeApi relation](https://nttds.my.id/discord)
+- `/anime random` - Get a random anime from MyAnimeList, powered by [nattadasu's AnimeApi](https://nttds.my.id/discord)
+- `/anime relation` - Show external links for an anime, powered by [nattadasu's AnimeApi](https://nttds.my.id/discord)
 - `/anime search` - Search for an anime, using AniList's search API
 
 ### Manga Commands
