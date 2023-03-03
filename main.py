@@ -998,20 +998,6 @@ async def getGuildMemberData(guild_snowflake: int, user_snowflake: int):
     return member
 
 
-def grabClubId(snowflake: int):
-    snow = str(snowflake)
-    with open(r"./database/clubs.csv", "r") as f:
-        reader = csv.reader(f, delimiter="\t")
-        for row in reader:
-            if row[0] == snow:
-                return int(row[1])
-        # Custom Club
-        if snow == f"{VERIFICATION_SERVER}":
-            return int(CLUB_ID)
-        else:
-            return 0
-
-
 async def getNekomimi(gender: str = None):
     nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t")
     nmDb = nmDb.fillna('')
@@ -1105,7 +1091,7 @@ For more info what do we collect and use, use `/privacy`.
         discordJoined = int(discordJoined)
         discordServerName = ctx.guild.name
 
-        clubId = grabClubId(ctx.guild_id)
+        clubId = CLUB_ID
 
         # check if user is already registered
         if checkIfRegistered(discordId):
@@ -1167,7 +1153,7 @@ async def verify(ctx: interactions.CommandContext):
     memberRoles = getMemberDetail.roles
     verifiedRole = VERIFIED_ROLE
 
-    clubId = grabClubId(ctx.guild_id)
+    clubId = CLUB_ID
 
     if str(ctx.guild_id) != f"{VERIFICATION_SERVER}":
         messages = f"""{EMOJI_USER_ERROR} **You are not allowed to use this command!**
