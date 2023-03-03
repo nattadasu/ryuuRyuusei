@@ -5,14 +5,14 @@ import pandas as pd
 import requests as r
 import json
 import time
-
-MAIN_SITE = "https://aniapi.nattadasu.my.id/myanimelist().json"
+# encode ( and ) to %28 and %29
+MAIN_SITE = 'https://aniapi.nattadasu.my.id/myanimelist%28%29.json'
 
 def get_data():
-    data = r.get(MAIN_SITE).json()
+    data = r.get(MAIN_SITE)
     # save data to json file
-    with open("cache/mal.json", "wb") as f:
-        json.dump(data, f, indent=4)
+    with open("cache/mal.json", "w", encoding="utf8") as f:
+        json.dump(data.json(), f, ensure_ascii=False)
 
 def load_data():
     with open("cache/mal.json", "r") as f:
