@@ -1,5 +1,5 @@
 aiohttp
-discord_py_interactions
+discord_py_interactions==4.3.4
 pandas
 python-dotenv
 regex

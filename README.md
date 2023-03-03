@@ -7,6 +7,9 @@
 
 <h3 align="center">Ryuuzaki Ryuusei</h3>
 
+<p align="center"><img src="https://img.shields.io/badge/Interactions.py-4.3.4-blue?style=for-the-badge&logo=python">
+<img src="https://img.shields.io/badge/Python-3.9_and_above-blue?style=for-the-badge&logo=python"></p>
+
 ---
 
 <p align="center"> 🤖 A Discord Bot to verify MAL club members and MAL simple utility commands.
