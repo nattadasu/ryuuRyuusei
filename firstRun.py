@@ -14,7 +14,8 @@ def installJikanpy():
     print("Installing jikanpy via git...")
     os.system("git clone https://github.com/abhinavk99/jikanpy")
     os.chdir("jikanpy")
-    os.system("python setup.py install")
+    os.system(f"{pf} -m pip install -r requirements.txt")
+    os.system(f"{pf} setup.py install")
     os.chdir("..")
     # remove jikanpy folder
     print("Removing jikanpy folder...")
@@ -33,8 +34,11 @@ def main():
     # run malIndexer.py
     print("Running malIndexer.py...")
     os.system(f"{pf} firstRun/malIndexer.py")
-    # run jikanpy installer
-    installJikanpy()
+    # check if jikanpy is installed
+    try:
+        import jikanpy
+    except ImportError:
+        installJikanpy()
 
 if __name__ == "__main__":
     main()
