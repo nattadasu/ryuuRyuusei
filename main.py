@@ -1872,6 +1872,7 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
     await ctx.defer()
     try:
         uid = id
+        pf = platform
         # Fix platform name
         if platform == 'shikimori':
             pf = 'myanimelist'
@@ -1879,9 +1880,6 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
             uid = re.sub(r'^[a-z]+', '', id)
         elif platform == 'simkl':
             simId = uid
-            pf = platform
-        else:
-            pf = platform.lower()
 
         if pf == 'simkl':
             simDat = await getSimklID(simkl_id=simId, media_type='anime')
@@ -1893,7 +1891,33 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
                 raise Exception(
                     "No MAL ID found, please ask the SIMKL developer to add it to the database")
 
-        aa = await getNatsuAniApi(id=uid, platform=pf)
+        await ctx.send(f"Searching for relations on {platform} using ID: {uid}")
+
+        if pf == 'kaize':
+            try:
+                try:
+                    aa = await getNatsuAniApi(id=uid, platform=pf)
+                except:
+                    # check on slug using regex, if contains `-N` suffix, try to decrease by one,
+                    # if `-N` is `-1`, remove completely the slug
+                    # get the last number
+                    lastNum = re.search(r'\d+$', uid).group()
+                    # get the slug
+                    slug = re.sub(r'-\d+$', '', uid)
+                    # decrease the number by one
+                    lastNum = int(lastNum) - 1
+                    # if the number is 0, remove the suffix
+                    if lastNum == 0:
+                        uid = slug
+                    else:
+                        uid = f"{slug}-{lastNum}"
+                    await ctx.edit(f"Searching for relations on {platform} using ID: {uid} (decrease by one)")
+                    aa = await getNatsuAniApi(id=uid, platform=pf)
+            except json.JSONDecodeError:
+                raise Exception("""We've tried to search for the anime using the slug (and even fix the slug itself), but it seems that the anime is not found on Kaize via AnimeApi.
+Please send a message to AnimeApi maintainer, nattadasu (he is also a developer of this bot)""")
+        else:
+            aa = await getNatsuAniApi(id=uid, platform=pf)
 
         # Get the anime title
         title = aa['title']
@@ -1920,7 +1944,7 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
         if (aa['aniSearch'] is not None) and (pf != 'anisearch'):
             rels += f"""\n<:aniSearch:1073439148100300810> **aniSearch**: [`{aa['aniSearch']}`](<https://anisearch.com/anime/{aa['aniSearch']}>)"""
         if (aa['kaize'] is not None) and (pf != 'kaize'):
-            rels += f"""\n<:kaize:1073441859910774784> **Kaize** (BETA): [`{aa['kaize']}`](<https://kaize.io/anime/{aa['kaize']}>)"""
+            rels += f"""\n<:kaize:1073441859910774784> **Kaize** (BETA, link may not working as expected): [`{aa['kaize']}`](<https://kaize.io/anime/{aa['kaize']}>)"""
         if (aa['kitsu'] is not None) and (pf != 'kitsu'):
             rels += f"""\n<:kitsu:1073439152462368950> **Kitsu**: [`{aa['kitsu']}`](<https://kitsu.io/anime/{aa['kitsu']}>)"""
         if (aa['liveChart'] is not None) and (pf != 'livechart'):
@@ -1971,6 +1995,7 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
         # generate the message
         sendMessages = f"""**{title}** relations to [{pf}](<{uid}>):\n{rels}"""
         sendMessages += f"""\n\n**Powered by [nattadasu's AnimeAPI](<https://nttds.my.id/discord>) and [SIMKL](<https://simkl.com>)**"""
+        await ctx.edit(sendMessages)
     except Exception as e:
         if e == 'Expecting value: line 1 column 1 (char 0)':
             e = 'No relations found!\nEither the anime is not in the database, or you have entered the wrong ID.'
@@ -1979,7 +2004,7 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
         e = f"""While getting the relations for `{platform}` with id `{id}`, we got error message: {e}"""
         sendMessages = returnException(e)
 
-    await ctx.send(sendMessages)
+        await ctx.edit(sendMessages)
 
 
 @bot.command(
