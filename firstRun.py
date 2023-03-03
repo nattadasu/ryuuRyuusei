@@ -24,7 +24,25 @@ def installJikanpy():
     else:
         os.system("rm -rf jikanpy")
 
+def checkTermux():
+    # check if termux
+    if platform.system() == "Linux":
+        if os.path.exists("/data/data/com.termux/files/usr/bin"):
+            return True
+        else:
+            return False
+    else:
+        return False
+
 def main():
+    # check if termux
+    if checkTermux():
+        env = "MATHLAB=\"m\" "
+    else:
+        env = ""
+    # install dependencies
+    print("Installing dependencies...")
+    os.system(f"{env}{pf} -m pip install -r requirements.txt")
     # run prepFile.py
     print("Running prepFile.py...")
     os.system(f"{pf} firstRun/prepFile.py")
@@ -36,9 +54,12 @@ def main():
     os.system(f"{pf} firstRun/malIndexer.py")
     # check if jikanpy is installed
     try:
-        import jikanpy
+        from jikanpy import AioJikan
     except ImportError:
         installJikanpy()
+    # reupgrade dependencies that may have been downgraded
+    print("Re-upgrading dependencies...")
+    os.system(f"{env}{pf} -m pip install -r requirements.txt --upgrade")
 
 if __name__ == "__main__":
     main()
