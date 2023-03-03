@@ -4,5 +4,4 @@ pandas
 python-dotenv
 regex
 requests
-pytz
 tzdata
