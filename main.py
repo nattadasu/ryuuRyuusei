@@ -235,15 +235,18 @@ async def searchAniList(name: str = None, media_id: int = None, isAnime: bool = 
         raise Exception(ierr)
 
 
-async def searchSimklId(mal_id: str, platform: str):
-    url = f'https://api.simkl.com/search/id/?{platform}={mal_id}&client_id={SIMKL_CLIENT_ID}'
+async def searchSimklId(title_id: str, platform: str):
+    url = f'https://api.simkl.com/search/id/?{platform}={title_id}&client_id={SIMKL_CLIENT_ID}'
     try:
         async with aiohttp.ClientSession() as sSession:
             async with sSession.get(url) as sResp:
                 idFound = await sResp.json()
-                idFound = idFound[0]['ids']['simkl']
+                fin = idFound[0]['ids']['simkl']
                 await sSession.close()
-                return idFound
+                if idFound[0]['type'] != 'anime':
+                    raise Exception('Not an anime')
+                else:
+                    return fin
     except:
         return 0
 
@@ -273,8 +276,7 @@ async def getSimklID(simkl_id: int, media_type: str):
                         "wikien": data.get('wikien', None),
                         "wikijp": data.get('wikijp', None),
                         "poster": animeFound.get('poster', None),
-                        "fanart": animeFound.get('fanart', None),
-                        "aniType": animeFound.get('anime_type', None)
+                        "fanart": animeFound.get('fanart', None)
                     }
                     await gSession.close()
                     return data
@@ -294,8 +296,7 @@ async def getSimklID(simkl_id: int, media_type: str):
             "wikien": None,
             "wikijp": None,
             "poster": None,
-            "fanart": None,
-            "aniType": None
+            "fanart": None
         }
         return data
 
@@ -327,12 +328,7 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
     aa = await getNatsuAniApi(m, platform="myanimelist")
     aniApi = aa
     smId = await searchSimklId(m, 'mal')
-    if smId != 0:
-        smk = await getSimklID(smId, 'anime')
-    else:
-        smk = {"simkl": None, "slug": None, "allcin": None, "anfo": None, "ann": None, "imdb": None, "mal": None,
-               "offjp": None, "tmdb": None, "tvdb": None, "wikien": None, "wikijp": None, "poster": None, "fanart": None,
-               "tvdbslug": None, "aniType": None}
+    smk = await getSimklID(smId, 'anime')
 
     if j['synopsis'] is not None:
         # remove \n\n[Written by MAL Rewrite]
@@ -776,8 +772,8 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
             '<i>', '*').replace('</i>', '*').replace('<br>', '\n').replace('<Br>', '\n').replace(
             '<b>', '**').replace('</b>', '**').replace('<strong>', '**').replace(
             '</strong>', '**').replace('<em>', '*').replace('</em>', '*').replace(
-            '<u>', '__').replace('</u>', '__').replace('<strike>', '~~').replace('</strike>',
-                                                                                 '~~').replace('<s>', '~~').replace('</s>', '~~').replace('<BR>', '\n')
+            '<u>', '__').replace('</u>', '__').replace('<strike>', '~~').replace(
+            '</strike>', '~~').replace('<s>', '~~').replace('</s>', '~~').replace('<BR>', '\n')
         cyno = cyno.split('\n')
         cynl = len(cyno)
 
@@ -1917,7 +1913,7 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
             try:
                 if aa['myAnimeList'] is not None:
                     # search SIMKL ID
-                    simId = await searchSimklId(mal_id=aa['myAnimeList'], platform='mal')
+                    simId = await searchSimklId(title_id=aa['myAnimeList'], platform='mal')
                 else:
                     simId = 0
             except:
