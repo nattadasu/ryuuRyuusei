@@ -26,7 +26,7 @@ The bot is fully powered by slash commands and is currently in alpha testing.
 
 To use the bot, invite it to your server using this link:
 
-[![Shield](https://img.shields.io/badge/Invite%20to%20your%20server-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=811887256368840744&permissions=8&scope=bot%20applications.commands)
+[![Shield](https://img.shields.io/badge/Invite%20to%20your%20server-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=811887256368840744&permissions=274878221376&scope=bot%20applications.commands)
 
 Next, go to the channel you want to use the bot in and type `/` to see the list of available commands.
 

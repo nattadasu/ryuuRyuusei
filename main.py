@@ -2435,7 +2435,7 @@ async def info(ctx: interactions.CommandContext, id: int):
     description="Invite me to your server!"
 )
 async def invite(ctx: interactions.CommandContext):
-    invLink = f"https://discord.com/api/oauth2/authorize?client_id={BOT_CLIENT_ID}&permissions=8&scope=bot%20applications.commands"
+    invLink = f"https://discord.com/api/oauth2/authorize?client_id={BOT_CLIENT_ID}&permissions=274878221376&scope=bot%20applications.commands"
     dcEm = interactions.Embed(
         title=f"{EMOJI_ATTENTIVE} Thanks for your interest in inviting me to your server!",
         color=0x996422,
@@ -2443,7 +2443,7 @@ async def invite(ctx: interactions.CommandContext):
         fields=[
             interactions.EmbedField(
                 name="Required permissions/access",
-                value="`Administrator`, for granting roles, kick/ban member",
+                value="Read Messages, Send Messages, Send Messages in Thread, Embed Links, Attach Files, Use External Emojis, Add Reactions",
                 inline=True
             ),
             interactions.EmbedField(
