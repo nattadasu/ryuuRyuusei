@@ -2167,13 +2167,18 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         else:
             postsrc = ""
 
+        uAu = uid.split('/')
+        uAu = uAu[0] + "//" + uAu[2]
+
         # generate the message
         dcEm = interactions.Embed(
             author=interactions.EmbedAuthor(
                 name=f"Looking external site relations from {pf}",
-                icon_url=f"https://cdn.discordapp.com/emojis/{emoid}.png?v=1"
+                icon_url=f"https://cdn.discordapp.com/emojis/{emoid}.png?v=1",
+                url=uAu
             ),
             title=f"{title}",
+            url=uid,
             description="Data might be inaccurate, especially for sequels of the title (as IMDb, TVDB, TMDB, and Trakt relies on per title entry than season entry)",
             color=col,
             fields=relsEm,
