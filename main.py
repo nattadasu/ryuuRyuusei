@@ -2151,9 +2151,17 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         elif (smk['poster'] is None) and (aa['notifyMoe'] is not None):
             poster = f"https://media.notify.moe/images/anime/original/{aa['notifyMoe']}.jpg"
             postsrc = "Notify.moe"
-        else:
+        elif smk['poster'] is not None:
             poster = f"https://simkl.in/posters/{smk['poster']}_m.webp"
             postsrc = "SIMKL"
+        else:
+            poster = None
+            postsrc = None
+
+        if postsrc is not None:
+            postsrc = f" Poster from {postsrc}"
+        else:
+            postsrc = ""
 
         # generate the message
         dcEm = interactions.Embed(
@@ -2166,7 +2174,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             color=col,
             fields=relsEm,
             footer=interactions.EmbedFooter(
-                text=f"Powered by nattadasu's AnimeAPI and SIMKL. Poster from {postsrc}"
+                text=f"Powered by nattadasu's AnimeAPI and SIMKL.{postsrc}"
             ),
             thumbnail=interactions.EmbedImageStruct(
                 url=poster
