@@ -249,7 +249,6 @@ async def searchSimklId(title_id: str, platform: str):
                     raise Exception('Not an anime')
                 else:
                     return fin
-                await sSession.close()
     except:
         return 0
 
@@ -428,23 +427,30 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
     else:
         pdta = ""
 
+    jJpg = j['images']['jpg']
+
     if (smId != 0) and (smk['poster'] is not None):
         poster = f"https://simkl.in/posters/{smk['poster']}_m.webp"
         background = f"https://simkl.in/fanart/{smk['fanart']}_w.webp"
         note = "Images from SIMKL"
     elif (aa['kitsu'] != 0) or (aa['kitsu'] is not None):
         kitsu = await getKitsuMetadata(aa['kitsu'], 'anime')
-        post = kitsu['data']['attributes']['posterImage']['original']
-        if post is not None:
-            poster = post
+        try:
+            poster = kitsu['data']['attributes']['posterImage']['original']
             background = kitsu['data']['attributes']['coverImage']['original']
             note = "Images from Kitsu"
-        else:
-            poster = j['images']['jpg']['image_url']
+        except:
+            if jJpg['large_image_url'] is not None:
+                poster = jJpg['large_image_url']
+            else:
+                poster = j['image_url']
             background = ""
             note = ""
     else:
-        poster = j['images']['jpg']['image_url']
+        if jJpg['large_image_url'] is not None:
+            poster = jJpg['large_image_url']
+        else:
+            poster = j['image_url']
         background = ""
         note = ""
 
@@ -1695,6 +1701,8 @@ async def search(ctx: interactions.CommandContext, title: str = None):
     """Search anime from MAL by title. Anime lookup powered by AniList"""
     await ctx.defer()
     await ctx.get_channel()
+
+    ani_id = None
 
     async def lookupByNameAniList(aniname: str):
         rawData = await searchAniList(name=aniname, media_id=None, isAnime=True)
