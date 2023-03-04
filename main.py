@@ -251,7 +251,27 @@ async def searchSimklId(title_id: str, platform: str):
         return 0
 
 
-async def getSimklID(simkl_id: int, media_type: str):
+simkl0rels = {
+    "simkl": None,
+    "slug": None,
+    "allcin": None,
+    "anfo": None,
+    "ann": None,
+    "imdb": None,
+    "mal": None,
+    "offjp": None,
+    "tmdb": None,
+    "tvdb": None,
+    "tvdbslug": None,
+    "wikien": None,
+    "wikijp": None,
+    "poster": None,
+    "fanart": None,
+    "anitype": None
+}
+
+
+async def getSimklID(simkl_id: int, media_type: str) -> dict:
     try:
         if simkl_id == 0:
             raise Exception('Simkl ID is 0')
@@ -276,29 +296,13 @@ async def getSimklID(simkl_id: int, media_type: str):
                         "wikien": data.get('wikien', None),
                         "wikijp": data.get('wikijp', None),
                         "poster": animeFound.get('poster', None),
-                        "fanart": animeFound.get('fanart', None)
+                        "fanart": animeFound.get('fanart', None),
+                        "aniType": animeFound.get('anime_type', None)
                     }
                     await gSession.close()
                     return data
     except:
-        data = {
-            "simkl": None,
-            "slug": None,
-            "allcin": None,
-            "anfo": None,
-            "ann": None,
-            "imdb": None,
-            "mal": None,
-            "offjp": None,
-            "tmdb": None,
-            "tvdb": None,
-            "tvdbslug": None,
-            "wikien": None,
-            "wikijp": None,
-            "poster": None,
-            "fanart": None
-        }
-        return data
+        return simkl0rels
 
 
 def trimCyno(message: str):
@@ -1835,6 +1839,10 @@ async def info(ctx: interactions.CommandContext, id: int):
                     value="anisearch"
                 ),
                 interactions.Choice(
+                    name="IMDb",
+                    value="imdb"
+                ),
+                interactions.Choice(
                     name="Kaize (BETA, slug only)",
                     value="kaize"
                 ),
@@ -1861,6 +1869,14 @@ async def info(ctx: interactions.CommandContext, id: int):
                 interactions.Choice(
                     name="SIMKL",
                     value="simkl"
+                ),
+                interactions.Choice(
+                    name="The Movie Database",
+                    value="tmdb"
+                ),
+                interactions.Choice(
+                    name="The TVDB",
+                    value="tvdb"
                 )
             ],
             required=True
@@ -1873,16 +1889,17 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
     try:
         uid = id
         pf = platform
+        await ctx.send(f"Searching for relations on `{platform}` using ID: `{uid}`", embeds=None)
         # Fix platform name
         if platform == 'shikimori':
             pf = 'myanimelist'
             # remove any prefix started with any a-z in the id
             uid = re.sub(r'^[a-z]+', '', id)
-        elif platform == 'simkl':
-            simId = uid
+            await ctx.edit("Removing Shikimori ID's prefix to be compatible with MyAnimeList ID", embeds=None)
 
         if pf == 'simkl':
-            simDat = await getSimklID(simkl_id=simId, media_type='anime')
+            simDat = await getSimklID(simkl_id=id, media_type='anime')
+            simId = id
             # if simDat['mal'] key is not in the dict, it will raise KeyError
             try:
                 uid = simDat['mal']
@@ -1890,8 +1907,17 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
             except KeyError:
                 raise Exception(
                     "No MAL ID found, please ask the SIMKL developer to add it to the database")
+        elif pf in ['tmdb', 'tvdb', 'imdb']:
+            try:
+                simId = await searchSimklId(title_id=id, platform=pf)
+                simDat = await getSimklID(simkl_id=simId, media_type='anime')
+                uid = simDat['mal']
+                pf = 'myanimelist'
+            except Exception as e:
+                raise Exception(
+                    f"Error while searching for the ID of {platform} on SIMKL, entry may not linked with SIMKL counterpart")
 
-        await ctx.send(f"Searching for relations on {platform} using ID: {uid}")
+
 
         if pf == 'kaize':
             try:
@@ -1911,7 +1937,7 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
                         uid = slug
                     else:
                         uid = f"{slug}-{lastNum}"
-                    await ctx.edit(f"Searching for relations on {platform} using ID: {uid} (decrease by one)")
+                    await ctx.edit(f"Searching for relations on {platform} using ID: {uid} (decrease by one)", embeds=None)
                     aa = await getNatsuAniApi(id=uid, platform=pf)
             except json.JSONDecodeError:
                 raise Exception("""We've tried to search for the anime using the slug (and even fix the slug itself), but it seems that the anime is not found on Kaize via AnimeApi.
@@ -1922,80 +1948,254 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         # Get the anime title
         title = aa['title']
 
+        smk = simkl0rels
+
         # Get the relations from others to SIMKL, if MAL is found
-        if platform != 'simkl':
+        if platform not in ['simkl', 'tmdb', 'tvdb', 'imdb']:
             try:
                 if aa['myAnimeList'] is not None:
                     # search SIMKL ID
                     simId = await searchSimklId(title_id=aa['myAnimeList'], platform='mal')
-                else:
-                    simId = 0
+                    # get the relations
+                    smk = await getSimklID(simkl_id=simId, media_type='anime')
             except:
-                simId = 0
+                pass
+        else:
+            try:
+                smk = await getSimklID(simkl_id=simId, media_type='anime')
+            except:
+                pass
 
-        rels = ""
+        relsEm = []
         # Get the relations
+        if smk['allcin'] is not None:
+            relsEm += [interactions.EmbedField(
+                name="<:allcinema:1079493870326403123> AllCinema",
+                value=f"[`{smk['allcin']}`](<https://www.allcinema.net/prog/show_c.php?num_c={smk['allcin']}>)",
+                inline=True
+            )]
         if (aa['aniDb'] is not None) and (pf != 'anidb'):
-            rels += f"""\n<:aniDb:1073439145067806801> **AniDB**: [`{aa['aniDb']}`](<https://anidb.net/anime/{aa['aniDb']}>)"""
+            relsEm += [interactions.EmbedField(
+                name="<:aniDb:1073439145067806801> AniDB",
+                value=f"[`{aa['aniDb']}`](<https://anidb.net/anime/{aa['aniDb']}>)",
+                inline=True
+            )]
         if (aa['aniList'] is not None) and (pf != 'anilist'):
-            rels += f"""\n<:aniList:1073445700689465374> **AniList**: [`{aa['aniList']}`](<https://anilist.co/anime/{aa['aniList']}>)"""
+            relsEm += [interactions.EmbedField(
+                name="<:aniList:1073445700689465374> AniList",
+                value=f"[`{aa['aniList']}`](<https://anilist.co/anime/{aa['aniList']}>)",
+                inline=True
+            )]
+        if smk['ann'] is not None:
+            relsEm += [interactions.EmbedField(
+                name="<:ann:1079377192951230534> Anime News Network",
+                value=f"[`{smk['ann']}`](<https://www.animenewsnetwork.com/encyclopedia/anime.php?id={smk['ann']}>)",
+                inline=True
+            )]
         if (aa['animePlanet'] is not None) and (pf != 'animeplanet'):
-            rels += f"""\n<:animePlanet:1073446927447891998> **Anime-Planet**: [`{aa['animePlanet']}`](<https://www.anime-planet.com/anime/{aa['animePlanet']}>)"""
+            relsEm += [interactions.EmbedField(
+                name="<:animePlanet:1073446927447891998> Anime-Planet",
+                value=f"[`{aa['animePlanet']}`](<https://www.anime-planet.com/anime/{aa['animePlanet']}>)",
+                inline=True
+            )]
         if (aa['aniSearch'] is not None) and (pf != 'anisearch'):
-            rels += f"""\n<:aniSearch:1073439148100300810> **aniSearch**: [`{aa['aniSearch']}`](<https://anisearch.com/anime/{aa['aniSearch']}>)"""
+            relsEm += [interactions.EmbedField(
+                name="<:aniSearch:1073439148100300810> aniSearch",
+                value=f"[`{aa['aniSearch']}`](<https://anisearch.com/anime/{aa['aniSearch']}>)",
+                inline=True
+            )]
+        if (smk['imdb'] is not None) and (platform != "imdb"):
+            relsEm += [interactions.EmbedField(
+                name="<:IMDb:1079376998880784464> IMDb",
+                value=f"[`{smk['imdb']}`](<https://www.imdb.com/title/{smk['imdb']}>)",
+                inline=True
+            )]
         if (aa['kaize'] is not None) and (pf != 'kaize'):
-            rels += f"""\n<:kaize:1073441859910774784> **Kaize** (BETA, link may not working as expected): [`{aa['kaize']}`](<https://kaize.io/anime/{aa['kaize']}>)"""
+            relsEm += [interactions.EmbedField(
+                name="<:kaize:1073441859910774784> Kaize",
+                value=f"(BETA, link may not working as expected)\n[`{aa['kaize']}`](<https://kaize.io/anime/{aa['kaize']}>)",
+                inline=True
+            )]
         if (aa['kitsu'] is not None) and (pf != 'kitsu'):
-            rels += f"""\n<:kitsu:1073439152462368950> **Kitsu**: [`{aa['kitsu']}`](<https://kitsu.io/anime/{aa['kitsu']}>)"""
+            relsEm += [interactions.EmbedField(
+                name="<:kitsu:1073439152462368950> Kitsu",
+                value=f"[`{aa['kitsu']}`](<https://kitsu.io/anime/{aa['kitsu']}>)",
+                inline=True
+            )]
         if (aa['liveChart'] is not None) and (pf != 'livechart'):
-            rels += f"""\n<:liveChart:1073439158883844106> **LiveChart**: [`{aa['liveChart']}`](<https://livechart.me/anime/{aa['liveChart']}>)"""
+            relsEm += [interactions.EmbedField(
+                name="<:liveChart:1073439158883844106> LiveChart",
+                value=f"[`{aa['liveChart']}`](<https://livechart.me/anime/{aa['liveChart']}>)",
+                inline=True
+            )]
         if (aa['myAnimeList'] is not None) and (platform != 'myanimelist'):
-            rels += f"""\n<:myAnimeList:1073442204921643048> **MyAnimeList**: [`{aa['myAnimeList']}`](<https://myanimelist.net/anime/{aa['myAnimeList']}>)"""
+            relsEm += [interactions.EmbedField(
+                name="<:myAnimeList:1073442204921643048> MyAnimeList",
+                value=f"[`{aa['myAnimeList']}`](<https://myanimelist.net/anime/{aa['myAnimeList']}>)",
+                inline=True
+            )]
         if (aa['notifyMoe'] is not None) and (pf != 'notify'):
-            rels += f"""\n<:notifyMoe:1073439161194905690> **Notify**: [`{aa['notifyMoe']}`](<https://notify.moe/anime/{aa['notifyMoe']}>)"""
+            relsEm += [interactions.EmbedField(
+                name="<:notifyMoe:1073439161194905690> Notify",
+                value=f"[`{aa['notifyMoe']}`](<https://notify.moe/anime/{aa['notifyMoe']}>)",
+                inline=True
+            )]
         if (aa['myAnimeList'] is not None) and (platform != 'shikimori'):
-            rels += f"""\n<:shikimori:1073441855645155468> **Shikimori (Шикимори)**: [`{aa['myAnimeList']}`](<https://shikimori.one/animes/{aa['myAnimeList']}>)"""
+            relsEm += [interactions.EmbedField(
+                name="<:shikimori:1073441855645155468> Shikimori (Шикимори)",
+                value=f"[`{aa['myAnimeList']}`](<https://shikimori.one/animes/{aa['myAnimeList']}>)",
+                inline=True
+            )]
         if (simId != 0) and (platform != 'simkl'):
-            rels += f"""\n<:simkl:1073630754275348631> **SIMKL**: [`{simId}`](<https://simkl.com/anime/{simId}>)"""
+            relsEm += [interactions.EmbedField(
+                name="<:simkl:1073630754275348631> SIMKL",
+                value=f"[`{simId}`](<https://simkl.com/anime/{simId}>)",
+                inline=True
+            )]
+        if (smk['imdb'] is not None) or (smk['tmdb'] is not None):
+            if smk['imdb'] is not None:
+                tid = smk['imdb']
+                lookup = f"imdb?query={tid}"
+                scpf = "IMDb"
+            else:
+                tid = smk['tmdb']
+                lookup = f"tmdb?query={tid}"
+                scpf = "TMDB"
+            relsEm += [interactions.EmbedField(
+                name=f"<:trakt:1081612822175305788> Trakt",
+                value=f"[`{tid}`](<https://trakt.tv/search/{lookup}>) (search using {scpf} id)",
+                inline=True
+            )]
+        if (smk['tmdb'] is not None) and (platform != "tmdb"):
+            if smk['aniType'] == "tv":
+                ttyp = "tv"
+            else:
+                ttyp = "movie"
+            relsEm += [interactions.EmbedField(
+                name="<:tmdb:1079379319920529418> The Movie Database",
+                value=f"[`{smk['tmdb']}`](<https://www.themoviedb.org/{ttyp}/{smk['tmdb']}>)",
+                inline=True
+            )]
+        if (smk['tvdb'] is not None) and (platform != "tvdb"):
+            if smk['aniType'] == "tv":
+                ttyp = "series"
+            else:
+                ttyp = "movies"
+            relsEm += [interactions.EmbedField(
+                name="<:tvdb:1079378495064510504> The TVDB",
+                value=f"[`{smk['tvdb']}`](<https://www.thetvdb.com/?tab={ttyp}&id={smk['tvdb']}>)",
+                inline=True
+            )]
+        elif (smk['tvdbslug'] is not None) and (platform != "tvdb"):
+            if smk['aniType'] == "tv":
+                ttyp = "series"
+            else:
+                ttyp = "movies"
+            relsEm += [interactions.EmbedField(
+                name="<:tvdb:1079378495064510504> The TVDB",
+                value=f"[`{smk['tvdbslug']}`](<https://www.thetvdb.com/?tab={ttyp}&id={smk['tvdbslug']}>)",
+                inline=True
+            )]
 
         if pf == 'anidb':
             uid = f"https://anidb.net/anime/{id}"
             pf = 'AniDB'
+            emoid = '1073439145067806801'
+            col = 0x2A2F46
         elif pf == 'anilist':
             uid = f"https://anilist.co/anime/{id}"
             pf = 'AniList'
+            emoid = '1073445700689465374'
+            col = 0x2F80ED
         elif pf == 'animeplanet':
             uid = f"https://www.anime-planet.com/anime/{id}"
             pf = 'Anime-Planet'
+            emoid = '1073446927447891998'
+            col = 0xE75448
         elif pf == 'anisearch':
             uid = f"https://anisearch.com/anime/{id}"
             pf = 'aniSearch'
+            emoid = '1073439148100300810'
+            col = 0xFDA37C
         elif pf == 'kaize':
             uid = f"https://kaize.io/anime/{id}"
             pf = 'Kaize'
+            emoid = '1073441859910774784'
+            col = 0x692FC2
         elif pf == 'kitsu':
             uid = f"https://kitsu.io/anime/{id}"
-            pf = 'Kitsu'
+            pf = 'Kitsu',
+            emoid = '1073439152462368950'
+            col = 0xF85235
         elif platform == 'myanimelist':
             uid = f"https://myanimelist.net/anime/{id}"
             pf = 'MyAnimeList'
+            emoid = '1073442204921643048'
+            col = 0x2F51A3
         elif platform == 'shikimori':
             uid = f"https://shikimori.one/animes/{id}"
             pf = 'Shikimori (Шикимори)'
+            emoid = '1073441855645155468'
+            col = 0x2E2E2E
         elif pf == 'livechart':
             uid = f"https://livechart.me/anime/{id}"
             pf = 'LiveChart'
+            emoid = '1073439158883844106'
+            col = 0x67A427
         elif pf == 'notify':
             uid = f"https://notify.moe/anime/{id}"
             pf = 'Notify.moe'
+            emoid = '1073439161194905690'
+            col = 0xDEA99E
         elif platform == 'simkl':
             uid = f"https://simkl.com/anime/{id}"
             pf = 'SIMKL'
+            emoid = '1073630754275348631'
+            col = 0x0B0F10
+        elif platform == 'tvdb':
+            uid = f"https://www.thetvdb.com/?tab=series&id={id}"
+            pf = 'The TV Database'
+            emoid = '1079378495064510504'
+            col = 0x6CD491
+        elif platform == 'tmdb':
+            uid = f"https://www.themoviedb.org/tv/{id}"
+            pf = 'The Movie Database'
+            emoid = '1079379319920529418'
+            col = 0x09B4E2
+        elif platform == 'imdb':
+            uid = f"https://www.imdb.com/title/{id}"
+            pf = 'IMDb'
+            emoid = '1079376998880784464'
+            col = 0xF5C518
+
+        if (smk['poster'] is None) and (aa['kitsu'] is not None):
+            poster = f"https://media.kitsu.io/anime/poster_images/{aa['kitsu']}/large.jpg"
+            postsrc = "Kitsu"
+        elif (smk['poster'] is None) and (aa['notifyMoe'] is not None):
+            poster = f"https://media.notify.moe/images/anime/original/{aa['notifyMoe']}.jpg"
+            postsrc = "Notify.moe"
+        else:
+            poster = f"https://simkl.in/posters/{smk['poster']}_m.webp"
+            postsrc = "SIMKL"
 
         # generate the message
-        sendMessages = f"""**{title}** relations to [{pf}](<{uid}>):\n{rels}"""
-        sendMessages += f"""\n\n**Powered by [nattadasu's AnimeAPI](<https://nttds.my.id/discord>) and [SIMKL](<https://simkl.com>)**"""
-        await ctx.edit(sendMessages)
+        dcEm = interactions.Embed(
+            author=interactions.EmbedAuthor(
+                name=f"Looking external site relations from {pf}",
+                icon_url=f"https://cdn.discordapp.com/emojis/{emoid}.png?v=1"
+            ),
+            title=f"{title}",
+            description="Data might be inaccurate, especially for sequels of the title (as IMDb, TVDB, TMDB, and Trakt relies on per title entry than season entry)",
+            color=col,
+            fields=relsEm,
+            footer=interactions.EmbedFooter(
+                text=f"Powered by nattadasu's AnimeAPI and SIMKL. Poster from {postsrc}"
+            ),
+            thumbnail=interactions.EmbedImageStruct(
+                url=poster
+            )
+        )
+        await ctx.edit("", embeds=dcEm)
     except Exception as e:
         if e == 'Expecting value: line 1 column 1 (char 0)':
             e = 'No relations found!\nEither the anime is not in the database, or you have entered the wrong ID.'
@@ -2004,7 +2204,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         e = f"""While getting the relations for `{platform}` with id `{id}`, we got error message: {e}"""
         sendMessages = returnException(e)
 
-        await ctx.edit(sendMessages)
+        await ctx.edit(sendMessages, embeds=None)
 
 
 @bot.command(
