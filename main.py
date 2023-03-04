@@ -1867,6 +1867,10 @@ async def info(ctx: interactions.CommandContext, id: int):
                     value="shikimori"
                 ),
                 interactions.Choice(
+                    name="Silver Yasha: DB Tontonan Indonesia",
+                    value="silveryasha"
+                ),
+                interactions.Choice(
                     name="SIMKL",
                     value="simkl"
                 ),
@@ -1913,7 +1917,7 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
                 simDat = await getSimklID(simkl_id=simId, media_type='anime')
                 uid = simDat['mal']
                 pf = 'myanimelist'
-            except Exception as e:
+            except KeyError:
                 raise Exception(
                     f"Error while searching for the ID of {platform} on SIMKL, entry may not linked with SIMKL counterpart")
 
@@ -2046,6 +2050,12 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 value=f"[`{aa['myAnimeList']}`](<https://shikimori.one/animes/{aa['myAnimeList']}>)",
                 inline=True
             )]
+        if (aa['silverYasha'] is not None) and (platform != 'silveryasha'):
+            relsEm += [interactions.EmbedField(
+                name="<:silverYasha:1079380182059733052> Silver Yasha",
+                value=f"[`{aa['silverYasha']}`](<https://db.silveryasha.web.id/anime/{aa['silverYasha']}>)",
+                inline=True
+            )]
         if (simId != 0) and (platform != 'simkl'):
             relsEm += [interactions.EmbedField(
                 name="<:simkl:1073630754275348631> SIMKL",
@@ -2167,6 +2177,11 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             pf = 'IMDb'
             emoid = '1079376998880784464'
             col = 0xF5C518
+        elif pf == 'silveryasha':
+            uid = f"<https://db.silveryasha.web.id/anime/{id}>"
+            pf = "Silver Yasha"
+            col = 0x0172BB
+            emoid = "1079380182059733052"
 
         if (smk['poster'] is None) and (aa['kitsu'] is not None):
             poster = f"https://media.kitsu.io/anime/poster_images/{aa['kitsu']}/large.jpg"
