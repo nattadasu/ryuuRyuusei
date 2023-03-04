@@ -356,71 +356,6 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
     else:
         cyno = "*None*"
 
-    pdta = []
-    if (smk['allcin'] is not None) and (smId != 0):
-        pdta += [
-            f"[<:allcinema:1079493870326403123>](http://www.allcinema.net/prog/show_c.php?num_c={smk['allcin']})"]
-    if aa['aniDb'] is not None:
-        pdta += [
-            f"[<:aniDb:1073439145067806801>](<https://anidb.net/anime/{aa['aniDb']}>)"]
-    if aa['aniList'] is not None:
-        pdta += [
-            f"[<:aniList:1073445700689465374>](<https://anilist.co/anime/{aa['aniList']}>)"]
-    if aa['animePlanet'] is not None:
-        pdta += [
-            f"[<:animePlanet:1073446927447891998>](<https://www.anime-planet.com/anime/{aa['animePlanet']}>)"]
-    if aniApi['aniSearch'] is not None:
-        pdta += [
-            f"[<:aniSearch:1073439148100300810>](<https://anisearch.com/anime/{aniApi['aniSearch']}>)"]
-    if (smk['ann'] is not None) and (smId != 0):
-        pdta += [
-            f"[<:animeNewsNetwork:1079377192951230534>](<https://www.animenewsnetwork.com/encyclopedia/anime.php?id={smk['ann']}>)"]
-    if (smk['imdb'] is not None) and (smId != 0):
-        pdta += [
-            f"[<:IMDb:1079376998880784464>](<https://www.imdb.com/title/{smk['imdb']}>)"]
-    if aniApi['kaize'] is not None:
-        pdta += [
-            f"[<:kaize:1073441859910774784>](<https://kaize.io/anime/{aniApi['kaize']}>)"]
-    if aniApi['kitsu'] is not None:
-        pdta += [
-            f"[<:kitsu:1073439152462368950>](<https://kitsu.io/anime/{aniApi['kitsu']}>)"]
-    if aniApi['liveChart'] is not None:
-        pdta += [
-            f"[<:liveChart:1073439158883844106>](<https://livechart.me/anime/{aniApi['liveChart']}>)"]
-    if aniApi['notifyMoe'] is not None:
-        pdta += [
-            f"[<:notifyMoe:1073439161194905690>](<https://notify.moe/anime/{aniApi['notifyMoe']}>)"]
-    if aniApi['myAnimeList'] is not None:
-        pdta += [
-            f"[<:shikimori:1073441855645155468>](<https://shikimori.one/animes/{m}>)"]
-    if smId != 0:
-        pdta += [
-            f"[<:simkl:1073630754275348631>](<https://simkl.com/anime/{smId}>)"]
-    if aa['silverYasha'] is not None:
-        pdta += [
-            f"[<:silverYasha:1079380182059733052>](<https://db.silveryasha.web.id/anime/{aa['silverYasha']}>)"]
-    if (smk['tmdb'] is not None) and (smId != 0):
-        if j['type'] == "TV":
-            aniType = "tv"
-        else:
-            aniType = "movie"
-        pdta += [
-            f"[<:tmdb:1079379319920529418>](<https://www.themoviedb.org/tv/{smk['tmdb']}>)"]
-    if (smk['tvdb'] is not None) and (smId != 0):
-        if j['type'] == "TV":
-            aniType = "series"
-        else:
-            aniType = "movies"
-        pdta += [
-            f"[<:tvdb:1079378495064510504>](<https://www.thetvdb.com/?tab={aniType}&id={smk['tvdb']}>)"]
-    elif (smk['tvdbslug'] is not None) and (smId != 0):
-        if j['type'] == "TV":
-            aniType = "series"
-        else:
-            aniType = "movies"
-        pdta += [
-            f"[<:tvdb:1079378495064510504>](<https://www.thetvdb.com/{aniType}/{smk['tvdbslug']}>)"]
-
     if len(pdta) > 0:
         pdta = " ".join(pdta)
         pdta = "\n**External sites**\n" + pdta
@@ -631,7 +566,8 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
         description=f"""*`{m}`, {j['type']}, {sson} {year}, ⭐ {scr}/10 by {pvd}*
 
 > {cyno}
-{pdta}
+
+*Use `/anime relations id:{m} platform:MyAnimeList` to see external links!
 """,
         color=0x2E51A2,
         thumbnail=interactions.EmbedImageStruct(
@@ -2092,6 +2028,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                     'trakt-api-version': TRAKT_API_VERSION
                 }) as session:
                 async with session.get(f'https://api.trakt.tv/search/{lookup}') as resp:
+                    await ctx.edit(f"Looking up Trakt ID via {scpf} (`{tid}`)", embeds=None)
                     trkRes = await resp.json()
                     trkType = trkRes[0]['type']
                     traktId = trkRes[0][f'{trkType}']['ids']['trakt']
