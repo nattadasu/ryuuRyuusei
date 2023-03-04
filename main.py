@@ -2536,11 +2536,13 @@ async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int =
                     jsonText = await resp.text()
                     jsonFinal = jload(jsonText)
                     ud = jsonFinal['user']
+                await session.close()
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user={username}&api_key={LASTFM_API_KEY}&format=json&limit=9') as resp:
                 jsonText = await resp.text()
                 jsonFinal = jload(jsonText)
                 scb = jsonFinal['recenttracks']['track']
+                await session.close()
         tracks = []
         # trim scb if items more than {maximum}
         if maximum > 0:
