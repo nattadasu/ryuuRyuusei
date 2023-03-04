@@ -561,7 +561,7 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
 
 > {cyno}
 
-*Use `/anime relations id:{m} platform:MyAnimeList` to see external links!
+*Use `/anime relations id:{m} platform:MyAnimeList` to see external links!*
 """,
         color=0x2E51A2,
         thumbnail=interactions.EmbedImageStruct(
@@ -1705,6 +1705,8 @@ async def random(ctx: interactions.CommandContext):
 
     ani_id = await lookupRandom()
 
+    await ctx.send(f"Found [`{ani_id}`](<https://myanimelist.net/anime/{ani_id}>), showing information...", ephemeral=True)
+
     try:
         # check if command invoked in a forum thread
         if ctx.channel.type == 11 or ctx.channel.type == 12:
@@ -1714,11 +1716,13 @@ async def random(ctx: interactions.CommandContext):
             nsfw_bool = await getParentNsfwStatus(snowflake=prId)
         else:
             nsfw_bool = ctx.channel.nsfw
-        sendMessages = await generateMal(ani_id, nsfw_bool)
+        sendMessages = None
+        dcEm = await generateMal(ani_id, nsfw_bool)
     except Exception as e:
         sendMessages = returnException(e)
+        dcEm = None
 
-    await ctx.send(sendMessages)
+    await ctx.send(sendMessages, embeds=dcEm)
 
 
 @anime.subcommand()
