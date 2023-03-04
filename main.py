@@ -30,6 +30,8 @@ TRAKT_CLIENT_ID = os.getenv('TRAKT_CLIENT_ID')
 VERIFICATION_SERVER = os.getenv('VERIFICATION_SERVER')
 VERIFIED_ROLE = os.getenv('VERIFIED_ROLE')
 LASTFM_API_KEY = os.getenv('LASTFM_API_KEY')
+TRAKT_CLIENT_ID = os.getenv('TRAKT_CLIENT_ID')
+TRAKT_API_VERSION = os.getenv('TRAKT_API_VERSION')
 
 EMOJI_ATTENTIVE = os.getenv('EMOJI_ATTENTIVE')
 EMOJI_DOUBTING = os.getenv('EMOJI_DOUBTING')
@@ -2065,15 +2067,31 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         if (smk['imdb'] is not None) or (smk['tmdb'] is not None):
             if smk['imdb'] is not None:
                 tid = smk['imdb']
-                lookup = f"imdb?query={tid}"
+                lookup = f"imdb/{tid}"
                 scpf = "IMDb"
             else:
+                if smk['aniType'] == "tv":
+                    ttyp = "show"
+                else:
+                    ttyp = "movie"
                 tid = smk['tmdb']
-                lookup = f"tmdb?query={tid}"
+                lookup = f"tmdb/{tid}?type={ttyp}"
                 scpf = "TMDB"
+            async with aiohttp.ClientSession(headers={
+                    'Content-Type': 'applications/json',
+                    'trakt-api-key': TRAKT_CLIENT_ID,
+                    'trakt-api-version': TRAKT_API_VERSION
+                }) as session:
+                async with session.get(f'https://api.trakt.tv/search/{lookup}') as resp:
+                    trkRes = await resp.json()
+                    trkType = trkRes[0]['type']
+                    traktId = trkRes[0][f'{trkType}']['ids']['trakt']
+                    if trkType == "show":
+                        trkType = "shows"
+                    await session.close()
             relsEm += [interactions.EmbedField(
                 name=f"<:trakt:1081612822175305788> Trakt",
-                value=f"[`{tid}`](<https://trakt.tv/search/{lookup}>) (search using {scpf} id)",
+                value=f"[`{traktId}`](<https://trakt.tv/{trkType}/{traktId}>)",
                 inline=True
             )]
         if (smk['tmdb'] is not None) and (platform != "tmdb"):
