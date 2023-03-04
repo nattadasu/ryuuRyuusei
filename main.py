@@ -249,6 +249,7 @@ async def searchSimklId(title_id: str, platform: str):
                     raise Exception('Not an anime')
                 else:
                     return fin
+                await sSession.close()
     except:
         return 0
 
