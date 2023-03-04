@@ -751,6 +751,7 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
 
     # get the genres
     tgs = []
+    cw = False
     syChkMark = ''
     for g in alm['genres']:
         tgs += [f"{g}"]
@@ -761,7 +762,6 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
                 tgs += [f"||{t['name']}||"]
             else:
                 tgs += [f"{t['name']}"]
-            cw = False
         elif (t['name'] in bannedTags) and (isNsfw is True):
             if t['isMediaSpoiler'] is True:
                 tgs += [f"||{t['name']} **!**||"]
@@ -771,11 +771,15 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
         else:
             syChkMark = '*'
 
-    if len(tgs) is None:
+    if (len(tgs) is None) or (len(tgs) == 0):
         tgs = "*None*"
-    elif len(tgs) > 0:
-        tgs = sorted(set(tgs))
-        tgs = ", ".join(tgs)
+    elif len(tgs) > 20:
+        tgss = sorted(set(tgs[:20]))
+        tgs = ", ".join(tgss)
+        tgs += f", *and {len(tgss) - 20} more*"
+    else:
+        tgss = sorted(set(tgs))
+        tgs = ", ".join(tgss)
 
     stat = str(alm['status'])
     # Only capitalize the first letter, rest must lowercase
