@@ -356,12 +356,6 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
     else:
         cyno = "*None*"
 
-    if len(pdta) > 0:
-        pdta = " ".join(pdta)
-        pdta = "\n**External sites**\n" + pdta
-    else:
-        pdta = ""
-
     jJpg = j['images']['jpg']
 
     if (smId != 0) and (smk['poster'] is not None):
