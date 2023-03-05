@@ -7,6 +7,7 @@ import datetime
 import json
 import os
 import time
+from uuid import uuid4 as id4
 from json import loads as jload
 from zoneinfo import ZoneInfo
 
@@ -948,8 +949,15 @@ async def getGuildMemberData(guild_snowflake: int, user_snowflake: int):
     member = await botHttp.get_member(guild_id=guild_snowflake, member_id=user_snowflake)
     return member
 
+def getRandom(value: int = 9) -> int:
+    seed = id4()
+    # negate value
+    value = -value
+    seed = int(str(seed.int)[value:])
+    return seed
 
 async def getNekomimi(gender: str = None):
+    seed = getRandom()
     nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t")
     nmDb = nmDb.fillna('')
     if gender is not None:
@@ -957,7 +965,7 @@ async def getNekomimi(gender: str = None):
     else:
         query = nmDb
     # get a random row from the query
-    row = query.sample()
+    row = query.sample(n=1, random_state=seed)
     return row
 
 
@@ -1699,10 +1707,11 @@ async def random(ctx: interactions.CommandContext):
     await ctx.get_channel()
 
     async def lookupRandom():
+        seed = getRandom()
         # open database/mal.csv
         df = pd.read_csv("database/mal.csv", sep="\t")
         # get random anime
-        randomAnime = df.sample()
+        randomAnime = df.sample(n=1, random_state=seed)
         # get anime id
         randomAnimeId: int = randomAnime['mal_id'].values[0]
         return randomAnimeId
