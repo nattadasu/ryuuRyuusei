@@ -719,7 +719,7 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
     elif pvd == 1:
         pvd = f"1 person voted"
 
-    poster = alm['coverImage']['large']
+    poster = alm['coverImage']['extralarge']
     background = alm['bannerImage']
 
     if poster is None:
