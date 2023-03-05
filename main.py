@@ -212,6 +212,7 @@ async def searchAniList(name: str = None, media_id: int = None, isAnime: bool = 
                 volumes
                 coverImage {{
                     large
+                    extraLarge
                 }}
                 bannerImage
                 genres
