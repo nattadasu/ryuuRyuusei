@@ -504,6 +504,34 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
     syns = sorted(set(syns))
     synsl = len(syns)
 
+    rot = j['title']
+
+    nat = j['title_japanese']
+    if (nat == '') or (nat is None):
+        nat = "*None*"
+
+    ent = j['title_english']
+    if (ent is None) or (ent == ''):
+        # for each s in syns, check if the s is in ASCII using regex
+        # if it is, then set ent to s
+        # if not, then set ent to rot
+        for s in syns:
+            if re.match(r"([0-9a-zA-Z][:0-9a-zA-Z ]+)(?= )", s):
+                # grab group 1
+                ent = s
+                break
+            else:
+                ent = rot
+        else:
+            ent = rot
+        enChkMark = '\\*'
+        chkMsg = "\n* Data might be inaccurate due to bot rules/config, please check source for more information."
+    else:
+        enChkMark = ''
+        chkMsg = ""
+
+    note += chkMsg
+
     if synsl > 8:
         syns = syns[:8]
         syns = ", ".join(syns)
@@ -527,16 +555,6 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
     eps = j['episodes']
     if (eps == 0) or (eps is None):
         eps = '*??*'
-
-    rot = j['title']
-
-    ent = j['title_english']
-    if (ent == '') or (ent is None):
-        ent = rot
-
-    nat = j['title_japanese']
-    if (nat == '') or (nat is None):
-        nat = "*None*"
 
     stat = j['status']
     if (stat == '') or (stat is None):
@@ -570,7 +588,7 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
         ),
         fields=[
             interactions.EmbedField(
-                name="English Title",
+                name=f"English Title{enChkMark}",
                 value=ent,
                 inline=True
             ),
@@ -650,6 +668,8 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
                 break
             else:
                 ent = rot
+        else:
+            ent = rot
         enChkMark = '\\*'
     else:
         enChkMark = ''
