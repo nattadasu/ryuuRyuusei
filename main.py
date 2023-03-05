@@ -968,6 +968,64 @@ async def getNekomimi(gender: str = None):
     row = query.sample(n=1, random_state=seed)
     return row
 
+def getPlatformColor(pf: str) -> hex:
+    pf = pf.lower()
+    if pf == "twitter":
+        cl = 0x15202B
+    elif pf == "pixiv":
+        cl = 0x0096FA
+    elif pf == "deviantart":
+        cl = 0x05CC47
+    elif pf == "instagram":
+        cl = 0x833AB4
+    elif pf == "tumblr":
+        cl = 0x35465C
+    elif pf == "patreon":
+        cl = 0xF96854
+    elif pf == "artstation":
+        cl = 0x0F0F0F
+    elif pf == "lofter":
+        cl = 0x335F60
+    elif pf == "weibo":
+        cl = 0xE6162D
+    elif pf == "seiga":
+        cl = 0xEDA715
+    elif pf == "reddit":
+        cl = 0xFF4500
+    elif pf == "hoyolab":
+        cl = 0x1B75BB
+    elif pf == 'anidb':
+        cl = 0x2A2F46
+    elif pf == 'anilist':
+        cl = 0x2F80ED
+    elif pf == 'animeplanet':
+        cl = 0xE75448
+    elif pf == 'anisearch':
+        cl = 0xFDA37C
+    elif pf == 'kaize':
+        cl = 0x692FC2
+    elif pf == 'kitsu':
+        cl = 0xF85235
+    elif pf == 'myanimelist':
+        cl = 0x2F51A3
+    elif pf == 'shikimori':
+        cl = 0x2E2E2E
+    elif pf == 'livechart':
+        cl = 0x67A427
+    elif pf == 'notify':
+        cl = 0xDEA99E
+    elif pf == 'simkl':
+        cl = 0x0B0F10
+    elif pf == 'tvdb':
+        cl = 0x6CD491
+    elif pf == 'tmdb':
+        cl = 0x09B4E2
+    elif pf == 'imdb':
+        cl = 0xF5C518
+    elif pf == 'silveryasha':
+        cl = 0x0172BB
+    return cl
+
 
 # START OF BOT CODE
 
@@ -2082,80 +2140,67 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 inline=True
             )]
 
+        col = getPlatformColor(platform)
+
         if pf == 'anidb':
             uid = f"https://anidb.net/anime/{id}"
             pf = 'AniDB'
             emoid = '1073439145067806801'
-            col = 0x2A2F46
         elif pf == 'anilist':
             uid = f"https://anilist.co/anime/{id}"
             pf = 'AniList'
             emoid = '1073445700689465374'
-            col = 0x2F80ED
         elif pf == 'animeplanet':
             uid = f"https://www.anime-planet.com/anime/{id}"
             pf = 'Anime-Planet'
             emoid = '1073446927447891998'
-            col = 0xE75448
         elif pf == 'anisearch':
             uid = f"https://anisearch.com/anime/{id}"
             pf = 'aniSearch'
             emoid = '1073439148100300810'
-            col = 0xFDA37C
         elif pf == 'kaize':
             uid = f"https://kaize.io/anime/{id}"
             pf = 'Kaize'
             emoid = '1073441859910774784'
-            col = 0x692FC2
         elif pf == 'kitsu':
             uid = f"https://kitsu.io/anime/{id}"
-            pf = 'Kitsu',
+            pf = 'Kitsu'
             emoid = '1073439152462368950'
-            col = 0xF85235
         elif platform == 'myanimelist':
             uid = f"https://myanimelist.net/anime/{id}"
             pf = 'MyAnimeList'
             emoid = '1073442204921643048'
-            col = 0x2F51A3
         elif platform == 'shikimori':
             uid = f"https://shikimori.one/animes/{id}"
             pf = 'Shikimori (Шикимори)'
             emoid = '1073441855645155468'
-            col = 0x2E2E2E
         elif pf == 'livechart':
             uid = f"https://livechart.me/anime/{id}"
             pf = 'LiveChart'
             emoid = '1073439158883844106'
-            col = 0x67A427
         elif pf == 'notify':
             uid = f"https://notify.moe/anime/{id}"
             pf = 'Notify.moe'
             emoid = '1073439161194905690'
-            col = 0xDEA99E
         elif platform == 'simkl':
             uid = f"https://simkl.com/anime/{id}"
             pf = 'SIMKL'
             emoid = '1073630754275348631'
-            col = 0x0B0F10
         elif platform == 'tvdb':
             uid = f"https://www.thetvdb.com/?tab=series&id={id}"
             pf = 'The TV Database'
             emoid = '1079378495064510504'
-            col = 0x6CD491
         elif platform == 'tmdb':
             uid = f"https://www.themoviedb.org/tv/{id}"
             pf = 'The Movie Database'
             emoid = '1079379319920529418'
-            col = 0x09B4E2
         elif platform == 'imdb':
             uid = f"https://www.imdb.com/title/{id}"
             pf = 'IMDb'
             emoid = '1079376998880784464'
-            col = 0xF5C518
         elif pf == 'silveryasha':
             uid = f"<https://db.silveryasha.web.id/anime/{id}>"
             pf = "Silver Yasha"
-            col = 0x0172BB
             emoid = "1079380182059733052"
 
         if (smk['poster'] is None) and (aa['kitsu'] is not None):
@@ -2231,13 +2276,14 @@ async def bois(ctx: interactions.CommandContext):
     artist = row['artist'].values[0]
     artistUrl = row['artistUrl'].values[0]
     imageSourceUrl = row['imageSourceUrl'].values[0]
+    col = getPlatformColor(row['platform'].values[0])
     # Send the image url to the user
     dcEm = interactions.Embed(
         title=f"{mediaSource}",
         image=interactions.EmbedImageStruct(
             url=str(img)
         ),
-        color=0x326799,
+        color=col,
         author=interactions.EmbedAuthor(
             name="Powered by Natsu's nekomimiDb",
             url="https://github.com/nattadasu/nekomimiDb"
@@ -2271,13 +2317,14 @@ async def gurls(ctx: interactions.CommandContext):
     artist = row['artist'].values[0]
     artistUrl = row['artistUrl'].values[0]
     imageSourceUrl = row['imageSourceUrl'].values[0]
+    col = getPlatformColor(row['platform'].values[0])
     # Send the image url to the user
     dcEm = interactions.Embed(
         title=f"{mediaSource}",
         image=interactions.EmbedImageStruct(
             url=str(img)
         ),
-        color=0x326799,
+        color=col,
         author=interactions.EmbedAuthor(
             name="Powered by Natsu's nekomimiDb",
             url="https://github.com/nattadasu/nekomimiDb"
@@ -2311,13 +2358,14 @@ async def true_random(ctx: interactions.CommandContext):
     artist = row['artist'].values[0]
     artistUrl = row['artistUrl'].values[0]
     imageSourceUrl = row['imageSourceUrl'].values[0]
+    col = getPlatformColor(row['platform'].values[0])
     # Send the image url to the user
     dcEm = interactions.Embed(
         title=f"{mediaSource}",
         image=interactions.EmbedImageStruct(
             url=str(img)
         ),
-        color=0x326799,
+        color=col,
         author=interactions.EmbedAuthor(
             name="Powered by Natsu's nekomimiDb",
             url="https://github.com/nattadasu/nekomimiDb"
