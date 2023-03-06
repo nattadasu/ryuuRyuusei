@@ -1919,7 +1919,7 @@ async def info(ctx: interactions.CommandContext, id: int):
                     value="kaize"
                 ),
                 interactions.Choice(
-                    name="Kitsu (only ID supported)",
+                    name="Kitsu",
                     value="kitsu"
                 ),
                 interactions.Choice(
@@ -1991,9 +1991,7 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
                 pf = 'myanimelist'
             except KeyError:
                 raise Exception(
-                    f"Error while searching for the ID of {platform} on SIMKL, entry may not linked with SIMKL counterpart")
-
-
+                    f"Error while searching for the ID of `{platform}` on SIMKL, entry may not linked with SIMKL counterpart")
 
         if pf == 'kaize':
             try:
@@ -2013,11 +2011,27 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
                         uid = slug
                     else:
                         uid = f"{slug}-{lastNum}"
-                    await ctx.edit(f"Searching for relations on {platform} using ID: {uid} (decrease by one)", embeds=None)
+                    await ctx.edit(f"Searching for relations on `{platform}` using ID: `{uid}` (decrease by one)", embeds=None)
                     aa = await getNatsuAniApi(id=uid, platform=pf)
             except json.JSONDecodeError:
                 raise Exception("""We've tried to search for the anime using the slug (and even fix the slug itself), but it seems that the anime is not found on Kaize via AnimeApi.
 Please send a message to AnimeApi maintainer, nattadasu (he is also a developer of this bot)""")
+        elif pf == 'kitsu':
+            # check if the ID provided is a slug
+            if re.match(r'^[a-z0-9-]+$', uid):
+                # get the anime ID
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(f"https://kitsu.io/api/edge/anime?filter[slug]={uid}") as resp:
+                        if resp.status == 200:
+                            data = await resp.json()
+                            uid = data['data'][0]['id']
+                        else:
+                            raise Exception("Error while searching for the ID of Kitsu")
+                    await session.close()
+                await ctx.edit(f"Searching for relations on `{platform}` using ID: `{uid}` (slug to ID)", embeds=None)
+            else:
+                uid = int(uid)
+            aa = await getNatsuAniApi(id=uid, platform=pf)
         else:
             aa = await getNatsuAniApi(id=uid, platform=pf)
 
@@ -2043,6 +2057,8 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 pass
         else:
             smk = simDat
+
+        traktId = 0
 
         if smk['imdb'] is not None:
             # well, IMDb is basically de-facto for TV/Movie database
