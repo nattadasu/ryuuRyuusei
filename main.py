@@ -2044,6 +2044,27 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         else:
             smk = simDat
 
+        if smk['imdb'] is not None:
+            # well, IMDb is basically de-facto for TV/Movie database
+            # similar to MyAnimeList
+            tid = smk['imdb']
+            lookup = f"imdb/{tid}"
+            scpf = "IMDb"
+            try:
+                async with aiohttp.ClientSession(headers={
+                        'Content-Type': 'applications/json',
+                        'trakt-api-key': TRAKT_CLIENT_ID,
+                        'trakt-api-version': TRAKT_API_VERSION
+                    }) as session:
+                    async with session.get(f'https://api.trakt.tv/search/{lookup}') as resp:
+                        await ctx.edit(f"Looking up Trakt ID via {scpf} (`{tid}`)", embeds=None)
+                        trkRes = await resp.json()
+                        trkType = trkRes[0]['type']
+                        traktId = int(trkRes[0][f'{trkType}']['ids']['trakt'])
+                        await session.close()
+            except:
+                traktId = 0
+
         relsEm = []
         # Get the relations
         if smk['allcin'] is not None:
@@ -2136,65 +2157,58 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 value=f"[`{simId}`](<https://simkl.com/anime/{simId}>)",
                 inline=True
             )]
-        if (smk['imdb'] is not None) or (smk['tmdb'] is not None):
-            if smk['imdb'] is not None:
-                tid = smk['imdb']
-                lookup = f"imdb/{tid}"
-                scpf = "IMDb"
-            else:
-                if smk['aniType'] == "tv":
-                    ttyp = "show"
-                else:
-                    ttyp = "movie"
-                tid = smk['tmdb']
-                lookup = f"tmdb/{tid}?type={ttyp}"
-                scpf = "TMDB"
-            async with aiohttp.ClientSession(headers={
-                    'Content-Type': 'applications/json',
-                    'trakt-api-key': TRAKT_CLIENT_ID,
-                    'trakt-api-version': TRAKT_API_VERSION
-                }) as session:
-                async with session.get(f'https://api.trakt.tv/search/{lookup}') as resp:
-                    await ctx.edit(f"Looking up Trakt ID via {scpf} (`{tid}`)", embeds=None)
-                    trkRes = await resp.json()
-                    trkType = trkRes[0]['type']
-                    traktId = trkRes[0][f'{trkType}']['ids']['trakt']
-                    if trkType == "show":
-                        trkType = "shows"
-                    await session.close()
+        if (traktId != 0) and (platform != "trakt"):
             relsEm += [interactions.EmbedField(
                 name=f"<:trakt:1081612822175305788> Trakt",
                 value=f"[`{traktId}`](<https://trakt.tv/{trkType}/{traktId}>)",
                 inline=True
             )]
         if (smk['tmdb'] is not None) and (platform != "tmdb"):
-            if smk['aniType'] == "tv":
-                ttyp = "tv"
+            if traktId != 0:
+                if trkType == "show":
+                    ttyp = "tv"
+                else:
+                    ttyp = "movie"
             else:
-                ttyp = "movie"
+                if smk['aniType'] == "tv":
+                    ttyp = "tv"
+                else:
+                    ttyp = "movie"
             relsEm += [interactions.EmbedField(
                 name="<:tmdb:1079379319920529418> The Movie Database",
                 value=f"[`{smk['tmdb']}`](<https://www.themoviedb.org/{ttyp}/{smk['tmdb']}>)",
                 inline=True
             )]
         if (smk['tvdb'] is not None) and (platform != "tvdb"):
-            if smk['aniType'] == "tv":
-                ttyp = "series"
+            if traktId != 0:
+                if trkType == "show":
+                    ttyp = "series"
+                else:
+                    ttyp = "movies"
             else:
-                ttyp = "movies"
+                if smk['aniType'] == "tv":
+                    ttyp = "series"
+                else:
+                    ttyp = "movies"
             relsEm += [interactions.EmbedField(
                 name="<:tvdb:1079378495064510504> The TVDB",
                 value=f"[`{smk['tvdb']}`](<https://www.thetvdb.com/?tab={ttyp}&id={smk['tvdb']}>)",
                 inline=True
             )]
         elif (smk['tvdbslug'] is not None) and (platform != "tvdb"):
-            if smk['aniType'] == "tv":
-                ttyp = "series"
+            if traktId != 0:
+                if trkType == "show":
+                    ttyp = "series"
+                else:
+                    ttyp = "movies"
             else:
-                ttyp = "movies"
+                if smk['aniType'] == "tv":
+                    ttyp = "series"
+                else:
+                    ttyp = "movies"
             relsEm += [interactions.EmbedField(
                 name="<:tvdb:1079378495064510504> The TVDB",
-                value=f"[`{smk['tvdbslug']}`](<https://www.thetvdb.com/?tab={ttyp}&id={smk['tvdbslug']}>)",
+                value=f"[`{smk['tvdbslug']}`](<https://www.thetvdb.com/{ttyp}/{smk['tvdbslug']}>)",
                 inline=True
             )]
 
