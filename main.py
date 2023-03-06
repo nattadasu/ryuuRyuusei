@@ -15,6 +15,8 @@ import aiohttp
 import interactions
 import pandas as pd
 import regex as re
+import html5lib
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from jikanpy import AioJikan
 
@@ -2034,11 +2036,13 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                     smk = await getSimklID(simkl_id=simId, media_type='anime')
             except:
                 pass
-        else:
+        elif platform == 'simkl':
             try:
                 smk = await getSimklID(simkl_id=simId, media_type='anime')
             except:
                 pass
+        else:
+            smk = simDat
 
         relsEm = []
         # Get the relations
