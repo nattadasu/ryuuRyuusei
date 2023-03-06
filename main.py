@@ -148,12 +148,28 @@ async def getJikanAnime(mal_id: int):
 
 
 async def getNatsuAniApi(id, platform: str):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://aniapi.nattadasu.my.id/{platform}/{id}') as resp:
-            jsonText = await resp.text()
-            jsonFinal = jload(jsonText)
-        await session.close()
-        return jsonFinal
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f'https://aniapi.nattadasu.my.id/{platform}/{id}') as resp:
+                jsonText = await resp.text()
+                jsonFinal = jload(jsonText)
+            await session.close()
+            return jsonFinal
+    except:
+        aaDict = {
+            'title': None,
+            'aniDb': None,
+            'aniList': None,
+            'animePlanet': None,
+            'aniSearch': None,
+            'kaize': None,
+            'kitsu': None,
+            'liveChart': None,
+            'myAnimeList': None,
+            'notifyMoe': None,
+            'silverYasha': None
+        }
+        return aaDict
 
 
 async def getKitsuMetadata(id, media: str = "anime"):
@@ -319,8 +335,12 @@ def trimCyno(message: str):
         return message
 
 
-async def generateMal(entry_id: int, isNsfw: bool = False):
+async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, animeApi: dict = None):
     j = await getJikanAnime(entry_id)
+    if alDict is not None:
+        al = alDict[0]
+    else:
+        al = None
     if isNsfw is None:
         msgForThread = warnThreadCW
     else:
@@ -333,10 +353,8 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
                     f'{EMOJI_FORBIDDEN} **NSFW is not allowed!**\nOnly NSFW channels are allowed to search NSFW content.{msgForThread}')
 
     m = j['mal_id']
-    aa = await getNatsuAniApi(m, platform="myanimelist")
-    aniApi = aa
-    smId = await searchSimklId(m, 'mal')
-    smk = await getSimklID(smId, 'anime')
+    aa = animeApi
+    
 
     if j['synopsis'] is not None:
         # remove \n\n[Written by MAL Rewrite]
@@ -359,31 +377,34 @@ async def generateMal(entry_id: int, isNsfw: bool = False):
         cyno = "*None*"
 
     jJpg = j['images']['jpg']
+    note = "Images from "
 
-    if (smId != 0) and (smk['poster'] is not None):
-        poster = f"https://simkl.in/posters/{smk['poster']}_m.webp"
-        background = f"https://simkl.in/fanart/{smk['fanart']}_w.webp"
-        note = "Images from SIMKL"
-    elif (aa['kitsu'] != 0) or (aa['kitsu'] is not None):
-        kitsu = await getKitsuMetadata(aa['kitsu'], 'anime')
-        try:
-            poster = kitsu['data']['attributes']['posterImage']['original']
-            background = kitsu['data']['attributes']['coverImage']['original']
-            note = "Images from Kitsu"
-        except:
-            if jJpg['large_image_url'] is not None:
-                poster = jJpg['large_image_url']
-            else:
-                poster = j['image_url']
-            background = ""
-            note = ""
+    if al is not None:
+        poster = al['coverImage']['extraLarge']
+        background = al['bannerImage']
+        note += "AniList"
     else:
-        if jJpg['large_image_url'] is not None:
-            poster = jJpg['large_image_url']
+        smId = await searchSimklId(m, 'mal')
+        smk = await getSimklID(smId, 'anime')
+        if (smId != 0) and (smk['poster'] is not None):
+            poster = f"https://simkl.in/posters/{smk['poster']}_m.webp"
+            background = f"https://simkl.in/fanart/{smk['fanart']}_w.webp"
+            note += "SIMKL"
         else:
-            poster = j['image_url']
-        background = ""
-        note = ""
+            try:
+                if aa['kitsu'] is None:
+                    raise Exception()
+                kitsu = await getKitsuMetadata(aa['kitsu'], 'anime')
+                poster = kitsu['data']['attributes']['posterImage']['original']
+                background = kitsu['data']['attributes']['coverImage']['original']
+                note += "Kitsu"
+            except Exception:
+                if jJpg['large_image_url'] is not None:
+                    poster = jJpg['large_image_url']
+                else:
+                    poster = j['image_url']
+                background = ""
+                note += "MyAnimeList"
 
     # Build sendMessages
     tgs = []
@@ -1724,10 +1745,11 @@ async def search(ctx: interactions.CommandContext, title: str = None):
     await ctx.get_channel()
 
     ani_id = None
+    alData = None
 
     async def lookupByNameAniList(aniname: str):
         rawData = await searchAniList(name=aniname, media_id=None, isAnime=True)
-        return rawData[0]
+        return rawData
 
     async def lookupByNameJikan(name: str):
         rawData = await searchJikanAnime(name)
@@ -1746,7 +1768,7 @@ async def search(ctx: interactions.CommandContext, title: str = None):
 
     try:
         alData = await lookupByNameAniList(title)
-        ani_id = alData['idMal']
+        ani_id = alData[0]['idMal']
     except:
         ani_id = None
 
@@ -1766,7 +1788,8 @@ async def search(ctx: interactions.CommandContext, title: str = None):
                 nsfw_bool = await getParentNsfwStatus(snowflake=prId)
             else:
                 nsfw_bool = ctx.channel.nsfw
-            dcEm = await generateMal(ani_id, nsfw_bool)
+            aniApi = await getNatsuAniApi(ani_id, platform="myanimelist")
+            dcEm = await generateMal(ani_id, nsfw_bool, alDict=alData, animeApi=aniApi)
             sendMessages = None
         except Exception as e:
             sendMessages = returnException(e)
@@ -1809,7 +1832,12 @@ async def random(ctx: interactions.CommandContext):
         else:
             nsfw_bool = ctx.channel.nsfw
         sendMessages = None
-        dcEm = await generateMal(ani_id, nsfw_bool)
+        aniApi = await getNatsuAniApi(ani_id, platform="myanimelist")
+        if aniApi['aniList'] is not None:
+            aaDict = await searchAniList(media_id=aniApi['aniList'], isAnime=True)
+        else:
+            aaDict = None
+        dcEm = await generateMal(ani_id, nsfw_bool, aaDict, animeApi=aniApi)
     except Exception as e:
         sendMessages = returnException(e)
         dcEm = None
@@ -1837,7 +1865,12 @@ async def info(ctx: interactions.CommandContext, id: int):
             nsfw_bool = await getParentNsfwStatus(snowflake=prId)
         else:
             nsfw_bool = ctx.channel.nsfw
-        dcEm = await generateMal(id, nsfw_bool)
+        aniApi = await getNatsuAniApi(id=id, platform='myanimelist')
+        if aniApi['aniList'] is not None:
+            aaDict = await searchAniList(media_id=aniApi['aniList'], isAnime=True)
+        else:
+            aaDict = None
+        dcEm = await generateMal(id, nsfw_bool, aaDict, animeApi=aniApi)
         sendMessages = None
     except Exception as e:
         sendMessages = returnException(e)
