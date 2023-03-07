@@ -7,15 +7,16 @@ import datetime
 import json
 import os
 import time
-from uuid import uuid4 as id4
+import subprocess
 from json import loads as jload
+from uuid import uuid4 as id4
 from zoneinfo import ZoneInfo
 
 import aiohttp
+import html5lib
 import interactions
 import pandas as pd
 import regex as re
-import html5lib
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from jikanpy import AioJikan
@@ -62,6 +63,17 @@ bannedTags = [
     'Sweat', 'Tentacles', 'Threesome', 'Vore',
     'Voyeur', 'Watersports', 'Omegaverse'
 ]
+
+
+# https://stackoverflow.com/a/21901260
+def get_git_revision_hash() -> str:
+    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+
+def get_git_revision_short_hash() -> str:
+    return subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
+
+gittyHash = get_git_revision_hash()
+gtHsh = get_git_revision_short_hash()
 
 
 bot = interactions.Client(
@@ -1640,6 +1652,8 @@ This bot may requires your consent to collect and store your data when you invok
 However, you still able to use the bot without collecting your data, albeit limited usage.
 
 If you want to contact the author, send a DM to [{AUTHOR_USERNAME}](<{ownerUserUrl}>) or via [support server](<{BOT_SUPPORT_SERVER}>).
+
+Bot version, in Git hash: [`{gtHsh}`](<https://github.com/nattadasu/ryuuRyuusei/commit/{gittyHash}>)
 '''
     await ctx.send(messages)
 
