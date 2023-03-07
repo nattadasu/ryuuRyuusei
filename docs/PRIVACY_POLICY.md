@@ -1,5 +1,9 @@
 <!-- markdownlint-disable MD041 MD013 MD032 MD047 -->
 
+> **Warning**
+>
+> This is a tl;dr version of Privacy Policy taken from `/privacy` command. For full version, the document is currently rewritten and will be available soon.
+
 Hello and thank you for your interest to read this tl;dr version of Privacy Policy.
 
 In this message we shortly briefing which content we collect, store, and use, including what third party services we used for bot to function as expected.
