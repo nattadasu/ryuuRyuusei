@@ -1226,7 +1226,6 @@ async def verify(ctx: interactions.CommandContext):
     memberRoles = getMemberDetail.roles
     verifiedRole = VERIFIED_ROLE
 
-    clubId = CLUB_ID
 
     if str(ctx.guild_id) != f"{VERIFICATION_SERVER}":
         messages = f"""{EMOJI_USER_ERROR} **You are not allowed to use this command!**
@@ -1249,14 +1248,14 @@ This command only allowed to be used on that particular server.... if you know w
             verified = False
             for club in clubs:
                 if int(club['mal_id']) == int(CLUB_ID):
-                    await ctx.member.add_role(verifiedRole)
+                    await ctx.member.add_role(verifiedRole, reason="Verified by bot")
                     messages = f"""{EMOJI_ATTENTIVE} **You have been verified!**"""
                     verified = True
                     # exit the loop
                     break
             if verified is False:
                 messages = f"""{EMOJI_USER_ERROR} **You are not in the club!**
-Please join [our club](<https://myanimelist.net/clubs.php?cid={clubId}>) to get your role!"""
+Please join [our club](<https://myanimelist.net/clubs.php?cid={CLUB_ID}>) to get your role!"""
         else:
             messages = f"""{EMOJI_DOUBTING} **You are not registered!**
 Please use the command `/register` to register your MAL profile to this server!"""
@@ -2827,6 +2826,65 @@ async def admin_unregister(ctx: interactions.CommandContext, dc_username: int):
         sendMessages = f"""{EMOJI_DOUBTING} **User is not registered!**"""
 
     await ctx.send(sendMessages, ephemeral=True)
+
+
+@bot.command(
+    name="admin_verify",
+    description="Verify user for the server, for admin only!",
+    default_member_permissions=interactions.Permissions.ADMINISTRATOR,
+    scope=[
+        int(VERIFICATION_SERVER)
+    ],
+    options=[
+        interactions.Option(
+            name="username",
+            description="User to verify",
+            type=interactions.OptionType.USER,
+            required=True
+        )
+    ]
+)
+async def admin_verify(ctx: interactions.CommandContext, username: int):
+    await ctx.defer()
+    discordId = username.id
+    # get user joined date
+    discordJoined = snowflake_to_datetime(discordId)
+    discordJoined = int(discordJoined)
+    getMemberDetail = await ctx.guild.get_member(discordId)
+    memberRoles = getMemberDetail.roles
+    verifiedRole = VERIFIED_ROLE
+
+    try:
+        if discordId == ctx.author.id:
+            raise Exception(f"{EMOJI_USER_ERROR} Sorry, but you can't verify yourself!")
+        elif int(verifiedRole) in memberRoles:
+            raise Exception(f"{EMOJI_USER_ERROR} User have already verified.")
+
+        with open(database, "r") as f:
+            reader = csv.reader(f, delimiter="\t")
+            for row in reader:
+                if row[0] == discordId:
+                    username = row[3]
+                    break
+            else:
+                raise Exception(f"{EMOJI_UNEXPECTED_ERROR} It seems user has been not registered to the bot, or there's unknown error")
+
+        clubs = await checkClubMembership(username)
+        verified = False
+        for club in clubs:
+            if int(club['mal_id']) == int(CLUB_ID):
+                botHttp = interactions.HTTPClient(token=BOT_TOKEN)
+                await botHttp.add_member_role(guild_id=ctx.guild_id, user_id=discordId, role_id=verifiedRole, reason=f"Verified by {ctx.author.username}#{ctx.author.discriminator} ({ctx.author.id})")
+                sendMessages = f"{EMOJI_SUCCESS} User <@!{discordId}> has been verified"
+                verified = True
+                break
+
+        if verified is False:
+            raise Exception(f"{EMOJI_DOUBTING} User may have not joined the club yet, or the bot currently only check a page. Please raise an issue to this bot maintainer")
+    except Exception as e:
+        sendMessages = returnException(e)
+
+    await ctx.send(sendMessages)
 
 
 print("Starting bot...")
