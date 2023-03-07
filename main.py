@@ -1851,7 +1851,10 @@ async def random(ctx: interactions.CommandContext):
         if aniApi['aniList'] is not None:
             aaDict = await searchAniList(media_id=aniApi['aniList'], isAnime=True)
         else:
-            aaDict = None
+            try:
+                aaDict = await searchAniList(name=aniApi['title'], media_id=None, isAnime=True)
+            except:
+                aaDict = None
         dcEm = await generateMal(ani_id, nsfw_bool, aaDict, animeApi=aniApi)
     except Exception as e:
         sendMessages = returnException(e)
@@ -1884,7 +1887,10 @@ async def info(ctx: interactions.CommandContext, id: int):
         if aniApi['aniList'] is not None:
             aaDict = await searchAniList(media_id=aniApi['aniList'], isAnime=True)
         else:
-            aaDict = None
+            try:
+                aaDict = await searchAniList(name=aniApi['title'], media_id=None, isAnime=True)
+            except:
+                aaDict = None
         dcEm = await generateMal(id, nsfw_bool, aaDict, animeApi=aniApi)
         sendMessages = None
     except Exception as e:
