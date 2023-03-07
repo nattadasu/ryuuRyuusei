@@ -2192,52 +2192,41 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 value=f"[`{traktId}`](<https://trakt.tv/{trkType}/{traktId}>)",
                 inline=True
             )]
-        if (smk['tmdb'] is not None) and (platform != "tmdb"):
+        try:
             if traktId != 0:
                 if trkType == "show":
-                    ttyp = "tv"
+                    tvtyp = "series"
+                    tmtyp = "tv"
                 else:
-                    ttyp = "movie"
+                    tvtyp = "movies"
+                    tmtyp = "movie"
             else:
                 if smk['aniType'] == "tv":
-                    ttyp = "tv"
-                else:
-                    ttyp = "movie"
+                    tvtyp = "series"
+                    tmtyp = "tv"
+                elif smk['aniType'] is not None:
+                    tvtyp = "movies"
+                    tmtyp = "movie"
+        except:
+            tvtyp = "series"
+            tmtyp = "tv"
+        if (smk['tmdb'] is not None) and (platform != "tmdb"):
+            if traktId != 0:
             relsEm += [interactions.EmbedField(
                 name="<:tmdb:1079379319920529418> The Movie Database",
-                value=f"[`{smk['tmdb']}`](<https://www.themoviedb.org/{ttyp}/{smk['tmdb']}>)",
+                value=f"[`{smk['tmdb']}`](<https://www.themoviedb.org/{tmtyp}/{smk['tmdb']}>)",
                 inline=True
             )]
         if (smk['tvdb'] is not None) and (platform != "tvdb"):
-            if traktId != 0:
-                if trkType == "show":
-                    ttyp = "series"
-                else:
-                    ttyp = "movies"
-            else:
-                if smk['aniType'] == "tv":
-                    ttyp = "series"
-                else:
-                    ttyp = "movies"
             relsEm += [interactions.EmbedField(
                 name="<:tvdb:1079378495064510504> The TVDB",
-                value=f"[`{smk['tvdb']}`](<https://www.thetvdb.com/?tab={ttyp}&id={smk['tvdb']}>)",
+                value=f"[`{smk['tvdb']}`](<https://www.thetvdb.com/?tab={tvtyp}&id={smk['tvdb']}>)",
                 inline=True
             )]
         elif (smk['tvdbslug'] is not None) and (platform != "tvdb"):
-            if traktId != 0:
-                if trkType == "show":
-                    ttyp = "series"
-                else:
-                    ttyp = "movies"
-            else:
-                if smk['aniType'] == "tv":
-                    ttyp = "series"
-                else:
-                    ttyp = "movies"
             relsEm += [interactions.EmbedField(
                 name="<:tvdb:1079378495064510504> The TVDB",
-                value=f"[`{smk['tvdbslug']}`](<https://www.thetvdb.com/{ttyp}/{smk['tvdbslug']}>)",
+                value=f"[`{smk['tvdbslug']}`](<https://www.thetvdb.com/{tvtyp}/{smk['tvdbslug']}>)",
                 inline=True
             )]
 
@@ -2287,12 +2276,16 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             uid = f"https://simkl.com/anime/{id}"
             pf = 'SIMKL'
             emoid = '1073630754275348631'
-        elif platform == 'tvdb':
-            uid = f"https://www.thetvdb.com/?tab=series&id={id}"
+        elif (platform == 'tvdb') and (smk['tvdb'] is not None):
+            uid = f"https://www.thetvdb.com/?tab={tvtyp}&id={id}"
+            pf = 'The TV Database'
+            emoid = '1079378495064510504'
+        elif (platform == 'tvdb') and (smk['tvdbslug'] is not None):
+            uid = f"https://www.thetvdb.com/{tvtyp}/{id}"
             pf = 'The TV Database'
             emoid = '1079378495064510504'
         elif platform == 'tmdb':
-            uid = f"https://www.themoviedb.org/tv/{id}"
+            uid = f"https://www.themoviedb.org/{tmtyp}/{id}"
             pf = 'The Movie Database'
             emoid = '1079379319920529418'
         elif platform == 'imdb':
