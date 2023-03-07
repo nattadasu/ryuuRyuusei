@@ -2211,7 +2211,6 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             tvtyp = "series"
             tmtyp = "tv"
         if (smk['tmdb'] is not None) and (platform != "tmdb"):
-            if traktId != 0:
             relsEm += [interactions.EmbedField(
                 name="<:tmdb:1079379319920529418> The Movie Database",
                 value=f"[`{smk['tmdb']}`](<https://www.themoviedb.org/{tmtyp}/{smk['tmdb']}>)",
