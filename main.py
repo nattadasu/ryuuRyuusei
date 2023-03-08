@@ -539,16 +539,6 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
     else:
         sson = "Unknown"
 
-    # # create a synonyms list
-    syns = []
-    for s in j['titles']:
-        syns += [s['title']]
-    ogt = [j['title_english'], j['title_japanese'], j['title']]
-    syns = [x for x in syns if x not in ogt]
-    # sort
-    syns = sorted(set(syns))
-    synsl = len(syns)
-
     rot = j['title']
 
     nat = j['title_japanese']
@@ -576,6 +566,16 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
         chkMsg = ""
 
     note += chkMsg
+
+    # create a synonyms list
+    syns = []
+    for s in j['titles']:
+        syns += [s['title']]
+    ogt = [rot, nat, ent]
+    syns = [x for x in syns if x not in ogt]
+    # sort
+    syns = sorted(set(syns))
+    synsl = len(syns)
 
     if synsl > 8:
         syns = syns[:8]
