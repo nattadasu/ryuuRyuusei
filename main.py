@@ -546,6 +546,10 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
         nat = "*None*"
 
     ent = j['title_english']
+    # create a synonyms list
+    syns = []
+    for s in j['titles']:
+        syns += [s['title']]
     if (ent is None) or (ent == ''):
         # for each s in syns, check if the s is in ASCII using regex
         # if it is, then set ent to s
@@ -567,10 +571,6 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
 
     note += chkMsg
 
-    # create a synonyms list
-    syns = []
-    for s in j['titles']:
-        syns += [s['title']]
     ogt = [rot, nat, ent]
     syns = [x for x in syns if x not in ogt]
     # sort
