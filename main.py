@@ -449,6 +449,15 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
     daten = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
     bcast = j['broadcast']
 
+    # Grab studio names on j['studios'][n]['name']
+    stdio = []
+    for s in j['studios']:
+        stdio += [s['name']]
+    if len(stdio) > 0:
+        stdio = ", ".join(stdio)
+    else:
+        stdio = "*None*"
+
     # start date logic
     if astn is not None:
         # Check if title is airing/aired or TBA by checking astr in regex
@@ -642,18 +651,18 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
                 value=tgs
             ),
             interactions.EmbedField(
-                name="Episodes",
-                value=eps,
-                inline=True
-            ),
-            interactions.EmbedField(
-                name="Durations",
-                value=dur,
+                name="Eps/Duration",
+                value=f"{eps} ({dur})",
                 inline=True
             ),
             interactions.EmbedField(
                 name="Status",
                 value=stat,
+                inline=True
+            ),
+            interactions.EmbedField(
+                name="Studio",
+                value=stdio,
                 inline=True
             ),
             interactions.EmbedField(
