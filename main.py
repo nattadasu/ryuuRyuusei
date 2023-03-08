@@ -549,7 +549,8 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
     # create a synonyms list
     syns = []
     for s in j['titles']:
-        syns += [s['title']]
+        if s['type'] not in ['Default', 'Japanese', 'English']:
+            syns += [s['title']]
     if (ent is None) or (ent == ''):
         # for each s in syns, check if the s is in ASCII using regex
         # if it is, then set ent to s
