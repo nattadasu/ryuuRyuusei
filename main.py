@@ -1782,6 +1782,7 @@ async def search(ctx: interactions.CommandContext, title: str = None):
                         return myAnimeListID
 
     try:
+        await ctx.send(f"Searching `{title}` using AniList", embeds=None)
         alData = await lookupByNameAniList(title)
         ani_id = alData[0]['idMal']
     except:
@@ -1789,12 +1790,14 @@ async def search(ctx: interactions.CommandContext, title: str = None):
 
     if ani_id is None:
         try:
+            await ctx.edit(f"AniList failed to search `{title}`, searching via Jikan (inaccurate)", embeds=None)
             ani_id = await lookupByNameJikan(title)
         except:
             ani_id = None
 
     if ani_id is not None:
         try:
+            await ctx.edit("Anime found! Processing", embeds=None)
             # check if command invoked in a forum thread
             if ctx.channel.type == 11 or ctx.channel.type == 12:
                 # get parent channel id
@@ -1811,10 +1814,11 @@ async def search(ctx: interactions.CommandContext, title: str = None):
             dcEm = None
     else:
         sendMessages = returnException(
-            "We couldn't able to find any anime with that title.")
+            f"""We couldn't able to find any anime with that title (`{title}`). Please check the spelling!
+**Pro tip**: Use Native title to get most accurate result.... that if you know how to type in such language.""")
         dcEm = None
 
-    await ctx.send(sendMessages, embeds=dcEm)
+    await ctx.edit(sendMessages, embeds=dcEm)
 
 
 @anime.subcommand()
