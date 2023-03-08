@@ -40,8 +40,13 @@ def main():
         env = "MATHLAB=\"m\" "
     else:
         env = ""
+    # check if jikanpy is installed
+    try:
+        from jikanpy import AioJikan
+    except ImportError:
+        installJikanpy()
     # install dependencies
-    print("Installing dependencies...")
+    print("Installing dependencies for next step and the bot itself...")
     os.system(f"{env}{pf} -m pip install -r requirements.txt")
     # run prepFile.py
     print("Running prepFile.py...")
@@ -52,14 +57,7 @@ def main():
     # run malIndexer.py
     print("Running malIndexer.py...")
     os.system(f"{pf} firstRun/malIndexer.py")
-    # check if jikanpy is installed
-    try:
-        from jikanpy import AioJikan
-    except ImportError:
-        installJikanpy()
-    # reupgrade dependencies that may have been downgraded
-    print("Re-upgrading dependencies...")
-    os.system(f"{env}{pf} -m pip install -r requirements.txt --upgrade")
+    print("Initialization finished, you should able to run the bot safely now.")
 
 if __name__ == "__main__":
     main()
