@@ -6,9 +6,10 @@ import csv
 import datetime
 import json
 import os
-import time
 import subprocess
+import time
 from json import loads as jload
+from urllib.parse import quote as urlquote
 from uuid import uuid4 as id4
 from zoneinfo import ZoneInfo
 
@@ -2672,6 +2673,7 @@ If you have any questions (or more payment channels), please join my [support se
 )
 async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int = 9):
     await ctx.defer()
+    await ctx.send(f"Fetching data for {username}...", embeds=None)
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://ws.audioscrobbler.com/2.0/?method=user.getinfo&user={username}&api_key={LASTFM_API_KEY}&format=json') as resp:
@@ -2698,7 +2700,9 @@ async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int =
                 rpt = "\n\n**Recently played track**"
             if len(scb) > maximum:
                 scb = scb[:maximum]
+            nRep = 1
             for tr in scb:
+                await ctx.edit(f"Fetching data for {username}... {nRep}/{maximum}", embeds=None)
                 try:
                     if tr['@attr']['nowplaying'] is not None:
                         np = jload(tr['@attr']['nowplaying'].lower())
@@ -2711,6 +2715,23 @@ async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int =
                     "|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/")
                 tr['album']['#text'] = str(tr['album']['#text']).replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace(
                     "|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/")
+                scu = tr['url']
+                scus = scu.split("/")
+                # assumes the url as such: https://www.last.fm/music/Artist/_/Track
+                # so, the artist is at index 4, and track is at index 6
+                # in index 4 and 6, encode the string to be url compatible with percent encoding
+                track = []
+                for art in scus[6].split("+"):
+                    track.append(urlquote(art))
+                track = "+".join(track)
+
+                artist = []
+                for art in scus[4].split("+"):
+                    artist.append(urlquote(art))
+                artist = "+".join(artist)
+
+                tr['url'] = f"https://www.last.fm/music/{artist}/_/{track}"
+
                 if np is True:
                     title = f"▶️ {tr['name']}"
                     dt = "*Currently playing*"
@@ -2725,6 +2746,7 @@ async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int =
 {dt}, [Link]({tr['url']})""",
                     inline=True
                 )]
+                nRep += 1
         else:
             rpt = ""
         # read ud['images'], and grab latest one
@@ -2761,7 +2783,7 @@ Total scrobbles: {ud['playcount']}
         sendMessages = returnException(e)
         dcEm = None
 
-    await ctx.send(sendMessages, embeds=dcEm)
+    await ctx.edit(sendMessages, embeds=dcEm)
 
 
 @bot.command(
