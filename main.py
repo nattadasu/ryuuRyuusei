@@ -69,8 +69,10 @@ bannedTags = [
 def get_git_revision_hash() -> str:
     return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
 
+
 def get_git_revision_short_hash() -> str:
     return subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
+
 
 gittyHash = get_git_revision_hash()
 gtHsh = get_git_revision_short_hash()
@@ -368,7 +370,6 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
 
     m = j['mal_id']
     aa = animeApi
-    
 
     if j['synopsis'] is not None:
         # remove \n\n[Written by MAL Rewrite]
@@ -1015,12 +1016,14 @@ async def getGuildMemberData(guild_snowflake: int, user_snowflake: int):
     member = await botHttp.get_member(guild_id=guild_snowflake, member_id=user_snowflake)
     return member
 
+
 def getRandom(value: int = 9) -> int:
     seed = id4()
     # negate value
     value = -value
     seed = int(str(seed.int)[value:])
     return seed
+
 
 async def getNekomimi(gender: str = None):
     seed = getRandom()
@@ -1033,6 +1036,7 @@ async def getNekomimi(gender: str = None):
     # get a random row from the query
     row = query.sample(n=1, random_state=seed)
     return row
+
 
 def getPlatformColor(pf: str) -> hex:
     pf = pf.lower()
@@ -1235,7 +1239,6 @@ async def verify(ctx: interactions.CommandContext):
     getMemberDetail = await ctx.guild.get_member(discordId)
     memberRoles = getMemberDetail.roles
     verifiedRole = VERIFIED_ROLE
-
 
     if str(ctx.guild_id) != f"{VERIFICATION_SERVER}":
         messages = f"""{EMOJI_USER_ERROR} **You are not allowed to use this command!**
@@ -1542,14 +1545,21 @@ Last online: <t:{lastOnline}:R>{bbd}""",
                             man = malProfile['statistics']['manga']
                             bth = None
                             if malProfile['birthday'] is not None:
-                                bth = malProfile['birthday'].replace("+00:00", "+0000")
-                                bth = int(datetime.datetime.strptime(bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
-                            lstOnline = malProfile['last_online'].replace("+00:00", "+0000")
-                            lstOnline = int(datetime.datetime.strptime(lstOnline, "%Y-%m-%dT%H:%M:%S%z").timestamp())
-                            dtJoin = malProfile['joined'].replace("+00:00", "+0000")
-                            dtJoin = int(datetime.datetime.strptime(dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+                                bth = malProfile['birthday'].replace(
+                                    "+00:00", "+0000")
+                                bth = int(datetime.datetime.strptime(
+                                    bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+                            lstOnline = malProfile['last_online'].replace(
+                                "+00:00", "+0000")
+                            lstOnline = int(datetime.datetime.strptime(
+                                lstOnline, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+                            dtJoin = malProfile['joined'].replace(
+                                "+00:00", "+0000")
+                            dtJoin = int(datetime.datetime.strptime(
+                                dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
 
-                            dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man, lastOnline=lstOnline, joined=dtJoin, bday=bth, extend=extended)
+                            dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man,
+                                                  lastOnline=lstOnline, joined=dtJoin, bday=bth, extend=extended)
                             if user is None:
                                 sendMessages = ""
                             elif ctx.author.id == uid:
@@ -1605,13 +1615,17 @@ Last online: <t:{lastOnline}:R>{bbd}""",
             bth = None
             if malProfile['birthday'] is not None:
                 bth = malProfile['birthday'].replace("+00:00", "+0000")
-                bth = int(datetime.datetime.strptime(bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+                bth = int(datetime.datetime.strptime(
+                    bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
             lstOnline = malProfile['last_online'].replace("+00:00", "+0000")
-            lstOnline = int(datetime.datetime.strptime(lstOnline, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+            lstOnline = int(datetime.datetime.strptime(
+                lstOnline, "%Y-%m-%dT%H:%M:%S%z").timestamp())
             dtJoin = malProfile['joined'].replace("+00:00", "+0000")
-            dtJoin = int(datetime.datetime.strptime(dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+            dtJoin = int(datetime.datetime.strptime(
+                dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
 
-            dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man, lastOnline=lstOnline, joined=dtJoin, bday=bth, extend=extended)
+            dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man,
+                                  lastOnline=lstOnline, joined=dtJoin, bday=bth, extend=extended)
         except Exception as e:
             sendMessages = ""
             dcEm = interactions.Embed(
@@ -2059,7 +2073,8 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                             data = await resp.json()
                             uid = data['data'][0]['id']
                         else:
-                            raise Exception("Error while searching for the ID of Kitsu")
+                            raise Exception(
+                                "Error while searching for the ID of Kitsu")
                     await session.close()
                 await ctx.edit(f"Searching for relations on `{platform}` using ID: `{uid}` (slug to ID)", embeds=None)
             else:
@@ -2101,10 +2116,10 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             scpf = "IMDb"
             try:
                 async with aiohttp.ClientSession(headers={
-                        'Content-Type': 'applications/json',
-                        'trakt-api-key': TRAKT_CLIENT_ID,
-                        'trakt-api-version': TRAKT_API_VERSION
-                    }) as session:
+                    'Content-Type': 'applications/json',
+                    'trakt-api-key': TRAKT_CLIENT_ID,
+                    'trakt-api-version': TRAKT_API_VERSION
+                }) as session:
                     async with session.get(f'https://api.trakt.tv/search/{lookup}') as resp:
                         await ctx.edit(f"Looking up Trakt ID via {scpf} (`{tid}`)", embeds=None)
                         trkRes = await resp.json()
@@ -2868,7 +2883,8 @@ async def admin_verify(ctx: interactions.CommandContext, username: int):
 
     try:
         if discordId == ctx.author.id:
-            raise Exception(f"{EMOJI_USER_ERROR} Sorry, but you can't verify yourself!")
+            raise Exception(
+                f"{EMOJI_USER_ERROR} Sorry, but you can't verify yourself!")
         elif int(verifiedRole) in memberRoles:
             raise Exception(f"{EMOJI_USER_ERROR} User have already verified.")
 
@@ -2879,7 +2895,8 @@ async def admin_verify(ctx: interactions.CommandContext, username: int):
                     username = row[3]
                     break
             else:
-                raise Exception(f"{EMOJI_UNEXPECTED_ERROR} It seems user has been not registered to the bot, or there's unknown error")
+                raise Exception(
+                    f"{EMOJI_UNEXPECTED_ERROR} It seems user has been not registered to the bot, or there's unknown error")
 
         clubs = await checkClubMembership(username)
         verified = False
@@ -2892,7 +2909,8 @@ async def admin_verify(ctx: interactions.CommandContext, username: int):
                 break
 
         if verified is False:
-            raise Exception(f"{EMOJI_DOUBTING} User may have not joined the club yet, or the bot currently only check a page. Please raise an issue to this bot maintainer")
+            raise Exception(
+                f"{EMOJI_DOUBTING} User may have not joined the club yet, or the bot currently only check a page. Please raise an issue to this bot maintainer")
     except Exception as e:
         sendMessages = returnException(e)
 
