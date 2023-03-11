@@ -2724,11 +2724,13 @@ async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int =
                 for art in scus[6].split("+"):
                     track.append(urlquote(art))
                 track = "+".join(track)
+                track = track.replace('%25', '%')
 
                 artist = []
                 for art in scus[4].split("+"):
                     artist.append(urlquote(art))
                 artist = "+".join(artist)
+                artist = artist.replace('%25', '%')
 
                 tr['url'] = f"https://www.last.fm/music/{artist}/_/{track}"
 
