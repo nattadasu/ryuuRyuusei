@@ -419,32 +419,57 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
     jJpg = j['images']['jpg']
     note = "Images from "
 
-    if al is not None:
-        poster = al['coverImage']['extraLarge']
-        background = al['bannerImage']
-        note += "AniList"
+    if al is None:
+        al = {
+            'bannerImage': None,
+            'coverImage': {
+                'extraLarge': None
+            }
+        }
+
+    alPost = al['coverImage']['extraLarge']
+    alBg = al['bannerImage']
+
+    smId = await searchSimklId(m, 'mal')
+    smk = await getSimklID(smId, 'anime')
+    smkPost = smk.get('poster', None)
+    smkBg = smk.get('fanart', None)
+    smkPost = f"https://simkl.in/posters/{smkPost}_m.webp" if smkPost is not None else None
+    smkBg = f"https://simkl.in/fanart/{smkBg}_w.webp" if smkBg is not None else None
+
+    if (aa['kitsu'] is not None) and (((alPost is None) and (alBg is None)) or ((smkPost is None) and (smkBg is None))):
+        kts = await getKitsuMetadata(aa['kitsu'], 'anime')
     else:
-        smId = await searchSimklId(m, 'mal')
-        smk = await getSimklID(smId, 'anime')
-        if (smId != 0) and (smk['poster'] is not None):
-            poster = f"https://simkl.in/posters/{smk['poster']}_m.webp"
-            background = f"https://simkl.in/fanart/{smk['fanart']}_w.webp"
-            note += "SIMKL"
+        kts = {
+            "data": {
+                "attributes": {
+                    "posterImage": None,
+                    "coverImage": None
+                }
+            }
+        }
+
+    ktsPost = kts['data']['attributes'].get('posterImage', None)
+    ktsPost = ktsPost.get('original', None) if ktsPost is not None else None
+    ktsBg = kts['data']['attributes'].get('coverImage', None)
+    ktsBg = ktsBg.get('original', None) if ktsBg is not None else None
+
+    malPost = jJpg['large_image_url'] if jJpg['large_image_url'] is not None else j['image_url']
+    malBg = ""
+
+    poster = alPost if alPost is not None else smkPost if smkPost is not None else ktsPost if ktsPost is not None else malPost
+    postNote = "AniList" if alPost is not None else "SIMKL" if smkPost is not None else "Kitsu" if ktsPost is not None else "MyAnimeList"
+    background = alBg if alBg is not None else smkBg if smkBg is not None else ktsBg if ktsBg is not None else malBg
+    bgNote = "AniList" if alBg is not None else "SIMKL" if smkBg is not None else "Kitsu" if ktsBg is not None else "MyAnimeList"
+
+    if postNote == bgNote:
+        note += f"{postNote} for poster and background."
+    else:
+        note += f"{postNote} for poster"
+        if bgNote != "MyAnimeList":
+            note += f" and {bgNote} for background."
         else:
-            try:
-                if aa['kitsu'] is None:
-                    raise Exception()
-                kitsu = await getKitsuMetadata(aa['kitsu'], 'anime')
-                poster = kitsu['data']['attributes']['posterImage']['original']
-                background = kitsu['data']['attributes']['coverImage']['original']
-                note += "Kitsu"
-            except Exception:
-                if jJpg['large_image_url'] is not None:
-                    poster = jJpg['large_image_url']
-                else:
-                    poster = j['image_url']
-                background = ""
-                note += "MyAnimeList"
+            note += "."
 
     # Build sendMessages
     tgs = []
