@@ -271,8 +271,8 @@ async def searchAniList(name: str = None, media_id: int = None, isAnime: bool = 
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json={'query': query, 'variables': variables}) as resp:
                 jsonResult = await resp.json()
-                await session.close()
-                return jsonResult['data'][f'{mediaType.lower()}']['results']
+            await session.close()
+            return jsonResult['data'][f'{mediaType.lower()}']['results']
     except IndexError as ierr:
         raise Exception(ierr)
 
@@ -284,11 +284,11 @@ async def searchSimklId(title_id: str, platform: str):
             async with sSession.get(url) as sResp:
                 idFound = await sResp.json()
                 fin = idFound[0]['ids']['simkl']
-                await sSession.close()
-                if idFound[0]['type'] != 'anime':
-                    raise Exception('Not an anime')
-                else:
-                    return fin
+            await sSession.close()
+            if idFound[0]['type'] != 'anime':
+                raise Exception('Not an anime')
+            else:
+                return fin
     except:
         return 0
 
@@ -341,8 +341,8 @@ async def getSimklID(simkl_id: int, media_type: str) -> dict:
                         "fanart": animeFound.get('fanart', None),
                         "aniType": animeFound.get('anime_type', None)
                     }
-                    await gSession.close()
-                    return data
+                await gSession.close()
+                return data
     except:
         return simkl0rels
 
@@ -2207,7 +2207,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                         trkRes = await resp.json()
                         trkType = trkRes[0]['type']
                         traktId = int(trkRes[0][f'{trkType}']['ids']['trakt'])
-                        await session.close()
+                    await session.close()
             except:
                 traktId = 0
 
@@ -2775,13 +2775,13 @@ async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int =
                     jsonText = await resp.text()
                     jsonFinal = jload(jsonText)
                     ud = jsonFinal['user']
-                await session.close()
+            await session.close()
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user={username}&api_key={LASTFM_API_KEY}&format=json&limit=9') as resp:
                 jsonText = await resp.text()
                 jsonFinal = jload(jsonText)
                 scb = jsonFinal['recenttracks']['track']
-                await session.close()
+            await session.close()
         tracks = []
         # trim scb if items more than {maximum}
         if maximum > 0:
