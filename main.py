@@ -4,6 +4,7 @@
 
 import csv
 import datetime
+import html
 import json
 import os
 import subprocess
@@ -393,6 +394,8 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
     if j['synopsis'] is not None:
         # remove \n\n[Written by MAL Rewrite]
         jdata = j['synopsis'].replace("\n\n[Written by MAL Rewrite]", "")
+        # try to decode ampersands
+        jdata = html.unescape(jdata)
         j_spl = jdata.split("\n")
         synl = len(j_spl)
         cynoin = j_spl[0]
