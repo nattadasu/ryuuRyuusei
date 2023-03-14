@@ -399,12 +399,18 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
 
         cynmo = f"\n> \n> Read more on [MyAnimeList](<https://myanimelist.net/anime/{m}>)"
 
-        if len(str(cynoin)) >= 1000:
+        if len(str(cynoin)) <= 150:
+            cyno = cynoin
+            if synl >= 3:
+                cyno += "\n> \n> "
+                cyno += trimCyno(j_spl[2])
+        elif len(str(cynoin)) >= 1000:
             cyno = trimCyno(cynoin)
             # when cyno has ... at the end, it means it's trimmed, then add read more
         else:
             cyno = cynoin
-        if (cyno[-3:] == "...") or (synl > 1):
+
+        if (cyno[-3:] == "...") or ((len(str(cynoin)) >= 150) and (synl > 3)) or ((len(str(cynoin)) >= 1000) and (synsl > 1)):
             cyno += cynmo
 
     else:
@@ -813,12 +819,17 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
 
         cynoin = cyno[0]
 
-        if len(str(cynoin)) >= 1000:
+        if len(str(cynoin)) <= 150:
+            cyno = cynoin
+            if cynl >= 3:
+                cyno += "\n> \n> "
+                cyno += trimCyno(cyno[2])
+        elif len(str(cynoin)) >= 1000:
             cyno = trimCyno(cynoin)
         else:
             cyno = cynoin
 
-        if (cyno[-3:] == "...") or (cynl > 1):
+        if (cyno[-3:] == "...") or ((len(str(cynoin)) >= 150) and (cynl > 3)) or ((len(str(cynoin)) >= 1000) and (cynl > 1)):
             cyno += f"\n> \n> [Read more on AniList](<https://anilist.co/manga/{id}>)"
     else:
         cyno = "*None*"
