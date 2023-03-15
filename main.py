@@ -285,10 +285,7 @@ async def searchSimklId(title_id: str, platform: str):
                 idFound = await sResp.json()
                 fin = idFound[0]['ids']['simkl']
             await sSession.close()
-            if idFound[0]['type'] != 'anime':
-                raise Exception('Not an anime')
-            else:
-                return fin
+            return fin
     except:
         return 0
 
@@ -309,7 +306,8 @@ simkl0rels = {
     "wikijp": None,
     "poster": None,
     "fanart": None,
-    "anitype": None
+    "anitype": None,
+    'title': None
 }
 
 
@@ -339,7 +337,8 @@ async def getSimklID(simkl_id: int, media_type: str) -> dict:
                         "wikijp": data.get('wikijp', None),
                         "poster": animeFound.get('poster', None),
                         "fanart": animeFound.get('fanart', None),
-                        "aniType": animeFound.get('anime_type', None)
+                        "aniType": animeFound.get('anime_type', None),
+                        "title": animeFound.get('title', None)
                     }
                 await gSession.close()
                 return data
@@ -2086,6 +2085,7 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
     try:
         uid = id
         pf = platform
+        simId = 0
         await ctx.send(f"Searching for relations on `{platform}` using ID: `{uid}`", embeds=None)
         # Fix platform name
         if platform == 'shikimori':
@@ -2179,6 +2179,9 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 pass
         else:
             smk = simDat
+
+        if (title is None) and (simId != 0):
+            title = smk['title']
 
         traktId = 0
 
