@@ -1863,8 +1863,6 @@ async def search(ctx: interactions.CommandContext, title: str = None):
         ani_id = alData[0]['idMal']
         if (alData[0]['trailer'] is not None) and (alData[0]['trailer']['site'] == "youtube"):
             trailer = generateTrailer(data=alData[0]['trailer'])
-        else:
-            trailer=None
     except:
         ani_id = None
 
@@ -1892,11 +1890,13 @@ async def search(ctx: interactions.CommandContext, title: str = None):
         except Exception as e:
             sendMessages = returnException(e)
             dcEm = None
+            trailer = None
     else:
         sendMessages = returnException(
             f"""We couldn't able to find any anime with that title (`{title}`). Please check the spelling!
 **Pro tip**: Use Native title to get most accurate result.... that if you know how to type in such language.""")
         dcEm = None
+        trailer = None
 
     await ctx.edit(sendMessages, embeds=dcEm, components=trailer)
 
@@ -1937,21 +1937,18 @@ async def random(ctx: interactions.CommandContext):
             aaDict = await searchAniList(media_id=aniApi['aniList'], isAnime=True)
             if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
                 trailer = generateTrailer(data=aaDict[0]['trailer'])
-            else:
-                trailer=None
         else:
             try:
                 aaDict = await searchAniList(name=aniApi['title'], media_id=None, isAnime=True)
                 if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
                     trailer = generateTrailer(data=aaDict[0]['trailer'])
-                else:
-                    trailer=None
             except:
                 aaDict = None
         dcEm = await generateMal(ani_id, nsfw_bool, aaDict, animeApi=aniApi)
     except Exception as e:
         sendMessages = returnException(e)
         dcEm = None
+        trailer = None
 
     await ctx.send(sendMessages, embeds=dcEm, components=trailer)
 
@@ -1982,15 +1979,11 @@ async def info(ctx: interactions.CommandContext, id: int):
             aaDict = await searchAniList(media_id=aniApi['aniList'], isAnime=True)
             if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
                 trailer = generateTrailer(data=aaDict[0]['trailer'])
-            else:
-                trailer=None
         else:
             try:
                 aaDict = await searchAniList(name=aniApi['title'], media_id=None, isAnime=True)
                 if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
                     trailer = generateTrailer(data=aaDict[0]['trailer'])
-                else:
-                    trailer=None
             except:
                 aaDict = None
         dcEm = await generateMal(id, nsfw_bool, aaDict, animeApi=aniApi)
@@ -1998,6 +1991,7 @@ async def info(ctx: interactions.CommandContext, id: int):
     except Exception as e:
         sendMessages = returnException(e)
         dcEm = None
+        trailer = None
 
     await ctx.send(sendMessages, embeds=dcEm, components=trailer)
 
@@ -2617,10 +2611,6 @@ async def search(ctx: interactions.CommandContext, title: str):
     try:
         rawData = await searchAniList(name=title, media_id=None, isAnime=False)
         bypass = await bypassAniListEcchiTag(alm=rawData[0])
-        if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
-            trailer = generateTrailer(data=rawData[0]['trailer'])
-        else:
-            trailer=None
         # check if command invoked in a forum thread
         if ctx.channel.type == 11 or ctx.channel.type == 12:
             # get parent channel id
@@ -2630,10 +2620,13 @@ async def search(ctx: interactions.CommandContext, title: str):
         else:
             nsfw_bool = ctx.channel.nsfw
         dcEm = await generateAnilist(alm=rawData[0], isNsfw=nsfw_bool, bypassEcchi=bypass)
+        if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
+            trailer = generateTrailer(data=rawData[0]['trailer'])
         sendMessages = None
     except Exception as e:
         sendMessages = returnException(e)
         dcEm = None
+        trailer = None
 
     await ctx.send(sendMessages, embeds=dcEm, components=trailer)
 
@@ -2657,10 +2650,6 @@ async def info(ctx: interactions.CommandContext, id: int):
     try:
         rawData = await searchAniList(name=None, media_id=id, isAnime=False)
         bypass = await bypassAniListEcchiTag(alm=rawData[0])
-        if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
-            trailer = generateTrailer(data=rawData[0]['trailer'])
-        else:
-            trailer=None
         # check if command invoked in a forum thread
         if ctx.channel.type == 11 or ctx.channel.type == 12:
             # get parent channel id
@@ -2670,10 +2659,13 @@ async def info(ctx: interactions.CommandContext, id: int):
         else:
             nsfw_bool = ctx.channel.nsfw
         dcEm = await generateAnilist(alm=rawData[0], isNsfw=nsfw_bool, bypassEcchi=bypass)
+        if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
+            trailer = generateTrailer(data=rawData[0]['trailer'])
         sendMessages = None
     except Exception as e:
         sendMessages = returnException(e)
         dcEm = None
+        trailer = None
 
     await ctx.send(sendMessages, embeds=dcEm, components=trailer)
 
