@@ -131,25 +131,25 @@ def saveToDatabase(discordId: int, discordUsername: str, discordJoined: int, mal
                         malId, malJoined, registeredAt, registeredGuild, registeredBy, guildName])
 
 
-def returnException(error: str):
+def returnException(error: str) -> str:
     return f"""{EMOJI_UNEXPECTED_ERROR} **Error found!**
 There's something wrong with the bot while processing your request.
 
 Error is: {error}"""
 
 
-async def checkClubMembership(username):
+async def checkClubMembership(username) -> dict:
     jikanUser = await jikan.users(username=f'{username}', extension='clubs')
     return jikanUser['data']
 
 
-async def getJikanData(uname):
+async def getJikanData(uname) -> dict:
     jikanData = await jikan.users(username=f'{uname}')
     jikanData = jikanData['data']
     return jikanData
 
 
-async def searchJikanAnime(title: str):
+async def searchJikanAnime(title: str) -> dict:
     jikanParam = {
         'limit': '10'
     }
@@ -158,14 +158,14 @@ async def searchJikanAnime(title: str):
     return jikanData
 
 
-async def getJikanAnime(mal_id: int):
+async def getJikanAnime(mal_id: int) -> dict:
     id = mal_id
     jikanData = await jikan.anime(id)
     jikanData = jikanData['data']
     return jikanData
 
 
-async def getNatsuAniApi(id, platform: str):
+async def getNatsuAniApi(id, platform: str) -> dict:
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://aniapi.nattadasu.my.id/{platform}/{id}') as resp:
@@ -190,7 +190,7 @@ async def getNatsuAniApi(id, platform: str):
         return aaDict
 
 
-async def getKitsuMetadata(id, media: str = "anime"):
+async def getKitsuMetadata(id, media: str = "anime") -> dict:
     async with aiohttp.ClientSession() as session:
         async with session.get(f'https://kitsu.io/api/edge/{media}/{id}') as resp:
             jsonText = await resp.text()
@@ -199,7 +199,7 @@ async def getKitsuMetadata(id, media: str = "anime"):
         return jsonFinal
 
 
-async def searchAniList(name: str = None, media_id: int = None, isAnime: bool = True):
+async def searchAniList(name: str = None, media_id: int = None, isAnime: bool = True) -> dict:
     try:
         url = 'https://graphql.anilist.co'
         mediaType = 'ANIME' if isAnime else 'MANGA'
@@ -277,7 +277,7 @@ async def searchAniList(name: str = None, media_id: int = None, isAnime: bool = 
         raise Exception(ierr)
 
 
-async def searchSimklId(title_id: str, platform: str):
+async def searchSimklId(title_id: str, platform: str) -> int:
     url = f'https://api.simkl.com/search/id/?{platform}={title_id}&client_id={SIMKL_CLIENT_ID}'
     try:
         async with aiohttp.ClientSession() as sSession:
@@ -346,7 +346,7 @@ async def getSimklID(simkl_id: int, media_type: str) -> dict:
         return simkl0rels
 
 
-def trimCyno(message: str):
+def trimCyno(message: str) -> str:
     if len(message) > 1000:
         msg = message[:1000]
         # trim spaces
@@ -374,7 +374,7 @@ def generateTrailer(data: dict, isMal: bool = False) -> interactions.Button:
     return final
 
 
-async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, animeApi: dict = None):
+async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, animeApi: dict = None) -> interactions.Embed:
     j = await getJikanAnime(entry_id)
     if alDict is not None:
         al = alDict[0]
@@ -739,7 +739,7 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
     return embed
 
 
-async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = False):
+async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = False) -> interactions.Embed:
     if isNsfw is None:
         msgForThread = warnThreadCW
     else:
@@ -1044,7 +1044,7 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
     # return msg.strip()
 
 
-async def bypassAniListEcchiTag(alm: dict):
+async def bypassAniListEcchiTag(alm: dict) -> bool:
     # get the genres
     tgs = []
     for g in alm['genres']:
@@ -1058,21 +1058,21 @@ async def bypassAniListEcchiTag(alm: dict):
         return False
 
 
-async def getParentNsfwStatus(snowflake: int):
+async def getParentNsfwStatus(snowflake: int) -> dict:
     botHttp = interactions.HTTPClient(token=BOT_TOKEN)
     guild = await botHttp.get_channel(channel_id=snowflake)
     # close the connection
     return guild['nsfw']
 
 
-async def getUserData(user_snowflake: int):
+async def getUserData(user_snowflake: int) -> dict:
     botHttp = interactions.HTTPClient(token=BOT_TOKEN)
     member = await botHttp.get_user(user_id=user_snowflake)
     # close the connection
     return member
 
 
-async def getGuildMemberData(guild_snowflake: int, user_snowflake: int):
+async def getGuildMemberData(guild_snowflake: int, user_snowflake: int) -> dict:
     botHttp = interactions.HTTPClient(token=BOT_TOKEN)
     member = await botHttp.get_member(guild_id=guild_snowflake, member_id=user_snowflake)
     return member
@@ -1086,7 +1086,7 @@ def getRandom(value: int = 9) -> int:
     return seed
 
 
-async def getNekomimi(gender: str = None):
+async def getNekomimi(gender: str = None) -> dict:
     seed = getRandom()
     nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t")
     nmDb = nmDb.fillna('')
@@ -1839,11 +1839,11 @@ async def search(ctx: interactions.CommandContext, title: str = None):
     ani_id = None
     alData = None
 
-    async def lookupByNameAniList(aniname: str):
+    async def lookupByNameAniList(aniname: str) -> dict:
         rawData = await searchAniList(name=aniname, media_id=None, isAnime=True)
         return rawData
 
-    async def lookupByNameJikan(name: str):
+    async def lookupByNameJikan(name: str) -> dict:
         rawData = await searchJikanAnime(name)
         for ani in rawData:
             romaji = ani['title']
@@ -1912,7 +1912,7 @@ async def random(ctx: interactions.CommandContext):
     await ctx.defer()
     await ctx.get_channel()
 
-    async def lookupRandom():
+    async def lookupRandom() -> int:
         seed = getRandom()
         # open database/mal.csv
         df = pd.read_csv("database/mal.csv", sep="\t")
