@@ -357,12 +357,16 @@ def trimCyno(message: str):
         return message
 
 
-def generateTrailer(data: dict) -> interactions.Button:
+def generateTrailer(data: dict, isMal: bool = False) -> interactions.Button:
+    if isMal:
+        ytid = data['youtube_id']
+    else:
+        ytid = data['id']
     final = interactions.Button(
         type=interactions.ComponentType.BUTTON,
         label="Trailer on YouTube",
         style=interactions.ButtonStyle.LINK,
-        url=f"https://www.youtube.com/watch?v={data['id']}",
+        url=f"https://www.youtube.com/watch?v={ytid}",
         emoji=interactions.Emoji(
             id=975564205228965918,
             name="Youtube"
@@ -1847,13 +1851,12 @@ async def search(ctx: interactions.CommandContext, title: str = None):
             english = ani['title_english']
             native = ani['title_japanese']
             syns = ani['titles']
-            myAnimeListID = ani['mal_id']
             if (romaji == name) or (english == name) or (native == name):
-                return myAnimeListID
+                return ani
             else:
                 for title in syns:
                     if title == name:
-                        return myAnimeListID
+                        return ani
 
     trailer = None
 
@@ -1862,14 +1865,17 @@ async def search(ctx: interactions.CommandContext, title: str = None):
         alData = await lookupByNameAniList(title)
         ani_id = alData[0]['idMal']
         if (alData[0]['trailer'] is not None) and (alData[0]['trailer']['site'] == "youtube"):
-            trailer = generateTrailer(data=alData[0]['trailer'])
+            trailer = generateTrailer(data=alData[0]['trailer'], isMal=False)
     except:
         ani_id = None
 
     if ani_id is None:
         try:
             await ctx.edit(f"AniList failed to search `{title}`, searching via Jikan (inaccurate)", embeds=None, components=None)
-            ani_id = await lookupByNameJikan(title)
+            ani = await lookupByNameJikan(title)
+            ani_id = ani['mal_id']
+            if (ani['trailer'] is not None) and (ani['trailer']['youtube_id'] is not None):
+                trailer = generateTrailer(data=ani['trailer'], isMal=True) 
         except:
             ani_id = None
 
