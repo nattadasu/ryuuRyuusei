@@ -364,7 +364,7 @@ def generateTrailer(data: dict, isMal: bool = False) -> interactions.Button:
         ytid = data['id']
     final = interactions.Button(
         type=interactions.ComponentType.BUTTON,
-        label="Trailer on YouTube",
+        label="PV/CM on YouTube",
         style=interactions.ButtonStyle.LINK,
         url=f"https://www.youtube.com/watch?v={ytid}",
         emoji=interactions.Emoji(
