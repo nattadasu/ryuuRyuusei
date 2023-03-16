@@ -1533,7 +1533,7 @@ Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
 • Mean score: {malAnime['mean_score']}
 • Total entries: {malAnime['total_entries']}
 👀 {malAnime['watching']} | ✅ {malAnime['completed']} | ⏸️ {malAnime['on_hold']} | 🗑️ {malAnime['dropped']} | ⏰ {malAnime['plan_to_watch']}
-*Episodes watched: {malAnime['episodes_watched']}""",
+*Episodes watched: {malAnime['episodes_watched']}*""",
                     inline=True
                 ),
                 interactions.EmbedField(
