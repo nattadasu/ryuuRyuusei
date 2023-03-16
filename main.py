@@ -306,7 +306,8 @@ simkl0rels = {
     "wikijp": None,
     "poster": None,
     "fanart": None,
-    "anitype": None,
+    "anitype": "tv",
+    "type": "anime",
     'title': None
 }
 
@@ -338,6 +339,7 @@ async def getSimklID(simkl_id: int, media_type: str) -> dict:
                         "poster": animeFound.get('poster', None),
                         "fanart": animeFound.get('fanart', None),
                         "aniType": animeFound.get('anime_type', None),
+                        "type": animeFound.get('type', None),
                         "title": animeFound.get('title', None)
                     }
                 await gSession.close()
@@ -2295,7 +2297,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         if (simId != 0) and (platform != 'simkl'):
             relsEm += [interactions.EmbedField(
                 name="<:simkl:1073630754275348631> SIMKL",
-                value=f"[`{simId}`](<https://simkl.com/anime/{simId}>)",
+                value=f"[`{simId}`](<https://simkl.com/{smk['type']}/{simId}>)",
                 inline=True
             )]
         if (traktId != 0) and (platform != "trakt"):
