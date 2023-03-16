@@ -2317,8 +2317,8 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             )]
         if (aa['kaize'] is not None) and (pf != 'kaize'):
             relsEm += [interactions.EmbedField(
-                name="<:kaize:1073441859910774784> Kaize",
-                value=f"(BETA, link may not working as expected)\n[`{aa['kaize']}`](<https://kaize.io/anime/{aa['kaize']}>)",
+                name="<:kaize:1073441859910774784> Kaize (BETA)",
+                value=f"[`{aa['kaize']}`](<https://kaize.io/anime/{aa['kaize']}>)",
                 inline=True
             )]
         if (aa['kitsu'] is not None) and (pf != 'kitsu'):
@@ -2347,7 +2347,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             )]
         if (aa['myAnimeList'] is not None) and (platform != 'shikimori'):
             relsEm += [interactions.EmbedField(
-                name="<:shikimori:1073441855645155468> Shikimori (Шикимори)",
+                name="<:shikimori:1073441855645155468> Shikimori",
                 value=f"[`{aa['myAnimeList']}`](<https://shikimori.one/animes/{aa['myAnimeList']}>)",
                 inline=True
             )]
