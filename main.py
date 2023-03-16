@@ -46,6 +46,12 @@ EMOJI_SUCCESS = os.getenv('EMOJI_SUCCESS')
 EMOJI_UNEXPECTED_ERROR = os.getenv('EMOJI_UNEXPECTED_ERROR')
 EMOJI_USER_ERROR = os.getenv('EMOJI_USER_ERROR')
 
+traktHeader = {
+    'Content-Type': 'applications/json',
+    'trakt-api-key': TRAKT_CLIENT_ID,
+    'trakt-api-version': TRAKT_API_VERSION
+}
+
 warnThreadCW = f"""
 
 If you invoked this command outside (public or private) forum thread channel or regular text channel and **Age Restriction** is enabled, please contact developer of this bot as the feature only tested in forum thread and text channel.
@@ -1157,6 +1163,8 @@ def getPlatformColor(pf: str) -> hex:
         cl = 0xF5C518
     elif pf == 'silveryasha':
         cl = 0x0172BB
+    elif pf == 'trakt':
+        cl = 0xED1C24
     return cl
 
 
@@ -2069,6 +2077,10 @@ async def info(ctx: interactions.CommandContext, id: int):
                     value="simkl"
                 ),
                 interactions.Choice(
+                    name="Trakt (append media type and slash before id/slug, e.g. shows/rick-and-morty)",
+                    value="trakt"
+                ),
+                interactions.Choice(
                     name="The Movie Database",
                     value="tmdb"
                 ),
@@ -2088,6 +2100,8 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
         uid = id
         pf = platform
         simId = 0
+        traktId = None
+        title = None
         await ctx.send(f"Searching for relations on `{platform}` using ID: `{uid}`", embeds=None)
         # Fix platform name
         if platform == 'shikimori':
@@ -2115,6 +2129,32 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
             except KeyError:
                 raise Exception(
                     f"Error while searching for the ID of `{platform}` on SIMKL, entry may not linked with SIMKL counterpart")
+        elif pf == 'trakt':
+            try:
+                # check using regex if the id is valid
+                if re.match(r'^(show|movie)s?\/[a-z0-9-]+$', id):
+                    trkQuery = id.split('/')
+                    trkType = trkQuery[0]
+                    traktId = trkQuery[1]
+                    if trkType == "show":
+                        trkType += "s"
+                    elif trkType == "movie":
+                        trkType += "s"
+                else:
+                    raise Exception("Invalid Trakt ID required by bot. Valid ID format: `shows/<slug-or-id>` and `movies/<slug-or-id>`")
+                async with aiohttp.ClientSession(headers=traktHeader) as session:
+                    async with session.get(f"https://api.trakt.tv/{trkType}/{traktId}") as response:
+                        trkData = await response.json()
+                    await session.close()
+                traktId = trkData['ids']['slug']
+                imdbId = trkData['ids']['imdb']
+                simId = await searchSimklId(title_id=imdbId, platform='imdb')
+                simDat = await getSimklID(simkl_id=simId, media_type='anime')
+                uid = simDat['mal']
+                pf = 'myanimelist'
+            except KeyError:
+                raise Exception(
+                    f"Error while searching for the ID of `{platform}` via `imdb` on SIMKL, entry may not linked with SIMKL counterpart")
 
         if pf == 'kaize':
             try:
@@ -2165,7 +2205,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         smk = simkl0rels
 
         # Get the relations from others to SIMKL, if MAL is found
-        if platform not in ['simkl', 'tmdb', 'tvdb', 'imdb']:
+        if platform not in ['simkl', 'tmdb', 'tvdb', 'imdb', 'trakt']:
             try:
                 if aa['myAnimeList'] is not None:
                     # search SIMKL ID
@@ -2185,20 +2225,14 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         if (title is None) and (simId != 0):
             title = smk['title']
 
-        traktId = 0
-
-        if smk['imdb'] is not None:
+        if (smk['imdb'] is not None) and (platform != 'trakt'):
             # well, IMDb is basically de-facto for TV/Movie database
             # similar to MyAnimeList
             tid = smk['imdb']
             lookup = f"imdb/{tid}"
             scpf = "IMDb"
             try:
-                async with aiohttp.ClientSession(headers={
-                    'Content-Type': 'applications/json',
-                    'trakt-api-key': TRAKT_CLIENT_ID,
-                    'trakt-api-version': TRAKT_API_VERSION
-                }) as session:
+                async with aiohttp.ClientSession(headers=traktHeader) as session:
                     async with session.get(f'https://api.trakt.tv/search/{lookup}') as resp:
                         await ctx.edit(f"Looking up Trakt ID via {scpf} (`{tid}`)", embeds=None)
                         trkRes = await resp.json()
@@ -2206,7 +2240,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                         traktId = int(trkRes[0][f'{trkType}']['ids']['trakt'])
                     await session.close()
             except:
-                traktId = 0
+                traktId = None
 
         relsEm = []
         # Get the relations
@@ -2300,15 +2334,15 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 value=f"[`{simId}`](<https://simkl.com/{smk['type']}/{simId}>)",
                 inline=True
             )]
-        if (traktId != 0) and (platform != "trakt"):
+        if (traktId is not None) and (platform != "trakt"):
             relsEm += [interactions.EmbedField(
                 name=f"<:trakt:1081612822175305788> Trakt",
                 value=f"[`{traktId}`](<https://trakt.tv/{trkType}/{traktId}>)",
                 inline=True
             )]
         try:
-            if traktId != 0:
-                if trkType == "show":
+            if traktId is not None:
+                if re.search(r"^shows?$", trkType):
                     tvtyp = "series"
                     tmtyp = "tv"
                 else:
@@ -2406,9 +2440,13 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             pf = 'IMDb'
             emoid = '1079376998880784464'
         elif pf == 'silveryasha':
-            uid = f"<https://db.silveryasha.web.id/anime/{id}>"
+            uid = f"https://db.silveryasha.web.id/anime/{id}"
             pf = "Silver Yasha"
             emoid = "1079380182059733052"
+        elif platform == 'trakt':
+            uid = f"https://trakt.tv/{trkType}/{traktId}"
+            pf = 'Trakt'
+            emoid = '1081612822175305788'
 
         if (smk['poster'] is None) and (aa['kitsu'] is not None):
             poster = f"https://media.kitsu.io/anime/poster_images/{aa['kitsu']}/large.jpg"
