@@ -1591,6 +1591,29 @@ Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
         )
         return embed
 
+    def definejikanException(errmsg: str) -> interactions.Embed:
+        """Define what HTTP error AioJikan/Jikan/MyAnimeList threw"""
+        e = str(errmsg).split('=')
+        etype = int(str(e[1]).split(',')[0])
+        errm = e[3].strip()
+        if len(e) >= 4:
+            for i in range(4, len(e)):
+                errm += f"={e[i]}"
+        if etype == 403:
+            em = f"**Jikan unable to reach MyAnimeList at the moment.**\nPlease try again in 3 seconds."
+        elif etype == 404:
+            em = f"**I couldn't find the user on MAL.**\nCheck the spelling or well, maybe they don't exist? 🤔"
+        elif etype == 408:
+            em = f"**Jikan had a timeout while fetching your data**\nPlease try again in 3 seconds."
+        else:
+            em = f"HTTP {etype}\n{errm}"
+        dcEm = interactions.Embed(
+            title="Error",
+            description=returnException(em),
+            color=0xFF0000
+        )
+        return dcEm
+
     if (user is not None) and (mal_username is not None):
         try:
             raise KeyError
@@ -1599,7 +1622,7 @@ Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
             dcEm = interactions.Embed(
                 title="Error",
                 description=returnException(
-                    f"{EMOJI_USER_ERROR} **You cannot use both options! Use either one of `user:` or `mal_username:`, hmph. >:(**"),
+                    f"{EMOJI_USER_ERROR} **You cannot use both options!** Use either one of `user:` or `mal_username:`, hmph. >:("),
                 color=0xFF0000
             )
     else:
@@ -1642,30 +1665,23 @@ Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
                         sendMessages = f"<@{uid}> data:"
                 else:
                     if user is None:
-                        regAccount = f"{EMOJI_USER_ERROR} Sorry, but to use standalone command, you need to `/register` your account. Or, you can use `/profile mal_username:<yourUsername>` instead"
-                        foo = "Please be a good child, okay? 🚶‍♂️"
+                        raise KeyError(f"{EMOJI_USER_ERROR} Sorry, but to use standalone command, you need to `/register` your account. Or, you can use `/profile mal_username:<yourUsername>` instead")
                     else:
-                        regAccount = f"I couldn't find <@!{uid}> on my database. It could be that they have not registered their MAL account yet."
-                        foo = ""
-                    sendMessages = ""
-                    dcEm = interactions.Embed(
-                        title="User have not registered yet!",
-                        description=returnException(regAccount),
-                        color=0xFF0000,
-                        footer=interactions.EmbedFooter(
-                            text=foo
-                        )
-                    )
-            except Exception as e:
+                        raise KeyError(f"I couldn't find <@!{uid}> on my database. It could be that they have not registered their MAL account yet.")
+            except KeyError as regAccount:
+                foo = "Please be a good child, okay? 🚶‍♂️" if user is None else ""
                 sendMessages = ""
                 dcEm = interactions.Embed(
-                    title="Error",
-                    description=returnException(e),
+                    title="User have not registered yet!",
+                    description=returnException(regAccount),
                     color=0xFF0000,
                     footer=interactions.EmbedFooter(
-                        text=httpErr
+                        text=foo
                     )
                 )
+            except Exception as e:
+                sendMessages = ""
+                dcEm = definejikanException(e)
         elif mal_username is not None:
             uname = mal_username.strip()
             try:
@@ -1699,14 +1715,7 @@ Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
                                     joined=dtJoin, bday=bth, extend=extended)
             except Exception as e:
                 sendMessages = ""
-                dcEm = interactions.Embed(
-                    title="Error",
-                    description=returnException(e),
-                    color=0xFF0000,
-                    footer=interactions.EmbedFooter(
-                        text=httpErr
-                    )
-                )
+                dcEm = definejikanException(e)
 
     await ctx.send(sendMessages, embeds=dcEm)
 
