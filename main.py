@@ -283,8 +283,11 @@ async def searchAniList(name: str = None, media_id: int = None, isAnime: bool = 
         raise Exception(ierr)
 
 
-async def searchSimklId(title_id: str, platform: str) -> int:
-    url = f'https://api.simkl.com/search/id/?{platform}={title_id}&client_id={SIMKL_CLIENT_ID}'
+async def searchSimklId(title_id: str, platform: str, media_type: str = None) -> int:
+    url = f'https://api.simkl.com/search/id/?{platform}={title_id}'
+    if media_type is not None:
+        url += f'&type={media_type}'
+    url += f"&client_id={SIMKL_CLIENT_ID}"
     try:
         async with aiohttp.ClientSession() as sSession:
             async with sSession.get(url) as sResp:
@@ -2045,7 +2048,7 @@ async def info(ctx: interactions.CommandContext, id: int):
                     value="imdb"
                 ),
                 interactions.Choice(
-                    name="Kaize (BETA, slug only)",
+                    name="Kaize (BETA)",
                     value="kaize"
                 ),
                 interactions.Choice(
@@ -2077,7 +2080,7 @@ async def info(ctx: interactions.CommandContext, id: int):
                     value="simkl"
                 ),
                 interactions.Choice(
-                    name="Trakt (append media type and slash before id/slug, e.g. shows/rick-and-morty)",
+                    name="Trakt*",
                     value="trakt"
                 ),
                 interactions.Choice(
@@ -2103,13 +2106,24 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
         traktId = None
         title = None
         await ctx.send(f"Searching for relations on `{platform}` using ID: `{uid}`", embeds=None)
+
+        async def lookupTrakt(lookup_param: str, source: str, media_id: str) -> dict:
+            async with aiohttp.ClientSession(headers=traktHeader) as session:
+                async with session.get(f'https://api.trakt.tv/search/{lookup_param}') as resp:
+                    await ctx.edit(f"Looking up Trakt ID via {source} (`{media_id}`)", embeds=None)
+                    trkRes = await resp.json()
+                await session.close()
+                try:
+                    return trkRes[0]
+                except IndexError:
+                    raise KeyError
+
         # Fix platform name
         if platform == 'shikimori':
             pf = 'myanimelist'
             # remove any prefix started with any a-z in the id
             uid = re.sub(r'^[a-z]+', '', id)
             await ctx.edit("Removing Shikimori ID's prefix to be compatible with MyAnimeList ID", embeds=None)
-
         if pf == 'simkl':
             simDat = await getSimklID(simkl_id=id, media_type='anime')
             simId = id
@@ -2148,7 +2162,12 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
                     await session.close()
                 traktId = trkData['ids']['slug']
                 imdbId = trkData['ids']['imdb']
-                simId = await searchSimklId(title_id=imdbId, platform='imdb')
+                if imdbId is not None:
+                    simId = await searchSimklId(title_id=imdbId, platform='imdb')
+                else:
+                    tmdbId = trkData['ids']['tmdb']
+                    mdtype = "show" if re.match(r'shows?', trkType) else "movie"
+                    simId = await searchSimklId(title_id=tmdbId, platform='tmdb', media_type=mdtype)
                 simDat = await getSimklID(simkl_id=simId, media_type='anime')
                 uid = simDat['mal']
                 pf = 'myanimelist'
@@ -2228,22 +2247,25 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         if (title is None) and (simId != 0):
             title = smk['title']
 
-        if (smk['imdb'] is not None) and (platform != 'trakt'):
-            # well, IMDb is basically de-facto for TV/Movie database
-            # similar to MyAnimeList
-            tid = smk['imdb']
-            lookup = f"imdb/{tid}"
-            scpf = "IMDb"
+        if ((smk['imdb'] is not None) or (smk['tmdb'] is not None)) and (platform != 'trakt'):
             try:
-                async with aiohttp.ClientSession(headers=traktHeader) as session:
-                    async with session.get(f'https://api.trakt.tv/search/{lookup}') as resp:
-                        await ctx.edit(f"Looking up Trakt ID via {scpf} (`{tid}`)", embeds=None)
-                        trkRes = await resp.json()
-                        trkType = trkRes[0]['type']
-                        traktId = int(trkRes[0][f'{trkType}']['ids']['trakt'])
-                    await session.close()
-            except:
-                traktId = None
+                tid = smk['imdb']
+                lookup = f"imdb/{tid}"
+                scpf = "IMDb"
+                trkData = await lookupTrakt(lookup_param=lookup, source=scpf, media_id=tid)
+                trkType = trkData['type']
+                traktId = trkData[trkType]['ids']['trakt']
+            except KeyError:
+                try:
+                    tid = smk['tmdb']
+                    ttype = "movie" if smk['aniType'] == "movie" else "show" if ((smk['aniType'] == "tv") or (smk['aniType'] == "ona")) else "movie" 
+                    lookup = f"tmdb/{tid}?type={ttype}"
+                    scpf = "TMDB"
+                    trkData = await lookupTrakt(lookup_param=lookup, source=scpf, media_id=tid)
+                    trkType = trkData['type']
+                    traktId = trkData[trkType]['ids']['trakt']
+                except KeyError:
+                    pass
 
         relsEm = []
         # Get the relations
@@ -2486,7 +2508,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 color=col,
                 fields=relsEm,
                 footer=interactions.EmbedFooter(
-                    text=f"Powered by nattadasu's AnimeAPI and SIMKL.{postsrc}"
+                    text=f"Powered by nattadasu's AnimeAPI, Trakt, and SIMKL.{postsrc}"
                 ),
                 thumbnail=interactions.EmbedImageStruct(
                     url=poster
