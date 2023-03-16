@@ -1591,117 +1591,122 @@ Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
         )
         return embed
 
-    if user and mal_username:
-        sendMessages = ""
-        dcEm = interactions.Embed(
-            title="Error",
-            description=returnException(
-                f"{EMOJI_USER_ERROR} **You cannot use both options!**"),
-            color=0xFF0000
-        )
-    if mal_username is None:
-        if user is not None:
-            uid = user.id
-        else:
-            uid = ctx.author.id
+    if (user is not None) and (mal_username is not None):
         try:
-            if checkIfRegistered(uid):
+            raise KeyError
+        except KeyError:
+            sendMessages = ""
+            dcEm = interactions.Embed(
+                title="Error",
+                description=returnException(
+                    f"{EMOJI_USER_ERROR} **You cannot use both options! Use either one of `user:` or `mal_username:`, hmph. >:(**"),
+                color=0xFF0000
+            )
+    else:
+        if mal_username is None:
+            if user is not None:
+                uid = user.id
+            else:
+                uid = ctx.author.id
+            try:
+                if checkIfRegistered(uid):
+                    with open(database, "r") as f:
+                        reader = csv.reader(f, delimiter="\t")
+                        for row in reader:
+                            if row[0] == uid:
+                                jikanStats = await jikan.users(username=row[3], extension='full')
+                                break
+                    malProfile = jikanStats['data']
+                    mun = malProfile['username'].replace("_", "\\_")
+                    mid = malProfile['mal_id']
+                    ani = malProfile['statistics']['anime']
+                    man = malProfile['statistics']['manga']
+                    bth = None
+                    if malProfile['birthday'] is not None:
+                        bth = malProfile['birthday'].replace(
+                            "+00:00", "+0000")
+                        bth = int(datetime.datetime.strptime(
+                            bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+                    dtJoin = malProfile['joined'].replace(
+                        "+00:00", "+0000")
+                    dtJoin = int(datetime.datetime.strptime(
+                        dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+
+                    dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man,
+                                          joined=dtJoin, bday=bth, extend=extended)
+                    if user is None:
+                        sendMessages = ""
+                    elif ctx.author.id == uid:
+                        sendMessages = userRegistered
+                    else:
+                        sendMessages = f"<@{uid}> data:"
+                else:
+                    if user is None:
+                        regAccount = f"{EMOJI_USER_ERROR} Sorry, but to use standalone command, you need to `/register` your account. Or, you can use `/profile mal_username:<yourUsername>` instead"
+                        foo = "Please be a good child, okay? 🚶‍♂️"
+                    else:
+                        regAccount = f"I couldn't find <@!{uid}> on my database. It could be that they have not registered their MAL account yet."
+                        foo = ""
+                    sendMessages = ""
+                    dcEm = interactions.Embed(
+                        title="User have not registered yet!",
+                        description=returnException(regAccount),
+                        color=0xFF0000,
+                        footer=interactions.EmbedFooter(
+                            text=foo
+                        )
+                    )
+            except Exception as e:
+                sendMessages = ""
+                dcEm = interactions.Embed(
+                    title="Error",
+                    description=returnException(e),
+                    color=0xFF0000,
+                    footer=interactions.EmbedFooter(
+                        text=httpErr
+                    )
+                )
+        elif mal_username is not None:
+            uname = mal_username.strip()
+            try:
                 with open(database, "r") as f:
                     reader = csv.reader(f, delimiter="\t")
                     for row in reader:
-                        if row[0] == uid:
-                            jikanStats = await jikan.users(username=row[3], extension='full')
-                            malProfile = jikanStats['data']
-                            mun = malProfile['username'].replace("_", "\\_")
-                            mid = malProfile['mal_id']
-                            ani = malProfile['statistics']['anime']
-                            man = malProfile['statistics']['manga']
-                            bth = None
-                            if malProfile['birthday'] is not None:
-                                bth = malProfile['birthday'].replace(
-                                    "+00:00", "+0000")
-                                bth = int(datetime.datetime.strptime(
-                                    bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
-                            dtJoin = malProfile['joined'].replace(
-                                "+00:00", "+0000")
-                            dtJoin = int(datetime.datetime.strptime(
-                                dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+                        if (str(row[3]).lower() == str(uname).lower()) and (ctx.author.id == row[0]):
+                            sendMessages = userRegistered
+                            break
+                        elif (str(row[3]).lower() == str(uname).lower()) and (ctx.author.id != row[0]):
+                            sendMessages = f"{EMOJI_ATTENTIVE} This MAL account is registered on this bot, you could use `/profile user:<@!{row[0]}>` instead"
+                            break
+                        else:
+                            sendMessages = ""
+                jikanStats = await jikan.users(username=uname, extension='full')
+                malProfile = jikanStats['data']
+                mun = malProfile['username'].replace("_", "\\_")
+                mid = malProfile['mal_id']
+                ani = malProfile['statistics']['anime']
+                man = malProfile['statistics']['manga']
+                bth = None
+                if malProfile['birthday'] is not None:
+                    bth = malProfile['birthday'].replace("+00:00", "+0000")
+                    bth = int(datetime.datetime.strptime(
+                        bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+                dtJoin = malProfile['joined'].replace("+00:00", "+0000")
+                dtJoin = int(datetime.datetime.strptime(
+                    dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
 
-                            dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man,
-                                                  joined=dtJoin, bday=bth, extend=extended)
-                            if user is None:
-                                sendMessages = ""
-                            elif ctx.author.id == uid:
-                                sendMessages = userRegistered
-                            else:
-                                sendMessages = f"<@{uid}> data:"
-            else:
-                if user is None:
-                    regAccount = f"{EMOJI_USER_ERROR} Sorry, but to use standalone command, you need to `/register` your account. Or, you can use `/profile mal_username:<yourUsername>` instead"
-                    foo = "Please be a good child, okay? 🚶‍♂️"
-                else:
-                    regAccount = f"I couldn't find <@!{uid}> on my database. It could be that they have not registered their MAL account yet."
-                    foo = ""
+                dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man,
+                                    joined=dtJoin, bday=bth, extend=extended)
+            except Exception as e:
                 sendMessages = ""
                 dcEm = interactions.Embed(
-                    title="User have not registered yet!",
-                    description=returnException(regAccount),
+                    title="Error",
+                    description=returnException(e),
                     color=0xFF0000,
                     footer=interactions.EmbedFooter(
-                        text=foo
+                        text=httpErr
                     )
                 )
-        except Exception as e:
-            sendMessages = ""
-            dcEm = interactions.Embed(
-                title="Error",
-                description=returnException(e),
-                color=0xFF0000,
-                footer=interactions.EmbedFooter(
-                    text=httpErr
-                )
-            )
-    elif mal_username is not None:
-        uname = mal_username.strip()
-        try:
-            with open(database, "r") as f:
-                reader = csv.reader(f, delimiter="\t")
-                for row in reader:
-                    if (str(row[3]).lower() == str(uname).lower()) and (ctx.author.id == row[0]):
-                        sendMessages = userRegistered
-                        break
-                    elif (str(row[3]).lower() == str(uname).lower()) and (ctx.author.id != row[0]):
-                        sendMessages = f"{EMOJI_ATTENTIVE} This MAL account is registered on this bot, you could use `/profile user:<@!{row[0]}>` instead"
-                        break
-                    else:
-                        sendMessages = ""
-            jikanStats = await jikan.users(username=uname, extension='full')
-            malProfile = jikanStats['data']
-            mun = malProfile['username'].replace("_", "\\_")
-            mid = malProfile['mal_id']
-            ani = malProfile['statistics']['anime']
-            man = malProfile['statistics']['manga']
-            bth = None
-            if malProfile['birthday'] is not None:
-                bth = malProfile['birthday'].replace("+00:00", "+0000")
-                bth = int(datetime.datetime.strptime(
-                    bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
-            dtJoin = malProfile['joined'].replace("+00:00", "+0000")
-            dtJoin = int(datetime.datetime.strptime(
-                dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
-
-            dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man,
-                                  joined=dtJoin, bday=bth, extend=extended)
-        except Exception as e:
-            sendMessages = ""
-            dcEm = interactions.Embed(
-                title="Error",
-                description=returnException(e),
-                color=0xFF0000,
-                footer=interactions.EmbedFooter(
-                    text=httpErr
-                )
-            )
 
     await ctx.send(sendMessages, embeds=dcEm)
 
