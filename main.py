@@ -1887,7 +1887,7 @@ async def search(ctx: interactions.CommandContext, title: str = None):
             ani = await lookupByNameJikan(title)
             ani_id = ani['mal_id']
             if (ani['trailer'] is not None) and (ani['trailer']['youtube_id'] is not None):
-                trailer = generateTrailer(data=ani['trailer'], isMal=True) 
+                trailer = generateTrailer(data=ani['trailer'], isMal=True)
         except:
             ani_id = None
 
@@ -2155,7 +2155,8 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
                     elif trkType == "movie":
                         trkType += "s"
                 else:
-                    raise Exception("Invalid Trakt ID required by bot. Valid ID format: `shows/<slug-or-id>` and `movies/<slug-or-id>`")
+                    raise Exception(
+                        "Invalid Trakt ID required by bot. Valid ID format: `shows/<slug-or-id>` and `movies/<slug-or-id>`")
                 async with aiohttp.ClientSession(headers=traktHeader) as session:
                     async with session.get(f"https://api.trakt.tv/{trkType}/{traktId}") as response:
                         trkData = await response.json()
@@ -2166,14 +2167,16 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
                     simId = await searchSimklId(title_id=imdbId, platform='imdb')
                 else:
                     tmdbId = trkData['ids']['tmdb']
-                    mdtype = "show" if re.match(r'shows?', trkType) else "movie"
+                    mdtype = "show" if re.match(
+                        r'shows?', trkType) else "movie"
                     simId = await searchSimklId(title_id=tmdbId, platform='tmdb', media_type=mdtype)
                 simDat = await getSimklID(simkl_id=simId, media_type='anime')
                 uid = simDat['mal']
                 pf = 'myanimelist'
             # throw exception if aiohttp unexpected mime type
             except aiohttp.ContentTypeError:
-                raise Exception("Title not found on the database, or you have entered the wrong ID/slug!")
+                raise Exception(
+                    "Title not found on the database, or you have entered the wrong ID/slug!")
             except KeyError:
                 raise Exception(
                     f"Error while searching for the ID of `{platform}` via `imdb` on SIMKL, entry may not linked with SIMKL counterpart")
@@ -2258,7 +2261,8 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             except KeyError:
                 try:
                     tid = smk['tmdb']
-                    ttype = "movie" if smk['aniType'] == "movie" else "show" if ((smk['aniType'] == "tv") or (smk['aniType'] == "ona")) else "movie" 
+                    ttype = "movie" if smk['aniType'] == "movie" else "show" if (
+                        (smk['aniType'] == "tv") or (smk['aniType'] == "ona")) else "movie"
                     lookup = f"tmdb/{tid}?type={ttype}"
                     scpf = "TMDB"
                     trkData = await lookupTrakt(lookup_param=lookup, source=scpf, media_id=tid)
@@ -2515,7 +2519,8 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 )
             )
         else:
-            raise Exception(f"No relations found on {pf} with following url: <{uid}>!\nEither the anime is not in the database, or you have entered the wrong ID.")
+            raise Exception(
+                f"No relations found on {pf} with following url: <{uid}>!\nEither the anime is not in the database, or you have entered the wrong ID.")
         await ctx.edit("", embeds=dcEm)
     except Exception as e:
         if e == 'Expecting value: line 1 column 1 (char 0)':
