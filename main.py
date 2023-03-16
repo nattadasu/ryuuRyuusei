@@ -2152,6 +2152,9 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
                 simDat = await getSimklID(simkl_id=simId, media_type='anime')
                 uid = simDat['mal']
                 pf = 'myanimelist'
+            # throw exception if aiohttp unexpected mime type
+            except aiohttp.ContentTypeError:
+                raise Exception("Title not found on the database, or you have entered the wrong ID/slug!")
             except KeyError:
                 raise Exception(
                     f"Error while searching for the ID of `{platform}` via `imdb` on SIMKL, entry may not linked with SIMKL counterpart")
@@ -2470,24 +2473,27 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         uAu = uAu[0] + "//" + uAu[2]
 
         # generate the message
-        dcEm = interactions.Embed(
-            author=interactions.EmbedAuthor(
-                name=f"Looking external site relations from {pf}",
-                icon_url=f"https://cdn.discordapp.com/emojis/{emoid}.png?v=1",
-                url=uAu
-            ),
-            title=f"{title}",
-            url=uid,
-            description="Data might be inaccurate, especially for sequels of the title (as IMDb, TVDB, TMDB, and Trakt relies on per title entry than season entry)",
-            color=col,
-            fields=relsEm,
-            footer=interactions.EmbedFooter(
-                text=f"Powered by nattadasu's AnimeAPI and SIMKL.{postsrc}"
-            ),
-            thumbnail=interactions.EmbedImageStruct(
-                url=poster
+        if title is not None:
+            dcEm = interactions.Embed(
+                author=interactions.EmbedAuthor(
+                    name=f"Looking external site relations from {pf}",
+                    icon_url=f"https://cdn.discordapp.com/emojis/{emoid}.png?v=1",
+                    url=uAu
+                ),
+                title=f"{title}",
+                url=uid,
+                description="Data might be inaccurate, especially for sequels of the title (as IMDb, TVDB, TMDB, and Trakt relies on per title entry than season entry)",
+                color=col,
+                fields=relsEm,
+                footer=interactions.EmbedFooter(
+                    text=f"Powered by nattadasu's AnimeAPI and SIMKL.{postsrc}"
+                ),
+                thumbnail=interactions.EmbedImageStruct(
+                    url=poster
+                )
             )
-        )
+        else:
+            raise Exception(f"No relations found on {pf} with following url: <{uid}>!\nEither the anime is not in the database, or you have entered the wrong ID.")
         await ctx.edit("", embeds=dcEm)
     except Exception as e:
         if e == 'Expecting value: line 1 column 1 (char 0)':
