@@ -109,7 +109,8 @@ database = r"database/database.csv"
 jikan = AioJikan()
 
 
-def snowflake_to_datetime(snowflake: int) -> datetime:
+def snowflake_to_datetime(snowflake: int) -> int:
+    """Convert Discord snowflake to datetime object."""
     timestamp_bin = bin(int(snowflake) >> 22)
     timestamp_dec = int(timestamp_bin, 0)
     timestamp_unix = (timestamp_dec + 1420070400000) / 1000
@@ -121,6 +122,7 @@ def snowflake_to_datetime(snowflake: int) -> datetime:
 
 
 def checkIfRegistered(discordId: int) -> bool:
+    """Check if user is registered on Database"""
     with open(database, "r", encoding="utf-8") as f:
         reader = csv.reader(f, delimiter="\t")
         for row in reader:
@@ -131,6 +133,7 @@ def checkIfRegistered(discordId: int) -> bool:
 
 def saveToDatabase(discordId: int, discordUsername: str, discordJoined: int, malUsername: str, malId: int,
                    malJoined: int, registeredAt: int, registeredGuild: int, registeredBy: int, guildName: str):
+    """Save information regarding to user with their consent"""
     with open(database, "a", newline='', encoding="utf-8") as f:
         writer = csv.writer(f, delimiter="\t")
         writer.writerow([discordId, discordUsername, discordJoined, malUsername,
@@ -138,6 +141,7 @@ def saveToDatabase(discordId: int, discordUsername: str, discordJoined: int, mal
 
 
 def returnException(error: str) -> str:
+    """Format exception message to a message string"""
     return f"""{EMOJI_UNEXPECTED_ERROR} **Error found!**
 There's something wrong with the bot while processing your request.
 
@@ -145,17 +149,20 @@ Error is: {error}"""
 
 
 async def checkClubMembership(username) -> dict:
+    """Check if user is a member of any club"""
     jikanUser = await jikan.users(username=f'{username}', extension='clubs')
     return jikanUser['data']
 
 
 async def getJikanData(uname) -> dict:
+    """Get user data from Jikan"""
     jikanData = await jikan.users(username=f'{uname}')
     jikanData = jikanData['data']
     return jikanData
 
 
 async def searchJikanAnime(title: str) -> dict:
+    """Search anime on MyAnimeList via Jikan (inaccurate)"""
     jikanParam = {
         'limit': '10'
     }
@@ -165,6 +172,7 @@ async def searchJikanAnime(title: str) -> dict:
 
 
 async def getJikanAnime(mal_id: int) -> dict:
+    """Get anime data from MyAnimeList via Jikan"""
     id = mal_id
     jikanData = await jikan.anime(id)
     jikanData = jikanData['data']
@@ -172,6 +180,7 @@ async def getJikanAnime(mal_id: int) -> dict:
 
 
 async def getNatsuAniApi(id, platform: str) -> dict:
+    """Get a relation between anime and other platform via Natsu's AniAPI"""
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(f'https://aniapi.nattadasu.my.id/{platform}/{id}') as resp:
@@ -197,6 +206,7 @@ async def getNatsuAniApi(id, platform: str) -> dict:
 
 
 async def getKitsuMetadata(id, media: str = "anime") -> dict:
+    """Get anime metadata from Kitsu"""
     async with aiohttp.ClientSession() as session:
         async with session.get(f'https://kitsu.io/api/edge/{media}/{id}') as resp:
             jsonText = await resp.text()
@@ -206,6 +216,7 @@ async def getKitsuMetadata(id, media: str = "anime") -> dict:
 
 
 async def searchAniList(name: str = None, media_id: int = None, isAnime: bool = True) -> dict:
+    """Search anime on AniList"""
     try:
         url = 'https://graphql.anilist.co'
         mediaType = 'ANIME' if isAnime else 'MANGA'
@@ -284,6 +295,7 @@ async def searchAniList(name: str = None, media_id: int = None, isAnime: bool = 
 
 
 async def searchSimklId(title_id: str, platform: str, media_type: str = None) -> int:
+    """Search SIMKL title ID  from other platforms"""
     url = f'https://api.simkl.com/search/id/?{platform}={title_id}'
     if media_type is not None:
         url += f'&type={media_type}'
@@ -322,6 +334,7 @@ simkl0rels = {
 
 
 async def getSimklID(simkl_id: int, media_type: str) -> dict:
+    """Get external IDs provided by SIMKL"""
     try:
         if simkl_id == 0:
             raise Exception('Simkl ID is 0')
@@ -358,6 +371,7 @@ async def getSimklID(simkl_id: int, media_type: str) -> dict:
 
 
 def trimCyno(message: str) -> str:
+    """Trim synopsys to 1000 characters"""
     if len(message) > 1000:
         msg = message[:1000]
         # trim spaces
@@ -368,6 +382,7 @@ def trimCyno(message: str) -> str:
 
 
 def generateTrailer(data: dict, isMal: bool = False) -> interactions.Button:
+    """Generate a button to a YouTube video"""
     if isMal:
         ytid = data['youtube_id']
     else:
@@ -386,6 +401,7 @@ def generateTrailer(data: dict, isMal: bool = False) -> interactions.Button:
 
 
 async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, animeApi: dict = None) -> interactions.Embed:
+    """Generate an embed for /anime with MAL via Jikan"""
     j = await getJikanAnime(entry_id)
     if alDict is not None:
         al = alDict[0]
@@ -751,6 +767,7 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
 
 
 async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = False) -> interactions.Embed:
+    """Generate an embed for Anilist manga."""
     if isNsfw is None:
         msgForThread = warnThreadCW
     else:
@@ -1056,6 +1073,7 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
 
 
 async def bypassAniListEcchiTag(alm: dict) -> bool:
+    """Bypass 'NSFW' tagged entry on AniList if it's only an ecchi tag"""
     # get the genres
     tgs = []
     for g in alm['genres']:
@@ -1070,6 +1088,7 @@ async def bypassAniListEcchiTag(alm: dict) -> bool:
 
 
 async def getParentNsfwStatus(snowflake: int) -> dict:
+    """Get a channel age restriction status if command was invoked in a thread/forum"""
     botHttp = interactions.HTTPClient(token=BOT_TOKEN)
     guild = await botHttp.get_channel(channel_id=snowflake)
     # close the connection
@@ -1077,6 +1096,7 @@ async def getParentNsfwStatus(snowflake: int) -> dict:
 
 
 async def getUserData(user_snowflake: int) -> dict:
+    """Get user's Discord information"""
     botHttp = interactions.HTTPClient(token=BOT_TOKEN)
     member = await botHttp.get_user(user_id=user_snowflake)
     # close the connection
@@ -1084,12 +1104,14 @@ async def getUserData(user_snowflake: int) -> dict:
 
 
 async def getGuildMemberData(guild_snowflake: int, user_snowflake: int) -> dict:
+    """Get user's Discord information about current server"""
     botHttp = interactions.HTTPClient(token=BOT_TOKEN)
     member = await botHttp.get_member(guild_id=guild_snowflake, member_id=user_snowflake)
     return member
 
 
 def getRandom(value: int = 9) -> int:
+    """Get a random seed number with a specific length"""
     seed = id4()
     # negate value
     value = -value
@@ -1098,6 +1120,7 @@ def getRandom(value: int = 9) -> int:
 
 
 async def getNekomimi(gender: str = None) -> dict:
+    """Get a random nekomimi image from the database"""
     seed = getRandom()
     nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t")
     nmDb = nmDb.fillna('')
@@ -1111,6 +1134,7 @@ async def getNekomimi(gender: str = None) -> dict:
 
 
 def getPlatformColor(pf: str) -> hex:
+    """Get a color code for a specific platform"""
     pf = pf.lower()
     if pf == "twitter":
         cl = 0x15202B
@@ -1511,9 +1535,9 @@ async def profile(ctx: interactions.CommandContext, user: int = None, mal_userna
     await ctx.defer()
 
     userRegistered = f"{EMOJI_DOUBTING} **You are looking at your own profile!**\nYou can also use </profile:1072608801334755529> without any arguments to get your own profile!"
-    httpErr = "If you get HTTP 503 or HTTP 408 error, resubmit command again!\nUsually, first time use on Jikan would take a time to fetch your data"
 
     def generate_embed(uname: str, uid: int, malAnime: dict, malManga: dict, joined: int, bday: int = None, extend: bool = False) -> interactions.Embed:
+        """Generate embed for profile command"""
         bbd = ""
         if bday is not None:
             # convert bday from timestamp back to datetime
@@ -1867,10 +1891,12 @@ async def search(ctx: interactions.CommandContext, title: str = None):
     alData = None
 
     async def lookupByNameAniList(aniname: str) -> dict:
+        """Lookup anime by name using AniList"""
         rawData = await searchAniList(name=aniname, media_id=None, isAnime=True)
         return rawData
 
     async def lookupByNameJikan(name: str) -> dict:
+        """Lookup anime by name using Jikan"""
         rawData = await searchJikanAnime(name)
         for ani in rawData:
             romaji = ani['title']
@@ -1940,6 +1966,7 @@ async def random(ctx: interactions.CommandContext):
     await ctx.get_channel()
 
     async def lookupRandom() -> int:
+        """Lookup random anime from MAL"""
         seed = getRandom()
         # open database/mal.csv
         df = pd.read_csv("database/mal.csv", sep="\t")
@@ -2122,6 +2149,7 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
         await ctx.send(f"Searching for relations on `{platform}` using ID: `{uid}`", embeds=None)
 
         async def lookupTrakt(lookup_param: str, source: str, media_id: str) -> dict:
+            """Lookup Trakt ID via IMDb ID or TMDB ID"""
             async with aiohttp.ClientSession(headers=traktHeader) as session:
                 async with session.get(f'https://api.trakt.tv/search/{lookup_param}') as resp:
                     await ctx.edit(f"Looking up Trakt ID via {source} (`{media_id}`)", embeds=None)
