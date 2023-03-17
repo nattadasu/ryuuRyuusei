@@ -1,5 +1,5 @@
 <!-- cSpell:words Ryuuzaki Ryuusei nattadasu atsine geolocation -->
-
+<!-- omit in toc -->
 # Ryuuzaki Ryuusei Privacy Policy
 
 |                  |                |
@@ -7,19 +7,24 @@
 | **Effective**    | April 1, 2023  |
 | **Last Updated** | March 17, 2023 |
 
-Hello, and welcome to Ryuuzaki Ryuusei's Privacy Policy. This Privacy Policy
-explains how we collect, use, store, protect, and share your personal
-information through our services.
+Greetings, and welcome to Ryuuzaki Ryuusei's Privacy Policy. Through this
+document, we aim to provide you with an explanation of how your personal
+information is collected, used, stored, protected, and shared by our
+bot/service. By using our service, you agree to the collection, use, storage,
+and sharing of your limited personal information as described in this Privacy
+Policy.
 
-[nattadasu][gh-nattadasu] is the data controller of your personal information,
-data were collected under Indonesia jurisdiction while respecting
-[EU General Data Protection Regulation][gdpr] and
-[California Consumer Privacy Act][ccpa]. If you have any questions or concerns
-about this Privacy Policy, please contact data controller in the
-[About Us](#about-us) section.
+[nattadasu][gh-nattadasu] is the Data Controller of your personal information,
+which will be collected under the jurisdiction of Indonesia. We ensure that our
+policies adhere to both, the [EU General Data Protection Regulation][gdpr] and
+[California Consumer Privacy Act][ccpa]. Should you have any questions or
+concerns regarding this Privacy Policy or other relevant matters, please do not
+hesitate to reach out to the data controller through our [About Us](#about-us)
+section.
 
-Although we encourage you to read this Privacy Policy in full, here is a summary
-of what we collect, store, and use:
+Whilst we encourage you to peruse this Privacy Policy thoroughly, here's a brief
+synopsis of the data categories we collect, store, and use with consent from
+yourself:
 
 * **We collect personal information tied about you**, with your consent, the
   following data:
@@ -31,12 +36,15 @@ of what we collect, store, and use:
   the bot to function as expected, with the following services:
   > **Warning**
   >
-  > Although we do not collect, store, or use any logs of messages sent by
-  > system about you under any circumstances, the following services may collect
-  > and store information you have provided to them.
+  > Please note that, while Ryuuzaki Ryuusei does not collect, store, maintain
+  > or use logs of messages sent about you under any circumstances, some of the
+  > third party services integrated into the Bot may have their protocols on
+  > data collection, storage, processing and sharing that you should be aware
+  > of.
   >
-  > You can read their privacy policy for more information, and you can opt-out
-  > from their services by deleting your account from the service.
+  > For more information, you can visit the privacy policies of the
+  > questioned services. You also have the right to opt-out of these services by
+  > deleting your data from these services.
   * [MyAnimeList][mal] (via [Jikan][jikan]): MyAnimeList Username
   * [Last.FM][lastfm]: Last.FM Username
   * [MAL-Heatmap][malh]: MyAnimeList Username
@@ -56,21 +64,52 @@ of what we collect, store, and use:
   during the bot's development process. Maintenance will announced in the Bot
   status channel in Support Server and Bot Activity.
 
+<!-- omit in toc -->
+## Table of Contents
+
+* [Definitions](#definitions)
+* [About Us](#about-us)
+* [User Consent](#user-consent)
+* [User Data Collection and Usage](#user-data-collection-and-usage)
+  * [Discord: User](#discord-user)
+  * [MyAnimeList: User](#myanimelist-user)
+* [User Data Sharing](#user-data-sharing)
+  * [MyAnimeList: Global](#myanimelist-global)
+  * [Last.FM](#lastfm)
+  * [MAL-Heatmap](#mal-heatmap)
+  * [Discord: Global](#discord-global)
+* [Data Caching](#data-caching)
+* [Data Logging](#data-logging)
+* [Access to User Data](#access-to-user-data)
+* [Data Retention](#data-retention)
+* [User Rights](#user-rights)
+  * [Right to Opt-Out](#right-to-opt-out)
+  * [Right to Non-Discrimination](#right-to-non-discrimination)
+  * [Right to Access, Know, and Data Portability](#right-to-access-know-and-data-portability)
+  * [Right to Modify, Rectify, Delete, or Restrict Processing](#right-to-modify-rectify-delete-or-restrict-processing)
+  * [Right to Limit](#right-to-limit)
+  * [Right to Stop Processing on Your Server](#right-to-stop-processing-on-your-server)
+* [Prevention of User Data Leakage](#prevention-of-user-data-leakage)
+* [Changes to this Privacy Policy](#changes-to-this-privacy-policy)
+* [Disclaimer for Warranty and Liability](#disclaimer-for-warranty-and-liability)
+
 ## Definitions
 
-* **Ryuuzaki Ryuusei/Bot/System/Service** is a software that is used to provide
-  a service to you.
-* **Data Controller** is a person or organization that determines the purposes
-  and means of the processing of Personal Information.
-* **We/Us/Our/Owner** refers to [nattadasu][gh-nattadasu], the Data Controller.
+* **Ryuuzaki Ryuusei/Bot/System/Service** is defined as the software used to
+  provide users with services.
+* **Data Controller** refers to any organization or individual determining the
+  method and purpose of processing personal information.
+* **We/Us/Our/Owner** collectively refer to [nattadasu][gh-nattadasu], who is a
+  Data Controller of your personal information.
 
 ---
 
 * **You/Author/User**, unless otherwise specified, refers to a person who
   invoked the bot command.
-* **Discriminator** is a unique number that is assigned to each user on Discord.
-* **Personal Information** is any information that can be used to identify you,
-  such as your name, email address, or user identifier.
+* **Discriminator** is a unique numerical value that is allocated to each user
+  on Discord platform.
+* **Personal Information** is any information that is capable of identifying an
+  individual, for instance, name, email address or user ID.
 * **Sensitive Personal Information** is a specific subset of personal
   information that includes certain government  (such as social security
   numbers); an account log-in, financial account, debit card, or credit card
@@ -90,10 +129,10 @@ of what we collect, store, and use:
 ## About Us
 
 Ryuuzaki Ryuusei is a Discord bot that is developed by [nattadasu][gh-nattadasu]
-which aims better privacy for title
-(anime, manga, tv, movie, music) lookup.
+which aims better privacy for title (anime, manga, tv, movie, music) lookup.
 
-For inquiries, please contact Data Controller at:
+If you have any inquiries or concerns in regards to this privacy policy, please
+contact the Data Controller at:
 
 ```text
 hello [atsine] nattadasu [dot] my [dot] id
@@ -101,9 +140,9 @@ hello [atsine] nattadasu [dot] my [dot] id
 
 ## User Consent
 
-By using Ryuuzaki Ryuusei, you consent to the collection, use, storage, and
-sharing of your limited personal information as described in this Privacy
-Policy.
+By using Ryuuzaki Ryuusei, you automatically grant consent to collection, use,
+storage, and sharing of your limited personal information as described in this
+Privacy Policy.
 
 ## User Data Collection and Usage
 
@@ -138,36 +177,40 @@ This data is used to provide the following functionality:
 
 ## User Data Sharing
 
-Ryuuzaki Ryuusei shares limited personal information about you and/or other,
-required for the bot to function as expected.
+Ryuuzaki Ryuusei shares limited personal information about you and/or others
+strictly for the purpose of providing functionality of the bot. The data sharing
+process is only done on the requirement of the bot operations.
 
-User may opt-out from the following services by deleting their account from the
-service listed below and/or by deleting their data from the bot.
+In order to provide various features, Ryuuzaki Ryuusei collects data from other
+services as described below. Any user willing to opt-out from the service may do
+so by deleting their account from the particular service stated below and/or by
+removing their data from the bot.
 
 ### MyAnimeList: Global
 
-Bot shares MyAnimeList username with [Jikan][jikan], which is a third party
-software (API) to access [MyAnimeList][mal] to retrieve information about User's
-profile. The information is only used to provide information in `/profile`,
-`/admin_register`, `/register`, and `/verify` commands.
+To offer user profile lookup, Ryuuzaki Ryuusei use [Jikan API][jikan] which is a
+third-party software that assists in accessing [MyAnimeList][mal] to obtain
+information about the user's profile. This information is used by Ryuuzaki
+Ryuusei for `/profile`, `/admin_register`, `/register`, and `/verify` commands.
 
 ### Last.FM
 
-Bot shares Last.FM username with [Last.FM][lastfm] to retrieve information about
-User's profile and recent tracks. The information is only used to provide
-information in `/lastfm` command.
+Last.FM username is shared with the [Last.FM][lastfm] service to retrieve
+information regarding the user's profile and recently played tracks. This
+information is accessed by Ryuuzaki Ryuusei exclusively for `/lastfm` command
+purposes.
 
 ### MAL-Heatmap
 
-Bot shares MyAnimeList username with [MAL-Heatmap][malh] to retrieve information
-about User's history in visualized heatmap format. The information is only used
-to provide information in `/profile` command.
+MyAnimeList username is shared with [MAL-Heatmap][malh] to obtain data related
+to the user's histories in a visualized heatmap format. This information is used
+solely for the purpose of providing data in the `/profile` command.
 
 ### Discord: Global
 
-Bot utilize Discord to get message author identifier to retrieve information
-about User's profile and write command actor for server audit log. The
-information is used to provide the following functionality:
+The bot utilizes Discord infrastructure to retrieve information regarding the
+user's profile and write command actor for server audit logs. The information is
+used to provide the following functionality:
 
 * `/admin_register` command
 * `/admin_verify` actor
@@ -179,19 +222,19 @@ information is used to provide the following functionality:
 
 ## Data Caching
 
-Ryuuzaki Ryuusei stores information for caching, this feature is used to reduce
-the number of requests to external services, and to reduce the amount of time
-needed to retrieve information.
+Ryuuzaki Ryuusei stores information for the purpose of caching, which is
+intended to reduce the number of requests made to external services and decrease
+the time it takes to retrieve information. This function only caches information
+that is related to a Title, and does not transmit any information about you
+other than the bot's IP address and/or query request.
 
-Only information related to a Title is being cached, and no information is being
-transmitted about you than Bot's IP address and/or query request.
-
-This data is used to provide the following functionality:
+The data that is stored is used exclusively to enable the following
+functionality:
 
 * `/anime` commands group
 * `/manga` commands group
 
-Services that are being used for caching:
+The services used to perform data caching include:
 
 * [AniList][al]: Title information
 * [AnimeAPI][aniapi]: ID relation mapping
@@ -202,25 +245,54 @@ Services that are being used for caching:
 
 ## Data Logging
 
-Ryuuzaki Ryuusei does not log any information related to you. Logging is only
-enabled during development, bug fix, and testing, limited to general information
-such as bot startup, command execution, API process and error, and will be
-removed once the bot is ready for production.
+Ryuuzaki Ryuusei does not log any information related to the User. In situations
+related to development, bug fixing, and testing, however, general information
+such as bot startup, command execution, API process, and errors may be logged,
+but these logs will only be used for debugging purposes, and will be terminated
+once the bot is production-ready.
 
-Bot maintenance and development is done by Data Controller, and user will be
-informed/noticed if logging is enabled by Support Server announcement and
-Bot Activity status.
+The maintenance and development of the bot are overseen by a Data Controller,
+and in instances where logging is enabled, users shall be notified through
+Support Server announcements and Bot Activity status.
 
 ## Access to User Data
 
-User can access their data by utilizing `/export_data` command, which will
-generate a JSON file containing all the data that Bot has collected about User.
+Users can access their data by utilizing the `/export_data` command. Once
+executed, Ryuuzaki Ryuusei will generate a JSON file that contains all the
+information that the bot has gathered about the user.
 
-User also able to read information stored in bot interactively by utilizing
-`/whois` command.
+It's important to note that this data export represents a mirror of the
+information that is stored in the bot. If you would like to see which data
+points are being collected by Ryuuzaki Ryuusei, please refer to the
+[User Data Collection and Usage](#user-data-collection-and-usage) section of
+this document.
 
-Data is stored in a database written in CSV ("Comma Separated Value"), and is
-only accessible by the Data Controller.
+If you prefer an interactive way to check information stored in bot, `/whois`
+command is available as well.
+
+All user data is stored in a database that is written in CSV format. This
+database is only accessible by the Data Controller, and will never be shared
+with third parties, evaluated, analyzed, distributed, or otherwise made
+available for any reason.
+
+Data retention is essential for the Ryuuzaki Ryuusei bot to function as
+expected. Therefore, it will not be deleted unless a user explicitly requests
+its removal. More information regarding data retention and user rights can be
+found in the [Data Retention](#data-retention) and [User Rights](#user-rights)
+sections of this document.
+
+External services such as [AniList][al], [AnimeAPI][aniapi], [MyAnimeList][mal]
+(via [Jikan][jikan]), [SIMKL][simkl], [The Movie Database][tmdb], and
+[Trakt][trakt] might be used by Ryuuzaki Ryuusei to retrieve title-related
+information. Please note that such services shall only receive limited
+information necessary for providing you with the service you requested, and they
+will not have access to your personal data.
+
+## Data Retention
+
+Ryuuzaki Ryuusei will keep the User's data for as long as they are registered in
+the bot. If the User wishes to erase their data from the bot, they can employ
+`/unregister` command to request the removal of their data.
 
 ## User Rights
 
@@ -230,16 +302,17 @@ You have the following rights under the
 
 ### Right to Opt-Out
 
-As Bot does not have ability to share your personal information with third
-parties for advertising purposes, this right applies globally.
-
-However, if you wish to remove access to your data using Bot, please utilize
-`/unregister` command and remove bot from your server.
+The right to opt-out applies globally as the Bot is not authorized to share any
+personal information of the User with third-party sources for advertising
+purposes. If you, as a User, desire to remove access to your data using the Bot
+platform, you can avail of this right by executing the `/unregister` command and
+proceed to remove the bot from your server.
 
 ### Right to Non-Discrimination
 
-You have the right to not be discriminated against for exercising any of your
-rights.
+In accordance with data protection laws, you have the right to not be
+discriminated against or penalized for exercising any of your rights listed in
+this Privacy Policy.
 
 ### Right to Access, Know, and Data Portability
 
@@ -251,18 +324,21 @@ command.
 
 ### Right to Modify, Rectify, Delete, or Restrict Processing
 
-You have the right to modify, rectify, delete, or restrict processing of your
-personal information. If you wish to exercise this right, please utilize
-`/unregister` command. To modify your data, please utilize `/register` command.
+You have the right to modify and rectify your personal information if it is
+inaccurate. You also have the right to delete or restrict processing of your
+personal information. If you wish to exercise any of these rights, please
+contact the Data Controller in the [About Us](#about-us) section.
 
-However, if the bot unable to modify your data automatically, please contact
-Data Controller in the [About Us](#about-us) section.
+Please note that certain data is necessary for the Bot to function properly, as
+outlined in the [User Data Collection and Usage](#user-data-collection-and-usage)
+section, and deleting or restricting processing of such data may result in the
+Bot not functioning as expected.
 
 ### Right to Limit
 
-You have the right to limit processing of your personal information. If you wish
-to exercise this right, please contact Data Controller in the
-[About Us](#about-us) section.
+You have the right to limit the processing of your personal information under
+certain conditions. If you wish to exercise this right, please contact the Data
+Controller in the [About Us](#about-us) section.
 
 ### Right to Stop Processing on Your Server
 
@@ -271,14 +347,52 @@ to exercise this right, please contact Data Controller in the
 [About Us](#about-us) section to remove all data related to your server, this
 will includes members that registered to the bot on your server.
 
-Additionally, you can also remove the bot from your server, which will remove
-functionality of the bot on your server.
+Furthermore, you may also choose to remove the bot from your server which will
+automatically cause the removal of bot functionality from your server.
+
+## Prevention of User Data Leakage
+
+Although Ryuuzaki Ryuusei does not have any known data leakage, we cannot assure
+that there is no data leakage on our service. However, if you happen to identify
+any data leakage, kindly contact the Data Controller mentioned in the
+[About Us](#about-us) section.
+
+Certain commands such as `/whois` and `/profile` may display the User's data.
+This is a deliberate feature and not categorized as data leakage.
+
+To conceal your data from other users, please use the `/unregister` command
+instead.
 
 ## Changes to this Privacy Policy
 
-We may update this Privacy Policy from time to time. We will notify you of any
-changes by posting the new Privacy Policy on this page and announcing the change
-on our Discord server.
+Privacy policies are subject to periodic changes due to various reasons,
+such as regulatory updates or changes in service operations. Therefore, we
+reserve the right to update this Privacy Policy from time to time.
+
+The amended version of the Privacy Policy will be made available on the website
+at all times, and any changes will be announced on our Discord server.
+Old versions of the policy may be viewed in the commit history but will not be
+effective or binding. The continued use of the Services after any modifications
+to the current policy will indicate your acceptance of the revised clauses.
+It is important that you periodically review this document to stay informed
+about our handling of your data.
+
+## Disclaimer for Warranty and Liability
+
+Ryuuzaki Ryuusei bot is a free software and provided "as is" and "as available"
+without any warranty of any kind, either express or implied. The Data Controller
+does not warrant that the bot will meet your requirements, be uninterrupted,
+timely, secure or error-free, nor does it warrant that any information obtained
+through the bot will be accurate or reliable.
+
+Under no circumstances shall the Data Controller be liable for any direct,
+indirect, incidental, special, exemplary, or consequential damages arising in
+any way out of the use of this bot. This includes but is not limited to
+procurement of substitute goods or services, loss of profits, loss of data, or
+business interruption; regardless of whether the cause of such damages is rooted
+in contract, strict liability, or tort law (including negligence or otherwise),
+and even if the possibility of such loss or damage has been disclosed to the
+Data Controller.
 
 <!-- References -->
 [al]: https://anilist.co
