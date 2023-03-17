@@ -1392,6 +1392,7 @@ async def whois(ctx: interactions.CommandContext, user: int):
 
     try:
         if checkIfRegistered(user.id):
+            row = []
             with open(database, "r") as f:
                 reader = csv.reader(f, delimiter="\t")
                 for row in reader:
@@ -1404,52 +1405,53 @@ async def whois(ctx: interactions.CommandContext, user: int):
                             assistedRegister = f"\nRegistered by: <@!{row[8]}>"
                         else:
                             assistedRegister = ""
-                        userData = await getUserData(user_snowflake=row[0])
-                        userJoined = await getGuildMemberData(guild_snowflake=ctx.guild_id, user_snowflake=row[0])
-                        userJoined = datetime.datetime.strptime(
-                            userJoined['joined_at'], "%Y-%m-%dT%H:%M:%S.%f%z")
-                        userJoined = int(userJoined.timestamp())
-                        userAvatar: str = userData['avatar']
-                        # check if avatar has a_ prefix
-                        if userAvatar.startswith("a_"):
-                            fileExt = "gif"
-                        else:
-                            fileExt = "webp"
-                        userBanner: str = userData['banner']
-                        userDecColor = userData['accent_color']
-                        messages = ""
-                        dcEm = interactions.Embed(
-                            title=f"{user.username}#{user.discriminator} data",
-                            thumbnail=interactions.EmbedImageStruct(
-                                url=f"https://cdn.discordapp.com/avatars/{user.id}/{userAvatar}.{fileExt}?size=512"
-                            ),
-                            color=userDecColor,
-                            fields=[
-                                interactions.EmbedField(
-                                    name="Discord",
-                                    value=f"""Username: {row[1]}
+                        row = row
+                        break
+            userData = await getUserData(user_snowflake=row[0])
+            userJoined = await getGuildMemberData(guild_snowflake=ctx.guild_id, user_snowflake=row[0])
+            userJoined = datetime.datetime.strptime(
+                userJoined['joined_at'], "%Y-%m-%dT%H:%M:%S.%f%z")
+            userJoined = int(userJoined.timestamp())
+            userAvatar: str = userData['avatar']
+            # check if avatar has a_ prefix
+            if userAvatar.startswith("a_"):
+                fileExt = "gif"
+            else:
+                fileExt = "webp"
+            userBanner: str = userData['banner']
+            userDecColor = userData['accent_color']
+            messages = ""
+            dcEm = interactions.Embed(
+                title=f"{user.username}#{user.discriminator} data",
+                thumbnail=interactions.EmbedImageStruct(
+                    url=f"https://cdn.discordapp.com/avatars/{user.id}/{userAvatar}.{fileExt}?size=512"
+                ),
+                color=userDecColor,
+                fields=[
+                    interactions.EmbedField(
+                        name="Discord",
+                        value=f"""Username: {row[1]}
 Snowflake: `{row[0]}`
 Created date: <t:{row[2]}:F>
 Joined to {ctx.guild.name}: <t:{userJoined}:F>""",
-                                ),
-                                interactions.EmbedField(
-                                    name="Bot Database",
-                                    value=f"""Registered date: <t:{row[6]}:F>
+                    ),
+                    interactions.EmbedField(
+                        name="Bot Database",
+                        value=f"""Registered date: <t:{row[6]}:F>
 Registered in: {row[9]}
 Server Snowflake: `{row[7]}`{assistedRegister}"""
-                                ),
-                                interactions.EmbedField(
-                                    name="MyAnimeList",
-                                    value=f"""Username: [{row[3]}](<https://myanimelist.net/profile/{row[3]}>) ([Anime List](<https://myanimelist.net/animelist/{row[3]}>) | [Manga List](<https://myanimelist.net/mangalist/{row[3]}>))
+                    ),
+                    interactions.EmbedField(
+                        name="MyAnimeList",
+                        value=f"""Username: [{row[3]}](<https://myanimelist.net/profile/{row[3]}>) ([Anime List](<https://myanimelist.net/animelist/{row[3]}>) | [Manga List](<https://myanimelist.net/mangalist/{row[3]}>))
 User ID: `{row[4]}`
 Created date: <t:{row[5]}:F>"""
-                                )
-                            ],
-                            image=interactions.EmbedImageStruct(
-                                url=f"https://cdn.discordapp.com/banners/{row[0]}/{userBanner}.webp?size=512"
-                            )
-                        )
-                        break
+                    )
+                ],
+                image=interactions.EmbedImageStruct(
+                    url=f"https://cdn.discordapp.com/banners/{row[0]}/{userBanner}.webp?size=512"
+                )
+            )
 
         else:
             messages = f"<@!{user.id}> data is not registered, trying to get only Discord data..."
@@ -1842,24 +1844,23 @@ async def export_data(ctx: interactions.CommandContext):
                     row[7] = int(row[7])
                     row[8] = int(row[8])
                     row[9] = str(row[9])
-                    userRow = row
-                    userRow = dict(zip(header, userRow))
+                    userRow = dict(zip(header, row))
                     userRow = json.dumps(userRow)
-                    dcEm = interactions.Embed(
-                        title="Data Exported!",
-                        description=f"""{EMOJI_SUCCESS} **Here's your data!**
+                break
+        dcEm = interactions.Embed(
+            title="Data Exported!",
+            description=f"""{EMOJI_SUCCESS} **Here's your data!**
 ```json
 {userRow}
-```or, do you prefer Python list format?```python
-{{{header},
-{row}}}```""",
-                        color=0x2E2E2E,
-                        footer=interactions.EmbedFooter(
-                            text="Unregister easily by typing /unregister!"
-                        )
-                    )
-                    messages = None
-                    break
+```or, do you prefer Python List format?```python
+[{header},
+{row}]```""",
+            color=0x2E2E2E,
+            footer=interactions.EmbedFooter(
+                text="Unregister easily by typing /unregister!"
+            )
+        )
+        messages = None
     else:
         messages = f"""{EMOJI_USER_ERROR} **You are not registered!**"""
         dcEm = None
