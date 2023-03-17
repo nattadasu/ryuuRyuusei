@@ -2901,7 +2901,6 @@ async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int =
                 scb = scb[:maximum]
             nRep = 1
             for tr in scb:
-                await ctx.edit(f"Fetching data for {username}... {nRep}/{maximum}", embeds=None)
                 try:
                     if tr['@attr']['nowplaying'] is not None:
                         np = jload(tr['@attr']['nowplaying'].lower())
