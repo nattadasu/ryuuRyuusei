@@ -1794,31 +1794,38 @@ Bot version, in Git hash: [`{gtHsh}`](<https://github.com/nattadasu/ryuuRyuusei/
 async def privacy(ctx: interactions.CommandContext):
     messages = '''Hello and thank you for your interest to read this tl;dr version of Privacy Policy.
 
-In this message we shortly briefing which content we collect, store, and use, including what third party services we used for bot to function as expected.
+In this message we shortly briefing which content we collect, store, and use, including what third party services we used for bot to function as expected. You can read the full version of [Privacy Policy here at anytime you wish](<https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md>).
 
 __We collect, store, and use following data__:
-- Discord: username, discriminator, user ID, joined date, guild/server ID of registration, server name, date of registration, user referral (if any)
+- Discord: username, discriminator, user snowflake ID, joined date, guild/server ID of registration, server name, date of registration, user referral (if any)
 - MyAnimeList: username, user ID, joined date
 
+__We shared limited personal information about you to 3rd Party__:
+This is required for the bot to function as expected, with the following services:
+Discord, Last.FM, MAL Heatmap, MyAnimeList
+
+__We cached data for limited features of the bot__:
+Used to reduce the amount of API calls to 3rd party services, and to reduce the amount of time to process the data and no information tied to you. This is required for the bot to function as expected, with the following services:
+AniList, AnimeAPI, MyAnimeList, SIMKL, The Movie Database (TMDB), Trakt
+
 __We do not collect, however, following data__:
-- Logs of messages sent by system. Logging only will be enabled during development, testing, or maintenance.
+Any logs of messages sent by system about you under any circumstances. Logging of messages only occurs when you invoked general commands (such as `/help`, `/anime`, `/manga`, etc.) and during the bot's development process. Maintenance will announced in the Bot status channel in Support Server and Bot Activity.
 
-Data stored locally to Data Maintainer's (read: owner) server/machine of this bot. To read your profile that we've collected, type `/export_data` following your username.
+Data stored locally to Data Maintainer's (read: owner) server/machine of this bot as CSV. To read your profile that we've collected, type `/export_data` following your username.
 
-__We used following modules/technology for the bot__:
-- ✨ [AniList](<https://anilist.co>) API
-- [Discord](<https://discord.com>), through [Python: `interactions.py`](<https://github.com/interactions-py/interactions.py>).
-- [MyAnimeList](<https://myanimelist.net>), through [Jikan](<https://jikan.moe/>) (Python: `jikanpy`) and [MAL Heatmap](<https://malheatmap.com>).
-- ✨ [nattadasu's AnimeApi Relation](<https://aniapi.nattadasu.my.id>).
-- ✨ [nattadasu's nekomimiDb](<https://github.com/nattadasu/nekomimiDb>).
-
-As user, you have right to create a profile by typing `/register` and accept privacy consent and/or modify/delete your data by typing `/unregister`.
+As user, you have right to access, know, data portability, modify/rectify, delete, restrict, limit, opt-out, and/or withdraw your consent to use your data.
 
 For any contact information, type `/about`.
+'''
 
-✨: No data is being transmitted about you than bot's IP address and/or query request.'''
+    butt = interactions.Button(
+        type=2,
+        style=interactions.ButtonStyle.LINK,
+        label="Read Full Privacy Policy",
+        url='https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md'
+    )
 
-    await ctx.send(messages, ephemeral=True)
+    await ctx.send(messages, ephemeral=False, components=[butt])
 
 
 @bot.command(
