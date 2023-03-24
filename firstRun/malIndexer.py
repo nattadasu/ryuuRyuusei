@@ -29,9 +29,9 @@ def main():
     data = load_data()
     df = pd.DataFrame(data)
     # only select title and myAnimeList columns
-    df = df[["myAnimeList", "title"]]
+    df = df[["myanimelist", "title"]]
     # rename myAnimeList to mal_id
-    df.rename(columns={"myAnimeList": "mal_id"}, inplace=True)
+    df.rename(columns={"myanimelist": "mal_id"}, inplace=True)
     # sort by mal_id
     df.sort_values(by="mal_id", inplace=True)
     # save to csv file with utf-8 encoding and \t as delimiter
