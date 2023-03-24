@@ -191,16 +191,23 @@ async def getNatsuAniApi(id, platform: str) -> dict:
     except:
         aaDict = {
             'title': None,
-            'aniDb': None,
-            'aniList': None,
-            'animePlanet': None,
-            'aniSearch': None,
+            'anidb': None,
+            'anilist': None,
+            'animeplanet': None,
+            'anisearch': None,
+            'annict': None,
             'kaize': None,
             'kitsu': None,
-            'liveChart': None,
-            'myAnimeList': None,
-            'notifyMoe': None,
-            'silverYasha': None
+            'livechart': None,
+            'myanimelist': None,
+            'notify': None,
+            'otakotaku': None,
+            'shikimori': None,
+            'shoboi': None,
+            'silveryasha': None,
+            'trakt': None,
+            'trakt_type': None,
+            'trakt_season': None
         }
         return aaDict
 
@@ -419,7 +426,6 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
                     f'{EMOJI_FORBIDDEN} **NSFW is not allowed!**\nOnly NSFW channels are allowed to search NSFW content.{msgForThread}')
 
     m = j['mal_id']
-    aa = animeApi
 
     if j['synopsis'] is not None:
         # remove \n\n[Written by MAL Rewrite]
@@ -470,8 +476,8 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
     smkPost = f"https://simkl.in/posters/{smkPost}_m.webp" if smkPost is not None else None
     smkBg = f"https://simkl.in/fanart/{smkBg}_w.webp" if smkBg is not None else None
 
-    if (aa['kitsu'] is not None) and (((alPost is None) and (alBg is None)) or ((smkPost is None) and (smkBg is None))):
-        kts = await getKitsuMetadata(aa['kitsu'], 'anime')
+    if (animeApi['kitsu'] is not None) and (((alPost is None) and (alBg is None)) or ((smkPost is None) and (smkBg is None))):
+        kts = await getKitsuMetadata(animeApi['kitsu'], 'anime')
     else:
         kts = {
             "data": {
@@ -549,7 +555,7 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
             ast = astr.split(" to ")[0]
             tsa = ""
         elif re.match(r'^([a-zA-Z]{3} [\d]{1,2}, [\d]{4})', astr):
-            if (bcast['string'] == "Unknown") or (bcast['string'] is None):
+            if (bcast['string'] == "Unknown") or (bcast['string'] is None) or (bcast['time'] is None):
                 astn = astn.replace('+00:00', '+0000')
                 ast = (datetime.datetime.strptime(
                     astn, '%Y-%m-%dT%H:%M:%S%z') - daten).total_seconds()
@@ -570,7 +576,7 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
     # end date logic
     if aenn is not None:
         if re.match(r'^([a-zA-Z]{3} [\d]{1,2}, [\d]{4})', astr):
-            if (bcast['string'] == "Unknown") or (bcast['string'] is None):
+            if (bcast['string'] == "Unknown") or (bcast['string'] is None) or (bcast['time'] is None):
                 aenn = aenn.replace('+00:00', '+0000')
                 aen = (datetime.datetime.strptime(
                     aenn, '%Y-%m-%dT%H:%M:%S%z') - daten).total_seconds()
@@ -1168,6 +1174,8 @@ def getPlatformColor(pf: str) -> hex:
         cl = 0xE75448
     elif pf == 'anisearch':
         cl = 0xFDA37C
+    elif pf == 'annict':
+        cl = 0xF65B73
     elif pf == 'kaize':
         cl = 0x692FC2
     elif pf == 'kitsu':
@@ -1180,6 +1188,10 @@ def getPlatformColor(pf: str) -> hex:
         cl = 0x67A427
     elif pf == 'notify':
         cl = 0xDEA99E
+    elif pf == 'otakotaku':
+        cl = 0xBE2222
+    elif (pf == "shoboi") or (pf == "syoboi"):
+        cl = 0xE3F0FD
     elif pf == 'simkl':
         cl = 0x0B0F10
     elif pf == 'tvdb':
@@ -2000,8 +2012,8 @@ async def random(ctx: interactions.CommandContext):
             nsfw_bool = ctx.channel.nsfw
         sendMessages = None
         aniApi = await getNatsuAniApi(ani_id, platform="myanimelist")
-        if aniApi['aniList'] is not None:
-            aaDict = await searchAniList(media_id=aniApi['aniList'], isAnime=True)
+        if aniApi['anilist'] is not None:
+            aaDict = await searchAniList(media_id=aniApi['anilist'], isAnime=True)
             if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
                 trailer = generateTrailer(data=aaDict[0]['trailer'])
         else:
@@ -2042,8 +2054,8 @@ async def info(ctx: interactions.CommandContext, id: int):
         else:
             nsfw_bool = ctx.channel.nsfw
         aniApi = await getNatsuAniApi(id=id, platform='myanimelist')
-        if aniApi['aniList'] is not None:
-            aaDict = await searchAniList(media_id=aniApi['aniList'], isAnime=True)
+        if aniApi['anilist'] is not None:
+            aaDict = await searchAniList(media_id=aniApi['anilist'], isAnime=True)
             if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
                 trailer = generateTrailer(data=aaDict[0]['trailer'])
         else:
@@ -2093,11 +2105,15 @@ async def info(ctx: interactions.CommandContext, id: int):
                     value="anisearch"
                 ),
                 interactions.Choice(
+                    name="Annict (アニクト)",
+                    value="annict"
+                ),
+                interactions.Choice(
                     name="IMDb",
                     value="imdb"
                 ),
                 interactions.Choice(
-                    name="Kaize (BETA)",
+                    name="Kaize",
                     value="kaize"
                 ),
                 interactions.Choice(
@@ -2117,8 +2133,16 @@ async def info(ctx: interactions.CommandContext, id: int):
                     value="notify"
                 ),
                 interactions.Choice(
+                    name="Otak Otaku",
+                    value="otakotaku"
+                ),
+                interactions.Choice(
                     name="Shikimori (Шикимори)",
                     value="shikimori"
+                ),
+                interactions.Choice(
+                    name="Shoboi Calendar (しょぼいカレンダー)",
+                    value="shoboi"
                 ),
                 interactions.Choice(
                     name="Silver Yasha: DB Tontonan Indonesia",
@@ -2282,9 +2306,9 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         # Get the relations from others to SIMKL, if MAL is found
         if platform not in ['simkl', 'tmdb', 'tvdb', 'imdb', 'trakt']:
             try:
-                if aa['myAnimeList'] is not None:
+                if aa['myanimelist'] is not None:
                     # search SIMKL ID
-                    simId = await searchSimklId(title_id=aa['myAnimeList'], platform='mal')
+                    simId = await searchSimklId(title_id=aa['myanimelist'], platform='mal')
                     # get the relations
                     smk = await getSimklID(simkl_id=simId, media_type='anime')
             except:
@@ -2329,16 +2353,16 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 value=f"[`{smk['allcin']}`](<https://www.allcinema.net/prog/show_c.php?num_c={smk['allcin']}>)",
                 inline=True
             )]
-        if (aa['aniDb'] is not None) and (pf != 'anidb'):
+        if (aa['anidb'] is not None) and (pf != 'anidb'):
             relsEm += [interactions.EmbedField(
                 name="<:aniDb:1073439145067806801> AniDB",
-                value=f"[`{aa['aniDb']}`](<https://anidb.net/anime/{aa['aniDb']}>)",
+                value=f"[`{aa['anidb']}`](<https://anidb.net/anime/{aa['anidb']}>)",
                 inline=True
             )]
-        if (aa['aniList'] is not None) and (pf != 'anilist'):
+        if (aa['anilist'] is not None) and (pf != 'anilist'):
             relsEm += [interactions.EmbedField(
                 name="<:aniList:1073445700689465374> AniList",
-                value=f"[`{aa['aniList']}`](<https://anilist.co/anime/{aa['aniList']}>)",
+                value=f"[`{aa['anilist']}`](<https://anilist.co/anime/{aa['anilist']}>)",
                 inline=True
             )]
         if smk['ann'] is not None:
@@ -2347,16 +2371,22 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 value=f"[`{smk['ann']}`](<https://www.animenewsnetwork.com/encyclopedia/anime.php?id={smk['ann']}>)",
                 inline=True
             )]
-        if (aa['animePlanet'] is not None) and (pf != 'animeplanet'):
+        if (aa['animeplanet'] is not None) and (pf != 'animeplanet'):
             relsEm += [interactions.EmbedField(
                 name="<:animePlanet:1073446927447891998> Anime-Planet",
-                value=f"[`{aa['animePlanet']}`](<https://www.anime-planet.com/anime/{aa['animePlanet']}>)",
+                value=f"[`{aa['animeplanet']}`](<https://www.anime-planet.com/anime/{aa['animeplanet']}>)",
                 inline=True
             )]
-        if (aa['aniSearch'] is not None) and (pf != 'anisearch'):
+        if (aa['anisearch'] is not None) and (pf != 'anisearch'):
             relsEm += [interactions.EmbedField(
                 name="<:aniSearch:1073439148100300810> aniSearch",
-                value=f"[`{aa['aniSearch']}`](<https://anisearch.com/anime/{aa['aniSearch']}>)",
+                value=f"[`{aa['anisearch']}`](<https://anisearch.com/anime/{aa['anisearch']}>)",
+                inline=True
+            )]
+        if (aa['annict'] is not None) and (pf != 'annict'):
+            relsEm += [interactions.EmbedField(
+                name="<:annict:1088801941469012050> Annict",
+                value=f"`{aa['annict']}` ([En](<https://en.annict.com/works/{aa['annict']}>) | [Ja](<https://annict.com/works/{aa['annict']}>))",
                 inline=True
             )]
         if (smk['imdb'] is not None) and (platform != "imdb"):
@@ -2367,7 +2397,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             )]
         if (aa['kaize'] is not None) and (pf != 'kaize'):
             relsEm += [interactions.EmbedField(
-                name="<:kaize:1073441859910774784> Kaize (BETA)",
+                name="<:kaize:1073441859910774784> Kaize",
                 value=f"[`{aa['kaize']}`](<https://kaize.io/anime/{aa['kaize']}>)",
                 inline=True
             )]
@@ -2377,34 +2407,46 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 value=f"[`{aa['kitsu']}`](<https://kitsu.io/anime/{aa['kitsu']}>)",
                 inline=True
             )]
-        if (aa['liveChart'] is not None) and (pf != 'livechart'):
+        if (aa['livechart'] is not None) and (pf != 'livechart'):
             relsEm += [interactions.EmbedField(
                 name="<:liveChart:1073439158883844106> LiveChart",
-                value=f"[`{aa['liveChart']}`](<https://livechart.me/anime/{aa['liveChart']}>)",
+                value=f"[`{aa['livechart']}`](<https://livechart.me/anime/{aa['livechart']}>)",
                 inline=True
             )]
-        if (aa['myAnimeList'] is not None) and (platform != 'myanimelist'):
+        if (aa['myanimelist'] is not None) and (platform != 'myanimelist'):
             relsEm += [interactions.EmbedField(
                 name="<:myAnimeList:1073442204921643048> MyAnimeList",
-                value=f"[`{aa['myAnimeList']}`](<https://myanimelist.net/anime/{aa['myAnimeList']}>)",
+                value=f"[`{aa['myanimelist']}`](<https://myanimelist.net/anime/{aa['myanimelist']}>)",
                 inline=True
             )]
-        if (aa['notifyMoe'] is not None) and (pf != 'notify'):
+        if (aa['notify'] is not None) and (pf != 'notify'):
             relsEm += [interactions.EmbedField(
                 name="<:notifyMoe:1073439161194905690> Notify",
-                value=f"[`{aa['notifyMoe']}`](<https://notify.moe/anime/{aa['notifyMoe']}>)",
+                value=f"[`{aa['notify']}`](<https://notify.moe/anime/{aa['notify']}>)",
                 inline=True
             )]
-        if (aa['myAnimeList'] is not None) and (platform != 'shikimori'):
+        if (aa['shikimori'] is not None) and (platform != 'shikimori'):
             relsEm += [interactions.EmbedField(
                 name="<:shikimori:1073441855645155468> Shikimori",
-                value=f"[`{aa['myAnimeList']}`](<https://shikimori.one/animes/{aa['myAnimeList']}>)",
+                value=f"[`{aa['shikimori']}`](<https://shikimori.one/animes/{aa['shikimori']}>)",
                 inline=True
             )]
-        if (aa['silverYasha'] is not None) and (platform != 'silveryasha'):
+        if (aa['shoboi'] is not None) and (platform != 'shoboi'):
+            relsEm += [interactions.EmbedField(
+                name="<:shoboi:1088801950751015005> Shoboi Calendar",
+                value=f"[`{aa['shoboi']}`](<https://cal.syoboi.jp/tid/{aa['shoboi']}>)",
+                inline=True
+            )]
+        if (aa['otakotaku'] is not None) and (platform != 'otakotaku'):
+            relsEm += [interactions.EmbedField(
+                name="<:otakOtaku:1088801946313429013> Otak Otaku",
+                value=f"[`{aa['otakotaku']}`](<https://otakotaku.com/anime/view/{aa['otakotaku']}>)",
+                inline=True
+            )]
+        if (aa['silveryasha'] is not None) and (platform != 'silveryasha'):
             relsEm += [interactions.EmbedField(
                 name="<:silverYasha:1079380182059733052> Silver Yasha",
-                value=f"[`{aa['silverYasha']}`](<https://db.silveryasha.web.id/anime/{aa['silverYasha']}>)",
+                value=f"[`{aa['silveryasha']}`](<https://db.silveryasha.web.id/anime/{aa['silveryasha']}>)",
                 inline=True
             )]
         if (simId != 0) and (platform != 'simkl'):
@@ -2474,6 +2516,10 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             uid = f"https://anisearch.com/anime/{id}"
             pf = 'aniSearch'
             emoid = '1073439148100300810'
+        elif pf == 'annict':
+            uid = f"https://en.annict.com/works/{id}"
+            pf = 'Annict (アニクト)'
+            emoid = '1088801941469012050'
         elif pf == 'kaize':
             uid = f"https://kaize.io/anime/{id}"
             pf = 'Kaize'
@@ -2498,10 +2544,18 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             uid = f"https://notify.moe/anime/{id}"
             pf = 'Notify.moe'
             emoid = '1073439161194905690'
+        elif pf == 'otakotaku':
+            uid = f"https://otakotaku.com/anime/view/{id}"
+            pf = 'Otak Otaku'
+            emoid = '1088801946313429013'
         elif platform == 'simkl':
             uid = f"https://simkl.com/anime/{id}"
             pf = 'SIMKL'
             emoid = '1073630754275348631'
+        elif pf == 'shoboi':
+            uid = f"https://cal.syoboi.jp/tid/{id}"
+            pf = 'Shoboi Calendar (しょぼいカレンダー)'
+            emoid = '1088801950751015005'
         elif (platform == 'tvdb') and (smk['tvdb'] is not None):
             uid = f"https://www.thetvdb.com/?tab={tvtyp}&id={id}"
             pf = 'The TV Database'
