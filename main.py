@@ -2954,7 +2954,7 @@ If you have any questions (or more payment channels), please join my [support se
             description="Maximum scrobbled tracks to show",
             type=interactions.OptionType.INTEGER,
             min_value=0,
-            max_value=9,
+            max_value=15,
             required=False
         )
     ]
