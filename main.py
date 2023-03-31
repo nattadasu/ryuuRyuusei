@@ -413,6 +413,11 @@ def trimCyno(message: str) -> str:
         return message
 
 
+def sanitizeMarkdown(text: str) -> str:
+    text = text.replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace("|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/").replace("@", "\\@")
+    return text
+
+
 def generateTrailer(data: dict, isMal: bool = False) -> interactions.Button:
     """Generate a button to a YouTube video"""
     if isMal:
@@ -1415,8 +1420,7 @@ async def whois(ctx: interactions.CommandContext, user: int):
                 for row in reader:
                     if row[0] == user.id:
                         # escape markdown
-                        row[1] = row[1].replace("*", "\\*").replace("_", "\\_").replace("~", "\\~").replace("`", "\\`").replace(
-                            "|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("@", "\\@")
+                        row[1] = sanitizeMarkdown(row[1])
                         row[3] = row[3].replace("_", "\\_")
                         if row[8] != user.id:
                             assistedRegister = f"\nRegistered by: <@!{row[8]}>"
@@ -2996,12 +3000,11 @@ async def lastfm(ctx: interactions.CommandContext, username: str, maximum: int =
                 except:
                     np = False
                 # sanitize title to be markdown compatible
-                tr['name'] = str(tr['name']).replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace("|", "\\|").replace(
-                    ">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/")
-                tr['artist']['#text'] = str(tr['artist']['#text']).replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace(
-                    "|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/")
-                tr['album']['#text'] = str(tr['album']['#text']).replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace(
-                    "|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/")
+                tr['name'] = sanitizeMarkdown(str(tr['name']))
+                tr['artist']['#text'] = sanitizeMarkdown(
+                    str(tr['artist']['#text']))
+                tr['album']['#text'] = sanitizeMarkdown(
+                    str(tr['album']['#text']))
                 scu = tr['url']
                 scus = scu.split("/")
                 # assumes the url as such: https://www.last.fm/music/Artist/_/Track
