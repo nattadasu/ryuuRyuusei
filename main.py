@@ -179,6 +179,28 @@ async def getJikanAnime(mal_id: int) -> dict:
     return jikanData
 
 
+invAa = {
+    'title': None,
+    'anidb': None,
+    'anilist': None,
+    'animeplanet': None,
+    'anisearch': None,
+    'annict': None,
+    'kaize': None,
+    'kitsu': None,
+    'livechart': None,
+    'myanimelist': None,
+    'notify': None,
+    'otakotaku': None,
+    'shikimori': None,
+    'shoboi': None,
+    'silveryasha': None,
+    'trakt': None,
+    'trakt_type': None,
+    'trakt_season': None
+}
+
+
 async def getNatsuAniApi(id, platform: str) -> dict:
     """Get a relation between anime and other platform via Natsu's AniAPI"""
     try:
@@ -189,26 +211,7 @@ async def getNatsuAniApi(id, platform: str) -> dict:
             await session.close()
             return jsonFinal
     except:
-        aaDict = {
-            'title': None,
-            'anidb': None,
-            'anilist': None,
-            'animeplanet': None,
-            'anisearch': None,
-            'annict': None,
-            'kaize': None,
-            'kitsu': None,
-            'livechart': None,
-            'myanimelist': None,
-            'notify': None,
-            'otakotaku': None,
-            'shikimori': None,
-            'shoboi': None,
-            'silveryasha': None,
-            'trakt': None,
-            'trakt_type': None,
-            'trakt_season': None
-        }
+        aaDict = invAa
         return aaDict
 
 
@@ -319,8 +322,13 @@ async def searchSimklId(title_id: str, platform: str, media_type: str = None) ->
 
 
 simkl0rels = {
+    'title': None,
     "simkl": None,
     "slug": None,
+    "poster": None,
+    "fanart": None,
+    "anitype": "tv",
+    "type": "anime",
     "allcin": None,
     "anfo": None,
     "ann": None,
@@ -332,11 +340,6 @@ simkl0rels = {
     "tvdbslug": None,
     "wikien": None,
     "wikijp": None,
-    "poster": None,
-    "fanart": None,
-    "anitype": "tv",
-    "type": "anime",
-    'title': None
 }
 
 
@@ -352,8 +355,13 @@ async def getSimklID(simkl_id: int, media_type: str) -> dict:
                     data = animeFound['ids']
                     # Null safe result, if any of the key is not found, it will be replaced with None
                     data = {
+                        "title": animeFound.get('title', None),
                         "simkl": data.get('simkl', None),
                         "slug": data.get('slug', None),
+                        "poster": animeFound.get('poster', None),
+                        "fanart": animeFound.get('fanart', None),
+                        "aniType": animeFound.get('anime_type', None),
+                        "type": animeFound.get('type', None),
                         "allcin": data.get('allcin', None),
                         "anfo": data.get('anfo', None),
                         "ann": data.get('ann', None),
@@ -365,16 +373,33 @@ async def getSimklID(simkl_id: int, media_type: str) -> dict:
                         "tvdbslug": data.get('tvdbslug', None),
                         "wikien": data.get('wikien', None),
                         "wikijp": data.get('wikijp', None),
-                        "poster": animeFound.get('poster', None),
-                        "fanart": animeFound.get('fanart', None),
-                        "aniType": animeFound.get('anime_type', None),
-                        "type": animeFound.get('type', None),
-                        "title": animeFound.get('title', None)
                     }
                 await gSession.close()
                 return data
     except:
         return simkl0rels
+
+
+async def lookupTrakt(lookup_param: str) -> dict:
+    """Lookup Trakt ID via IMDb ID or TMDB ID"""
+    async with aiohttp.ClientSession(headers=traktHeader) as session:
+        async with session.get(f'https://api.trakt.tv/search/{lookup_param}') as resp:
+            trkRes = await resp.json()
+        await session.close()
+        try:
+            return trkRes[0]
+        except IndexError:
+            raise KeyError
+
+
+async def getTraktID(trakt_id: int, media_type: str = "show", extended: bool = False) -> dict:
+    """Get external IDs provided by Trakt"""
+    ext = "?extended=full" if extended is True else ""
+    async with aiohttp.ClientSession(headers=traktHeader) as session:
+        async with session.get(f'https://api.trakt.tv/{media_type}/{trakt_id}{ext}') as resp:
+            trkRes = await resp.json()
+        await session.close()
+        return trkRes
 
 
 def trimCyno(message: str) -> str:
@@ -1142,69 +1167,49 @@ async def getNekomimi(gender: str = None) -> dict:
 def getPlatformColor(pf: str) -> hex:
     """Get a color code for a specific platform"""
     pf = pf.lower()
-    if pf == "twitter":
-        cl = 0x15202B
-    elif pf == "pixiv":
-        cl = 0x0096FA
-    elif pf == "deviantart":
-        cl = 0x05CC47
-    elif pf == "instagram":
-        cl = 0x833AB4
-    elif pf == "tumblr":
-        cl = 0x35465C
-    elif pf == "patreon":
-        cl = 0xF96854
-    elif pf == "artstation":
-        cl = 0x0F0F0F
-    elif pf == "lofter":
-        cl = 0x335F60
-    elif pf == "weibo":
-        cl = 0xE6162D
-    elif pf == "seiga":
-        cl = 0xEDA715
-    elif pf == "reddit":
-        cl = 0xFF4500
-    elif pf == "hoyolab":
-        cl = 0x1B75BB
-    elif pf == 'anidb':
-        cl = 0x2A2F46
-    elif pf == 'anilist':
-        cl = 0x2F80ED
-    elif pf == 'animeplanet':
-        cl = 0xE75448
-    elif pf == 'anisearch':
-        cl = 0xFDA37C
-    elif pf == 'annict':
-        cl = 0xF65B73
-    elif pf == 'kaize':
-        cl = 0x692FC2
-    elif pf == 'kitsu':
-        cl = 0xF85235
-    elif pf == 'myanimelist':
-        cl = 0x2F51A3
-    elif pf == 'shikimori':
-        cl = 0x2E2E2E
-    elif pf == 'livechart':
-        cl = 0x67A427
-    elif pf == 'notify':
-        cl = 0xDEA99E
-    elif pf == 'otakotaku':
-        cl = 0xBE2222
-    elif (pf == "shoboi") or (pf == "syoboi"):
-        cl = 0xE3F0FD
-    elif pf == 'simkl':
-        cl = 0x0B0F10
-    elif pf == 'tvdb':
-        cl = 0x6CD491
-    elif pf == 'tmdb':
-        cl = 0x09B4E2
-    elif pf == 'imdb':
-        cl = 0xF5C518
-    elif pf == 'silveryasha':
-        cl = 0x0172BB
-    elif pf == 'trakt':
-        cl = 0xED1C24
-    return cl
+    if pf == "syoboi":
+        pf = "shoboi"
+    elif pf == "last":
+        pf = "lastfm"
+    pfDict = {
+        # SNS
+        "artstation": 0x0F0F0F,
+        "deviantart": 0x05CC47,
+        "hoyolab": 0x1B75BB,
+        "instagram": 0x833AB4,
+        "lofter": 0x335F60,
+        "patreon": 0xF96854,
+        "pixiv": 0x0096FA,
+        "reddit": 0xFF4500,
+        "seiga": 0xEDA715,
+        "tumblr": 0x35465C,
+        "twitter": 0x15202B,
+        "weibo": 0xE6162D,
+        # Media tracking
+        "anidb": 0x2A2F46,
+        "anilist": 0x2F80ED,
+        "animeplanet": 0xE75448,
+        "anisearch": 0xFDA37C,
+        "annict": 0xF65B73,
+        "imdb": 0xF5C518,
+        "kaize": 0x692FC2,
+        "kitsu": 0xF85235,
+        "lastfm": 0xD51007,
+        "livechart": 0x67A427,
+        "myanimelist": 0x2F51A3,
+        "notify": 0xDEA99E,
+        "otakotaku": 0xBE2222,
+        "shikimori": 0x2E2E2E,
+        "shoboi": 0xE3F0FD,
+        "silveryasha": 0x0172BB,
+        "simkl": 0x0B0F10,
+        "syoboi": 0xE3F0FD,
+        "tmdb": 0x09B4E2,
+        "trakt": 0xED1C24,
+        "tvdb": 0x6CD491,
+    }
+
+    return pfDict.get(pf, 0x000000)
 
 
 # START OF BOT CODE
@@ -1703,9 +1708,11 @@ Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
                         sendMessages = f"<@{uid}> data:"
                 else:
                     if user is None:
-                        raise KeyError(f"{EMOJI_USER_ERROR} Sorry, but to use standalone command, you need to `/register` your account. Or, you can use `/profile mal_username:<yourUsername>` instead")
+                        raise KeyError(
+                            f"{EMOJI_USER_ERROR} Sorry, but to use standalone command, you need to `/register` your account. Or, you can use `/profile mal_username:<yourUsername>` instead")
                     else:
-                        raise KeyError(f"I couldn't find <@!{uid}> on my database. It could be that they have not registered their MAL account yet.")
+                        raise KeyError(
+                            f"I couldn't find <@!{uid}> on my database. It could be that they have not registered their MAL account yet.")
             except KeyError as regAccount:
                 foo = "Please be a good child, okay? 🚶‍♂️" if user is None else ""
                 sendMessages = ""
@@ -1750,7 +1757,7 @@ Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
                     dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
 
                 dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man,
-                                    joined=dtJoin, bday=bth, extend=extended)
+                                      joined=dtJoin, bday=bth, extend=extended)
             except Exception as e:
                 sendMessages = ""
                 dcEm = definejikanException(e)
@@ -2172,93 +2179,100 @@ async def info(ctx: interactions.CommandContext, id: int):
 async def relations(ctx: interactions.CommandContext, id: str, platform: str):
     """Find a list of relations to external site for an anime"""
     await ctx.defer()
+    await ctx.send(f"Searching for relations on `{platform}` using ID: `{id}`", embeds=None)
     try:
-        uid = id
-        pf = platform
         simId = 0
+        imdbId = None
+        malId = None
+        tmdbId = None
         traktId = None
-        title = None
-        await ctx.send(f"Searching for relations on `{platform}` using ID: `{uid}`", embeds=None)
+        trkSeason = None
+        trkType = None
+        smk = simkl0rels
+        simDat = simkl0rels
+        aa = invAa
 
-        async def lookupTrakt(lookup_param: str, source: str, media_id: str) -> dict:
-            """Lookup Trakt ID via IMDb ID or TMDB ID"""
-            async with aiohttp.ClientSession(headers=traktHeader) as session:
-                async with session.get(f'https://api.trakt.tv/search/{lookup_param}') as resp:
-                    await ctx.edit(f"Looking up Trakt ID via {source} (`{media_id}`)", embeds=None)
-                    trkRes = await resp.json()
-                await session.close()
-                try:
-                    return trkRes[0]
-                except IndexError:
-                    raise KeyError
-
-        # Fix platform name
-        if platform == 'shikimori':
-            pf = 'myanimelist'
-            # remove any prefix started with any a-z in the id
-            uid = re.sub(r'^[a-z]+', '', id)
-            await ctx.edit("Removing Shikimori ID's prefix to be compatible with MyAnimeList ID", embeds=None)
-        if pf == 'simkl':
-            simDat = await getSimklID(simkl_id=id, media_type='anime')
+        # Properly config the ID
+        if (platform == 'shikimori') and (re.match(r'^[a-zA-Z]+', id)):
+            id = re.sub(r'^[a-zA-Z]+', '', id)
+            await ctx.edit(f'Removed the prefix from the ID on `{platform}`', embeds=None)
+            aa = await getNatsuAniApi(id=id, platform='shikimori')
+        elif platform == 'simkl':
+            simDat = await getSimklID(id, 'anime')
             simId = id
-            # if simDat['mal'] key is not in the dict, it will raise KeyError
+            malId = simDat['mal']
+        elif platform in ['tmdb', 'tvdb', 'imdb']:
             try:
-                uid = simDat['mal']
-                pf = 'myanimelist'
+                if platform == 'tmdb':
+                    id = id.split('/')
+                    if len(id) > 1:
+                        await ctx.edit(f'Season split is currently not supported on `{platform}`', embeds=None)
+                        id = id[0]
+                simId = await searchSimklId(id, platform=platform)
+                simDat = await getSimklID(simId, 'anime')
+                malId = simDat['mal']
             except KeyError:
                 raise Exception(
-                    "No MAL ID found, please ask the SIMKL developer to add it to the database")
-        elif pf in ['tmdb', 'tvdb', 'imdb']:
+                    f'No anime found on SIMKL with ID: `{id}` on `{platform}`')
+        elif platform == 'trakt':
             try:
-                simId = await searchSimklId(title_id=id, platform=pf)
-                simDat = await getSimklID(simkl_id=simId, media_type='anime')
-                uid = simDat['mal']
-                pf = 'myanimelist'
-            except KeyError:
-                raise Exception(
-                    f"Error while searching for the ID of `{platform}` on SIMKL, entry may not linked with SIMKL counterpart")
-        elif pf == 'trakt':
-            try:
-                # check using regex if the id is valid
-                if re.match(r'^(show|movie)s?\/[a-z0-9-]+$', id):
+                if re.match(r'^(show|movie)s?\/[a-z0-9-]+(/season(s)?/[\d]+)$', id):
                     trkQuery = id.split('/')
                     trkType = trkQuery[0]
                     traktId = trkQuery[1]
+                    if len(trkQuery) > 2:
+                        trkSeason = trkQuery[3]
                     if trkType == "show":
                         trkType += "s"
                     elif trkType == "movie":
                         trkType += "s"
                 else:
                     raise Exception(
-                        "Invalid Trakt ID required by bot. Valid ID format: `shows/<slug-or-id>` and `movies/<slug-or-id>`")
-                async with aiohttp.ClientSession(headers=traktHeader) as session:
-                    async with session.get(f"https://api.trakt.tv/{trkType}/{traktId}") as response:
-                        trkData = await response.json()
-                    await session.close()
-                traktId = trkData['ids']['slug']
+                        'Invalid Trakt ID required by bot. Valid ID format: `shows/<slug-or-id>` and `movies/<slug-or-id>`.')
+                trkData = await getTraktID(traktId, trkType)
+                traktId = trkData['ids']['trakt']
                 imdbId = trkData['ids']['imdb']
-                if imdbId is not None:
-                    simId = await searchSimklId(title_id=imdbId, platform='imdb')
+                tmdbId = trkData['ids']['tmdb']
+                if trkSeason is not None:
+                    aa = await getNatsuAniApi(id=f"{trkType}/{traktId}/seasons/{trkSeason}", platform='trakt')
                 else:
-                    tmdbId = trkData['ids']['tmdb']
+                    aa = await getNatsuAniApi(id=f"{trkType}/{traktId}", platform='trakt')
+                if aa['title'] is not None:
+                    simId = await searchSimklId(title_id=aa['myanimelist'], platform='mal')
+                elif (aa['title'] is None) and (imdbId is not None):
+                    simId = await searchSimklId(title_id=imdbId, platform='imdb')
+                elif (aa['title'] is None) and (tmdbId is not None):
                     mdtype = "show" if re.match(
                         r'shows?', trkType) else "movie"
                     simId = await searchSimklId(title_id=tmdbId, platform='tmdb', media_type=mdtype)
+
                 simDat = await getSimklID(simkl_id=simId, media_type='anime')
-                uid = simDat['mal']
-                pf = 'myanimelist'
-            # throw exception if aiohttp unexpected mime type
+                malId = simDat['mal']
             except aiohttp.ContentTypeError:
                 raise Exception(
-                    "Title not found on the database, or you have entered the wrong ID/slug!")
+                    f'Title not found on the database, or you have entered the wrong ID/slug!')
             except KeyError:
                 raise Exception(
-                    f"Error while searching for the ID of `{platform}` via `imdb` on SIMKL, entry may not linked with SIMKL counterpart")
-
-        if pf == 'kaize':
+                    f'Error while searching for the ID of `{platform}` via `imdb` and `tmdb` on SIMKL, entry may not linked with SIMKL counterpart, so unfortunately we can\'t reverse search for the relation')
+        elif platform == 'kitsu':
+            if re.match(r'^[a-zA-Z\-]+', id):
+                # replace slug to id
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(f'https://kitsu.io/api/edge/anime?filter[slug]={id}') as resp:
+                        if resp.status == 200:
+                            kitsuData = await resp.json()
+                            ktSlug = id
+                            id = kitsuData['data'][0]['id']
+                        else:
+                            raise Exception(
+                                f'Error while searching for the ID of `{platform}`')
+                    await session.close()
+                await ctx.edit(f'Replaced the slug (`{ktSlug}`) with the ID (`{id}`) on `{platform}`', embeds=None)
+            aa = await getNatsuAniApi(id=id, platform=platform)
+        elif platform == 'kaize':
             try:
                 try:
-                    aa = await getNatsuAniApi(id=uid, platform=pf)
+                    aa = await getNatsuAniApi(id=id, platform=platform)
                 except:
                     # check on slug using regex, if contains `-N` suffix, try to decrease by one,
                     # if `-N` is `-1`, remove completely the slug
@@ -2274,72 +2288,64 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
                     else:
                         uid = f"{slug}-{lastNum}"
                     await ctx.edit(f"Searching for relations on `{platform}` using ID: `{uid}` (decrease by one)", embeds=None)
-                    aa = await getNatsuAniApi(id=uid, platform=pf)
+                    aa = await getNatsuAniApi(id=uid, platform=platform)
             except json.JSONDecodeError:
                 raise Exception("""We've tried to search for the anime using the slug (and even fix the slug itself), but it seems that the anime is not found on Kaize via AnimeApi.
 Please send a message to AnimeApi maintainer, nattadasu (he is also a developer of this bot)""")
-        elif pf == 'kitsu':
-            # check if the ID provided is a slug
-            if re.match(r'^[a-z0-9-]+$', uid):
-                # get the anime ID
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(f"https://kitsu.io/api/edge/anime?filter[slug]={uid}") as resp:
-                        if resp.status == 200:
-                            data = await resp.json()
-                            uid = data['data'][0]['id']
-                        else:
-                            raise Exception(
-                                "Error while searching for the ID of Kitsu")
-                    await session.close()
-                await ctx.edit(f"Searching for relations on `{platform}` using ID: `{uid}` (slug to ID)", embeds=None)
-            else:
-                uid = int(uid)
-            aa = await getNatsuAniApi(id=uid, platform=pf)
         else:
-            aa = await getNatsuAniApi(id=uid, platform=pf)
+            aa = await getNatsuAniApi(id=id, platform=platform)
 
-        # Get the anime title
-        title = aa['title']
+        if (aa['title'] is None) and (malId is not None):
+            aa = await getNatsuAniApi(id=malId, platform='myanimelist')
 
-        smk = simkl0rels
-
-        # Get the relations from others to SIMKL, if MAL is found
-        if platform not in ['simkl', 'tmdb', 'tvdb', 'imdb', 'trakt']:
+        # link SIMKL ID
+        if platform not in ['simkl', 'trakt', 'tmdb', 'tvdb', 'imdb']:
             try:
                 if aa['myanimelist'] is not None:
-                    # search SIMKL ID
                     simId = await searchSimklId(title_id=aa['myanimelist'], platform='mal')
-                    # get the relations
                     smk = await getSimklID(simkl_id=simId, media_type='anime')
-            except:
-                pass
-        elif platform == 'simkl':
-            try:
-                smk = await getSimklID(simkl_id=simId, media_type='anime')
+                elif aa['anidb'] is not None:
+                    simId = await searchSimklId(title_id=aa['anidb'], platform='anidb')
+                    smk = await getSimklID(simkl_id=simId, media_type='anime')
             except:
                 pass
         else:
             smk = simDat
 
-        if (title is None) and (simId != 0):
-            title = smk['title']
+        if (tmdbId is None) and (platform != 'tmdb'):
+            tmdbId = smk['tmdb']
+        elif platform == 'tmdb':
+            tmdbId = id
+        if (imdbId is None) and (platform != 'imdb'):
+            imdbId = smk['imdb']
+        elif platform == 'imdb':
+            imdbId = id
 
-        if ((smk['imdb'] is not None) or (smk['tmdb'] is not None)) and (platform != 'trakt'):
+        if (aa['title'] is None) and (simId != 0):
+            title = smk['title']
+        else:
+            title = aa['title']
+
+        if (aa['trakt'] is not None) and (platform != 'trakt'):
+            trkType = aa['trakt_type']
+            trkSeason = aa['trakt_season']
+            traktId = f"{aa['trakt']}/seasons/{trkSeason}"
+        elif (aa['trakt'] is None) and ((tmdbId is not None) or (imdbId is not None)) and (platform != 'trakt'):
             try:
-                tid = smk['imdb']
+                tid = imdbId
                 lookup = f"imdb/{tid}"
                 scpf = "IMDb"
-                trkData = await lookupTrakt(lookup_param=lookup, source=scpf, media_id=tid)
+                trkData = await lookupTrakt(lookup_param=lookup)
                 trkType = trkData['type']
                 traktId = trkData[trkType]['ids']['trakt']
             except KeyError:
                 try:
-                    tid = smk['tmdb']
+                    tid = tmdbId
                     ttype = "movie" if smk['aniType'] == "movie" else "show" if (
                         (smk['aniType'] == "tv") or (smk['aniType'] == "ona")) else "movie"
                     lookup = f"tmdb/{tid}?type={ttype}"
                     scpf = "TMDB"
-                    trkData = await lookupTrakt(lookup_param=lookup, source=scpf, media_id=tid)
+                    trkData = await lookupTrakt(lookup_param=lookup)
                     trkType = trkData['type']
                     traktId = trkData[trkType]['ids']['trakt']
                 except KeyError:
@@ -2353,13 +2359,13 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 value=f"[`{smk['allcin']}`](<https://www.allcinema.net/prog/show_c.php?num_c={smk['allcin']}>)",
                 inline=True
             )]
-        if (aa['anidb'] is not None) and (pf != 'anidb'):
+        if (aa['anidb'] is not None) and (platform != 'anidb'):
             relsEm += [interactions.EmbedField(
                 name="<:aniDb:1073439145067806801> AniDB",
                 value=f"[`{aa['anidb']}`](<https://anidb.net/anime/{aa['anidb']}>)",
                 inline=True
             )]
-        if (aa['anilist'] is not None) and (pf != 'anilist'):
+        if (aa['anilist'] is not None) and (platform != 'anilist'):
             relsEm += [interactions.EmbedField(
                 name="<:aniList:1073445700689465374> AniList",
                 value=f"[`{aa['anilist']}`](<https://anilist.co/anime/{aa['anilist']}>)",
@@ -2371,43 +2377,43 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 value=f"[`{smk['ann']}`](<https://www.animenewsnetwork.com/encyclopedia/anime.php?id={smk['ann']}>)",
                 inline=True
             )]
-        if (aa['animeplanet'] is not None) and (pf != 'animeplanet'):
+        if (aa['animeplanet'] is not None) and (platform != 'animeplanet'):
             relsEm += [interactions.EmbedField(
                 name="<:animePlanet:1073446927447891998> Anime-Planet",
                 value=f"[`{aa['animeplanet']}`](<https://www.anime-planet.com/anime/{aa['animeplanet']}>)",
                 inline=True
             )]
-        if (aa['anisearch'] is not None) and (pf != 'anisearch'):
+        if (aa['anisearch'] is not None) and (platform != 'anisearch'):
             relsEm += [interactions.EmbedField(
                 name="<:aniSearch:1073439148100300810> aniSearch",
                 value=f"[`{aa['anisearch']}`](<https://anisearch.com/anime/{aa['anisearch']}>)",
                 inline=True
             )]
-        if (aa['annict'] is not None) and (pf != 'annict'):
+        if (aa['annict'] is not None) and (platform != 'annict'):
             relsEm += [interactions.EmbedField(
                 name="<:annict:1088801941469012050> Annict",
-                value=f"`{aa['annict']}` ([En](<https://en.annict.com/works/{aa['annict']}>) | [Ja](<https://annict.com/works/{aa['annict']}>))",
+                value=f"[`{aa['annict']}`](<https://annict.com/works/{aa['annict']}>) ([En](<https://en.annict.com/works/{aa['annict']}>))",
                 inline=True
             )]
-        if (smk['imdb'] is not None) and (platform != "imdb"):
+        if (imdbId is not None) and (platform != "imdb"):
             relsEm += [interactions.EmbedField(
                 name="<:IMDb:1079376998880784464> IMDb",
-                value=f"[`{smk['imdb']}`](<https://www.imdb.com/title/{smk['imdb']}>)",
+                value=f"[`{imdbId}`](<https://www.imdb.com/title/{imdbId}>)",
                 inline=True
             )]
-        if (aa['kaize'] is not None) and (pf != 'kaize'):
+        if (aa['kaize'] is not None) and (platform != 'kaize'):
             relsEm += [interactions.EmbedField(
                 name="<:kaize:1073441859910774784> Kaize",
                 value=f"[`{aa['kaize']}`](<https://kaize.io/anime/{aa['kaize']}>)",
                 inline=True
             )]
-        if (aa['kitsu'] is not None) and (pf != 'kitsu'):
+        if (aa['kitsu'] is not None) and (platform != 'kitsu'):
             relsEm += [interactions.EmbedField(
                 name="<:kitsu:1073439152462368950> Kitsu",
                 value=f"[`{aa['kitsu']}`](<https://kitsu.io/anime/{aa['kitsu']}>)",
                 inline=True
             )]
-        if (aa['livechart'] is not None) and (pf != 'livechart'):
+        if (aa['livechart'] is not None) and (platform != 'livechart'):
             relsEm += [interactions.EmbedField(
                 name="<:liveChart:1073439158883844106> LiveChart",
                 value=f"[`{aa['livechart']}`](<https://livechart.me/anime/{aa['livechart']}>)",
@@ -2419,7 +2425,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 value=f"[`{aa['myanimelist']}`](<https://myanimelist.net/anime/{aa['myanimelist']}>)",
                 inline=True
             )]
-        if (aa['notify'] is not None) and (pf != 'notify'):
+        if (aa['notify'] is not None) and (platform != 'notify'):
             relsEm += [interactions.EmbedField(
                 name="<:notifyMoe:1073439161194905690> Notify",
                 value=f"[`{aa['notify']}`](<https://notify.moe/anime/{aa['notify']}>)",
@@ -2479,10 +2485,12 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         except:
             tvtyp = "series"
             tmtyp = "tv"
-        if (smk['tmdb'] is not None) and (platform != "tmdb"):
+        if (tmdbId is not None) and (platform != "tmdb"):
+            if trkSeason is not None:
+                tmdbId = f"{tmdbId}/season/{trkSeason}"
             relsEm += [interactions.EmbedField(
                 name="<:tmdb:1079379319920529418> The Movie Database",
-                value=f"[`{smk['tmdb']}`](<https://www.themoviedb.org/{tmtyp}/{smk['tmdb']}>)",
+                value=f"[`{tmdbId}`](<https://www.themoviedb.org/{tmtyp}/{tmdbId}>)",
                 inline=True
             )]
         if (smk['tvdb'] is not None) and (platform != "tvdb"):
@@ -2492,104 +2500,118 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
                 inline=True
             )]
         elif (smk['tvdbslug'] is not None) and (platform != "tvdb"):
+            if trkSeason is not None:
+                tvdbId = f"{smk['tvdbslug']}/seasons/official/{trkSeason}"
+            else:
+                tvdbId = smk['tvdbslug']
             relsEm += [interactions.EmbedField(
                 name="<:tvdb:1079378495064510504> The TVDB",
-                value=f"[`{smk['tvdbslug']}`](<https://www.thetvdb.com/{tvtyp}/{smk['tvdbslug']}>)",
+                value=f"[`{tvdbId}`](<https://www.thetvdb.com/{tvtyp}/{tvdbId}>)",
                 inline=True
             )]
 
+        if (platform == 'tvdb') and (re.match(r"^[\d]+$", id)):
+            tvdbId = f"https://www.thetvdb.com/?tab={tvtyp}&id={id}"
+        elif (platform == 'tvdb'):
+            tvdbId = f"https://www.thetvdb.com/{tvtyp}/{id}"
+        else:
+            tvdbId = None
+
         col = getPlatformColor(platform)
 
-        if pf == 'anidb':
-            uid = f"https://anidb.net/anime/{id}"
-            pf = 'AniDB'
-            emoid = '1073439145067806801'
-        elif pf == 'anilist':
-            uid = f"https://anilist.co/anime/{id}"
-            pf = 'AniList'
-            emoid = '1073445700689465374'
-        elif pf == 'animeplanet':
-            uid = f"https://www.anime-planet.com/anime/{id}"
-            pf = 'Anime-Planet'
-            emoid = '1073446927447891998'
-        elif pf == 'anisearch':
-            uid = f"https://anisearch.com/anime/{id}"
-            pf = 'aniSearch'
-            emoid = '1073439148100300810'
-        elif pf == 'annict':
-            uid = f"https://en.annict.com/works/{id}"
-            pf = 'Annict (アニクト)'
-            emoid = '1088801941469012050'
-        elif pf == 'kaize':
-            uid = f"https://kaize.io/anime/{id}"
-            pf = 'Kaize'
-            emoid = '1073441859910774784'
-        elif pf == 'kitsu':
-            uid = f"https://kitsu.io/anime/{id}"
-            pf = 'Kitsu'
-            emoid = '1073439152462368950'
-        elif platform == 'myanimelist':
-            uid = f"https://myanimelist.net/anime/{id}"
-            pf = 'MyAnimeList'
-            emoid = '1073442204921643048'
-        elif platform == 'shikimori':
-            uid = f"https://shikimori.one/animes/{id}"
-            pf = 'Shikimori (Шикимори)'
-            emoid = '1073441855645155468'
-        elif pf == 'livechart':
-            uid = f"https://livechart.me/anime/{id}"
-            pf = 'LiveChart'
-            emoid = '1073439158883844106'
-        elif pf == 'notify':
-            uid = f"https://notify.moe/anime/{id}"
-            pf = 'Notify.moe'
-            emoid = '1073439161194905690'
-        elif pf == 'otakotaku':
-            uid = f"https://otakotaku.com/anime/view/{id}"
-            pf = 'Otak Otaku'
-            emoid = '1088801946313429013'
-        elif platform == 'simkl':
-            uid = f"https://simkl.com/anime/{id}"
-            pf = 'SIMKL'
-            emoid = '1073630754275348631'
-        elif pf == 'shoboi':
-            uid = f"https://cal.syoboi.jp/tid/{id}"
-            pf = 'Shoboi Calendar (しょぼいカレンダー)'
-            emoid = '1088801950751015005'
-        elif (platform == 'tvdb') and (smk['tvdb'] is not None):
-            uid = f"https://www.thetvdb.com/?tab={tvtyp}&id={id}"
-            pf = 'The TV Database'
-            emoid = '1079378495064510504'
-        elif (platform == 'tvdb') and (smk['tvdbslug'] is not None):
-            uid = f"https://www.thetvdb.com/{tvtyp}/{id}"
-            pf = 'The TV Database'
-            emoid = '1079378495064510504'
-        elif platform == 'tmdb':
-            uid = f"https://www.themoviedb.org/{tmtyp}/{id}"
-            pf = 'The Movie Database'
-            emoid = '1079379319920529418'
-        elif platform == 'imdb':
-            uid = f"https://www.imdb.com/title/{id}"
-            pf = 'IMDb'
-            emoid = '1079376998880784464'
-        elif pf == 'silveryasha':
-            uid = f"https://db.silveryasha.web.id/anime/{id}"
-            pf = "Silver Yasha"
-            emoid = "1079380182059733052"
-        elif platform == 'trakt':
-            uid = f"https://trakt.tv/{trkType}/{traktId}"
-            pf = 'Trakt'
-            emoid = '1081612822175305788'
+        platform_dict = {
+            'anidb': {
+                'uid': f'https://anidb.net/anime/{id}',
+                'pf': 'AniDB',
+                'emoid': '1073439145067806801'},
+            'anilist': {
+                'uid': f'https://anilist.co/anime/{id}',
+                'pf': 'AniList',
+                'emoid': '1073445700689465374'},
+            'animeplanet': {
+                'uid': f'https://www.anime-planet.com/anime/{id}',
+                'pf': 'Anime-Planet',
+                'emoid': '1073446927447891998'},
+            'anisearch': {
+                'uid': f'https://anisearch.com/anime/{id}',
+                'pf': 'aniSearch',
+                'emoid': '1073439148100300810'},
+            'annict': {
+                'uid': f'https://en.annict.com/works/{id}',
+                'pf': 'Annict (アニクト)',
+                'emoid': '1088801941469012050'},
+            'imdb': {
+                'uid': f"https://www.imdb.com/title/{id}",
+                'pf': 'IMDb',
+                'emoid': '1079376998880784464'},
+            'kaize': {
+                'uid': f'https://kaize.io/anime/{id}',
+                'pf': 'Kaize',
+                'emoid': '1073441859910774784'},
+            'kitsu': {
+                'uid': f'https://kitsu.io/anime/{id}',
+                'pf': 'Kitsu',
+                'emoid': '1073439152462368950'},
+            'myanimelist': {
+                'uid': f'https://myanimelist.net/anime/{id}',
+                'pf': 'MyAnimeList',
+                'emoid': '1073442204921643048'},
+            'shikimori': {
+                'uid': f'https://shikimori.one/animes/{id}',
+                'pf': 'Shikimori (Шикимори)',
+                'emoid': '1073441855645155468'},
+            'livechart': {
+                'uid': f'https://livechart.me/anime/{id}',
+                'pf': 'LiveChart',
+                'emoid': '1073439158883844106'},
+            'notify': {
+                'uid': f'https://notify.moe/anime/{id}',
+                'pf': 'Notify.moe',
+                'emoid': '1073439161194905690'},
+            'otakotaku': {
+                'uid': f'https://otakotaku.com/anime/view/{id}',
+                'pf': 'Otak Otaku',
+                'emoid': '1088801946313429013'},
+            'simkl': {
+                'uid': f'https://simkl.com/anime/{id}',
+                'pf': 'SIMKL',
+                'emoid': '1073630754275348631'},
+            'shoboi': {
+                'uid': f'https://cal.syoboi.jp/tid/{id}',
+                'pf': 'Shoboi Calendar (しょぼいカレンダー)',
+                'emoid': '1088801950751015005'},
+            'tmdb': {
+                'uid': f"https://www.themoviedb.org/{tmtyp}/{id}",
+                'pf': 'The Movie Database',
+                'emoid': '1079379319920529418'},
+            'silveryasha': {
+                'uid': f"https://db.silveryasha.web.id/anime/{id}",
+                'pf': "Silver Yasha",
+                'emoid': "1079380182059733052"},
+            'trakt': {
+                'uid': f"https://trakt.tv/{trkType}/{traktId}",
+                'pf': 'Trakt',
+                'emoid': '1081612822175305788'},
+            'tvdb': {
+                'uid': tvdbId,
+                'pf': 'The TVDB',
+                'emoid': '1079378495064510504'},
+        }
 
-        if (smk['poster'] is None) and (aa['kitsu'] is not None):
-            poster = f"https://media.kitsu.io/anime/poster_images/{aa['kitsu']}/large.jpg"
-            postsrc = "Kitsu"
-        elif (smk['poster'] is None) and (aa['notifyMoe'] is not None):
-            poster = f"https://media.notify.moe/images/anime/original/{aa['notifyMoe']}.jpg"
-            postsrc = "Notify.moe"
-        elif smk['poster'] is not None:
+        if platform in platform_dict:
+            uid = platform_dict[platform]['uid']
+            pf = platform_dict[platform]['pf']
+            emoid = platform_dict[platform]['emoid']
+
+        if smk['poster'] is not None:
             poster = f"https://simkl.in/posters/{smk['poster']}_m.webp"
             postsrc = "SIMKL"
+        elif aa['kitsu'] is not None:
+            poster = f"https://media.kitsu.io/anime/poster_images/{aa['kitsu']}/large.jpg"
+            postsrc = "Kitsu"
+        elif aa['notify'] is not None:
+            poster = f"https://media.notify.moe/images/anime/original/{aa['notify']}.jpg"
+            postsrc = "Notify.moe"
         else:
             poster = None
             postsrc = None
@@ -2602,7 +2624,6 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         uAu = uid.split('/')
         uAu = uAu[0] + "//" + uAu[2]
 
-        # generate the message
         if title is not None:
             dcEm = interactions.Embed(
                 author=interactions.EmbedAuthor(
@@ -2626,15 +2647,21 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
             raise Exception(
                 f"No relations found on {pf} with following url: <{uid}>!\nEither the anime is not in the database, or you have entered the wrong ID.")
         await ctx.edit("", embeds=dcEm)
+
     except Exception as e:
         if e == 'Expecting value: line 1 column 1 (char 0)':
             e = 'No relations found!\nEither the anime is not in the database, or you have entered the wrong ID.'
         else:
             e = e
         e = f"""While getting the relations for `{platform}` with id `{id}`, we got error message: {e}"""
-        sendMessages = returnException(e)
+        sendMessages = ""
+        dcEm = interactions.Embed(
+            color=0xff0000,
+            title="Error",
+            description=returnException(e)
+        )
 
-        await ctx.edit(sendMessages, embeds=None)
+        await ctx.edit("", embeds=dcEm)
 
 
 @bot.command(
