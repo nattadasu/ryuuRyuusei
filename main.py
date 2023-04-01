@@ -1394,89 +1394,19 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
 
         col = getPlatformColor(platform)
 
-        platform_dict = {
-            'anidb': {
-                'uid': f'https://anidb.net/anime/{id}',
-                'pf': 'AniDB',
-                'emoid': '1073439145067806801'},
-            'anilist': {
-                'uid': f'https://anilist.co/anime/{id}',
-                'pf': 'AniList',
-                'emoid': '1073445700689465374'},
-            'animeplanet': {
-                'uid': f'https://www.anime-planet.com/anime/{id}',
-                'pf': 'Anime-Planet',
-                'emoid': '1073446927447891998'},
-            'anisearch': {
-                'uid': f'https://anisearch.com/anime/{id}',
-                'pf': 'aniSearch',
-                'emoid': '1073439148100300810'},
-            'annict': {
-                'uid': f'https://en.annict.com/works/{id}',
-                'pf': 'Annict (アニクト)',
-                'emoid': '1088801941469012050'},
-            'imdb': {
-                'uid': f"https://www.imdb.com/title/{id}",
-                'pf': 'IMDb',
-                'emoid': '1079376998880784464'},
-            'kaize': {
-                'uid': f'https://kaize.io/anime/{id}',
-                'pf': 'Kaize',
-                'emoid': '1073441859910774784'},
-            'kitsu': {
-                'uid': f'https://kitsu.io/anime/{id}',
-                'pf': 'Kitsu',
-                'emoid': '1073439152462368950'},
-            'myanimelist': {
-                'uid': f'https://myanimelist.net/anime/{id}',
-                'pf': 'MyAnimeList',
-                'emoid': '1073442204921643048'},
-            'shikimori': {
-                'uid': f'https://shikimori.one/animes/{id}',
-                'pf': 'Shikimori (Шикимори)',
-                'emoid': '1073441855645155468'},
-            'livechart': {
-                'uid': f'https://livechart.me/anime/{id}',
-                'pf': 'LiveChart',
-                'emoid': '1073439158883844106'},
-            'notify': {
-                'uid': f'https://notify.moe/anime/{id}',
-                'pf': 'Notify.moe',
-                'emoid': '1073439161194905690'},
-            'otakotaku': {
-                'uid': f'https://otakotaku.com/anime/view/{id}',
-                'pf': 'Otak Otaku',
-                'emoid': '1088801946313429013'},
-            'simkl': {
-                'uid': f'https://simkl.com/anime/{id}',
-                'pf': 'SIMKL',
-                'emoid': '1073630754275348631'},
-            'shoboi': {
-                'uid': f'https://cal.syoboi.jp/tid/{id}',
-                'pf': 'Shoboi Calendar (しょぼいカレンダー)',
-                'emoid': '1088801950751015005'},
-            'tmdb': {
-                'uid': f"https://www.themoviedb.org/{tmtyp}/{id}",
-                'pf': 'The Movie Database',
-                'emoid': '1079379319920529418'},
-            'silveryasha': {
-                'uid': f"https://db.silveryasha.web.id/anime/{id}",
-                'pf': "Silver Yasha",
-                'emoid': "1079380182059733052"},
-            'trakt': {
-                'uid': f"https://trakt.tv/{trkType}/{traktId}",
-                'pf': 'Trakt',
-                'emoid': '1081612822175305788'},
-            'tvdb': {
-                'uid': tvdbId,
-                'pf': 'The TVDB',
-                'emoid': '1079378495064510504'},
-        }
+        if platform == 'trakt':
+            media_id = f"{trkType}/{traktId}"
+        elif platform == 'tvdb':
+            media_id = tvdbId
+        elif platform == 'tmdb':
+            media_id = f"{tmtyp}/{id}"
+        else:
+            media_id = id
 
-        if platform in platform_dict:
-            uid = platform_dict[platform]['uid']
-            pf = platform_dict[platform]['pf']
-            emoid = platform_dict[platform]['emoid']
+        pfs = mediaIdToPlatform(media_id=media_id, platform=platform)
+        pf = pfs['pf']
+        uid = pfs['uid']
+        emoid = pfs['emoid']
 
         if smk['poster'] is not None:
             poster = f"https://simkl.in/posters/{smk['poster']}_m.webp"
