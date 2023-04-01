@@ -222,19 +222,23 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
         cynl = len(cyno)
 
         cynoin = cyno[0]
+        cynmo = f"\n> \n> [Read more on AniList](<https://anilist.co/manga/{id}>)"
 
         if len(str(cynoin)) <= 150:
-            cyno = cynoin
+            daff = cynoin
             if cynl >= 3:
+                daff = cynoin
+                cynoAdd = cyno[2]
+                cyno = trimCyno(daff)
                 cyno += "\n> \n> "
-                cyno += trimCyno(cyno[2])
+                cyno += trimCyno(cynoAdd)
         elif len(str(cynoin)) >= 1000:
             cyno = trimCyno(cynoin)
         else:
             cyno = cynoin
 
         if (cyno[-3:] == "...") or ((len(str(cynoin)) >= 150) and (cynl > 3)) or ((len(str(cynoin)) >= 1000) and (cynl > 1)):
-            cyno += f"\n> \n> [Read more on AniList](<https://anilist.co/manga/{id}>)"
+            cyno += cynmo
     else:
         cyno = "*None*"
 
