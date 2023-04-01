@@ -10,21 +10,24 @@ async def checkClubMembership(username) -> dict:
 def definejikanException(errmsg: str) -> interactions.Embed:
     """Define what HTTP error AioJikan/Jikan/MyAnimeList threw"""
     e = str(errmsg).split('=')
-    etype = int(str(e[1]).split(',')[0])
-    errm = e[3].strip()
-    if len(e) >= 4:
-        for i in range(4, len(e)):
-            errm += f"={e[i]}"
-    if etype == 403:
-        em = f"**Jikan unable to reach MyAnimeList at the moment.**\nPlease try again in 3 seconds."
-    elif etype == 404:
-        em = f"**I couldn't find the user on MAL.**\nCheck the spelling or well, maybe they don't exist? 🤔"
-    elif etype == 408:
-        em = f"**Jikan had a timeout while fetching your data**\nPlease try again in 3 seconds."
-    else:
-        em = f"HTTP {etype}\n{errm}"
-    dcEm = exceptionsToEmbed(em)
-    return dcEm
+    print(e)
+    try:
+        etype = int(str(e[1]).split(',')[0])
+        errm = e[3].strip()
+        if len(e) >= 4:
+            for i in range(4, len(e)):
+                errm += f"={e[i]}"
+        if etype == 403:
+            em = f"**Jikan unable to reach MyAnimeList at the moment.**\nPlease try again in 3 seconds."
+        elif etype == 404:
+            em = f"**I couldn't find the user on MAL.**\nCheck the spelling or well, maybe they don't exist? 🤔"
+        elif etype == 408:
+            em = f"**Jikan had a timeout while fetching your data**\nPlease try again in 3 seconds."
+        else:
+            em = f"HTTP {etype}\n{errm}"
+    except IndexError:
+        em = "Unknown error."
+    return em
 
 async def getJikanData(uname) -> dict:
     """Get user data from Jikan"""

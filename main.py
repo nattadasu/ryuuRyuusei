@@ -437,7 +437,7 @@ async def profile(ctx: interactions.CommandContext, user: int = None, mal_userna
                 dcEm = generateProfile(uname=mun, uid=mid, malAnime=ani, malManga=man, joined=dtJoin, bday=bth, extend=extended)
             except Exception as e:
                 sendMessages = ""
-                dcEm = definejikanException(e)
+                dcEm = exceptionsToEmbed(definejikanException(e))
 
     await ctx.send(sendMessages, embeds=dcEm)
 
@@ -1331,6 +1331,8 @@ async def search(ctx: interactions.CommandContext, title: str):
         results = await searchAniList(name=title, isAnime=False)
         f = []
         so = []
+        if len(results) == 0 :
+            raise ValueError()
         for r in results:
             # only capitalize the first letter of the format and status
             r["format"] = str(r["format"]).capitalize()
@@ -1373,6 +1375,10 @@ async def search(ctx: interactions.CommandContext, title: str):
         await ctx.send("", embeds=dcEm, components=com)
         await asyncio.sleep(90)
         await ctx.edit(MESSAGE_SELECT_TIMEOUT, embeds=dcEm, components=[])
+    except ValueError:
+        dcEm = exceptionsToEmbed(error=f"""We couldn't able to find any manga with that title (`{title}`). Please check the spelling!
+**Pro tip**: Use Native title to get most accurate result.... that if you know how to type in such language.""")
+        await ctx.send("", embeds=dcEm, components=[])
     except Exception as e:
         dcEm = exceptionsToEmbed(returnException(e))
         await ctx.send("", embeds=dcEm, components=[])
