@@ -303,12 +303,7 @@ Joined to {ctx.guild.name}: <t:{userJoined}:F>"""
         sendMessages = messages
     except AttributeError:
         sendMessages = ""
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(
-                "User can not be found if they're joined this server or not.")
-        )
+        dcEm = exceptionsToEmbed(returnException("User can not be found if they're joined this server or not."))
     except Exception as e:
         sendMessages = ""
         dcEm = exceptionsToEmbed(returnException(e))
@@ -351,12 +346,7 @@ async def profile(ctx: interactions.CommandContext, user: int = None, mal_userna
             raise KeyError
         except KeyError:
             sendMessages = ""
-            dcEm = interactions.Embed(
-                title="Error",
-                description=returnException(
-                    f"{EMOJI_USER_ERROR} **You cannot use both options!** Use either one of `user:` or `mal_username:`, hmph. >:("),
-                color=0xFF0000
-            )
+            dcEm = exceptionsToEmbed(returnException(f"{EMOJI_USER_ERROR} **You cannot use both options!** Use either one of `user:` or `mal_username:`, hmph. >:("))
     else:
         if mal_username is None:
             if user is not None:
