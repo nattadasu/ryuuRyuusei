@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 # cspell:disable
 
+from modules.commons import *
+
 from modules.anilist import *
 from modules.animeapi import *
-from modules.commons import *
+from modules.database import *
 from modules.kitsu import *
 from modules.myanimelist import *
 from modules.nekomimidb import *
@@ -592,9 +594,7 @@ async def unregister(ctx: interactions.CommandContext):
     if checkIfRegistered(ctx.author.id):
         # use pandas to read and drop the row
         try:
-            df = pd.read_csv(database, sep="\t")
-            df_drop = df.drop(df.query(f"discordId=={ctx.author.id}").index)
-            df_drop.to_csv(database, sep="\t", index=False, encoding='utf-8')
+            dropUser(discordId=ctx.author.id)
             sendMessages = f"""{EMOJI_SUCCESS} **Successfully unregistered!**"""
         except Exception as e:
             sendMessages = returnException(e)
@@ -1947,9 +1947,7 @@ async def admin_unregister(ctx: interactions.CommandContext, dc_username: int):
     discordId = dc_username.id
     if checkIfRegistered(discordId):
         try:
-            df = pd.read_csv(database, sep="\t")
-            df_drop = df.drop(df.query(f'discordId == {discordId}').index)
-            df_drop.to_csv(database, sep="\t", index=False, encoding="utf-8")
+            dropUser(discordId=discordId)
             sendMessages = f"""{EMOJI_SUCCESS} **User unregistered!**"""
         except Exception as e:
             sendMessages = returnException(e)
