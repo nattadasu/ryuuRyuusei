@@ -587,6 +587,7 @@ async def search(ctx: interactions.CommandContext, title: str = None):
                     )
                 ]
             aniFound = True
+            searchFrom = "AniList"
     except:
         try:
             await ctx.edit(f"AniList failed to search `{title}`, searching via Jikan (inaccurate)", embeds=None, components=None)
@@ -610,6 +611,7 @@ async def search(ctx: interactions.CommandContext, title: str = None):
                         )
                     ]
                 aniFound = True
+                searchFrom = "Jikan"
         except:
             aniFound = False
 
@@ -625,7 +627,7 @@ async def search(ctx: interactions.CommandContext, title: str = None):
                 thumbnail=interactions.EmbedImageStruct(
                     url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"
                 ),
-                title="Search Results",
+                title=f"Search Results via {searchFrom}",
                 description=f"Found **{len(f)} results** for `{title}`, please select by choosing right option in the dropdown below",
                 fields=f
             )
