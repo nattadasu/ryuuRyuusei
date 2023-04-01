@@ -227,7 +227,7 @@ async def getKitsuMetadata(id, media: str = "anime") -> dict:
         return jsonFinal
 
 
-async def searchAniList(name: str = None, media_id: int = None, isAnime: bool = True) -> dict:
+async def searchAniList(name: str = None, isAnime: bool = True) -> dict:
     """Search anime on AniList"""
     try:
         url = 'https://graphql.anilist.co'
@@ -235,68 +235,28 @@ async def searchAniList(name: str = None, media_id: int = None, isAnime: bool = 
         variables = {
             'mediaType': mediaType.upper()
         }
-        if name is not None:
-            qs = '''query ($search: String, $mediaType: MediaType) {'''
-            result = '''results: media(type: $mediaType, search: $search) {'''
-            variables['search'] = name
-        elif media_id is not None:
-            qs = '''query ($mediaId: Int, $mediaType: MediaType) {'''
-            result = '''results: media(type: $mediaType, id: $mediaId) {'''
-            variables['mediaId'] = media_id
-        else:
-            raise ValueError("Either name or media_id must be provided")
+        qs = '''query ($search: String, $mediaType: MediaType) {'''
+        result = '''results: media(type: $mediaType, search: $search) {'''
+        variables['search'] = name
 
         query = f'''{qs}
-        {mediaType.lower()}: Page(perPage: 1) {{
-            {result}
-                id
-                idMal
-                title {{
-                    romaji
-                    english
-                    native
-                }}
-                isAdult
-                description(asHtml: false)
-                synonyms
-                format
-                startDate {{
-                    year
-                    month
-                    day
-                }}
-                endDate {{
-                    year
-                    month
-                    day
-                }}
-                status
-                chapters
-                volumes
-                coverImage {{
-                    large
-                    extraLarge
-                }}
-                bannerImage
-                genres
-                tags {{
-                    name
-                    isMediaSpoiler
-                }}
-                averageScore
-                stats {{
-                    scoreDistribution {{
-                        score
-                        amount
-                    }}
-                }}
-                trailer {{
-                    id
-                    site
-                }}
+    {mediaType.lower()}: Page(perPage: 5) {{
+        {result}
+            id
+            idMal
+            title {{
+                romaji
+                english
+                native
             }}
+            isAdult
+            format
+            status
+            bannerImage
+            averageScore
         }}
-    }}'''
+    }}
+}}'''
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json={'query': query, 'variables': variables}) as resp:
                 jsonResult = await resp.json()
@@ -305,6 +265,76 @@ async def searchAniList(name: str = None, media_id: int = None, isAnime: bool = 
     except IndexError as ierr:
         raise Exception(ierr)
 
+
+async def getAniList(media_id: int, isAnime: bool = True) -> dict:
+    """Fetch the information regarding the title on AniList"""
+    try:
+        url = 'https://graphql.anilist.co'
+        mediaType = 'ANIME' if isAnime else 'MANGA'
+        variables = {
+            'mediaType': mediaType.upper()
+        }
+        qs = '''query ($mediaId: Int, $mediaType: MediaType) {'''
+        result = '''results: media(type: $mediaType, id: $mediaId) {'''
+        variables['mediaId'] = media_id
+        query = f'''{qs}
+    {mediaType.lower()}: Page(perPage: 1) {{
+        {result}
+            id
+            idMal
+            title {{
+                romaji
+                english
+                native
+            }}
+            isAdult
+            description(asHtml: false)
+            synonyms
+            format
+            startDate {{
+                year
+                month
+                day
+            }}
+            endDate {{
+                year
+                month
+                day
+            }}
+            status
+            chapters
+            volumes
+            coverImage {{
+                large
+                extraLarge
+            }}
+            bannerImage
+            genres
+            tags {{
+                name
+                isMediaSpoiler
+            }}
+            averageScore
+            stats {{
+                scoreDistribution {{
+                    score
+                    amount
+                }}
+            }}
+            trailer {{
+                id
+                site
+            }}
+        }}
+    }}
+}}'''
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json={'query': query, 'variables': variables}) as resp:
+                jsonResult = await resp.json()
+            await session.close()
+            return jsonResult['data'][f'{mediaType.lower()}']['results']
+    except IndexError as ierr:
+        raise Exception(ierr)
 
 async def searchSimklId(title_id: str, platform: str, media_type: str = None) -> int:
     """Search SIMKL title ID  from other platforms"""
@@ -2155,71 +2185,141 @@ async def search(ctx: interactions.CommandContext, title: str = None):
 
     async def lookupByNameAniList(aniname: str) -> dict:
         """Lookup anime by name using AniList"""
-        rawData = await searchAniList(name=aniname, media_id=None, isAnime=True)
+        rawData = await searchAniList(name=aniname, isAnime=True)
         return rawData
 
     async def lookupByNameJikan(name: str) -> dict:
         """Lookup anime by name using Jikan"""
         rawData = await searchJikanAnime(name)
-        for ani in rawData:
-            romaji = ani['title']
-            english = ani['title_english']
-            native = ani['title_japanese']
-            syns = ani['titles']
-            if (romaji == name) or (english == name) or (native == name):
-                return ani
-            else:
-                for title in syns:
-                    if title == name:
-                        return ani
+        return rawData
 
-    trailer = None
+    f = []
+    so = []
+    com = []
+    aniFound = False
 
     try:
         await ctx.send(f"Searching `{title}` using AniList", embeds=None, components=None)
         alData = await lookupByNameAniList(title)
-        ani_id = alData[0]['idMal']
-        if (alData[0]['trailer'] is not None) and (alData[0]['trailer']['site'] == "youtube"):
-            trailer = generateTrailer(data=alData[0]['trailer'], isMal=False)
+        if len(alData) == 0 :
+            raise Exception()
+        else:
+            for a in alData:
+                f += [
+                    interactions.EmbedField(
+                        name=f"{a['title']['romaji']}",
+                        value=f"""*{a['title']['native']}, {a['format']}, {a['status']}*""",
+                        inline=False
+                    )
+                ]
+                so += [
+                    interactions.SelectOption(
+                        label=f"{a['title']['romaji']}",
+                        value=f"{a['idMal']}",
+                        description=f"{a['format']}, {a['status']}"
+                    )
+                ]
+            aniFound = True
     except:
-        ani_id = None
-
-    if ani_id is None:
         try:
             await ctx.edit(f"AniList failed to search `{title}`, searching via Jikan (inaccurate)", embeds=None, components=None)
             ani = await lookupByNameJikan(title)
-            ani_id = ani['mal_id']
-            if (ani['trailer'] is not None) and (ani['trailer']['youtube_id'] is not None):
-                trailer = generateTrailer(data=ani['trailer'], isMal=True)
-        except:
-            ani_id = None
-
-    if ani_id is not None:
-        try:
-            await ctx.edit("Anime found! Processing", embeds=None)
-            # check if command invoked in a forum thread
-            if ctx.channel.type == 11 or ctx.channel.type == 12:
-                # get parent channel id
-                prId = ctx.channel.parent_id
-                # get NSFW status
-                nsfw_bool = await getParentNsfwStatus(snowflake=prId)
+            if len(ani) == 0:
+                raise Exception()
             else:
-                nsfw_bool = ctx.channel.nsfw
-            aniApi = await getNatsuAniApi(ani_id, platform="myanimelist")
-            dcEm = await generateMal(ani_id, nsfw_bool, alDict=alData, animeApi=aniApi)
-            sendMessages = None
-        except Exception as e:
-            sendMessages = returnException(e)
-            dcEm = None
-            trailer = None
-    else:
-        sendMessages = returnException(
-            f"""We couldn't able to find any anime with that title (`{title}`). Please check the spelling!
-**Pro tip**: Use Native title to get most accurate result.... that if you know how to type in such language.""")
-        dcEm = None
-        trailer = None
+                for a in ani:
+                    f += [
+                        interactions.EmbedField(
+                            name=f"{a['title']}",
+                            value=f"""*{a['title_japanese']}, {a['type']}, {a['status']}*""",
+                            inline=False
+                        )
+                    ]
+                    so += [
+                        interactions.SelectOption(
+                            label=f"{a['title']}",
+                            value=f"{a['mal_id']}",
+                            description=f"{a['type']}, {a['status']}"
+                        )
+                    ]
+                aniFound = True
+        except:
+            aniFound = False
 
-    await ctx.edit(sendMessages, embeds=dcEm, components=trailer)
+    if aniFound is True:
+        try:
+            dcEm = interactions.Embed(
+                color=0x2F51A3,
+                author=interactions.EmbedAuthor(
+                    name="MyAnimeList Anime",
+                    url="https://myanimelist.net",
+                    icon_url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"
+                ),
+                thumbnail=interactions.EmbedImageStruct(
+                    url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"
+                ),
+                title="Search Results",
+                description=f"Found **{len(f)} results** for `{title}`, please select by choosing right option in the dropdown below",
+                fields=f
+            )
+            com = [
+                interactions.SelectMenu(
+                    options=so,
+                    custom_id="mal_search",
+                    placeholder="Select an anime to get more information"
+                )
+            ]
+        except Exception as e:
+            dcEm = interactions.Embed(
+                color=0xff0000,
+                title="Error",
+                description=returnException(e)
+            )
+            com = []
+    else:
+        dcEm = interactions.Embed(
+            color=0xff0000,
+            title="Error",
+            description=returnException(f"""We couldn't able to find any anime with that title (`{title}`). Please check the spelling!
+**Pro tip**: Use Native title to get most accurate result.... that if you know how to type in such language.""")
+        )
+        com = []
+
+    await ctx.edit("", embeds=dcEm, components=com)
+    if len(com) > 0:
+        await asyncio.sleep(90)
+        await ctx.edit("*Selection had reached timeout*", embeds=dcEm, components=[])
+
+@bot.component('mal_search')
+async def mal_search(ctx: interactions.ComponentContext, choices: list[str]):
+    await ctx.defer()
+    try:
+        # check if command invoked in a forum thread
+        if ctx.channel.type == 11 or ctx.channel.type == 12:
+            # get parent channel id
+            prId = ctx.channel.parent_id
+            # get NSFW status
+            nsfw_bool = await getParentNsfwStatus(snowflake=prId)
+        else:
+            nsfw_bool = ctx.channel.nsfw
+        ani_id = int(choices[0])
+        aniApi = await getNatsuAniApi(ani_id, platform="myanimelist")
+        if aniApi['anilist'] is not None:
+            alData = await getAniList(media_id=aniApi['anilist'], isAnime=True)
+            if (alData[0]['trailer'] is not None) and (alData[0]['trailer']['site'] == "youtube"):
+                trailer = generateTrailer(data=alData[0]['trailer'], isMal=False)
+                trailer = [trailer]
+            else:
+                trailer = []
+        dcEm = await generateMal(ani_id, nsfw_bool, alDict=alData, animeApi=aniApi)
+    except Exception as e:
+        dcEm = interactions.Embed(
+            color=0xff0000,
+            title="Error",
+            description=returnException(e)
+        )
+        trailer = []
+    await ctx.send("", embeds=dcEm, components=trailer)
 
 
 @anime.subcommand()
