@@ -90,5 +90,7 @@ MESSAGE_MEMBER_REG_PROFILE = f"{EMOJI_DOUBTING} **You are looking at your own pr
 
 MESSAGE_INVITE = "To invite me, simply press \"**Invite me!**\" button below!\nFor any questions, please join my support server!"
 
+MESSAGE_SELECT_TIMEOUT = "*Selection menu has reached timeout, please try again if you didn't pick the option!*"
+
 ERR_KAIZE_SLUG_MODDED = '''We've tried to search for the anime using the slug (and even fix the slug itself), but it seems that the anime is not found on Kaize via AnimeApi.
 Please send a message to AnimeApi maintainer, nattadasu (he is also a developer of this bot)'''

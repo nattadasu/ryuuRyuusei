@@ -645,7 +645,7 @@ async def search(ctx: interactions.CommandContext, title: str = None):
     await ctx.edit("", embeds=dcEm, components=com)
     if len(com) > 0:
         await asyncio.sleep(90)
-        await ctx.edit("*Selection had reached timeout*", embeds=dcEm, components=[])
+        await ctx.edit(MESSAGE_SELECT_TIMEOUT, embeds=dcEm, components=[])
 
 @bot.component('mal_search')
 async def mal_search(ctx: interactions.ComponentContext, choices: list[str]):
@@ -1662,7 +1662,7 @@ async def search(ctx: interactions.CommandContext, title: str):
         await ctx.send("", embeds=dcEm, components=com)
         # timeout the selection
         await asyncio.sleep(90)
-        await ctx.edit("*Selection had reached timeout*", embeds=dcEm, components=[])
+        await ctx.edit(MESSAGE_SELECT_TIMEOUT, embeds=dcEm, components=[])
     except Exception as e:
         dcEm = exceptionsToEmbed(returnException(e))
         await ctx.send("", embeds=dcEm)
