@@ -28,9 +28,12 @@ def definejikanException(errmsg: str) -> interactions.Embed:
 
 async def getJikanData(uname) -> dict:
     """Get user data from Jikan"""
-    jikanData = await jikan.users(username=f'{uname}')
-    jikanData = jikanData['data']
-    return jikanData
+    try:
+        jikanData = await jikan.users(username=f'{uname}')
+        jikanData = jikanData['data']
+        return jikanData
+    except Exception as e:
+        raise Exception(e)
 
 
 async def searchJikanAnime(title: str) -> dict:
@@ -38,17 +41,23 @@ async def searchJikanAnime(title: str) -> dict:
     jikanParam = {
         'limit': '10'
     }
-    jikanData = await jikan.search('anime', f'{title}', parameters=jikanParam)
-    jikanData = jikanData['data']
-    return jikanData
+    try:
+        jikanData = await jikan.search('anime', f'{title}', parameters=jikanParam)
+        jikanData = jikanData['data']
+        return jikanData
+    except Exception as e:
+        raise Exception(e)
 
 
 async def getJikanAnime(mal_id: int) -> dict:
     """Get anime data from MyAnimeList via Jikan"""
     id = mal_id
-    jikanData = await jikan.anime(id)
-    jikanData = jikanData['data']
-    return jikanData
+    try:
+        jikanData = await jikan.anime(id)
+        jikanData = jikanData['data']
+        return jikanData
+    except Exception as e:
+        raise Exception(e)
 
 
 async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, animeApi: dict = None) -> interactions.Embed:
