@@ -2268,8 +2268,12 @@ async def random(ctx: interactions.CommandContext):
                 aaDict = None
         dcEm = await generateMal(ani_id, nsfw_bool, aaDict, animeApi=aniApi)
     except Exception as e:
-        sendMessages = returnException(e)
-        dcEm = None
+        dcEm = interactions.Embed(
+            color=0xff0000,
+            title="Error",
+            description=returnException(e)
+        )
+        sendMessages = ""
         trailer = None
 
     await ctx.send(sendMessages, embeds=dcEm, components=trailer)
@@ -2309,13 +2313,15 @@ async def info(ctx: interactions.CommandContext, id: int):
             except:
                 aaDict = None
         dcEm = await generateMal(id, nsfw_bool, aaDict, animeApi=aniApi)
-        sendMessages = None
     except Exception as e:
-        sendMessages = returnException(e)
-        dcEm = None
+        dcEm = interactions.Embed(
+            color=0xff0000,
+            title="Error",
+            description=returnException(e)
+        )
         trailer = None
 
-    await ctx.send(sendMessages, embeds=dcEm, components=trailer)
+    await ctx.send("", embeds=dcEm, components=trailer)
 
 
 @anime.subcommand(
@@ -3071,13 +3077,15 @@ async def search(ctx: interactions.CommandContext, title: str):
         dcEm = await generateAnilist(alm=rawData[0], isNsfw=nsfw_bool, bypassEcchi=bypass)
         if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
             trailer = generateTrailer(data=rawData[0]['trailer'])
-        sendMessages = None
     except Exception as e:
-        sendMessages = returnException(e)
-        dcEm = None
+        dcEm = interactions.Embed(
+            color=0xff0000,
+            title="Error",
+            description=returnException(e)
+        )
         trailer = None
 
-    await ctx.send(sendMessages, embeds=dcEm, components=trailer)
+    await ctx.send("", embeds=dcEm, components=trailer)
 
 
 @manga.subcommand(
@@ -3110,13 +3118,15 @@ async def info(ctx: interactions.CommandContext, id: int):
         dcEm = await generateAnilist(alm=rawData[0], isNsfw=nsfw_bool, bypassEcchi=bypass)
         if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
             trailer = generateTrailer(data=rawData[0]['trailer'])
-        sendMessages = None
     except Exception as e:
-        sendMessages = returnException(e)
-        dcEm = None
+        dcEm = interactions.Embed(
+            color=0xff0000,
+            title="Error",
+            description=returnException(e)
+        )
         trailer = None
 
-    await ctx.send(sendMessages, embeds=dcEm, components=trailer)
+    await ctx.send("", embeds=dcEm, components=trailer)
 
 
 @bot.command(
@@ -3302,12 +3312,14 @@ Total scrobbles: {ud['playcount']}
             ),
             fields=tracks
         )
-        sendMessages = None
     except Exception as e:
-        sendMessages = returnException(e)
-        dcEm = None
+        dcEm = interactions.Embed(
+            color=0xff0000,
+            title="Error",
+            description=returnException(e)
+        )
 
-    await ctx.edit(sendMessages, embeds=dcEm)
+    await ctx.edit("", embeds=dcEm)
 
 
 @bot.command(
