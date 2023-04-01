@@ -1321,15 +1321,66 @@ async def manga(ctx: interactions.CommandContext):
     ]
 )
 async def search(ctx: interactions.CommandContext, title: str):
-    """Search for a manga!"""
+    """Search manga using the title."""
+    await ctx.defer()
+    try:
+        results = await searchAniList(name=title, isAnime=False)
+        f = []
+        so = []
+        for r in results:
+            # only capitalize the first letter of the format and status
+            r["format"] = str(r["format"]).capitalize()
+            r["status"] = str(r["status"]).replace('_', ' ').capitalize()
+            f += [
+                interactions.EmbedField(
+                    name=r["title"]["romaji"],
+                    value=f"""*{r['title']['native']}, {r['format']}, {r['status']}*""",
+                    inline=False
+                )
+            ]
+            so += [
+                interactions.SelectOption(
+                    label=r["title"]["romaji"],
+                    value=r["id"],
+                    description=f"""{r['format']}, {r['status']}""",
+                )
+            ]
+        dcEm = interactions.Embed(
+            author=interactions.EmbedAuthor(
+                name="AniList",
+                url="https://anilist.co/",
+                icon_url="https://anilist.co/img/icons/android-chrome-192x192.png"
+            ),
+            thumbnail=interactions.EmbedImageStruct(
+                url="https://anilist.co/img/icons/android-chrome-192x192.png"
+            ),
+            color=0x2F80ED,
+            title="Search Results",
+            description=f"Found **{len(results)} results** for `{title}`, please select by choosing rigth option in the dropdown below.",
+            fields=f
+        )
+        com = [
+            interactions.SelectMenu(
+                options=so,
+                custom_id="anilist_search",
+                placeholder="Select a manga to get more information"
+            )
+        ]
+        await ctx.send("", embeds=dcEm, components=com)
+        await asyncio.sleep(90)
+        await ctx.edit(MESSAGE_SELECT_TIMEOUT, embeds=dcEm, components=[])
+    except Exception as e:
+        dcEm = exceptionsToEmbed(returnException(e))
+        await ctx.send("", embeds=dcEm, components=[])
+
+@bot.component("anilist_search")
+async def anilist_search(ctx: interactions.ComponentContext, choices: list[str]):
     await ctx.defer()
     await ctx.get_channel()
     trailer = None
-    # get the manga
     try:
-        rawData = await searchAniList(name=title, media_id=None, isAnime=False)
+        rawData = await getAniList(media_id=int(choices[0]), isAnime=False)
         bypass = await bypassAniListEcchiTag(alm=rawData[0])
-        # check if command invoked in a forum thread
         if ctx.channel.type == 11 or ctx.channel.type == 12:
             # get parent channel id
             prId = ctx.channel.parent_id
@@ -1342,7 +1393,6 @@ async def search(ctx: interactions.CommandContext, title: str):
             trailer = generateTrailer(data=rawData[0]['trailer'])
     except Exception as e:
         dcEm = exceptionsToEmbed(returnException(e))
-        trailer = None
 
     await ctx.send("", embeds=dcEm, components=trailer)
 
