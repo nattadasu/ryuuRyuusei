@@ -1499,7 +1499,7 @@ async def support(ctx: interactions.CommandContext):
             description="Maximum scrobbled tracks to show",
             type=interactions.OptionType.INTEGER,
             min_value=0,
-            max_value=15,
+            max_value=21,
             required=False
         )
     ]
