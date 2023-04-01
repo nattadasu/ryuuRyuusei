@@ -577,7 +577,7 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
     if len(tgs) is None:
         tgs = "*None*"
     elif len(tgs) > 0:
-        tgs = sorted(set(tgs))
+        tgs = sorted(set(tgs), key=str.casefold)
         tgs = ", ".join(tgs)
     else:
         tgs = "*None*"
@@ -717,7 +717,7 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
     ogt = [rot, nat, ent]
     syns = [x for x in syns if x not in ogt]
     # sort
-    syns = sorted(set(syns))
+    syns = sorted(set(syns), key=str.casefold)
     synsl = len(syns)
 
     if synsl > 8:
@@ -869,7 +869,7 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
     ogt = [rot, ent, nat]
     syns = [x for x in syns if x not in ogt]
     # sort
-    syns = sorted(set(syns))
+    syns = sorted(set(syns), key=str.casefold)
     synsl = len(syns)
 
     if synsl > 8:
@@ -989,11 +989,11 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
     if (len(tgs) is None) or (len(tgs) == 0):
         tgs = "*None*"
     elif len(tgs) > 20:
-        tgss = sorted(set(tgs[:20]))
+        tgss = sorted(set(tgs[:20]), key=str.casefold)
         tgs = ", ".join(tgss)
         tgs += f", *and {len(tgss) - 20} more*"
     else:
-        tgss = sorted(set(tgs))
+        tgss = sorted(set(tgs), key=str.casefold)
         tgs = ", ".join(tgss)
 
     stat = str(alm['status'])
