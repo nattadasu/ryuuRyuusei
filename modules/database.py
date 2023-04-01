@@ -1,7 +1,7 @@
 from modules.commons import *
 from modules.myanimelist import *
 
-def dropUser(discordId: int, actor: str) -> bool:
+def dropUser(discordId: int) -> bool:
     """Drop a user from the database"""
     df = pd.read_csv(database, sep="\t")
     df_drop = df.drop(df.query(f'discordId == {discordId}').index)
