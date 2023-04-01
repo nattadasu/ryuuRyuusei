@@ -2027,7 +2027,7 @@ async def unregister(ctx: interactions.CommandContext):
 )
 async def about(ctx: interactions.CommandContext):
     ownerUserUrl = f'https://discord.com/users/{AUTHOR_USERID}'
-    messages = f'''<@!{BOT_CLIENT_ID}> is a bot personally created and used by [nattadasu](<https://nattadasu.my.id>) with the initial purpose as for member verification and MAL profile integration bot, which is distributed under [AGPL 3.0](<https://www.gnu.org/licenses/agpl-3.0.en.html>) license. ([Source Code](<https://github.com/nattadasu/ryuuRyuusei>), source will be older than production)
+    messages = f'''<@!{BOT_CLIENT_ID}> is a bot personally created and used by [nattadasu](<https://nattadasu.my.id>) with the initial purpose as for member verification and MAL profile integration bot, which is distributed under [AGPL 3.0](<https://www.gnu.org/licenses/agpl-3.0.en.html>) license. ([Source Code](<https://github.com/nattadasu/ryuuRyuusei>), source code in repository may be older than main production maintained by nattadasu for)
 
 However, due to how advanced the bot in querying information regarding user, anime on MAL, and manga on AniList, invite link is available for anyone who's interested to invite the bot (see `/invite`).
 
@@ -3099,7 +3099,7 @@ async def search(ctx: interactions.CommandContext, title: str):
     ]
 )
 async def info(ctx: interactions.CommandContext, id: int):
-    """Get manga information from AniList using AniList id"""
+    """Get manga information from AniList using AniList ID"""
     await ctx.defer()
     await ctx.get_channel()
     trailer = None
