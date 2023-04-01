@@ -526,8 +526,7 @@ This is required for the bot to function as expected, with the following service
 Discord, Last.FM, MAL Heatmap, MyAnimeList
 
 __We cached data for limited features of the bot__:
-Used to reduce the amount of API calls to 3rd party services, and to reduce the amount of time to process the data and no information tied to you. This is required for the bot to function as expected, with the following services:
-AniList, AnimeAPI, MyAnimeList, SIMKL, The Movie Database (TMDB), Trakt
+Used to reduce the amount of API calls to 3rd party services, and to reduce the amount of time to process the data and no information tied to you.
 
 __We do not collect, however, following data__:
 Any logs of messages sent by system about you under any circumstances. Logging of messages only occurs when you invoked general commands (such as `/help`, `/anime`, `/manga`, etc.) and during the bot's development process. Maintenance will announced in the Bot status channel in Support Server and Bot Activity.

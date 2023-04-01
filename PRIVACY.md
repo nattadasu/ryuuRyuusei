@@ -5,7 +5,7 @@
 |                  |                |
 | ---------------- | -------------- |
 | **Effective**    | April 1, 2023  |
-| **Last Updated** | March 17, 2023 |
+| **Last Updated** | April 1, 2023  |
 
 Greetings, and welcome to Ryuuzaki Ryuusei's Privacy Policy. Through this
 document, we aim to provide you with an explanation of how your personal
@@ -49,15 +49,6 @@ yourself:
   * [Last.FM][lastfm]: Last.FM Username
   * [MAL-Heatmap][malh]: MyAnimeList Username
   * [Discord][discord]: Message Author Identifier
-* **We store information for caching**. No information is being transmitted
-  about you than bot's IP address and/or query request. We used the following
-  services for caching:
-  * [AniList][al]: Title information
-  * [AnimeAPI][aniapi]: ID relation mapping
-  * [MyAnimeList][mal] (via [Jikan][jikan]): Title information
-  * [SIMKL][simkl]: Title information
-  * [The Movie Database][tmdb]: Title information
-  * [Trakt][trakt]: Title information
 * **We do not collect, store, or use any logs of messages sent by system about
   you under any circumstances**. Logging of messages only occurs when you
   invoked general commands (such as `/help`, `/anime`, `/manga`, etc.) and
@@ -225,23 +216,8 @@ used to provide the following functionality:
 Ryuuzaki Ryuusei stores information for the purpose of caching, which is
 intended to reduce the number of requests made to external services and decrease
 the time it takes to retrieve information. This function only caches information
-that is related to a Title, and does not transmit any information about you
-other than the bot's IP address and/or query request.
-
-The data that is stored is used exclusively to enable the following
-functionality:
-
-* `/anime` commands group
-* `/manga` commands group
-
-The services used to perform data caching include:
-
-* [AniList][al]: Title information
-* [AnimeAPI][aniapi]: ID relation mapping
-* [MyAnimeList][mal] (via [Jikan][jikan]): Title information
-* [SIMKL][simkl]: Title information
-* [The Movie Database][tmdb]: Title information
-* [Trakt][trakt]: Title information
+that is related to a Title, and does not transmit and store any information
+about you other than the bot's IP address and/or query request and responses.
 
 ## Data Logging
 
