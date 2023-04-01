@@ -11,8 +11,9 @@ from modules.database import *
 from modules.kitsu import *
 from modules.myanimelist import *
 from modules.nekomimidb import *
-from modules.rawg import *
 from modules.platforms import *
+from modules.rawg import *
+from modules.relations import *
 from modules.simkl import *
 from modules.trakt import *
 
@@ -1036,120 +1037,6 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
 
         relsEm = []
         # Get the relations
-        if smk['allcin'] is not None:
-            relsEm += [interactions.EmbedField(
-                name="<:allcinema:1079493870326403123> AllCinema",
-                value=f"[`{smk['allcin']}`](<https://www.allcinema.net/prog/show_c.php?num_c={smk['allcin']}>)",
-                inline=True
-            )]
-        if (aa['anidb'] is not None) and (platform != 'anidb'):
-            relsEm += [interactions.EmbedField(
-                name="<:aniDb:1073439145067806801> AniDB",
-                value=f"[`{aa['anidb']}`](<https://anidb.net/anime/{aa['anidb']}>)",
-                inline=True
-            )]
-        if (aa['anilist'] is not None) and (platform != 'anilist'):
-            relsEm += [interactions.EmbedField(
-                name="<:aniList:1073445700689465374> AniList",
-                value=f"[`{aa['anilist']}`](<https://anilist.co/anime/{aa['anilist']}>)",
-                inline=True
-            )]
-        if smk['ann'] is not None:
-            relsEm += [interactions.EmbedField(
-                name="<:ann:1079377192951230534> Anime News Network",
-                value=f"[`{smk['ann']}`](<https://www.animenewsnetwork.com/encyclopedia/anime.php?id={smk['ann']}>)",
-                inline=True
-            )]
-        if (aa['animeplanet'] is not None) and (platform != 'animeplanet'):
-            relsEm += [interactions.EmbedField(
-                name="<:animePlanet:1073446927447891998> Anime-Planet",
-                value=f"[`{aa['animeplanet']}`](<https://www.anime-planet.com/anime/{aa['animeplanet']}>)",
-                inline=True
-            )]
-        if (aa['anisearch'] is not None) and (platform != 'anisearch'):
-            relsEm += [interactions.EmbedField(
-                name="<:aniSearch:1073439148100300810> aniSearch",
-                value=f"[`{aa['anisearch']}`](<https://anisearch.com/anime/{aa['anisearch']}>)",
-                inline=True
-            )]
-        if (aa['annict'] is not None) and (platform != 'annict'):
-            relsEm += [interactions.EmbedField(
-                name="<:annict:1088801941469012050> Annict",
-                value=f"[`{aa['annict']}`](<https://annict.com/works/{aa['annict']}>) ([En](<https://en.annict.com/works/{aa['annict']}>))",
-                inline=True
-            )]
-        if (imdbId is not None) and (platform != "imdb"):
-            relsEm += [interactions.EmbedField(
-                name="<:IMDb:1079376998880784464> IMDb",
-                value=f"[`{imdbId}`](<https://www.imdb.com/title/{imdbId}>)",
-                inline=True
-            )]
-        if (aa['kaize'] is not None) and (platform != 'kaize'):
-            relsEm += [interactions.EmbedField(
-                name="<:kaize:1073441859910774784> Kaize",
-                value=f"[`{aa['kaize']}`](<https://kaize.io/anime/{aa['kaize']}>)",
-                inline=True
-            )]
-        if (aa['kitsu'] is not None) and (platform != 'kitsu'):
-            relsEm += [interactions.EmbedField(
-                name="<:kitsu:1073439152462368950> Kitsu",
-                value=f"[`{aa['kitsu']}`](<https://kitsu.io/anime/{aa['kitsu']}>)",
-                inline=True
-            )]
-        if (aa['livechart'] is not None) and (platform != 'livechart'):
-            relsEm += [interactions.EmbedField(
-                name="<:liveChart:1073439158883844106> LiveChart",
-                value=f"[`{aa['livechart']}`](<https://livechart.me/anime/{aa['livechart']}>)",
-                inline=True
-            )]
-        if (aa['myanimelist'] is not None) and (platform != 'myanimelist'):
-            relsEm += [interactions.EmbedField(
-                name="<:myAnimeList:1073442204921643048> MyAnimeList",
-                value=f"[`{aa['myanimelist']}`](<https://myanimelist.net/anime/{aa['myanimelist']}>)",
-                inline=True
-            )]
-        if (aa['notify'] is not None) and (platform != 'notify'):
-            relsEm += [interactions.EmbedField(
-                name="<:notifyMoe:1073439161194905690> Notify",
-                value=f"[`{aa['notify']}`](<https://notify.moe/anime/{aa['notify']}>)",
-                inline=True
-            )]
-        if (aa['shikimori'] is not None) and (platform != 'shikimori'):
-            relsEm += [interactions.EmbedField(
-                name="<:shikimori:1073441855645155468> Shikimori",
-                value=f"[`{aa['shikimori']}`](<https://shikimori.one/animes/{aa['shikimori']}>)",
-                inline=True
-            )]
-        if (aa['shoboi'] is not None) and (platform != 'shoboi'):
-            relsEm += [interactions.EmbedField(
-                name="<:shoboi:1088801950751015005> Shoboi Calendar",
-                value=f"[`{aa['shoboi']}`](<https://cal.syoboi.jp/tid/{aa['shoboi']}>)",
-                inline=True
-            )]
-        if (aa['otakotaku'] is not None) and (platform != 'otakotaku'):
-            relsEm += [interactions.EmbedField(
-                name="<:otakOtaku:1088801946313429013> Otak Otaku",
-                value=f"[`{aa['otakotaku']}`](<https://otakotaku.com/anime/view/{aa['otakotaku']}>)",
-                inline=True
-            )]
-        if (aa['silveryasha'] is not None) and (platform != 'silveryasha'):
-            relsEm += [interactions.EmbedField(
-                name="<:silverYasha:1079380182059733052> Silver Yasha",
-                value=f"[`{aa['silveryasha']}`](<https://db.silveryasha.web.id/anime/{aa['silveryasha']}>)",
-                inline=True
-            )]
-        if (simId != 0) and (platform != 'simkl'):
-            relsEm += [interactions.EmbedField(
-                name="<:simkl:1073630754275348631> SIMKL",
-                value=f"[`{simId}`](<https://simkl.com/{smk['type']}/{simId}>)",
-                inline=True
-            )]
-        if (traktId is not None) and (platform != "trakt"):
-            relsEm += [interactions.EmbedField(
-                name=f"<:trakt:1081612822175305788> Trakt",
-                value=f"[`{traktId}`](<https://trakt.tv/{trkType}/{traktId}>)",
-                inline=True
-            )]
         try:
             if traktId is not None:
                 if re.search(r"^shows?$", trkType):
@@ -1168,30 +1055,49 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
         except:
             tvtyp = "series"
             tmtyp = "tv"
-        if (tmdbId is not None) and (platform != "tmdb"):
-            if trkSeason is not None:
-                tmdbId = f"{tmdbId}/season/{trkSeason}"
-            relsEm += [interactions.EmbedField(
-                name="<:tmdb:1079379319920529418> The Movie Database",
-                value=f"[`{tmdbId}`](<https://www.themoviedb.org/{tmtyp}/{tmdbId}>)",
-                inline=True
-            )]
-        if (smk['tvdb'] is not None) and (platform != "tvdb"):
-            relsEm += [interactions.EmbedField(
-                name="<:tvdb:1079378495064510504> The TVDB",
-                value=f"[`{smk['tvdb']}`](<https://www.thetvdb.com/?tab={tvtyp}&id={smk['tvdb']}>)",
-                inline=True
-            )]
-        elif (smk['tvdbslug'] is not None) and (platform != "tvdb"):
-            if trkSeason is not None:
-                tvdbId = f"{smk['tvdbslug']}/seasons/official/{trkSeason}"
-            else:
-                tvdbId = smk['tvdbslug']
-            relsEm += [interactions.EmbedField(
-                name="<:tvdb:1079378495064510504> The TVDB",
-                value=f"[`{tvdbId}`](<https://www.thetvdb.com/{tvtyp}/{tvdbId}>)",
-                inline=True
-            )]
+        isSlug = False
+
+        if trkSeason is not None:
+            if smk['tvdb'] is not None:
+                tvdbId = 'https://www.thetvdb.com/' + f"?tab={tvtyp}&id={smk['tvdb']}"
+            elif smk['tvdbslug'] is not None:
+                tvdbId = 'https://www.thetvdb.com/' + f"{tvtyp}/{smk['tvdbslug']}/seasons/official/{trkSeason}"
+                isSlug=True
+            tmdbId = f"{tmtyp}/{tmdbId}/season/{trkSeason}"
+        else:
+            if smk['tvdb'] is not None:
+                tvdbId = 'https://www.thetvdb.com/' + f"?tab={tvtyp}&id={smk['tvdb']}"
+            elif smk['tvdbslug'] is not None:
+                tvdbId = 'https://www.thetvdb.com/' + tvtyp + '/' + smk['tvdbslug']
+                isSlug=True
+            tmdbId = tmtyp + '/' + str(tmdbId)
+
+        relsEm = platformsToFields(
+            currPlatform=platform,
+            allcin=smk['allcin'],
+            anidb=aa['anidb'],
+            anilist=aa['anilist'],
+            ann=smk['ann'],
+            animeplanet=aa['animeplanet'],
+            anisearch=aa['anisearch'],
+            annict=aa['annict'],
+            imdb=imdbId,
+            kaize=aa['kaize'],
+            kitsu=aa['kitsu'],
+            livechart=aa['livechart'],
+            myanimelist=aa['myanimelist'],
+            notify=aa['notify'],
+            otakotaku=aa['otakotaku'],
+            shikimori=aa['shikimori'],
+            shoboi=aa['shoboi'],
+            silveryasha=aa['silveryasha'],
+            simkl=simId,
+            trakt=traktId,
+            tvdb=tvdbId,
+            tmdb=tmdbId,
+            tvtyp=tvtyp,
+            isSlug=isSlug,
+        )
 
         if (platform == 'tvdb') and (re.match(r"^[\d]+$", id)):
             tvdbId = f"https://www.thetvdb.com/?tab={tvtyp}&id={id}"

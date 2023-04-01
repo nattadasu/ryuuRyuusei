@@ -20,10 +20,12 @@ def getPlatformColor(pf: str) -> hex:
         "twitter": 0x15202B,
         "weibo": 0xE6162D,
         # Media tracking
+        "allcin": 0xEC0A0A,
         "anidb": 0x2A2F46,
         "anilist": 0x2F80ED,
         "animeplanet": 0xE75448,
         "anisearch": 0xFDA37C,
+        "ann": 0x2D50A7,
         "annict": 0xF65B73,
         "imdb": 0xF5C518,
         "kaize": 0x692FC2,
@@ -41,6 +43,7 @@ def getPlatformColor(pf: str) -> hex:
         "tmdb": 0x09B4E2,
         "trakt": 0xED1C24,
         "tvdb": 0x6CD491,
+        "tvtime": 0xFBD737,
     }
 
     return pfDict.get(pf, 0x000000)
@@ -66,10 +69,12 @@ def getPlatformName(pf: str) -> str:
         "twitter": "Twitter",
         "weibo": "Weibo",
         # Media tracking
+        "allcin": "AllCinema",
         "anidb": "AniDB",
         "anilist": "AniList",
         "animeplanet": "Anime-Planet",
         "anisearch": "AniSearch",
+        "ann": "Anime News Network",
         "annict": "Annict (アニクト)",
         "imdb": "IMDb",
         "kaize": "Kaize",
@@ -80,12 +85,13 @@ def getPlatformName(pf: str) -> str:
         "notify": "Notify.moe",
         "otakotaku": "Otak Otaku",
         "shikimori": "Shikimori (Шикимори)",
+        "shoboi": "Shoboi Calendar (しょぼいカレンダー)",
         "silveryasha": "SilverYasha",
         "simkl": "SIMKL",
-        "shoboi": "Shoboi Calendar (しょぼいカレンダー)",
         "tmdb": "The Movie Database",
         "trakt": "Trakt",
         "tvdb": "The TVDB",
+        "tvtime": "TV Time",
     }
 
     return pfDict.get(pf, "Unknown")
@@ -150,6 +156,15 @@ def mediaIdToPlatform(media_id: str, platform: str) -> dict:
         'tvdb': {
             'uid': media_id,
             'emoid': '1079378495064510504'},
+        'allcin': {
+            'uid': f"https://www.allcinema.net/prog/show_c.php?num_c={media_id}",
+            'emoid': '1079493870326403123'},
+        'ann': {
+            'uid': f"https://www.animenewsnetwork.com/encyclopedia/anime.php?id={media_id}",
+            'emoid': '1079377192951230534'},
+        'tvtime': {
+            'uid': f"https://tvtime.com/en/{media_id}",
+            'emoid': '1091550459023605790'},
     }
 
     data = platform_dict[platform]
