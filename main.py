@@ -570,6 +570,8 @@ async def search(ctx: interactions.CommandContext, title: str = None):
             raise Exception()
         else:
             for a in alData:
+                a["format"] = str(a["format"]).capitalize()
+                a["status"] = str(a["status"]).replace('_', ' ').capitalize()
                 f += [
                     interactions.EmbedField(
                         name=f"{a['title']['romaji']}",
@@ -698,12 +700,12 @@ async def random(ctx: interactions.CommandContext):
         sendMessages = None
         aniApi = await getNatsuAniApi(ani_id, platform="myanimelist")
         if aniApi['anilist'] is not None:
-            aaDict = await searchAniList(media_id=aniApi['anilist'], isAnime=True)
+            aaDict = await getAniList(media_id=aniApi['anilist'], isAnime=True)
             if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
                 trailer = generateTrailer(data=aaDict[0]['trailer'])
         else:
             try:
-                aaDict = await searchAniList(name=aniApi['title'], media_id=None, isAnime=True)
+                aaDict = await getAniList(name=aniApi['title'], media_id=None, isAnime=True)
                 if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
                     trailer = generateTrailer(data=aaDict[0]['trailer'])
             except:
@@ -740,12 +742,12 @@ async def info(ctx: interactions.CommandContext, id: int):
             nsfw_bool = ctx.channel.nsfw
         aniApi = await getNatsuAniApi(id=id, platform='myanimelist')
         if aniApi['anilist'] is not None:
-            aaDict = await searchAniList(media_id=aniApi['anilist'], isAnime=True)
+            aaDict = await getAniList(media_id=aniApi['anilist'], isAnime=True)
             if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
                 trailer = generateTrailer(data=aaDict[0]['trailer'])
         else:
             try:
-                aaDict = await searchAniList(name=aniApi['title'], media_id=None, isAnime=True)
+                aaDict = await getAniList(name=aniApi['title'], media_id=None, isAnime=True)
                 if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
                     trailer = generateTrailer(data=aaDict[0]['trailer'])
             except:
@@ -1414,7 +1416,7 @@ async def info(ctx: interactions.CommandContext, id: int):
     trailer = None
     # get the manga
     try:
-        rawData = await searchAniList(name=None, media_id=id, isAnime=False)
+        rawData = await getAniList(media_id=id, isAnime=False)
         bypass = await bypassAniListEcchiTag(alm=rawData[0])
         # check if command invoked in a forum thread
         if ctx.channel.type == 11 or ctx.channel.type == 12:
