@@ -157,7 +157,7 @@ There's something wrong with the bot while processing your request.
 
 Error is: {error}"""
 
-def exeptionsToEmbed(error: str) -> interactions.Embed:
+def exceptionsToEmbed(error: str) -> interactions.Embed:
     """Format exception message to a embed"""
     embed = interactions.Embed(
             color=0xff0000,
