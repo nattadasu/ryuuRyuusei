@@ -363,108 +363,6 @@ async def profile(ctx: interactions.CommandContext, user: int = None, mal_userna
 
     userRegistered = f"{EMOJI_DOUBTING} **You are looking at your own profile!**\nYou can also use </profile:1072608801334755529> without any arguments to get your own profile!"
 
-    def generate_embed(uname: str, uid: int, malAnime: dict, malManga: dict, joined: int, bday: int = None, extend: bool = False) -> interactions.Embed:
-        """Generate embed for profile command"""
-        bbd = ""
-        if bday is not None:
-            # convert bday from timestamp back to datetime
-            bdayRaw = datetime.datetime.fromtimestamp(int(bday))
-            today = datetime.datetime.now(tz=datetime.timezone.utc)
-            currYear = today.year
-            upcoming = bdayRaw.replace(year=currYear)
-            if int(upcoming.timestamp()) < int(today.timestamp()):
-                upcoming = upcoming.replace(year=currYear + 1)
-            bbd = f"\nBirthday: <t:{int(bday)}:D> <t:{int(bday)}:R> (next birthday <t:{int(upcoming.timestamp())}:R>)"
-        desc = f"[Anime List](https://myanimelist.net/animelist/{uname}) | [Manga List](https://myanimelist.net/mangalist/{uname})"
-        fds = [
-            interactions.EmbedField(
-                name="Profile",
-                value=f"""User ID: `{malProfile['mal_id']}`
-Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
-                inline=False
-            )
-        ]
-        img = None
-        foo = "Powered by MyAnimeList (via Jikan). Data may be inaccurate due to Jikan caching. To see more information, append \"extended: True\" argument!"
-        if extend is True:
-            desc += f"\nSee also on 3rd party sites: [MAL Badges](https://mal-badges.com/users/{uname}), [anime.plus malgraph](https://anime.plus/{uname})"
-            fds += [
-                interactions.EmbedField(
-                    name="Anime Stats",
-                    value=f"""• Days watched: {malAnime['days_watched']}
-• Mean score: {malAnime['mean_score']}
-• Total entries: {malAnime['total_entries']}
-👀 {malAnime['watching']} | ✅ {malAnime['completed']} | ⏸️ {malAnime['on_hold']} | 🗑️ {malAnime['dropped']} | ⏰ {malAnime['plan_to_watch']}
-*Episodes watched: {malAnime['episodes_watched']}*""",
-                    inline=True
-                ),
-                interactions.EmbedField(
-                    name="Manga Stats",
-                    value=f"""• "Days" read: {malManga['days_read']}
-• Mean score: {malManga['mean_score']}
-• Total entries: {malManga['total_entries']}
-👀 {malManga['reading']} | ✅ {malManga['completed']} | ⏸️ {malManga['on_hold']} | 🗑️ {malManga['dropped']} | ⏰ {malManga['plan_to_read']}
-*Chapters read: {malManga['chapters_read']}*
-*Volumes read: {malManga['volumes_read']}*""",
-                    inline=True
-                )
-            ]
-            img = interactions.EmbedImageStruct(
-                url=f"https://malheatmap.com/users/{uname}/signature"
-            )
-            foo = "Powered by MyAnimeList (via Jikan) and MAL Heatmap. Data may be inaccurate due to Jikan caching."
-        else:
-            desc += f"\nTotal Anime: {malAnime['total_entries']} (⭐ {malAnime['mean_score']}) | Total Manga: {malManga['total_entries']} (⭐ {malManga['mean_score']})"
-
-        if re.search(r"s$", uname):
-            ttl = f"{uname}' MAL Profile"
-        else:
-            ttl = f"{uname}'s MAL Profile"
-
-        embed = interactions.Embed(
-            author=interactions.EmbedAuthor(
-                name="MyAnimeList Profile",
-                url="https://myanimelist.net",
-                icon_url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"
-            ),
-            title=ttl,
-            url=f"https://myanimelist.net/profile/{uname}",
-            description=desc,
-            thumbnail=interactions.EmbedImageStruct(
-                url=f"https://cdn.myanimelist.net/images/userimages/{uid}.jpg"
-            ),
-            color=0x2E51A2,
-            fields=fds,
-            image=img,
-            footer=interactions.EmbedFooter(
-                text=foo
-            )
-        )
-        return embed
-
-    def definejikanException(errmsg: str) -> interactions.Embed:
-        """Define what HTTP error AioJikan/Jikan/MyAnimeList threw"""
-        e = str(errmsg).split('=')
-        etype = int(str(e[1]).split(',')[0])
-        errm = e[3].strip()
-        if len(e) >= 4:
-            for i in range(4, len(e)):
-                errm += f"={e[i]}"
-        if etype == 403:
-            em = f"**Jikan unable to reach MyAnimeList at the moment.**\nPlease try again in 3 seconds."
-        elif etype == 404:
-            em = f"**I couldn't find the user on MAL.**\nCheck the spelling or well, maybe they don't exist? 🤔"
-        elif etype == 408:
-            em = f"**Jikan had a timeout while fetching your data**\nPlease try again in 3 seconds."
-        else:
-            em = f"HTTP {etype}\n{errm}"
-        dcEm = interactions.Embed(
-            title="Error",
-            description=returnException(em),
-            color=0xFF0000
-        )
-        return dcEm
-
     if (user is not None) and (mal_username is not None):
         try:
             raise KeyError
@@ -506,8 +404,7 @@ Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
                     dtJoin = int(datetime.datetime.strptime(
                         dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
 
-                    dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man,
-                                          joined=dtJoin, bday=bth, extend=extended)
+                    dcEm = generateProfile(uname=mun, uid=mid, malAnime=ani, malManga=man, joined=dtJoin, bday=bth, extend=extended)
                     if user is None:
                         sendMessages = ""
                     elif ctx.author.id == uid:
@@ -564,8 +461,7 @@ Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
                 dtJoin = int(datetime.datetime.strptime(
                     dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
 
-                dcEm = generate_embed(uname=mun, uid=mid, malAnime=ani, malManga=man,
-                                      joined=dtJoin, bday=bth, extend=extended)
+                dcEm = generateProfile(uname=mun, uid=mid, malAnime=ani, malManga=man, joined=dtJoin, bday=bth, extend=extended)
             except Exception as e:
                 sendMessages = ""
                 dcEm = definejikanException(e)
