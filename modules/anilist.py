@@ -226,12 +226,17 @@ async def generateAnilist(alm: dict, isNsfw: bool = False, bypassEcchi: bool = F
 
         if len(str(cynoin)) <= 150:
             daff = cynoin
-            if cynl >= 3:
+            if cynl >= 2:
                 daff = cynoin
-                cynoAdd = cyno[2]
+                for i in range(1, cynl + 1):
+                    if (len(str(cyno[i])) > 0) or (cyno[i] != ""):
+                        cynoAdd = cyno[i]
+                        cynoAdd = sanitizeMarkdown(cynoAdd)
+                        break
                 cyno = trimCyno(daff)
-                cyno += "\n> \n> "
-                cyno += trimCyno(cynoAdd)
+                if re.match(r'^(\(|\[)Source', cynoAdd) != None:
+                    cyno += "\n> \n> "
+                    cyno += trimCyno(cynoAdd)
         elif len(str(cynoin)) >= 1000:
             cyno = trimCyno(cynoin)
         else:
