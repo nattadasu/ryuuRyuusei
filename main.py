@@ -563,14 +563,6 @@ async def export_data(ctx: interactions.CommandContext):
                     header = row
                     continue
                 if row[0] == str(userId):
-                    row[0] = int(row[0])
-                    row[2] = int(row[2])
-                    row[4] = int(row[4])
-                    row[5] = int(row[5])
-                    row[6] = int(row[6])
-                    row[7] = int(row[7])
-                    row[8] = int(row[8])
-                    row[9] = str(row[9])
                     userRow = dict(zip(header, row))
                     userRow = json.dumps(userRow)
                 break
