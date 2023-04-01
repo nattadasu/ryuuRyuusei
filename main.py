@@ -339,11 +339,7 @@ Joined to {ctx.guild.name}: <t:{userJoined}:F>"""
         )
     except Exception as e:
         sendMessages = ""
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(e)
-        )
+        dcEm = exeptionsToEmbed(returnException(e))
 
     await ctx.send(sendMessages, embeds=dcEm)
 
@@ -827,19 +823,11 @@ async def search(ctx: interactions.CommandContext, title: str = None):
                 )
             ]
         except Exception as e:
-            dcEm = interactions.Embed(
-                color=0xff0000,
-                title="Error",
-                description=returnException(e)
-            )
+            dcEm = exeptionsToEmbed(returnException(e))
             com = []
     else:
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(f"""We couldn't able to find any anime with that title (`{title}`). Please check the spelling!
+        dcEm = exeptionsToEmbed(error=f"""We couldn't able to find any anime with that title (`{title}`). Please check the spelling!
 **Pro tip**: Use Native title to get most accurate result.... that if you know how to type in such language.""")
-        )
         com = []
 
     await ctx.edit("", embeds=dcEm, components=com)
@@ -870,11 +858,7 @@ async def mal_search(ctx: interactions.ComponentContext, choices: list[str]):
                 trailer = []
         dcEm = await generateMal(ani_id, nsfw_bool, alDict=alData, animeApi=aniApi)
     except Exception as e:
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(e)
-        )
+        dcEm = exeptionsToEmbed(returnException(e))
         trailer = []
     await ctx.send("", embeds=dcEm, components=trailer)
 
@@ -925,11 +909,7 @@ async def random(ctx: interactions.CommandContext):
                 aaDict = None
         dcEm = await generateMal(ani_id, nsfw_bool, aaDict, animeApi=aniApi)
     except Exception as e:
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(e)
-        )
+        dcEm = exeptionsToEmbed(returnException(e))
         sendMessages = ""
         trailer = None
 
@@ -971,11 +951,7 @@ async def info(ctx: interactions.CommandContext, id: int):
                 aaDict = None
         dcEm = await generateMal(id, nsfw_bool, aaDict, animeApi=aniApi)
     except Exception as e:
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(e)
-        )
+        dcEm = exeptionsToEmbed(returnException(e))
         trailer = None
 
     await ctx.send("", embeds=dcEm, components=trailer)
@@ -1553,12 +1529,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
         else:
             e = e
         e = f"""While getting the relations for `{platform}` with id `{id}`, we got error message: {e}"""
-        sendMessages = ""
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(e)
-        )
+        dcEm = exeptionsToEmbed(returnException(e))
 
         await ctx.edit("", embeds=dcEm)
 
@@ -1735,11 +1706,7 @@ async def search(ctx: interactions.CommandContext, title: str):
         if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
             trailer = generateTrailer(data=rawData[0]['trailer'])
     except Exception as e:
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(e)
-        )
+        dcEm = exeptionsToEmbed(returnException(e))
         trailer = None
 
     await ctx.send("", embeds=dcEm, components=trailer)
@@ -1776,11 +1743,7 @@ async def info(ctx: interactions.CommandContext, id: int):
         if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
             trailer = generateTrailer(data=rawData[0]['trailer'])
     except Exception as e:
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(e)
-        )
+        dcEm = exeptionsToEmbed(returnException(e))
         trailer = None
 
     await ctx.send("", embeds=dcEm, components=trailer)
@@ -1970,11 +1933,7 @@ Total scrobbles: {ud['playcount']}
             fields=tracks
         )
     except Exception as e:
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(e)
-        )
+        dcEm = exeptionsToEmbed(returnException(e))
 
     await ctx.edit("", embeds=dcEm)
 
@@ -2198,11 +2157,7 @@ async def search(ctx: interactions.CommandContext, title: str):
         await asyncio.sleep(90)
         await ctx.edit("*Selection had reached timeout*", embeds=dcEm, components=[])
     except Exception as e:
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(e)
-        )
+        dcEm = exeptionsToEmbed(returnException(e))
         await ctx.send("", embeds=dcEm)
 
 
@@ -2213,11 +2168,7 @@ async def rawg_search(ctx: interactions.ComponentContext, choices: list[str]):
         gameData = await getRawgData(slug=choices[0])
         dcEm = await generateRawg(data=gameData)
     except Exception as e:
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(e)
-        )
+        dcEm = exeptionsToEmbed(returnException(e))
 
     await ctx.edit(embeds=dcEm, components=[])
 
@@ -2238,11 +2189,7 @@ async def info(ctx: interactions.CommandContext, slug: str):
         gameData = await getRawgData(slug=slug)
         dcEm = await generateRawg(data=gameData)
     except Exception as e:
-        dcEm = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=returnException(e)
-        )
+        dcEm = exeptionsToEmbed(returnException(e))
 
     await ctx.send("", embeds=dcEm)
 

@@ -157,6 +157,15 @@ There's something wrong with the bot while processing your request.
 
 Error is: {error}"""
 
+def exeptionsToEmbed(error: str) -> interactions.Embed:
+    """Format exception message to a embed"""
+    embed = interactions.Embed(
+            color=0xff0000,
+            title="Error",
+            description=error,
+        )
+    return embed
+
 def trimCyno(message: str) -> str:
     """Trim synopsys to 1000 characters"""
     if len(message) > 1000:
