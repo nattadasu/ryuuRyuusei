@@ -689,18 +689,7 @@ async def random(ctx: interactions.CommandContext):
     await ctx.defer()
     await ctx.get_channel()
 
-    async def lookupRandom() -> int:
-        """Lookup random anime from MAL"""
-        seed = getRandom()
-        # open database/mal.csv
-        df = pd.read_csv("database/mal.csv", sep="\t")
-        # get random anime
-        randomAnime = df.sample(n=1, random_state=seed)
-        # get anime id
-        randomAnimeId: int = randomAnime['mal_id'].values[0]
-        return randomAnimeId
-
-    ani_id = await lookupRandom()
+    ani_id = lookupRandomAnime()
     trailer = None
 
     await ctx.send(f"Found [`{ani_id}`](<https://myanimelist.net/anime/{ani_id}>), showing information...", ephemeral=True)

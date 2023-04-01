@@ -59,6 +59,17 @@ async def getJikanAnime(mal_id: int) -> dict:
     except Exception as e:
         raise Exception(e)
 
+def lookupRandomAnime() -> int:
+    """Lookup random anime from MAL"""
+    seed = getRandom()
+    # open database/mal.csv
+    df = pd.read_csv("database/mal.csv", sep="\t")
+    # get random anime
+    randomAnime = df.sample(n=1, random_state=seed)
+    # get anime id
+    randomAnimeId: int = randomAnime['mal_id'].values[0]
+    return randomAnimeId
+
 
 async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, animeApi: dict = None) -> interactions.Embed:
     """Generate an embed for /anime with MAL via Jikan"""
