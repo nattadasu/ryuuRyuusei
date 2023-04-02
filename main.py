@@ -1118,40 +1118,8 @@ async def random_nekomimi(ctx: interactions.CommandContext):
 async def bois(ctx: interactions.CommandContext):
     """Get a random image of male character with cat ears!"""
     await ctx.defer()
-    row = await getNekomimi('boy')
-    # get the image url
-    img = row['imageUrl'].values[0]
-    mediaSource = row['mediaSource'].values[0]
-    if mediaSource == '':
-        mediaSource = 'Original Character'
-    artist = row['artist'].values[0]
-    artistUrl = row['artistUrl'].values[0]
-    imageSourceUrl = row['imageSourceUrl'].values[0]
-    col = getPlatformColor(row['platform'].values[0])
-    # Send the image url to the user
-    dcEm = interactions.Embed(
-        title=f"{mediaSource}",
-        image=interactions.EmbedImageStruct(
-            url=str(img)
-        ),
-        color=col,
-        author=interactions.EmbedAuthor(
-            name="Powered by Natsu's nekomimiDb",
-            url="https://github.com/nattadasu/nekomimiDb"
-        ),
-        fields=[
-            interactions.EmbedField(
-                name="Image source",
-                value=f"[Click here]({imageSourceUrl})",
-                inline=True
-            ),
-            interactions.EmbedField(
-                name="Artist",
-                value=f"[{artist}]({artistUrl})",
-                inline=True
-            )
-        ]
-    )
+    data = await getNekomimi('boy')
+    dcEm = generateNekomimi(row=data)
     await ctx.send("", embeds=dcEm)
 
 
@@ -1159,40 +1127,8 @@ async def bois(ctx: interactions.CommandContext):
 async def gurls(ctx: interactions.CommandContext):
     """Get a random image of female character with cat ears!"""
     await ctx.defer()
-    row = await getNekomimi('girl')
-    # get the image url
-    img = row['imageUrl'].values[0]
-    mediaSource = row['mediaSource'].values[0]
-    if mediaSource == '':
-        mediaSource = 'Original Character'
-    artist = row['artist'].values[0]
-    artistUrl = row['artistUrl'].values[0]
-    imageSourceUrl = row['imageSourceUrl'].values[0]
-    col = getPlatformColor(row['platform'].values[0])
-    # Send the image url to the user
-    dcEm = interactions.Embed(
-        title=f"{mediaSource}",
-        image=interactions.EmbedImageStruct(
-            url=str(img)
-        ),
-        color=col,
-        author=interactions.EmbedAuthor(
-            name="Powered by Natsu's nekomimiDb",
-            url="https://github.com/nattadasu/nekomimiDb"
-        ),
-        fields=[
-            interactions.EmbedField(
-                name="Image source",
-                value=f"[Click here]({imageSourceUrl})",
-                inline=True
-            ),
-            interactions.EmbedField(
-                name="Artist",
-                value=f"[{artist}]({artistUrl})",
-                inline=True
-            )
-        ]
-    )
+    data = await getNekomimi('girl')
+    dcEm = generateNekomimi(row=data)
     await ctx.send("", embeds=dcEm)
 
 
@@ -1200,40 +1136,8 @@ async def gurls(ctx: interactions.CommandContext):
 async def true_random(ctx: interactions.CommandContext):
     """Get a random image of characters with cat ears, whatever the gender they are!"""
     await ctx.defer()
-    row = await getNekomimi()
-    # get the image url
-    img = row['imageUrl'].values[0]
-    mediaSource = row['mediaSource'].values[0]
-    if mediaSource == '':
-        mediaSource = 'Original Character'
-    artist = row['artist'].values[0]
-    artistUrl = row['artistUrl'].values[0]
-    imageSourceUrl = row['imageSourceUrl'].values[0]
-    col = getPlatformColor(row['platform'].values[0])
-    # Send the image url to the user
-    dcEm = interactions.Embed(
-        title=f"{mediaSource}",
-        image=interactions.EmbedImageStruct(
-            url=str(img)
-        ),
-        color=col,
-        author=interactions.EmbedAuthor(
-            name="Powered by Natsu's nekomimiDb",
-            url="https://github.com/nattadasu/nekomimiDb"
-        ),
-        fields=[
-            interactions.EmbedField(
-                name="Image source",
-                value=f"[Click here]({imageSourceUrl})",
-                inline=True
-            ),
-            interactions.EmbedField(
-                name="Artist",
-                value=f"[{artist}]({artistUrl})",
-                inline=True
-            )
-        ]
-    )
+    data = await getNekomimi()
+    dcEm = generateNekomimi(row=data)
     await ctx.send("", embeds=dcEm)
 
 
