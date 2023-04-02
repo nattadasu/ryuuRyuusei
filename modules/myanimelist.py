@@ -439,63 +439,75 @@ async def generateMal(entry_id: int, isNsfw: bool = False, alDict: dict = None, 
     return embed
 
 
-def generateProfile(uname: str, uid: int, malAnime: dict, malManga: dict, joined: int, bday: int = None, extend: bool = False) -> interactions.Embed:
+def generateProfile(malProfile: dict, extend: bool = False) -> interactions.Embed:
     """Generate embed for profile command"""
+    mun = malProfile['username'].replace("_", "\\_")
+    mid = malProfile['mal_id']
+    ani = malProfile['statistics']['anime']
+    man = malProfile['statistics']['manga']
+    bth = None
+    if malProfile['birthday'] is not None:
+        bth = malProfile['birthday'].replace("+00:00", "+0000")
+        bth = int(datetime.datetime.strptime(
+            bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
+    dtJoin = malProfile['joined'].replace("+00:00", "+0000")
+    dtJoin = int(datetime.datetime.strptime(
+        dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
     bbd = ""
-    if bday is not None:
-        # convert bday from timestamp back to datetime
-        bdayRaw = datetime.datetime.fromtimestamp(int(bday))
+    if bth is not None:
+        # convert bth from timestamp back to datetime
+        bthRaw = datetime.datetime.fromtimestamp(int(bth))
         today = datetime.datetime.now(tz=datetime.timezone.utc)
         currYear = today.year
-        upcoming = bdayRaw.replace(year=currYear)
+        upcoming = bthRaw.replace(year=currYear)
         if int(upcoming.timestamp()) < int(today.timestamp()):
             upcoming = upcoming.replace(year=currYear + 1)
-        bbd = f"\nBirthday: <t:{int(bday)}:D> <t:{int(bday)}:R> (next birthday <t:{int(upcoming.timestamp())}:R>)"
-    desc = f"[Anime List](https://myanimelist.net/animelist/{uname}) | [Manga List](https://myanimelist.net/mangalist/{uname})"
+        bbd = f"\nBirthday: <t:{int(bth)}:D> <t:{int(bth)}:R> (next birthday <t:{int(upcoming.timestamp())}:R>)"
+    desc = f"[Anime List](https://myanimelist.net/animelist/{mun}) | [Manga List](https://myanimelist.net/mangalist/{mun})"
     fds = [
         interactions.EmbedField(
             name="Profile",
-            value=f"""User ID: `{uid}`
-Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
+            value=f"""User ID: `{mid}`
+Account created: <t:{dtJoin}:D> (<t:{dtJoin}:R>){bbd}""",
             inline=False
         )
     ]
     img = None
     foo = "Powered by MyAnimeList (via Jikan). Data may be inaccurate due to Jikan caching. To see more information, append \"extended: True\" argument!"
     if extend is True:
-        desc += f"\nSee also on 3rd party sites: [MAL Badges](https://mal-badges.com/users/{uname}), [anime.plus malgraph](https://anime.plus/{uname})"
+        desc += f"\nSee also on 3rd party sites: [MAL Badges](https://mal-badges.com/users/{mun}), [anime.plus malgraph](https://anime.plus/{mun})"
         fds += [
             interactions.EmbedField(
                 name="Anime Stats",
-                value=f"""• Days watched: {malAnime['days_watched']}
-• Mean score: {malAnime['mean_score']}
-• Total entries: {malAnime['total_entries']}
-👀 {malAnime['watching']} | ✅ {malAnime['completed']} | ⏸️ {malAnime['on_hold']} | 🗑️ {malAnime['dropped']} | ⏰ {malAnime['plan_to_watch']}
-*Episodes watched: {malAnime['episodes_watched']}*""",
+                value=f"""• Days watched: {ani['days_watched']}
+• Mean score: {ani['mean_score']}
+• Total entries: {ani['total_entries']}
+👀 {ani['watching']} | ✅ {ani['completed']} | ⏸️ {ani['on_hold']} | 🗑️ {ani['dropped']} | ⏰ {ani['plan_to_watch']}
+*Episodes watched: {ani['episodes_watched']}*""",
                 inline=True
             ),
             interactions.EmbedField(
                 name="Manga Stats",
-                value=f"""• "Days" read: {malManga['days_read']}
-• Mean score: {malManga['mean_score']}
-• Total entries: {malManga['total_entries']}
-👀 {malManga['reading']} | ✅ {malManga['completed']} | ⏸️ {malManga['on_hold']} | 🗑️ {malManga['dropped']} | ⏰ {malManga['plan_to_read']}
-*Chapters read: {malManga['chapters_read']}*
-*Volumes read: {malManga['volumes_read']}*""",
+                value=f"""• "Days" read: {man['days_read']}
+• Mean score: {man['mean_score']}
+• Total entries: {man['total_entries']}
+👀 {man['reading']} | ✅ {man['completed']} | ⏸️ {man['on_hold']} | 🗑️ {man['dropped']} | ⏰ {man['plan_to_read']}
+*Chapters read: {man['chapters_read']}*
+*Volumes read: {man['volumes_read']}*""",
                 inline=True
             )
         ]
         img = interactions.EmbedImageStruct(
-            url=f"https://malheatmap.com/users/{uname}/signature"
+            url=f"https://malheatmap.com/users/{mun}/signature"
         )
         foo = "Powered by MyAnimeList (via Jikan) and MAL Heatmap. Data may be inaccurate due to Jikan caching."
     else:
-        desc += f"\nTotal Anime: {malAnime['total_entries']} (⭐ {malAnime['mean_score']}) | Total Manga: {malManga['total_entries']} (⭐ {malManga['mean_score']})"
+        desc += f"\nTotal Anime: {ani['total_entries']} (⭐ {ani['mean_score']}) | Total Manga: {man['total_entries']} (⭐ {man['mean_score']})"
 
-    if re.search(r"s$", uname):
-        ttl = f"{uname}' MAL Profile"
+    if re.search(r"s$", mun):
+        ttl = f"{mun}' MAL Profile"
     else:
-        ttl = f"{uname}'s MAL Profile"
+        ttl = f"{mun}'s MAL Profile"
 
     embed = interactions.Embed(
         author=interactions.EmbedAuthor(
@@ -504,10 +516,10 @@ Account created: <t:{joined}:D> (<t:{joined}:R>){bbd}""",
             icon_url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"
         ),
         title=ttl,
-        url=f"https://myanimelist.net/profile/{uname}",
+        url=f"https://myanimelist.net/profile/{mun}",
         description=desc,
         thumbnail=interactions.EmbedImageStruct(
-            url=f"https://cdn.myanimelist.net/images/userimages/{uid}.jpg"
+            url=f"https://cdn.myanimelist.net/images/userimages/{mid}.jpg"
         ),
         color=0x2E51A2,
         fields=fds,

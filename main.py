@@ -362,22 +362,8 @@ async def profile(ctx: interactions.CommandContext, user: int = None, mal_userna
                                 jikanStats = await jikan.users(username=row[3], extension='full')
                                 break
                     malProfile = jikanStats['data']
-                    mun = malProfile['username'].replace("_", "\\_")
-                    mid = malProfile['mal_id']
-                    ani = malProfile['statistics']['anime']
-                    man = malProfile['statistics']['manga']
-                    bth = None
-                    if malProfile['birthday'] is not None:
-                        bth = malProfile['birthday'].replace(
-                            "+00:00", "+0000")
-                        bth = int(datetime.datetime.strptime(
-                            bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
-                    dtJoin = malProfile['joined'].replace(
-                        "+00:00", "+0000")
-                    dtJoin = int(datetime.datetime.strptime(
-                        dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
 
-                    dcEm = generateProfile(uname=mun, uid=mid, malAnime=ani, malManga=man, joined=dtJoin, bday=bth, extend=extended)
+                    dcEm = generateProfile(malProfile=malProfile, extend=extended)
                     if user is None:
                         sendMessages = ""
                     elif ctx.author.id == uid:
@@ -421,20 +407,8 @@ async def profile(ctx: interactions.CommandContext, user: int = None, mal_userna
                             sendMessages = ""
                 jikanStats = await jikan.users(username=uname, extension='full')
                 malProfile = jikanStats['data']
-                mun = malProfile['username'].replace("_", "\\_")
-                mid = malProfile['mal_id']
-                ani = malProfile['statistics']['anime']
-                man = malProfile['statistics']['manga']
-                bth = None
-                if malProfile['birthday'] is not None:
-                    bth = malProfile['birthday'].replace("+00:00", "+0000")
-                    bth = int(datetime.datetime.strptime(
-                        bth, "%Y-%m-%dT%H:%M:%S%z").timestamp())
-                dtJoin = malProfile['joined'].replace("+00:00", "+0000")
-                dtJoin = int(datetime.datetime.strptime(
-                    dtJoin, "%Y-%m-%dT%H:%M:%S%z").timestamp())
 
-                dcEm = generateProfile(uname=mun, uid=mid, malAnime=ani, malManga=man, joined=dtJoin, bday=bth, extend=extended)
+                dcEm = generateProfile(malProfile=malProfile, extend=extended)
             except Exception as e:
                 sendMessages = ""
                 dcEm = exceptionsToEmbed(definejikanException(e))
