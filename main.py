@@ -494,24 +494,14 @@ async def export_data(ctx: interactions.CommandContext):
     await ctx.defer(ephemeral=True)
     userId = ctx.author.id
     if checkIfRegistered(userId):
-        with open(database, "r") as f:
-            reader = csv.reader(f, delimiter="\t")
-            for row in reader:
-                if row[0] == 'discordId':
-                    header = row
-                    continue
-                if row[0] == str(userId):
-                    userRow = dict(zip(header, row))
-                    userRow = json.dumps(userRow)
-                break
+        userRow = exportUserData(userId=userId)
         dcEm = interactions.Embed(
             title="Data Exported!",
             description=f"""{EMOJI_SUCCESS} **Here's your data!**
 ```json
 {userRow}
-```or, do you prefer Python List format?```python
-[{header},
-{row}]```""",
+```
+Quick PSA: the exported data in this JSON is exactly the same as the data stored in the bot's database.""",
             color=0x2E2E2E,
             footer=interactions.EmbedFooter(
                 text="Unregister easily by typing /unregister!"

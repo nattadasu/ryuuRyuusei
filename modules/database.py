@@ -29,3 +29,23 @@ async def verifyUser(discordId: int) -> bool:
             raise Exception(f"{EMOJI_UNEXPECTED_ERROR} User is not a member of the club")
 
     return verified
+
+
+def exportUserData(userId: int) -> str:
+    with open(database, "r") as f:
+        reader = csv.reader(f, delimiter="\t")
+        for row in reader:
+            if row[0] == 'discordId':
+                header = row
+                continue
+            if row[0] == str(userId):
+                for i in row:
+                    if i is None:
+                        row[row.index(i)] = ""
+                    if i.isdigit():
+                        row[row.index(i)] = int(i)
+                    else:
+                        row[row.index(i)] = str(i)
+                userRow = dict(zip(header, row))
+                userRow = json.dumps(userRow)
+                return userRow
