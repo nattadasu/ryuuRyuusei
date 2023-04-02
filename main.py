@@ -91,54 +91,16 @@ async def register(ctx: interactions.CommandContext, mal_username: str, accept_g
         await ctx.send(messages, ephemeral=True)
         return
     else:
-        # get the message author username
-        messageAuthor = ctx.user
-        # get the message author id
-        discordId = str(messageAuthor.id)
-        # get user discriminator
-        discordDiscrim = str(messageAuthor.discriminator)
-        # get user joined date
-        discordJoined = snowflake_to_datetime(discordId)
-        discordJoined = int(discordJoined)
-        discordServerName = ctx.guild.name
+        discordId = str(ctx.user.id)
+        discordUsername = str(ctx.user.username)
+        discordDiscrim = str(ctx.user.discriminator)
+        discordServer = ctx.guild
+        whois = f"{discordUsername}#{discordDiscrim}"
 
-        clubId = CLUB_ID
-
-        # check if user is already registered
-        if checkIfRegistered(discordId):
-            messages = f"""{EMOJI_DOUBTING} **You are already registered!**"""
-            if str(ctx.guild_id) == f'{VERIFICATION_SERVER}':
-                messages += f'''\nTo get your role back, please use the command `/verify` if you have joined [our club](<https://myanimelist.net/clubs.php?cid={clubId}>)!'''
-        else:
-            # get user id from jikan
-            try:
-                uname = mal_username.strip()
-                jikanUser = await getJikanData(uname)
-                uname = jikanUser['username']
-                # convert joined date to epoch
-                jikanUser['joined'] = jikanUser['joined'].replace(
-                    "+00:00", "+0000")
-                joined = datetime.datetime.strptime(
-                    jikanUser['joined'], "%Y-%m-%dT%H:%M:%S%z")
-                joined = joined.timestamp()
-                # try remove decimal places from joined
-                joined = int(joined)
-                registered = datetime.datetime.now().timestamp()
-                registered = int(registered)
-                messages = f"""{EMOJI_SUCCESS} **Your account has been registered!** :tada:
-
-**Discord Username**: {messageAuthor}#{discordDiscrim} `{discordId}`
-**Discord Joined date**: <t:{discordJoined}:F>
-———————————————————————————————
-**MyAnimeList Username**: [{uname}](<https://myanimelist.net/profile/{uname}>) `{jikanUser['mal_id']}`
-**MyAnimeList Joined date**: <t:{joined}:F>"""
-                if str(ctx.guild_id) == f'{VERIFICATION_SERVER}':
-                    messages += f'''\n
-*Now, please use the command `/verify` if you have joined [our club](<https://myanimelist.net/clubs.php?cid={clubId}>) to get your role!*'''
-                saveToDatabase(discordId, f'{messageAuthor}#{discordDiscrim}', discordJoined,
-                               uname, jikanUser['mal_id'], joined, registered, int(ctx.guild_id), discordId, discordServerName)
-            except Exception as e:
-                messages = returnException(e)
+        try:
+            messages = await registerUser(whois=whois, discordId=discordId, server=discordServer, malUsername=mal_username)
+        except Exception as e:
+            messages = returnException(e)
 
         await ctx.send(messages, ephemeral=True)
 
@@ -1508,37 +1470,10 @@ async def admin_register(ctx: interactions.CommandContext, dc_username: int, mal
     discordId = dc_username.id
     discordUsername = dc_username.username
     discordDiscriminator = dc_username.discriminator
-    discordJoined = int(snowflake_to_datetime(dc_username.id))
-    discordServerName = ctx.guild.name
-    malUname = mal_username.strip()
+    discordServer = ctx.guild
+    whois = f"{discordUsername}#{discordDiscriminator}"
     try:
-        if checkIfRegistered(discordId):
-            sendMessages = f"""{EMOJI_DOUBTING} **User is already registered!**"""
-        else:
-            jikanData = await getJikanData(malUname)
-            malUid = jikanData['mal_id']
-            jikanData['joined'] = jikanData['joined'].replace(
-                '+00:00', '+0000')
-            malJoined = int(datetime.datetime.strptime(
-                jikanData['joined'], "%Y-%m-%dT%H:%M:%S%z").timestamp())
-            registeredAt = int(datetime.datetime.now().timestamp())
-            registeredGuild = ctx.guild_id
-            registeredBy = ctx.author.id
-            sendMessages = f"""{EMOJI_SUCCESS} **User registered!**```json
-{{
-    "discordId": {discordId},
-    "discordUsername": "{discordUsername}#{discordDiscriminator}",
-    "discordJoined": {discordJoined},
-    "registeredGuildId": {registeredGuild},
-    "registeredGuildName": "{discordServerName}",
-    "malUname": "{malUname}",
-    "malId": {malUid},
-    "malJoined": {malJoined},
-    "registeredAt": {registeredAt},
-    "registeredBy": {registeredBy} // it's you, {ctx.author.username}#{ctx.author.discriminator}!
-}}```"""
-            saveToDatabase(discordId, f'{discordUsername}#{discordDiscriminator}', discordJoined, str(
-                malUname), malUid, malJoined, registeredAt, registeredGuild, registeredBy, discordServerName)
+        sendMessages = await registerUser(whois=whois, discordId=discordId, server=discordServer, malUsername=mal_username, actor=ctx.author)
     except Exception as e:
         sendMessages = returnException(e)
 

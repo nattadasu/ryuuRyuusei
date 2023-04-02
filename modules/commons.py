@@ -131,24 +131,6 @@ def snowflake_to_datetime(snowflake: int) -> int:
 
     return timestamp_unix
 
-def checkIfRegistered(discordId: int) -> bool:
-    """Check if user is registered on Database"""
-    with open(database, "r", encoding="utf-8") as f:
-        reader = csv.reader(f, delimiter="\t")
-        for row in reader:
-            if row[0] == discordId:
-                return True
-        return False
-
-
-def saveToDatabase(discordId: int, discordUsername: str, discordJoined: int, malUsername: str, malId: int,
-                   malJoined: int, registeredAt: int, registeredGuild: int, registeredBy: int, guildName: str):
-    """Save information regarding to user with their consent"""
-    with open(database, "a", newline='', encoding="utf-8") as f:
-        writer = csv.writer(f, delimiter="\t")
-        writer.writerow([discordId, discordUsername, discordJoined, malUsername,
-                        malId, malJoined, registeredAt, registeredGuild, registeredBy, guildName])
-
 
 def returnException(error: str) -> str:
     """Format exception message to a message string"""

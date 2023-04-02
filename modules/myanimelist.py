@@ -29,7 +29,7 @@ def definejikanException(errmsg: str) -> interactions.Embed:
         em = "Unknown error."
     return em
 
-async def getJikanData(uname) -> dict:
+async def getJikanUserData(uname) -> dict:
     """Get user data from Jikan"""
     try:
         jikanData = await jikan.users(username=f'{uname}')
