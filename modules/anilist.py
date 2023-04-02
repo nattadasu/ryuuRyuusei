@@ -1,4 +1,5 @@
 from modules.commons import *
+from modules.const import *
 
 
 async def searchAniList(name: str = None, isAnime: bool = True) -> dict:
@@ -439,4 +440,3 @@ async def bypassAniListEcchiTag(alm: dict) -> bool:
         return True
     else:
         return False
-

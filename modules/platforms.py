@@ -96,6 +96,7 @@ def getPlatformName(pf: str) -> str:
 
     return pfDict.get(pf, "Unknown")
 
+
 def mediaIdToPlatform(media_id: str, platform: str) -> dict:
     """Convert a media ID to a platform-specific ID"""
     platform_dict = {

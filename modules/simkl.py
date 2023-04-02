@@ -1,4 +1,6 @@
 from modules.commons import *
+from modules.const import *
+
 
 async def searchSimklId(title_id: str, platform: str, media_type: str = None) -> int:
     """Search SIMKL title ID  from other platforms"""
@@ -52,4 +54,3 @@ async def getSimklID(simkl_id: int, media_type: str) -> dict:
                 return data
     except:
         return simkl0rels
-

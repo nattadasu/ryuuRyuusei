@@ -1,6 +1,7 @@
 from modules.commons import *
 from modules.platforms import *
 
+
 def platformsToFields(currPlatform: str, **k) -> list:
     """Convert a platform to a dictionary of fields"""
     relsEm = []
@@ -195,7 +196,8 @@ def platformsToFields(currPlatform: str, **k) -> list:
             tvdb = k['tvdb']
             # assumes the link is https://www.thetvdb.com/series/123456/seasons/official/1
             # grab from 123456 to the end of the string
-            tvdb = re.sub(r'^https://(www.)?thetvdb.com/(series|movies)/', '', tvdb)
+            tvdb = re.sub(
+                r'^https://(www.)?thetvdb.com/(series|movies)/', '', tvdb)
         relsEm += [
             interactions.EmbedField(
                 name=f"<:tvdb:{pin['emoid']}> {pin['pf']}",

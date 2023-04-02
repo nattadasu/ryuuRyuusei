@@ -13,4 +13,3 @@ async def getNatsuAniApi(id, platform: str) -> dict:
     except:
         aaDict = invAa
         return aaDict
-

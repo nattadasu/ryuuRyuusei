@@ -1,4 +1,6 @@
 from modules.commons import *
+from modules.const import *
+
 
 async def lookupTrakt(lookup_param: str) -> dict:
     """Lookup Trakt ID via IMDb ID or TMDB ID"""

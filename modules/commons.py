@@ -2,8 +2,6 @@ import csv
 import datetime
 import html
 import json
-import os
-import subprocess
 import time
 from json import loads as jload
 from urllib.parse import quote as urlquote
@@ -16,41 +14,10 @@ import interactions
 import pandas as pd
 import regex as re
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
 from jikanpy import AioJikan
 import asyncio
 
-load_dotenv()
-
-database = r"database/database.csv"
-
-AUTHOR_USERID = os.getenv('AUTHOR_USERID')
-AUTHOR_USERNAME = os.getenv('AUTHOR_USERNAME')
-BOT_CLIENT_ID = os.getenv('BOT_CLIENT_ID')
-BOT_SUPPORT_SERVER = os.getenv('BOT_SUPPORT_SERVER')
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-CLUB_ID = os.getenv('CLUB_ID')
-SIMKL_CLIENT_ID = os.getenv('SIMKL_CLIENT_ID')
-TRAKT_CLIENT_ID = os.getenv('TRAKT_CLIENT_ID')
-VERIFICATION_SERVER = os.getenv('VERIFICATION_SERVER')
-VERIFIED_ROLE = os.getenv('VERIFIED_ROLE')
-LASTFM_API_KEY = os.getenv('LASTFM_API_KEY')
-TRAKT_CLIENT_ID = os.getenv('TRAKT_CLIENT_ID')
-TRAKT_API_VERSION = os.getenv('TRAKT_API_VERSION')
-RAWG_API_KEY = os.getenv('RAWG_API_KEY')
-
-EMOJI_ATTENTIVE = os.getenv('EMOJI_ATTENTIVE')
-EMOJI_DOUBTING = os.getenv('EMOJI_DOUBTING')
-EMOJI_FORBIDDEN = os.getenv('EMOJI_FORBIDDEN')
-EMOJI_SUCCESS = os.getenv('EMOJI_SUCCESS')
-EMOJI_UNEXPECTED_ERROR = os.getenv('EMOJI_UNEXPECTED_ERROR')
-EMOJI_USER_ERROR = os.getenv('EMOJI_USER_ERROR')
-
-warnThreadCW = f"""
-
-If you invoked this command outside (public or private) forum thread channel or regular text channel and **Age Restriction** is enabled, please contact developer of this bot as the feature only tested in forum thread and text channel.
-
-You can simply access it on `/support`"""
+from modules.const import *
 
 bannedTags = [
     'Amputation', 'Anal Sex', 'Ashikoki', 'Asphyxiation',
@@ -116,12 +83,6 @@ traktHeader = {
 
 jikan = AioJikan()
 
-def get_git_revision_hash() -> str:
-    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
-
-
-def get_git_revision_short_hash() -> str:
-    return subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
 
 def snowflake_to_datetime(snowflake: int) -> int:
     """Convert Discord snowflake to datetime object."""
@@ -139,14 +100,16 @@ There's something wrong with the bot while processing your request.
 
 Error is: {error}"""
 
+
 def exceptionsToEmbed(error: str) -> interactions.Embed:
     """Format exception message to a embed"""
     embed = interactions.Embed(
-            color=0xff0000,
-            title="Error",
-            description=error,
-        )
+        color=0xff0000,
+        title="Error",
+        description=error,
+    )
     return embed
+
 
 def trimCyno(message: str) -> str:
     """Trim synopsys to 1000 characters"""
@@ -160,7 +123,8 @@ def trimCyno(message: str) -> str:
 
 
 def sanitizeMarkdown(text: str) -> str:
-    text = text.replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace("|", "\\|").replace(">", "\\>").replace("<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/").replace("@", "\\@")
+    text = text.replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace("|", "\\|").replace(">", "\\>").replace(
+        "<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/").replace("@", "\\@")
     return text
 
 

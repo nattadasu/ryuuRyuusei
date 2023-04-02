@@ -1,5 +1,6 @@
 from modules.commons import *
 
+
 async def getNekomimi(gender: str = None) -> dict:
     """Get a random nekomimi image from the database"""
     seed = getRandom()

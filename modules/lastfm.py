@@ -1,4 +1,6 @@
 from modules.commons import *
+from modules.const import *
+
 
 async def generateLastFm(username: str, maximum: int = 9) -> interactions.Embed:
     async with aiohttp.ClientSession() as session:

@@ -2,6 +2,7 @@ from modules.commons import *
 from modules.const import *
 from modules.myanimelist import *
 
+
 def checkIfRegistered(discordId: int) -> bool:
     """Check if user is registered on Database"""
     with open(database, "r", encoding="utf-8") as f:
@@ -37,7 +38,8 @@ async def verifyUser(discordId: int) -> bool:
                 username = row[3]
                 break
         else:
-            raise Exception(f"{EMOJI_UNEXPECTED_ERROR} User maybe not registered to the bot, or there's unknown error")
+            raise Exception(
+                f"{EMOJI_UNEXPECTED_ERROR} User maybe not registered to the bot, or there's unknown error")
 
         clubs = await checkClubMembership(username)
         verified: bool = False
@@ -46,12 +48,14 @@ async def verifyUser(discordId: int) -> bool:
                 verified = True
                 break
         else:
-            raise Exception(f"{EMOJI_UNEXPECTED_ERROR} User is not a member of the club")
+            raise Exception(
+                f"{EMOJI_UNEXPECTED_ERROR} User is not a member of the club")
 
     return verified
 
+
 async def registerUser(
-    whois: str, # discord uname#1234
+    whois: str,  # discord uname#1234
     discordId: int,
     server: interactions.CommandContext.guild,
     malUsername: str,
@@ -75,7 +79,8 @@ async def registerUser(
         malUid = jkUser['mal_id']
         malUname = jkUser['username']
         jkUser['joined'] = jkUser['joined'].replace("+00:00", "+0000")
-        malJoined = datetime.datetime.strptime(jkUser['joined'], "%Y-%m-%dT%H:%M:%S%z")
+        malJoined = datetime.datetime.strptime(
+            jkUser['joined'], "%Y-%m-%dT%H:%M:%S%z")
         malJoined = int(malJoined.timestamp())
         registered = int(datetime.datetime.now().timestamp())
         dcJoined = int(snowflake_to_datetime(discordId))

@@ -1,4 +1,6 @@
 from modules.commons import *
+from modules.const import *
+
 
 async def searchRawg(query: str) -> dict:
     """Search game on RAWG"""
@@ -9,6 +11,7 @@ async def searchRawg(query: str) -> dict:
             rawgRes = await resp.json()
         await session.close()
         return rawgRes['results']
+
 
 async def getRawgData(slug: str) -> dict:
     """Get information of a title in RAWG"""
@@ -82,7 +85,7 @@ async def generateRawg(data: dict) -> interactions.Embed:
     if cyno is None:
         cyno = "*No description provided*"
     else:
-        cyno = cyno.replace("\r","")
+        cyno = cyno.replace("\r", "")
         cyno = cyno.split('\n')
         cynl = len(cyno)
         cynoin = cyno[0]
@@ -131,7 +134,8 @@ async def generateRawg(data: dict) -> interactions.Embed:
     if data['tba'] is False:
         rel = data['released']
         rel = re.sub(r'^(\d{4})-(\d{2})-(\d{2})', r'\1-\2-\3', rel)
-        rel = (datetime.datetime.strptime(f"{rel}+0000", "%Y-%m-%d%z") - daten).total_seconds()
+        rel = (datetime.datetime.strptime(
+            f"{rel}+0000", "%Y-%m-%d%z") - daten).total_seconds()
         # reconvert from Epoch to year
         year = datetime.datetime.utcfromtimestamp(rel).strftime('%Y')
         rel = f"<t:{int(rel)}:D> (<t:{int(rel)}:R>)"
@@ -166,7 +170,6 @@ async def generateRawg(data: dict) -> interactions.Embed:
         pdta = ""
 
     bg = data['background_image']
-
 
     embed = interactions.Embed(
         author=interactions.EmbedAuthor(
@@ -229,4 +232,3 @@ async def generateRawg(data: dict) -> interactions.Embed:
         )
     )
     return embed
-

@@ -39,6 +39,7 @@ bot = interactions.Client(
 
 # START OF BOT CODE
 
+
 @bot.command(
     name="ping",
     description="Ping the bot!"
@@ -262,7 +263,8 @@ Joined to {ctx.guild.name}: <t:{userJoined}:F>"""
         sendMessages = messages
     except AttributeError:
         sendMessages = ""
-        dcEm = exceptionsToEmbed(returnException("User can not be found if they're joined this server or not."))
+        dcEm = exceptionsToEmbed(returnException(
+            "User can not be found if they're joined this server or not."))
     except Exception as e:
         sendMessages = ""
         dcEm = exceptionsToEmbed(returnException(e))
@@ -305,7 +307,8 @@ async def profile(ctx: interactions.CommandContext, user: int = None, mal_userna
             raise KeyError
         except KeyError:
             sendMessages = ""
-            dcEm = exceptionsToEmbed(returnException(f"{EMOJI_USER_ERROR} **You cannot use both options!** Use either one of `user:` or `mal_username:`, hmph. >:("))
+            dcEm = exceptionsToEmbed(returnException(
+                f"{EMOJI_USER_ERROR} **You cannot use both options!** Use either one of `user:` or `mal_username:`, hmph. >:("))
     else:
         if mal_username is None:
             if user is not None:
@@ -322,7 +325,8 @@ async def profile(ctx: interactions.CommandContext, user: int = None, mal_userna
                                 break
                     malProfile = jikanStats['data']
 
-                    dcEm = generateProfile(malProfile=malProfile, extend=extended)
+                    dcEm = generateProfile(
+                        malProfile=malProfile, extend=extended)
                     if user is None:
                         sendMessages = ""
                     elif ctx.author.id == uid:
@@ -489,7 +493,7 @@ async def search(ctx: interactions.CommandContext, title: str = None):
     try:
         await ctx.send(f"Searching `{title}` using AniList", embeds=None, components=None)
         alData = await lookupByNameAniList(title)
-        if len(alData) == 0 :
+        if len(alData) == 0:
             raise Exception()
         else:
             for a in alData:
@@ -574,6 +578,7 @@ async def search(ctx: interactions.CommandContext, title: str = None):
         await asyncio.sleep(90)
         await ctx.edit(MESSAGE_SELECT_TIMEOUT, embeds=dcEm, components=[])
 
+
 @bot.component('mal_search')
 async def mal_search(ctx: interactions.ComponentContext, choices: list[str]):
     await ctx.defer()
@@ -591,7 +596,8 @@ async def mal_search(ctx: interactions.ComponentContext, choices: list[str]):
         if aniApi['anilist'] is not None:
             alData = await getAniList(media_id=aniApi['anilist'], isAnime=True)
             if (alData[0]['trailer'] is not None) and (alData[0]['trailer']['site'] == "youtube"):
-                trailer = generateTrailer(data=alData[0]['trailer'], isMal=False)
+                trailer = generateTrailer(
+                    data=alData[0]['trailer'], isMal=False)
                 trailer = [trailer]
             else:
                 trailer = []
@@ -977,17 +983,21 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
 
         if trkSeason is not None:
             if smk['tvdb'] is not None:
-                tvdbId = 'https://www.thetvdb.com/' + f"?tab={tvtyp}&id={smk['tvdb']}"
+                tvdbId = 'https://www.thetvdb.com/' + \
+                    f"?tab={tvtyp}&id={smk['tvdb']}"
             elif smk['tvdbslug'] is not None:
-                tvdbId = 'https://www.thetvdb.com/' + f"{tvtyp}/{smk['tvdbslug']}/seasons/official/{trkSeason}"
-                isSlug=True
+                tvdbId = 'https://www.thetvdb.com/' + \
+                    f"{tvtyp}/{smk['tvdbslug']}/seasons/official/{trkSeason}"
+                isSlug = True
             tmdbId = f"{tmtyp}/{tmdbId}/season/{trkSeason}"
         else:
             if smk['tvdb'] is not None:
-                tvdbId = 'https://www.thetvdb.com/' + f"?tab={tvtyp}&id={smk['tvdb']}"
+                tvdbId = 'https://www.thetvdb.com/' + \
+                    f"?tab={tvtyp}&id={smk['tvdb']}"
             elif smk['tvdbslug'] is not None:
-                tvdbId = 'https://www.thetvdb.com/' + tvtyp + '/' + smk['tvdbslug']
-                isSlug=True
+                tvdbId = 'https://www.thetvdb.com/' + \
+                    tvtyp + '/' + smk['tvdbslug']
+                isSlug = True
             tmdbId = tmtyp + '/' + str(tmdbId)
 
         relsEm = platformsToFields(
@@ -1254,7 +1264,7 @@ async def search(ctx: interactions.CommandContext, title: str):
         results = await searchAniList(name=title, isAnime=False)
         f = []
         so = []
-        if len(results) == 0 :
+        if len(results) == 0:
             raise ValueError()
         for r in results:
             # only capitalize the first letter of the format and status
@@ -1305,6 +1315,7 @@ async def search(ctx: interactions.CommandContext, title: str):
     except Exception as e:
         dcEm = exceptionsToEmbed(returnException(e))
         await ctx.send("", embeds=dcEm, components=[])
+
 
 @bot.component("anilist_search")
 async def anilist_search(ctx: interactions.ComponentContext, choices: list[str]):
@@ -1544,11 +1555,13 @@ async def admin_verify(ctx: interactions.CommandContext, username: int):
             await botHttp.add_member_role(guild_id=ctx.guild_id, user_id=discordId, role_id=verifiedRole, reason=f"Verified by {ctx.author.username}#{ctx.author.discriminator} ({ctx.author.id})")
             sendMessages = f"{EMOJI_SUCCESS} User <@!{discordId}> has been verified"
         elif verified is False:
-            raise Exception(f"{EMOJI_DOUBTING} User may have not joined the club yet, or the bot currently only check a page. Please raise an issue to this bot maintainer")
+            raise Exception(
+                f"{EMOJI_DOUBTING} User may have not joined the club yet, or the bot currently only check a page. Please raise an issue to this bot maintainer")
     except Exception as e:
         sendMessages = returnException(e)
 
     await ctx.send(sendMessages)
+
 
 @bot.command(
     name="games",
@@ -1556,6 +1569,7 @@ async def admin_verify(ctx: interactions.CommandContext, username: int):
 )
 async def games(ctx: interactions.CommandContext):
     pass
+
 
 @games.subcommand(
     options=[
@@ -1631,6 +1645,7 @@ async def rawg_search(ctx: interactions.ComponentContext, choices: list[str]):
         dcEm = exceptionsToEmbed(returnException(e))
 
     await ctx.edit(embeds=dcEm, components=[])
+
 
 @games.subcommand(
     options=[

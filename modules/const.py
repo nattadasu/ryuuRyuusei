@@ -1,4 +1,44 @@
+import subprocess
+from os import getenv as ge
+
+from dotenv import load_dotenv as ld
+
 from modules.commons import *
+
+ld()
+
+database = r"database/database.csv"
+
+AUTHOR_USERID = ge('AUTHOR_USERID')
+AUTHOR_USERNAME = ge('AUTHOR_USERNAME')
+BOT_CLIENT_ID = ge('BOT_CLIENT_ID')
+BOT_SUPPORT_SERVER = ge('BOT_SUPPORT_SERVER')
+BOT_TOKEN = ge('BOT_TOKEN')
+CLUB_ID = ge('CLUB_ID')
+SIMKL_CLIENT_ID = ge('SIMKL_CLIENT_ID')
+TRAKT_CLIENT_ID = ge('TRAKT_CLIENT_ID')
+VERIFICATION_SERVER = ge('VERIFICATION_SERVER')
+VERIFIED_ROLE = ge('VERIFIED_ROLE')
+LASTFM_API_KEY = ge('LASTFM_API_KEY')
+TRAKT_CLIENT_ID = ge('TRAKT_CLIENT_ID')
+TRAKT_API_VERSION = ge('TRAKT_API_VERSION')
+RAWG_API_KEY = ge('RAWG_API_KEY')
+
+EMOJI_ATTENTIVE = ge('EMOJI_ATTENTIVE')
+EMOJI_DOUBTING = ge('EMOJI_DOUBTING')
+EMOJI_FORBIDDEN = ge('EMOJI_FORBIDDEN')
+EMOJI_SUCCESS = ge('EMOJI_SUCCESS')
+EMOJI_UNEXPECTED_ERROR = ge('EMOJI_UNEXPECTED_ERROR')
+EMOJI_USER_ERROR = ge('EMOJI_USER_ERROR')
+
+
+def get_git_revision_hash() -> str:
+    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+
+
+def get_git_revision_short_hash() -> str:
+    return subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
+
 
 gittyHash = get_git_revision_hash()
 gtHsh = get_git_revision_short_hash()
@@ -64,7 +104,7 @@ If you have any questions (or more payment channels), please join my [support se
 # =============================================================================
 # Declined GDPR notice
 
-DECLINED_GDPR =  '''**You have not accepted the GDPR/CCPA/CPRA Privacy Consent!**
+DECLINED_GDPR = '''**You have not accepted the GDPR/CCPA/CPRA Privacy Consent!**
 Unfortunately, we cannot register you without your consent. However, you can still use the bot albeit limited.
 
 Allowed commands:
@@ -92,5 +132,16 @@ MESSAGE_INVITE = "To invite me, simply press \"**Invite me!**\" button below!\nF
 
 MESSAGE_SELECT_TIMEOUT = "*Selection menu has reached timeout, please try again if you didn't pick the option!*"
 
+MESSAGE_WARN_CONTENTS = f"""
+
+If you invoked this command outside (public or private) forum thread channel or regular text channel and **Age Restriction** is enabled, please contact developer of this bot as the feature only tested in forum thread and text channel.
+
+You can simply access it on `/support`"""
+
 ERR_KAIZE_SLUG_MODDED = '''We've tried to search for the anime using the slug (and even fix the slug itself), but it seems that the anime is not found on Kaize via AnimeApi.
 Please send a message to AnimeApi maintainer, nattadasu (he is also a developer of this bot)'''
+
+# =============================================================================
+# Aliases
+
+warnThreadCW = MESSAGE_WARN_CONTENTS

@@ -2,12 +2,14 @@ from modules.simkl import *
 from modules.commons import *
 from modules.kitsu import *
 
+
 async def checkClubMembership(username) -> dict:
     """Check if user is a member of any club"""
     jikanUser = await jikan.users(username=f'{username}', extension='clubs')
     return jikanUser['data']
 
-def definejikanException(errmsg: str) -> interactions.Embed:
+
+def definejikanException(errmsg: str) -> str:
     """Define what HTTP error AioJikan/Jikan/MyAnimeList threw"""
     e = str(errmsg).split('=')
     print(e)
@@ -28,6 +30,7 @@ def definejikanException(errmsg: str) -> interactions.Embed:
     except IndexError:
         em = "Unknown error."
     return em
+
 
 async def getJikanUserData(uname) -> dict:
     """Get user data from Jikan"""
@@ -61,6 +64,7 @@ async def getJikanAnime(mal_id: int) -> dict:
         return jikanData
     except Exception as e:
         raise Exception(e)
+
 
 def lookupRandomAnime() -> int:
     """Lookup random anime from MAL"""
