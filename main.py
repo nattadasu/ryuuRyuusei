@@ -157,9 +157,6 @@ async def verify(ctx: interactions.CommandContext):
     messageAuthor = ctx.user
     # get the message author id
     discordId = str(messageAuthor.id)
-    # get user joined date
-    discordJoined = snowflake_to_datetime(discordId)
-    discordJoined = int(discordJoined)
     getMemberDetail = await ctx.guild.get_member(discordId)
     memberRoles = getMemberDetail.roles
     verifiedRole = VERIFIED_ROLE
@@ -1595,9 +1592,6 @@ async def admin_unregister(ctx: interactions.CommandContext, dc_username: int):
 async def admin_verify(ctx: interactions.CommandContext, username: int):
     await ctx.defer()
     discordId = username.id
-    # get user joined date
-    discordJoined = snowflake_to_datetime(discordId)
-    discordJoined = int(discordJoined)
     getMemberDetail = await ctx.guild.get_member(discordId)
     memberRoles = getMemberDetail.roles
     verifiedRole = VERIFIED_ROLE
