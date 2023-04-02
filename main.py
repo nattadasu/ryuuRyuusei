@@ -544,19 +544,14 @@ async def search(ctx: interactions.CommandContext, title: str = None):
 
     if aniFound is True:
         try:
-            dcEm = interactions.Embed(
+            dcEm = generateSearchSelections(
                 color=0x2F51A3,
-                author=interactions.EmbedAuthor(
-                    name="MyAnimeList Anime",
-                    url="https://myanimelist.net",
-                    icon_url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"
-                ),
-                thumbnail=interactions.EmbedImageStruct(
-                    url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"
-                ),
+                homepage="https://myanimelist.net",
+                icon="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png",
+                platform="MyAnimeList Anime",
+                query=title,
+                results=f,
                 title=f"Search Results via {searchFrom}",
-                description=f"Found **{len(f)} results** for `{title}`, please select by choosing right option in the dropdown below",
-                fields=f
             )
             com = [
                 interactions.SelectMenu(
@@ -1188,19 +1183,14 @@ async def search(ctx: interactions.CommandContext, title: str):
                     description=f"""{r['format']}, {r['status']}""",
                 )
             ]
-        dcEm = interactions.Embed(
-            author=interactions.EmbedAuthor(
-                name="AniList",
-                url="https://anilist.co/",
-                icon_url="https://anilist.co/img/icons/android-chrome-192x192.png"
-            ),
-            thumbnail=interactions.EmbedImageStruct(
-                url="https://anilist.co/img/icons/android-chrome-192x192.png"
-            ),
+        dcEm = generateSearchSelections(
             color=0x2F80ED,
+            homepage="https://anilist.co/",
+            icon="https://anilist.co/img/icons/android-chrome-192x192.png",
+            platform="AniList Manga",
+            query=title,
+            results=f,
             title="Search Results",
-            description=f"Found **{len(results)} results** for `{title}`, please select by choosing rigth option in the dropdown below.",
-            fields=f
         )
         com = [
             interactions.SelectMenu(
@@ -1508,19 +1498,14 @@ async def search(ctx: interactions.CommandContext, title: str):
                     description=f"Released: {rhel}"
                 )
             ]
-        dcEm = interactions.Embed(
-            author=interactions.EmbedAuthor(
-                name="RAWG Game",
-                url=f"https://rawg.io/",
-                icon_url="https://pbs.twimg.com/profile_images/951372339199045632/-JTt60iX_400x400.jpg"
-            ),
-            thumbnail=interactions.EmbedImageStruct(
-                url="https://pbs.twimg.com/profile_images/951372339199045632/-JTt60iX_400x400.jpg"
-            ),
+        dcEm = generateSearchSelections(
             color=0x1F1F1F,
+            homepage="https://rawg.io/",
+            icon="https://pbs.twimg.com/profile_images/951372339199045632/-JTt60iX_400x400.jpg",
+            platform="RAWG Games",
+            query=title,
+            results=f,
             title="Search Results",
-            description=f"Found **{len(results)} results** for `{title}`, please select by choosing right option in the dropdown below",
-            fields=f
         )
         com = [
             interactions.SelectMenu(

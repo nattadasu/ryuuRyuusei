@@ -177,3 +177,30 @@ def getRandom(value: int = 9) -> int:
     value = -value
     seed = int(str(seed.int)[value:])
     return seed
+
+
+def generateSearchSelections(
+    platform: str,
+    homepage: str,
+    title: str,
+    color: hex,
+    icon: str,
+    query: str,
+    results: list[interactions.EmbedField],
+) -> interactions.Embed:
+    dcEm = interactions.Embed(
+            author=interactions.EmbedAuthor(
+                name=platform,
+                url=homepage,
+                icon_url=icon
+            ),
+            thumbnail=interactions.EmbedImageStruct(
+                url=icon
+            ),
+            color=color,
+            title=title,
+            description=f"Found **{len(results)} results** for `{query}`, please select by choosing right option in the dropdown below",
+            fields=results
+        )
+
+    return dcEm
