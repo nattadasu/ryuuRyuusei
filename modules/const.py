@@ -1,5 +1,6 @@
 import subprocess
 from os import getenv as ge
+from typing import Final
 
 from dotenv import load_dotenv as ld
 
@@ -9,27 +10,26 @@ ld()
 
 database = r"database/database.csv"
 
-AUTHOR_USERID = ge('AUTHOR_USERID')
-AUTHOR_USERNAME = ge('AUTHOR_USERNAME')
-BOT_CLIENT_ID = ge('BOT_CLIENT_ID')
-BOT_SUPPORT_SERVER = ge('BOT_SUPPORT_SERVER')
-BOT_TOKEN = ge('BOT_TOKEN')
-CLUB_ID = ge('CLUB_ID')
-SIMKL_CLIENT_ID = ge('SIMKL_CLIENT_ID')
-TRAKT_CLIENT_ID = ge('TRAKT_CLIENT_ID')
-VERIFICATION_SERVER = ge('VERIFICATION_SERVER')
-VERIFIED_ROLE = ge('VERIFIED_ROLE')
-LASTFM_API_KEY = ge('LASTFM_API_KEY')
-TRAKT_CLIENT_ID = ge('TRAKT_CLIENT_ID')
-TRAKT_API_VERSION = ge('TRAKT_API_VERSION')
-RAWG_API_KEY = ge('RAWG_API_KEY')
+AUTHOR_USERID: Final[int] = ge('AUTHOR_USERID')
+AUTHOR_USERNAME: Final[str] = ge('AUTHOR_USERNAME')
+BOT_CLIENT_ID: Final[int] = ge('BOT_CLIENT_ID')
+BOT_SUPPORT_SERVER: Final[str] = ge('BOT_SUPPORT_SERVER')
+BOT_TOKEN: Final[str] = ge('BOT_TOKEN')
+CLUB_ID: Final[int] = ge('CLUB_ID')
+LASTFM_API_KEY: Final[str] = ge('LASTFM_API_KEY')
+RAWG_API_KEY: Final[str] = ge('RAWG_API_KEY')
+SIMKL_CLIENT_ID: Final[str] = ge('SIMKL_CLIENT_ID')
+TRAKT_API_VERSION: Final[int] = ge('TRAKT_API_VERSION')
+TRAKT_CLIENT_ID: Final[str] = ge('TRAKT_CLIENT_ID')
+VERIFICATION_SERVER: Final[int] = ge('VERIFICATION_SERVER')
+VERIFIED_ROLE: Final[int] = ge('VERIFIED_ROLE')
 
-EMOJI_ATTENTIVE = ge('EMOJI_ATTENTIVE')
-EMOJI_DOUBTING = ge('EMOJI_DOUBTING')
-EMOJI_FORBIDDEN = ge('EMOJI_FORBIDDEN')
-EMOJI_SUCCESS = ge('EMOJI_SUCCESS')
-EMOJI_UNEXPECTED_ERROR = ge('EMOJI_UNEXPECTED_ERROR')
-EMOJI_USER_ERROR = ge('EMOJI_USER_ERROR')
+EMOJI_ATTENTIVE: Final[str] = ge('EMOJI_ATTENTIVE')
+EMOJI_DOUBTING: Final[str] = ge('EMOJI_DOUBTING')
+EMOJI_FORBIDDEN: Final[str] = ge('EMOJI_FORBIDDEN')
+EMOJI_SUCCESS: Final[str] = ge('EMOJI_SUCCESS')
+EMOJI_UNEXPECTED_ERROR: Final[str] = ge('EMOJI_UNEXPECTED_ERROR')
+EMOJI_USER_ERROR: Final[str] = ge('EMOJI_USER_ERROR')
 
 
 def get_git_revision_hash() -> str:
@@ -48,7 +48,7 @@ gtHsh = get_git_revision_short_hash()
 
 ownerUserUrl = f'https://discord.com/users/{AUTHOR_USERID}'
 
-ABOUT_BOT = f'''<@!{BOT_CLIENT_ID}> is a bot personally created and used by [nattadasu](<https://nattadasu.my.id>) with the initial purpose as for member verification and MAL profile integration bot, which is distributed under [AGPL 3.0](<https://www.gnu.org/licenses/agpl-3.0.en.html>) license. ([Source Code](<https://github.com/nattadasu/ryuuRyuusei>), source code in repository may be older than main production maintained by nattadasu for)
+ABOUT_BOT: Final[str] = f'''<@!{BOT_CLIENT_ID}> is a bot personally created and used by [nattadasu](<https://nattadasu.my.id>) with the initial purpose as for member verification and MAL profile integration bot, which is distributed under [AGPL 3.0](<https://www.gnu.org/licenses/agpl-3.0.en.html>) license. ([Source Code](<https://github.com/nattadasu/ryuuRyuusei>), source code in repository may be older than main production maintained by nattadasu for)
 
 However, due to how advanced the bot in querying information regarding user, anime on MAL, and manga on AniList, invite link is available for anyone who's interested to invite the bot (see `/invite`).
 
@@ -64,7 +64,7 @@ Bot version, in Git hash: [`{gtHsh}`](<https://github.com/nattadasu/ryuuRyuusei/
 # =============================================================================
 # Privacy Policy
 
-PRIVACY_POLICY = '''Hello and thank you for your interest to read this tl;dr version of Privacy Policy.
+PRIVACY_POLICY: Final[str] = '''Hello and thank you for your interest to read this tl;dr version of Privacy Policy.
 
 In this message we shortly briefing which content we collect, store, and use, including what third party services we used for bot to function as expected. You can read the full version of [Privacy Policy here at anytime you wish](<https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md>).
 
@@ -91,7 +91,7 @@ For any contact information, type `/about`.'''
 # =============================================================================
 # Support Development
 
-SUPPORT_DEVELOPMENT = f'''{EMOJI_ATTENTIVE} Thanks for your interest in supporting me!
+SUPPORT_DEVELOPMENT: Final[str] = f'''{EMOJI_ATTENTIVE} Thanks for your interest in supporting me!
 
 You can support me on [Ko-Fi](<https://ko-fi.com/nattadasu>), [PayPal](<https://paypal.me/nattadasu>), or [GitHub Sponsors](<https://github.com/sponsors/nattadasu>).
 
@@ -104,7 +104,7 @@ If you have any questions (or more payment channels), please join my [support se
 # =============================================================================
 # Declined GDPR notice
 
-DECLINED_GDPR = '''**You have not accepted the GDPR/CCPA/CPRA Privacy Consent!**
+DECLINED_GDPR: Final[str] = '''**You have not accepted the GDPR/CCPA/CPRA Privacy Consent!**
 Unfortunately, we cannot register you without your consent. However, you can still use the bot albeit limited.
 
 Allowed commands:
@@ -126,19 +126,19 @@ For more info what do we collect and use, use `/privacy`.
 
 # Common errors and messages
 
-MESSAGE_MEMBER_REG_PROFILE = f"{EMOJI_DOUBTING} **You are looking at your own profile!**\nYou can also use </profile:1072608801334755529> without any arguments to get your own profile!"
+MESSAGE_MEMBER_REG_PROFILE: Final[str] = f"{EMOJI_DOUBTING} **You are looking at your own profile!**\nYou can also use </profile:1072608801334755529> without any arguments to get your own profile!"
 
-MESSAGE_INVITE = "To invite me, simply press \"**Invite me!**\" button below!\nFor any questions, please join my support server!"
+MESSAGE_INVITE: Final[str] = "To invite me, simply press \"**Invite me!**\" button below!\nFor any questions, please join my support server!"
 
-MESSAGE_SELECT_TIMEOUT = "*Selection menu has reached timeout, please try again if you didn't pick the option!*"
+MESSAGE_SELECT_TIMEOUT: Final[str] = "*Selection menu has reached timeout, please try again if you didn't pick the option!*"
 
-MESSAGE_WARN_CONTENTS = f"""
+MESSAGE_WARN_CONTENTS: Final[str] = f"""
 
 If you invoked this command outside (public or private) forum thread channel or regular text channel and **Age Restriction** is enabled, please contact developer of this bot as the feature only tested in forum thread and text channel.
 
 You can simply access it on `/support`"""
 
-ERR_KAIZE_SLUG_MODDED = '''We've tried to search for the anime using the slug (and even fix the slug itself), but it seems that the anime is not found on Kaize via AnimeApi.
+ERR_KAIZE_SLUG_MODDED: Final[str] = '''We've tried to search for the anime using the slug (and even fix the slug itself), but it seems that the anime is not found on Kaize via AnimeApi.
 Please send a message to AnimeApi maintainer, nattadasu (he is also a developer of this bot)'''
 
 # =============================================================================
