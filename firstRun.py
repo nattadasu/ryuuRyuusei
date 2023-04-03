@@ -36,6 +36,15 @@ def main():
     # run malIndexer.py
     print("Indexing MyAnimeList data from AnimeAPI...")
     mal_run()
+    # check if .env exists, if not, copy .env.example
+    if not os.path.exists(".env"):
+        print("Copying .env.example to .env...")
+        if currentOS() == "Windows":
+            os.system("copy .env.example .env")
+        else:
+            os.system("cp .env.example .env")
+    else:
+        print(".env already exists, skipping...")
     print("Initialization finished, you should able to run the bot safely now.")
 
 if __name__ == "__main__":

@@ -180,12 +180,26 @@ cd ryuuRyuusei
 ```
 
 Next, you need to do an initial setup for the bot. Run `firstRun.py` and let the
-bot create the required files and install dependencies that hosted in GitHub
-instead of PyPI:
+automation intelligently pick the latest version of installed Python and
+installs `jikanpy` from GitHub repository (we need APIv4 and AioJikan
+support), install required modules for the bot, and finally prepare databases
+(bot, `nattadasu/nekomimiDb`, and AnimeAPI).
 
 ```bash
 python ./firstRun.py
 ```
+
+> **Note**
+>
+> In some cases, you may need to add variable `PYTHON_BINARY` to skip the
+> automatic Python version detection. For example in PowerShell (Windows/Core),
+> if you have multiple versions of Python installed, you can use
+>
+> ```pwsh
+> $Env:PYTHON_BINARY = "${Env:LOCALAPPDATA}/Programs/Python/Python39/python.exe"
+> ```
+>
+> to force the script to use Python 3.9.
 
 Then, when `pip` finished installing all of required modules, copy
 `.env.example` to `.env` and fill the required fields.

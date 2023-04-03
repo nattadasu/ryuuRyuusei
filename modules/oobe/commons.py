@@ -17,6 +17,9 @@ def currentOS() -> str:
 
 def pyBinPath() -> str:
     """Return python binary path"""
+    if os.getenv("PYTHON_BINARY"):
+        # eh, just return the env var if it exists
+        return os.getenv("PYTHON_BINARY")
     def askPython(shellOutput: str) -> bool:
         """Directly ask Python what version it is"""
         so = shellOutput.split(" ")
