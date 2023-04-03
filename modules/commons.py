@@ -204,3 +204,13 @@ def generateSearchSelections(
         )
 
     return dcEm
+
+
+async def getNsfwStatus(channel: interactions.CommandContext.channel) -> bool:
+    """Check if a channel is NSFW or not"""
+    if channel.type == 11 or channel.type == 12:
+        prId = channel.parent_id
+        nsfwBool = await getParentNsfwStatus(prId)
+    else:
+        nsfwBool = channel.nsfw
+    return nsfwBool

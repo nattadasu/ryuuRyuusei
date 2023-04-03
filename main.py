@@ -475,16 +475,6 @@ async def search(ctx: interactions.CommandContext, title: str = None):
     ani_id = None
     alData = None
 
-    async def lookupByNameAniList(aniname: str) -> dict:
-        """Lookup anime by name using AniList"""
-        rawData = await searchAniList(name=aniname, isAnime=True)
-        return rawData
-
-    async def lookupByNameJikan(name: str) -> dict:
-        """Lookup anime by name using Jikan"""
-        rawData = await searchJikanAnime(name)
-        return rawData
-
     f = []
     so = []
     com = []
@@ -492,7 +482,7 @@ async def search(ctx: interactions.CommandContext, title: str = None):
 
     try:
         await ctx.send(f"Searching `{title}` using AniList", embeds=None, components=None)
-        alData = await lookupByNameAniList(title)
+        alData = await searchAniList(name=title, isAnime=True)
         if len(alData) == 0:
             raise Exception()
         else:
@@ -518,7 +508,7 @@ async def search(ctx: interactions.CommandContext, title: str = None):
     except:
         try:
             await ctx.edit(f"AniList failed to search `{title}`, searching via Jikan (inaccurate)", embeds=None, components=None)
-            ani = await lookupByNameJikan(title)
+            ani = await searchJikanAnime(title=title)
             if len(ani) == 0:
                 raise Exception()
             else:
@@ -578,14 +568,7 @@ async def search(ctx: interactions.CommandContext, title: str = None):
 async def mal_search(ctx: interactions.ComponentContext, choices: list[str]):
     await ctx.defer()
     try:
-        # check if command invoked in a forum thread
-        if ctx.channel.type == 11 or ctx.channel.type == 12:
-            # get parent channel id
-            prId = ctx.channel.parent_id
-            # get NSFW status
-            nsfw_bool = await getParentNsfwStatus(snowflake=prId)
-        else:
-            nsfw_bool = ctx.channel.nsfw
+        nsfw_bool = await getNsfwStatus(channel=ctx.channel)
         ani_id = int(choices[0])
         aniApi = await getNatsuAniApi(ani_id, platform="myanimelist")
         if aniApi['anilist'] is not None:
@@ -615,14 +598,7 @@ async def random(ctx: interactions.CommandContext):
     await ctx.send(f"Found [`{ani_id}`](<https://myanimelist.net/anime/{ani_id}>), showing information...", ephemeral=True)
 
     try:
-        # check if command invoked in a forum thread
-        if ctx.channel.type == 11 or ctx.channel.type == 12:
-            # get parent channel id
-            prId = ctx.channel.parent_id
-            # get NSFW status
-            nsfw_bool = await getParentNsfwStatus(snowflake=prId)
-        else:
-            nsfw_bool = ctx.channel.nsfw
+        nsfw_bool = await getNsfwStatus(channel=ctx.channel)
         sendMessages = None
         aniApi = await getNatsuAniApi(ani_id, platform="myanimelist")
         if aniApi['anilist'] is not None:
@@ -658,14 +634,7 @@ async def info(ctx: interactions.CommandContext, id: int):
     await ctx.get_channel()
     trailer = None
     try:
-        # check if command invoked in a forum thread
-        if ctx.channel.type == 11 or ctx.channel.type == 12:
-            # get parent channel id
-            prId = ctx.channel.parent_id
-            # get NSFW status
-            nsfw_bool = await getParentNsfwStatus(snowflake=prId)
-        else:
-            nsfw_bool = ctx.channel.nsfw
+        nsfw_bool = await getNsfwStatus(channel=ctx.channel)
         aniApi = await getNatsuAniApi(id=id, platform='myanimelist')
         if aniApi['anilist'] is not None:
             aaDict = await getAniList(media_id=aniApi['anilist'], isAnime=True)
@@ -1221,13 +1190,7 @@ async def anilist_search(ctx: interactions.ComponentContext, choices: list[str])
     try:
         rawData = await getAniList(media_id=int(choices[0]), isAnime=False)
         bypass = await bypassAniListEcchiTag(alm=rawData[0])
-        if ctx.channel.type == 11 or ctx.channel.type == 12:
-            # get parent channel id
-            prId = ctx.channel.parent_id
-            # get NSFW status
-            nsfw_bool = await getParentNsfwStatus(snowflake=prId)
-        else:
-            nsfw_bool = ctx.channel.nsfw
+        nsfw_bool = await getNsfwStatus(channel=ctx.channel)
         dcEm = await generateAnilist(alm=rawData[0], isNsfw=nsfw_bool, bypassEcchi=bypass)
         if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
             trailer = generateTrailer(data=rawData[0]['trailer'])
@@ -1256,14 +1219,7 @@ async def info(ctx: interactions.CommandContext, id: int):
     try:
         rawData = await getAniList(media_id=id, isAnime=False)
         bypass = await bypassAniListEcchiTag(alm=rawData[0])
-        # check if command invoked in a forum thread
-        if ctx.channel.type == 11 or ctx.channel.type == 12:
-            # get parent channel id
-            prId = ctx.channel.parent_id
-            # get NSFW status
-            nsfw_bool = await getParentNsfwStatus(snowflake=prId)
-        else:
-            nsfw_bool = ctx.channel.nsfw
+        nsfw_bool = await getNsfwStatus(channel=ctx.channel)
         dcEm = await generateAnilist(alm=rawData[0], isNsfw=nsfw_bool, bypassEcchi=bypass)
         if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
             trailer = generateTrailer(data=rawData[0]['trailer'])
