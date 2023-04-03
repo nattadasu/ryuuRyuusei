@@ -1,38 +1,9 @@
 #!/usr/bin/env python3
 
-import os
-import platform
-
-# check current OS
-if platform.system() == "Windows":
-    pf = "python"
-else:
-    pf = "python3"
-
-def installJikanpy():
-    # install jikanpy
-    print("Installing jikanpy via git...")
-    os.system("git clone https://github.com/abhinavk99/jikanpy")
-    os.chdir("jikanpy")
-    os.system(f"{pf} -m pip install -r requirements.txt")
-    os.system(f"{pf} setup.py install")
-    os.chdir("..")
-    # remove jikanpy folder
-    print("Removing jikanpy folder...")
-    if platform.system() == "Windows":
-        os.system("rmdir /s /q jikanpy")
-    else:
-        os.system("rm -rf jikanpy")
-
-def checkTermux():
-    # check if termux
-    if platform.system() == "Linux":
-        if os.path.exists("/data/data/com.termux/files/usr/bin"):
-            return True
-        else:
-            return False
-    else:
-        return False
+from modules.oobe.commons import *
+from modules.oobe.jikan import *
+from modules.oobe.malIndexer import *
+from modules.oobe.getNekomimi import *
 
 def main():
     # check if termux
@@ -43,20 +14,27 @@ def main():
     # check if jikanpy is installed
     try:
         from jikanpy import AioJikan
+        # using git, fetch latest jikanpy
+        # if there's any changes, install it
+        print("Checking for jikanpy updates...")
+        os.chdir("jikanpy")
+        revertReqs()
+        if os.system("git diff --exit-code origin/master") != 0:
+            updateJikanpy()
     except ImportError:
         installJikanpy()
     # install dependencies
     print("Installing dependencies for next step and the bot itself...")
     os.system(f"{env}{pf} -m pip install -r requirements.txt")
     # run prepFile.py
-    print("Running prepFile.py...")
-    os.system(f"{pf} firstRun/prepFile.py")
+    print("Preparing database as database.csv in tabbed format...")
+    prepare_database()
     # run getNekomimi.py
-    print("Running getNekomimi.py...")
-    os.system(f"{pf} firstRun/getNekomimi.py")
+    print("Fetching latest github:nattadasu/nekomimiDb data...")
+    nk_run()
     # run malIndexer.py
-    print("Running malIndexer.py...")
-    os.system(f"{pf} firstRun/malIndexer.py")
+    print("Indexing MyAnimeList data from AnimeAPI...")
+    mal_run()
     print("Initialization finished, you should able to run the bot safely now.")
 
 if __name__ == "__main__":
