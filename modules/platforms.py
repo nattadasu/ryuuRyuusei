@@ -1,3 +1,5 @@
+from typing import Union
+
 def getPlatformColor(pf: str) -> hex:
     """Get a color code for a specific platform"""
     pf = pf.lower()
@@ -97,7 +99,7 @@ def getPlatformName(pf: str) -> str:
     return pfDict.get(pf, "Unknown")
 
 
-def mediaIdToPlatform(media_id: str, platform: str) -> dict:
+def mediaIdToPlatform(media_id: str, platform: str, simklType: Union[str, None] = None) -> dict:
     """Convert a media ID to a platform-specific ID"""
     platform_dict = {
         'anidb': {
@@ -140,7 +142,7 @@ def mediaIdToPlatform(media_id: str, platform: str) -> dict:
             'uid': f'https://otakotaku.com/anime/view/{media_id}',
             'emoid': '1088801946313429013'},
         'simkl': {
-            'uid': f'https://simkl.com/anime/{media_id}',
+            'uid': f'https://simkl.com/{simklType}/{media_id}',
             'emoid': '1073630754275348631'},
         'shoboi': {
             'uid': f'https://cal.syoboi.jp/tid/{media_id}',

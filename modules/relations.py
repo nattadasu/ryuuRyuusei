@@ -158,8 +158,9 @@ def platformsToFields(currPlatform: str, **k) -> list:
                 inline=True
             )
         ]
-    if (k['simkl'] is not None) and (currPlatform != 'simkl'):
-        pin = mediaIdToPlatform(k['simkl'], 'simkl')
+    # if ((k['simkl'] is not None) and (str(k['simkl']) != '0')) and (currPlatform != 'simkl'):
+    if (k['simkl'] not in [None, 0, '0']) and (currPlatform != 'simkl'):
+        pin = mediaIdToPlatform(media_id=k['simkl'], platform='simkl', simklType=k['simklType'])
         relsEm += [
             interactions.EmbedField(
                 name=f"<:simkl:{pin['emoid']}> {pin['pf']}",
@@ -176,7 +177,7 @@ def platformsToFields(currPlatform: str, **k) -> list:
                 inline=True
             )
         ]
-    if (k['tmdb'] is not None) and (currPlatform != 'tmdb'):
+    if (re.match(r'None$', k['tmdb']) is False) and (currPlatform != 'tmdb'):
         tmdb = re.sub(r'^(movie|tv)/', '', k['tmdb'])
         pin = mediaIdToPlatform(k['tmdb'], 'tmdb')
         relsEm += [

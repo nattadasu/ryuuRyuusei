@@ -789,6 +789,7 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
         imdbId = None
         malId = None
         tmdbId = None
+        tvdbId = None
         traktId = None
         trkSeason = None
         trkType = None
@@ -1015,6 +1016,7 @@ async def relations(ctx: interactions.CommandContext, id: str, platform: str):
             shoboi=aa['shoboi'],
             silveryasha=aa['silveryasha'],
             simkl=simId,
+            simklType=smk['type'],
             trakt=traktId,
             tvdb=tvdbId,
             tmdb=tmdbId,
