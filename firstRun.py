@@ -18,9 +18,10 @@ def main():
         # if there's any changes, install it
         print("Checking for jikanpy updates...")
         os.chdir("jikanpy")
-        revertReqs()
+        os.system("git pull")
         if os.system("git diff --exit-code origin/master") != 0:
             updateJikanpy()
+        os.chdir("..")
     except ImportError:
         installJikanpy()
     # install dependencies

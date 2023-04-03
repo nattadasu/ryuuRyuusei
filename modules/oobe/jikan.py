@@ -3,7 +3,6 @@ from modules.oobe.commons import *
 def revertReqs():
     os.remove("requirements.txt")
     os.system("git checkout HEAD .")
-    os.system("git fetch")
 
 def updateJikanpy():
     reqs = ""
@@ -21,7 +20,6 @@ def updateJikanpy():
     os.system(f"{pf} -m pip install -r requirements.txt")
     os.system(f"{pf} setup.py install")
     revertReqs()
-    os.chdir("..")
 
 def installJikanpy():
     # install jikanpy
@@ -29,3 +27,4 @@ def installJikanpy():
     os.system("git clone https://github.com/abhinavk99/jikanpy")
     os.chdir("jikanpy")
     updateJikanpy()
+    os.chdir("..")
