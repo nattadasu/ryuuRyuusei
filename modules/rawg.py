@@ -91,7 +91,7 @@ async def generateRawg(data: dict) -> interactions.Embed:
         cyno = cyno.split('\n')
         cynl = len(cyno)
         cynoin = cyno[0]
-        cynmo = "\n> \n> [Read more on RAWG](https://rawg.io/games/{id})"
+        cynmo = f"\n> \n> [Read more on RAWG](https://rawg.io/games/{id})"
 
         if len(str(cynoin)) <= 150:
             daff = cynoin
