@@ -21,6 +21,8 @@ async def getRawgData(slug: str) -> dict:
                 raise Exception(f"RAWG API returned {resp.status}")
             rawgRes = await resp.json()
         await session.close()
+        if len(rawgRes) == 0:
+            raise Exception("**No results found!**")
         return rawgRes
 
 
