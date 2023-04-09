@@ -200,7 +200,7 @@ def generateSearchSelections(
             ),
             color=color,
             title=title,
-            description=f"Found **{len(results)} results** for `{query}`, please select by choosing right option in the dropdown below",
+            description=f"Found **{len(results)} results** for `{query}`, Please select by choosing right option in the dropdown below",
             fields=results
         )
 
