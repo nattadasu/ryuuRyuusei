@@ -1,8 +1,10 @@
+import asyncio
 import csv
 import datetime
 import html
 import json
 import time
+import urllib.parse as urlparse
 from json import loads as jload
 from urllib.parse import quote as urlquote
 from uuid import uuid4 as id4
@@ -14,9 +16,8 @@ import interactions
 import pandas as pd
 import regex as re
 from bs4 import BeautifulSoup
-from jikanpy import AioJikan
-import asyncio
 
+from jikanpy import AioJikan
 from modules.const import *
 
 bannedTags = [
