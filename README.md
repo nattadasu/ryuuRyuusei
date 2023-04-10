@@ -162,6 +162,7 @@ If you have any questions, feel free to join the
   - `/random_nekomimi gurls` - Get a random female nekomimi image
   - `/random_nekomimi true_random` - *Harness the true power of having a random*
     *nekomimi image*
+- `/snowflake` - Convert Discord snowflake to UNIX/Epoch timestamp
 
 ### Commons Bot Commands
 

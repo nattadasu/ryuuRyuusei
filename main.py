@@ -1196,6 +1196,53 @@ async def info(ctx: interactions.CommandContext, simkl_id: int):
     await ctx.defer()
     await simklSubmit(ctx=ctx, simkl_id=simkl_id, media='movies')
 
+
+@bot.command(
+    name="snowflake",
+    description="Convert a Discord Snowflake to a timestamp",
+    options=[
+        interactions.Option(
+            name="snowflake",
+            description="The snowflake to convert",
+            required=True,
+            type=interactions.OptionType.STRING,
+        )
+    ]
+)
+async def snowflake(ctx: interactions.CommandContext, snowflake: str):
+    """Convert a Discord Snowflake to a timestamp"""
+    await ctx.defer()
+    tmsp = int(snowflake_to_datetime(int(snowflake)))
+    dcEm = interactions.Embed(
+        title="Snowflake",
+        description="Below is the timestamp for the snowflake:",
+        color=0x1F1F1F,
+        fields=[
+            interactions.EmbedField(
+                name="Timestamp",
+                value=tmsp,
+                inline=False
+            ),
+            interactions.EmbedField(
+                name="Date",
+                value=f"<t:{tmsp}:D>",
+                inline=True
+            ),
+            interactions.EmbedField(
+                name="Full Date",
+                value=f"<t:{tmsp}:F>",
+                inline=True
+            ),
+            interactions.EmbedField(
+                name="Relative",
+                value=f"<t:{tmsp}:R>",
+                inline=True
+            ),
+        ]
+    )
+    await ctx.send("", embeds=[dcEm])
+
+
 print("Starting bot...")
 
 bot.start()
