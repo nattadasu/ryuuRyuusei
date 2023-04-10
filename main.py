@@ -16,6 +16,7 @@ from modules.platforms import *
 from modules.rawg import *
 from modules.relations import *
 from modules.simkl import *
+from modules.tmdb import *
 from modules.trakt import *
 
 
@@ -1515,6 +1516,175 @@ async def info(ctx: interactions.CommandContext, slug: str):
 
     await ctx.send("", embeds=dcEm)
 
+@bot.command(
+    name="tv",
+    description="Get information about TV Shows! Powered by SIMKL and The Movie Database (for NSFW checker)"
+)
+async def tv(ctx: interactions.CommandContext):
+    pass
+
+@bot.command(
+    name="movie",
+    description="Get information about Movies! Powered by SIMKL and The Movie Database (for NSFW checker)"
+)
+async def movie(ctx: interactions.CommandContext):
+    pass
+
+@tv.subcommand(
+    options=[
+        interactions.Option(
+            name="title",
+            description="The title of the TV Show",
+            required=True,
+            type=interactions.OptionType.STRING,
+        )
+    ]
+)
+async def search(ctx: interactions.CommandContext, title: str):
+    """Search for a title in SIMKL"""
+    await ctx.defer()
+    try:
+        results = await searchSimkl(query=title, mediaType="tv")
+        f = []
+        so = []
+        for r in results:
+            rhel = r['year']
+            f += [
+                interactions.EmbedField(
+                    name=r['title'],
+                    value=f"*First aired on: {rhel}*",
+                    inline=False
+                )
+            ]
+            so += [
+                interactions.SelectOption(
+                    label=r['title'],
+                    value=f"tv/{r['ids']['simkl_id']}",
+                    description=f"First aired: {rhel}"
+                )
+            ]
+        dcEm = generateSearchSelections(
+            color=0x1F1F1F,
+            homepage="https://simkl.com/",
+            icon="https://media.discordapp.net/attachments/1078005713349115964/1094570318967865424/ico_square_1536x1536.png",
+            platform="SIMKL",
+            query=title,
+            results=f,
+            title="Search Results",
+        )
+        com = [
+            interactions.SelectMenu(
+                options=so,
+                custom_id="simkl_search",
+                placeholder="Select a TV Show to get more information"
+            )
+        ]
+
+        await ctx.send("", embeds=dcEm, components=com)
+        # timeout the selection
+        await asyncio.sleep(90)
+        await ctx.edit(MESSAGE_SELECT_TIMEOUT, embeds=dcEm, components=[])
+    except Exception as e:
+        dcEm = exceptionsToEmbed(returnException(e))
+        await ctx.send("", embeds=dcEm)
+
+@movie.subcommand(
+    options=[
+        interactions.Option(
+            name="title",
+            description="The title of the movie",
+            required=True,
+            type=interactions.OptionType.STRING,
+        )
+    ]
+)
+async def search(ctx: interactions.CommandContext, title: str):
+    """Search for a title in SIMKL"""
+    await ctx.defer()
+    try:
+        results = await searchSimkl(query=title, mediaType="movie")
+        f = []
+        so = []
+        for r in results:
+            rhel = r['year']
+            ttl = r['title']
+            f += [
+                interactions.EmbedField(
+                    name=ttl,
+                    value=f"*Premiered on: {rhel}*",
+                    inline=False
+                )
+            ]
+            so += [
+                interactions.SelectOption(
+                    label=ttl,
+                    value=f"movies/{r['ids']['simkl_id']}",
+                    description=f"Premiered: {rhel}"
+                )
+            ]
+        dcEm = generateSearchSelections(
+            color=0x1F1F1F,
+            homepage="https://simkl.com/",
+            icon="https://media.discordapp.net/attachments/1078005713349115964/1094570318967865424/ico_square_1536x1536.png",
+            platform="SIMKL",
+            query=title,
+            results=f,
+            title="Search Results",
+        )
+        com = [
+            interactions.SelectMenu(
+                options=so,
+                custom_id="simkl_search",
+                placeholder="Select a movie to get more information"
+            )
+        ]
+
+        await ctx.send("", embeds=dcEm, components=com)
+        # timeout the selection
+        await asyncio.sleep(90)
+        await ctx.edit(MESSAGE_SELECT_TIMEOUT, embeds=dcEm, components=[])
+    except Exception as e:
+        dcEm = exceptionsToEmbed(returnException(e))
+        await ctx.send("", embeds=dcEm)
+
+@bot.component("simkl_search")
+async def simkl_search(ctx: interactions.ComponentContext, choices: list[str]):
+    await ctx.defer()
+    ids = choices[0].split("/")
+    mediaType = ids[0]
+    simkl_id = ids[1]
+    await simklSubmit(ctx=ctx, simkl_id=simkl_id, media=mediaType)
+
+@tv.subcommand(
+    options=[
+        interactions.Option(
+            name="simkl_id",
+            description="The TV show id on SIMKL to fetch",
+            required=True,
+            type=interactions.OptionType.INTEGER,
+        )
+    ]
+)
+async def info(ctx: interactions.CommandContext, simkl_id: str):
+    """Get TV show information from SIMKL using SIMKL ID"""
+
+    await simklSubmit(ctx=ctx, simkl_id=simkl_id, media='tv')
+
+
+@movie.subcommand(
+    options=[
+        interactions.Option(
+            name="simkl_id",
+            description="The movie id on SIMKL to fetch",
+            required=True,
+            type=interactions.OptionType.INTEGER,
+        )
+    ]
+)
+async def info(ctx: interactions.CommandContext, simkl_id: int):
+    """Get movie information from SIMKL using SIMKL ID"""
+    await ctx.defer()
+    await simklSubmit(ctx=ctx, simkl_id=simkl_id, media='movies')
 
 print("Starting bot...")
 

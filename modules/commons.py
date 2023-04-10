@@ -129,10 +129,12 @@ def sanitizeMarkdown(text: str) -> str:
     return text
 
 
-def generateTrailer(data: dict, isMal: bool = False) -> interactions.Button:
+def generateTrailer(data: dict, isMal: bool = False, isSimkl: bool = False) -> interactions.Button:
     """Generate a button to a YouTube video"""
     if isMal:
         ytid = data['youtube_id']
+    elif isSimkl:
+        ytid = data['youtube']
     else:
         ytid = data['id']
     final = interactions.Button(
