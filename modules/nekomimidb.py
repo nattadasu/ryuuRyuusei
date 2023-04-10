@@ -51,3 +51,9 @@ def generateNekomimi(row: dict) -> interactions.Embed:
     )
 
     return dcEm
+
+
+async def nekomimiSubmit(ctx: interactions.CommandContext, gender: str = None):
+    data = await getNekomimi(gender)
+    dcEm = generateNekomimi(row=data)
+    await ctx.send("", embeds=dcEm)

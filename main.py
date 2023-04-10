@@ -300,84 +300,7 @@ Joined to {ctx.guild.name}: <t:{userJoined}:F>"""
 )
 async def profile(ctx: interactions.CommandContext, user: int = None, mal_username: str = None, extended: bool = False):
     await ctx.defer()
-
-    userRegistered = MESSAGE_MEMBER_REG_PROFILE
-
-    if (user is not None) and (mal_username is not None):
-        try:
-            raise KeyError
-        except KeyError:
-            sendMessages = ""
-            dcEm = exceptionsToEmbed(returnException(
-                f"{EMOJI_USER_ERROR} **You cannot use both options!** Use either one of `user:` or `mal_username:`, hmph. >:("))
-    else:
-        if mal_username is None:
-            if user is not None:
-                uid = user.id
-            else:
-                uid = ctx.author.id
-            try:
-                if checkIfRegistered(uid):
-                    with open(database, "r") as f:
-                        reader = csv.reader(f, delimiter="\t")
-                        for row in reader:
-                            if row[0] == uid:
-                                jikanStats = await jikan.users(username=row[3], extension='full')
-                                break
-                    malProfile = jikanStats['data']
-
-                    dcEm = generateProfile(
-                        malProfile=malProfile, extend=extended)
-                    if user is None:
-                        sendMessages = ""
-                    elif ctx.author.id == uid:
-                        sendMessages = userRegistered
-                    else:
-                        sendMessages = f"<@{uid}> data:"
-                else:
-                    if user is None:
-                        raise KeyError(
-                            f"{EMOJI_USER_ERROR} Sorry, but to use standalone command, you need to `/register` your account. Or, you can use `/profile mal_username:<yourUsername>` instead")
-                    else:
-                        raise KeyError(
-                            f"I couldn't find <@!{uid}> on my database. It could be that they have not registered their MAL account yet.")
-            except KeyError as regAccount:
-                foo = "Please be a good child, okay? 🚶‍♂️" if user is None else ""
-                sendMessages = ""
-                dcEm = interactions.Embed(
-                    title="User have not registered yet!",
-                    description=returnException(regAccount),
-                    color=0xFF0000,
-                    footer=interactions.EmbedFooter(
-                        text=foo
-                    )
-                )
-            except Exception as e:
-                sendMessages = ""
-                dcEm = exceptionsToEmbed(definejikanException(e))
-        elif mal_username is not None:
-            uname = mal_username.strip()
-            try:
-                with open(database, "r") as f:
-                    reader = csv.reader(f, delimiter="\t")
-                    for row in reader:
-                        if (str(row[3]).lower() == str(uname).lower()) and (ctx.author.id == row[0]):
-                            sendMessages = userRegistered
-                            break
-                        elif (str(row[3]).lower() == str(uname).lower()) and (ctx.author.id != row[0]):
-                            sendMessages = f"{EMOJI_ATTENTIVE} This MAL account is registered on this bot, you could use `/profile user:<@!{row[0]}>` instead"
-                            break
-                        else:
-                            sendMessages = ""
-                jikanStats = await jikan.users(username=uname, extension='full')
-                malProfile = jikanStats['data']
-
-                dcEm = generateProfile(malProfile=malProfile, extend=extended)
-            except Exception as e:
-                sendMessages = ""
-                dcEm = exceptionsToEmbed(definejikanException(e))
-
-    await ctx.send(sendMessages, embeds=dcEm)
+    await malProfileSubmit(ctx=ctx, user=user, mal_username=mal_username, extended=extended)
 
 
 @bot.command(
@@ -568,58 +491,20 @@ async def search(ctx: interactions.CommandContext, title: str = None):
 @bot.component('mal_search')
 async def mal_search(ctx: interactions.ComponentContext, choices: list[str]):
     await ctx.defer()
-    try:
-        nsfw_bool = await getNsfwStatus(channel=ctx.channel)
-        ani_id = int(choices[0])
-        aniApi = await getNatsuAniApi(ani_id, platform="myanimelist")
-        if aniApi['anilist'] is not None:
-            alData = await getAniList(media_id=aniApi['anilist'], isAnime=True)
-            if (alData[0]['trailer'] is not None) and (alData[0]['trailer']['site'] == "youtube"):
-                trailer = generateTrailer(
-                    data=alData[0]['trailer'], isMal=False)
-                trailer = [trailer]
-            else:
-                trailer = []
-        dcEm = await generateMal(ani_id, nsfw_bool, alDict=alData, animeApi=aniApi)
-    except Exception as e:
-        dcEm = exceptionsToEmbed(returnException(e))
-        trailer = []
-    await ctx.send("", embeds=dcEm, components=trailer)
+    ani_id: int = int(choices[0])
+    await malSubmit(ctx, ani_id, 'anime')
 
 
 @anime.subcommand()
 async def random(ctx: interactions.CommandContext):
     """Get random anime information from MAL"""
     await ctx.defer()
-    await ctx.get_channel()
 
     ani_id = lookupRandomAnime()
-    trailer = None
 
     await ctx.send(f"Found [`{ani_id}`](<https://myanimelist.net/anime/{ani_id}>), showing information...", ephemeral=True)
 
-    try:
-        nsfw_bool = await getNsfwStatus(channel=ctx.channel)
-        sendMessages = None
-        aniApi = await getNatsuAniApi(ani_id, platform="myanimelist")
-        if aniApi['anilist'] is not None:
-            aaDict = await getAniList(media_id=aniApi['anilist'], isAnime=True)
-            if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
-                trailer = generateTrailer(data=aaDict[0]['trailer'])
-        else:
-            try:
-                aaDict = await getAniList(name=aniApi['title'], media_id=None, isAnime=True)
-                if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
-                    trailer = generateTrailer(data=aaDict[0]['trailer'])
-            except:
-                aaDict = None
-        dcEm = await generateMal(ani_id, nsfw_bool, aaDict, animeApi=aniApi)
-    except Exception as e:
-        dcEm = exceptionsToEmbed(returnException(e))
-        sendMessages = ""
-        trailer = None
-
-    await ctx.send(sendMessages, embeds=dcEm, components=trailer)
+    await malSubmit(ctx, ani_id, 'anime')
 
 
 @anime.subcommand()
@@ -632,28 +517,7 @@ async def random(ctx: interactions.CommandContext):
 async def info(ctx: interactions.CommandContext, id: int):
     """Get anime information from MAL and AniAPI using MAL id"""
     await ctx.defer()
-    await ctx.get_channel()
-    trailer = None
-    try:
-        nsfw_bool = await getNsfwStatus(channel=ctx.channel)
-        aniApi = await getNatsuAniApi(id=id, platform='myanimelist')
-        if aniApi['anilist'] is not None:
-            aaDict = await getAniList(media_id=aniApi['anilist'], isAnime=True)
-            if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
-                trailer = generateTrailer(data=aaDict[0]['trailer'])
-        else:
-            try:
-                aaDict = await getAniList(name=aniApi['title'], media_id=None, isAnime=True)
-                if (aaDict[0]['trailer'] is not None) and (aaDict[0]['trailer']['site'] == "youtube"):
-                    trailer = generateTrailer(data=aaDict[0]['trailer'])
-            except:
-                aaDict = None
-        dcEm = await generateMal(id, nsfw_bool, aaDict, animeApi=aniApi)
-    except Exception as e:
-        dcEm = exceptionsToEmbed(returnException(e))
-        trailer = None
-
-    await ctx.send("", embeds=dcEm, components=trailer)
+    await malSubmit(ctx, id, 'anime')
 
 
 @anime.subcommand(
@@ -753,324 +617,7 @@ async def info(ctx: interactions.CommandContext, id: int):
 async def relations(ctx: interactions.CommandContext, id: str, platform: str):
     """Find a list of relations to external site for an anime"""
     await ctx.defer()
-    await ctx.send(f"Searching for relations on `{platform}` using ID: `{id}`", embeds=None)
-    try:
-        simId = 0
-        imdbId = None
-        malId = None
-        tmdbId = None
-        tvdbId = None
-        traktId = None
-        trkSeason = None
-        trkType = None
-        smk = simkl0rels
-        simDat = simkl0rels
-        aa = invAa
-
-        # Properly config the ID
-        if (platform == 'shikimori') and (re.match(r'^[a-zA-Z]+', id)):
-            id = re.sub(r'^[a-zA-Z]+', '', id)
-            await ctx.edit(f'Removed the prefix from the ID on `{platform}`', embeds=None)
-            aa = await getNatsuAniApi(id=id, platform='shikimori')
-        elif platform == 'simkl':
-            simDat = await getSimklID(id, 'anime')
-            simId = id
-            malId = simDat['mal']
-        elif platform in ['tmdb', 'tvdb', 'imdb']:
-            try:
-                if platform == 'tmdb':
-                    id = id.split('/')
-                    if len(id) > 1:
-                        await ctx.edit(f'Season split is currently not supported on `{platform}`', embeds=None)
-                        id = id[0]
-                simId = await searchSimklId(id, platform=platform)
-                simDat = await getSimklID(simId, 'anime')
-                malId = simDat['mal']
-            except KeyError:
-                raise Exception(
-                    f'No anime found on SIMKL with ID: `{id}` on `{platform}`')
-        elif platform == 'trakt':
-            try:
-                if re.match(r'^(show|movie)s?\/[a-z0-9-]+(/season(s)?/[\d]+)$', id):
-                    trkQuery = id.split('/')
-                    trkType = trkQuery[0]
-                    traktId = trkQuery[1]
-                    if len(trkQuery) > 2:
-                        trkSeason = trkQuery[3]
-                    if trkType == "show":
-                        trkType += "s"
-                    elif trkType == "movie":
-                        trkType += "s"
-                else:
-                    raise Exception(
-                        'Invalid Trakt ID required by bot. Valid ID format: `shows/<slug-or-id>` and `movies/<slug-or-id>`.')
-                trkData = await getTraktID(traktId, trkType)
-                traktId = trkData['ids']['trakt']
-                imdbId = trkData['ids']['imdb']
-                tmdbId = trkData['ids']['tmdb']
-                if trkSeason is not None:
-                    aa = await getNatsuAniApi(id=f"{trkType}/{traktId}/seasons/{trkSeason}", platform='trakt')
-                else:
-                    aa = await getNatsuAniApi(id=f"{trkType}/{traktId}", platform='trakt')
-                if aa['title'] is not None:
-                    simId = await searchSimklId(title_id=aa['myanimelist'], platform='mal')
-                elif (aa['title'] is None) and (imdbId is not None):
-                    simId = await searchSimklId(title_id=imdbId, platform='imdb')
-                elif (aa['title'] is None) and (tmdbId is not None):
-                    mdtype = "show" if re.match(
-                        r'shows?', trkType) else "movie"
-                    simId = await searchSimklId(title_id=tmdbId, platform='tmdb', media_type=mdtype)
-
-                simDat = await getSimklID(simkl_id=simId, media_type='anime')
-                malId = simDat['mal']
-            except aiohttp.ContentTypeError:
-                raise Exception(
-                    f'Title not found on the database, or you have entered the wrong ID/slug!')
-            except KeyError:
-                raise Exception(
-                    f'Error while searching for the ID of `{platform}` via `imdb` and `tmdb` on SIMKL, entry may not linked with SIMKL counterpart, so unfortunately we can\'t reverse search for the relation')
-        elif platform == 'kitsu':
-            if re.match(r'^[a-zA-Z\-]+', id):
-                # replace slug to id
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(f'https://kitsu.io/api/edge/anime?filter[slug]={id}') as resp:
-                        if resp.status == 200:
-                            kitsuData = await resp.json()
-                            ktSlug = id
-                            id = kitsuData['data'][0]['id']
-                        else:
-                            raise Exception(
-                                f'Error while searching for the ID of `{platform}`')
-                    await session.close()
-                await ctx.edit(f'Replaced the slug (`{ktSlug}`) with the ID (`{id}`) on `{platform}`', embeds=None)
-            aa = await getNatsuAniApi(id=id, platform=platform)
-        elif platform == 'kaize':
-            try:
-                try:
-                    aa = await getNatsuAniApi(id=id, platform=platform)
-                except:
-                    # check on slug using regex, if contains `-N` suffix, try to decrease by one,
-                    # if `-N` is `-1`, remove completely the slug
-                    # get the last number
-                    lastNum = re.search(r'\d+$', uid).group()
-                    # get the slug
-                    slug = re.sub(r'-\d+$', '', uid)
-                    # decrease the number by one
-                    lastNum = int(lastNum) - 1
-                    # if the number is 0, remove the suffix
-                    if lastNum == 0:
-                        uid = slug
-                    else:
-                        uid = f"{slug}-{lastNum}"
-                    await ctx.edit(f"Searching for relations on `{platform}` using ID: `{uid}` (decrease by one)", embeds=None)
-                    aa = await getNatsuAniApi(id=uid, platform=platform)
-            except json.JSONDecodeError:
-                raise Exception(ERR_KAIZE_SLUG_MODDED)
-        else:
-            aa = await getNatsuAniApi(id=id, platform=platform)
-
-        if (aa['title'] is None) and (malId is not None):
-            aa = await getNatsuAniApi(id=malId, platform='myanimelist')
-
-        # link SIMKL ID
-        if platform not in ['simkl', 'trakt', 'tmdb', 'tvdb', 'imdb']:
-            try:
-                if aa['myanimelist'] is not None:
-                    simId = await searchSimklId(title_id=aa['myanimelist'], platform='mal')
-                    smk = await getSimklID(simkl_id=simId, media_type='anime')
-                elif aa['anidb'] is not None:
-                    simId = await searchSimklId(title_id=aa['anidb'], platform='anidb')
-                    smk = await getSimklID(simkl_id=simId, media_type='anime')
-            except:
-                pass
-        else:
-            smk = simDat
-
-        if (tmdbId is None) and (platform != 'tmdb'):
-            tmdbId = smk['tmdb']
-        elif platform == 'tmdb':
-            tmdbId = id
-        if (imdbId is None) and (platform != 'imdb'):
-            imdbId = smk['imdb']
-        elif platform == 'imdb':
-            imdbId = id
-
-        if (aa['title'] is None) and (simId != 0):
-            title = smk['title']
-        else:
-            title = aa['title']
-
-        if (aa['trakt'] is not None) and (platform != 'trakt'):
-            trkType = aa['trakt_type']
-            trkSeason = aa['trakt_season']
-            traktId = f"{aa['trakt']}/seasons/{trkSeason}"
-        elif (aa['trakt'] is None) and ((tmdbId is not None) or (imdbId is not None)) and (platform != 'trakt'):
-            try:
-                tid = imdbId
-                lookup = f"imdb/{tid}"
-                scpf = "IMDb"
-                trkData = await lookupTrakt(lookup_param=lookup)
-                trkType = trkData['type']
-                traktId = trkData[trkType]['ids']['trakt']
-            except KeyError:
-                try:
-                    tid = tmdbId
-                    ttype = "movie" if smk['aniType'] == "movie" else "show" if (
-                        (smk['aniType'] == "tv") or (smk['aniType'] == "ona")) else "movie"
-                    lookup = f"tmdb/{tid}?type={ttype}"
-                    scpf = "TMDB"
-                    trkData = await lookupTrakt(lookup_param=lookup)
-                    trkType = trkData['type']
-                    traktId = trkData[trkType]['ids']['trakt']
-                except KeyError:
-                    pass
-
-        relsEm = []
-        # Get the relations
-        try:
-            if traktId is not None:
-                if re.search(r"^shows?$", trkType):
-                    tvtyp = "series"
-                    tmtyp = "tv"
-                else:
-                    tvtyp = "movies"
-                    tmtyp = "movie"
-            else:
-                if smk['aniType'] == "tv":
-                    tvtyp = "series"
-                    tmtyp = "tv"
-                elif smk['aniType'] is not None:
-                    tvtyp = "movies"
-                    tmtyp = "movie"
-        except:
-            tvtyp = "series"
-            tmtyp = "tv"
-        isSlug = False
-
-        if trkSeason is not None:
-            if smk['tvdb'] is not None:
-                tvdbId = 'https://www.thetvdb.com/' + \
-                    f"?tab={tvtyp}&id={smk['tvdb']}"
-            elif smk['tvdbslug'] is not None:
-                tvdbId = 'https://www.thetvdb.com/' + \
-                    f"{tvtyp}/{smk['tvdbslug']}/seasons/official/{trkSeason}"
-                isSlug = True
-            tmdbId = f"{tmtyp}/{tmdbId}/season/{trkSeason}"
-        else:
-            if smk['tvdb'] is not None:
-                tvdbId = 'https://www.thetvdb.com/' + \
-                    f"?tab={tvtyp}&id={smk['tvdb']}"
-            elif smk['tvdbslug'] is not None:
-                tvdbId = 'https://www.thetvdb.com/' + \
-                    tvtyp + '/' + smk['tvdbslug']
-                isSlug = True
-            tmdbId = tmtyp + '/' + str(tmdbId)
-
-        relsEm = platformsToFields(
-            currPlatform=platform,
-            allcin=smk['allcin'],
-            anidb=aa['anidb'],
-            anilist=aa['anilist'],
-            ann=smk['ann'],
-            animeplanet=aa['animeplanet'],
-            anisearch=aa['anisearch'],
-            annict=aa['annict'],
-            imdb=imdbId,
-            kaize=aa['kaize'],
-            kitsu=aa['kitsu'],
-            livechart=aa['livechart'],
-            myanimelist=aa['myanimelist'],
-            notify=aa['notify'],
-            otakotaku=aa['otakotaku'],
-            shikimori=aa['shikimori'],
-            shoboi=aa['shoboi'],
-            silveryasha=aa['silveryasha'],
-            simkl=simId,
-            simklType=smk['type'],
-            trakt=traktId,
-            tvdb=tvdbId,
-            tmdb=tmdbId,
-            tvtyp=tvtyp,
-            isSlug=isSlug,
-        )
-
-        if (platform == 'tvdb') and (re.match(r"^[\d]+$", id)):
-            tvdbId = f"https://www.thetvdb.com/?tab={tvtyp}&id={id}"
-        elif (platform == 'tvdb'):
-            tvdbId = f"https://www.thetvdb.com/{tvtyp}/{id}"
-        else:
-            tvdbId = None
-
-        col = getPlatformColor(platform)
-
-        if platform == 'trakt':
-            media_id = f"{trkType}/{traktId}"
-        elif platform == 'tvdb':
-            media_id = tvdbId
-        elif platform == 'tmdb':
-            media_id = f"{tmtyp}/{id}"
-        else:
-            media_id = id
-
-        pfs = mediaIdToPlatform(media_id=media_id, platform=platform)
-        pf = pfs['pf']
-        uid = pfs['uid']
-        emoid = pfs['emoid']
-
-        if smk['poster'] is not None:
-            poster = f"https://simkl.in/posters/{smk['poster']}_m.webp"
-            postsrc = "SIMKL"
-        elif aa['kitsu'] is not None:
-            poster = f"https://media.kitsu.io/anime/poster_images/{aa['kitsu']}/large.jpg"
-            postsrc = "Kitsu"
-        elif aa['notify'] is not None:
-            poster = f"https://media.notify.moe/images/anime/original/{aa['notify']}.jpg"
-            postsrc = "Notify.moe"
-        else:
-            poster = None
-            postsrc = None
-
-        if postsrc is not None:
-            postsrc = f" Poster from {postsrc}"
-        else:
-            postsrc = ""
-
-        uAu = uid.split('/')
-        uAu = uAu[0] + "//" + uAu[2]
-
-        if title is not None:
-            dcEm = interactions.Embed(
-                author=interactions.EmbedAuthor(
-                    name=f"Looking external site relations from {pf}",
-                    icon_url=f"https://cdn.discordapp.com/emojis/{emoid}.png?v=1",
-                    url=uAu
-                ),
-                title=f"{title}",
-                url=uid,
-                description="Data might be inaccurate, especially for sequels of the title (as IMDb, TVDB, TMDB, and Trakt relies on per title entry than season entry)",
-                color=col,
-                fields=relsEm,
-                footer=interactions.EmbedFooter(
-                    text=f"Powered by nattadasu's AnimeAPI, Trakt, and SIMKL.{postsrc}"
-                ),
-                thumbnail=interactions.EmbedImageStruct(
-                    url=poster
-                )
-            )
-        else:
-            raise Exception(
-                f"No relations found on {pf} with following url: <{uid}>!\nEither the anime is not in the database, or you have entered the wrong ID.")
-        await ctx.edit("", embeds=dcEm)
-
-    except Exception as e:
-        if e == 'Expecting value: line 1 column 1 (char 0)':
-            e = 'No relations found!\nEither the anime is not in the database, or you have entered the wrong ID.'
-        else:
-            e = e
-        e = f"""While getting the relations for `{platform}` with id `{id}`, we got error message: {e}"""
-        dcEm = exceptionsToEmbed(returnException(e))
-
-        await ctx.edit("", embeds=dcEm)
+    await relationsSubmit(ctx, id=id, platform=platform)
 
 
 @bot.command(
@@ -1085,27 +632,21 @@ async def random_nekomimi(ctx: interactions.CommandContext):
 async def bois(ctx: interactions.CommandContext):
     """Get a random image of male character with cat ears!"""
     await ctx.defer()
-    data = await getNekomimi('boy')
-    dcEm = generateNekomimi(row=data)
-    await ctx.send("", embeds=dcEm)
+    await nekomimiSubmit(ctx, 'boy')
 
 
 @random_nekomimi.subcommand()
 async def gurls(ctx: interactions.CommandContext):
     """Get a random image of female character with cat ears!"""
     await ctx.defer()
-    data = await getNekomimi('girl')
-    dcEm = generateNekomimi(row=data)
-    await ctx.send("", embeds=dcEm)
+    await nekomimiSubmit(ctx, 'girl')
 
 
 @random_nekomimi.subcommand()
 async def true_random(ctx: interactions.CommandContext):
     """Get a random image of characters with cat ears, whatever the gender they are!"""
     await ctx.defer()
-    data = await getNekomimi()
-    dcEm = generateNekomimi(row=data)
-    await ctx.send("", embeds=dcEm)
+    await nekomimiSubmit(ctx, None)
 
 
 @bot.command(
@@ -1186,19 +727,8 @@ async def search(ctx: interactions.CommandContext, title: str):
 @bot.component("anilist_search")
 async def anilist_search(ctx: interactions.ComponentContext, choices: list[str]):
     await ctx.defer()
-    await ctx.get_channel()
-    trailer = None
-    try:
-        rawData = await getAniList(media_id=int(choices[0]), isAnime=False)
-        bypass = await bypassAniListEcchiTag(alm=rawData[0])
-        nsfw_bool = await getNsfwStatus(channel=ctx.channel)
-        dcEm = await generateAnilist(alm=rawData[0], isNsfw=nsfw_bool, bypassEcchi=bypass)
-        if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
-            trailer = generateTrailer(data=rawData[0]['trailer'])
-    except Exception as e:
-        dcEm = exceptionsToEmbed(returnException(e))
-
-    await ctx.send("", embeds=dcEm, components=trailer)
+    id: int = int(choices[0])
+    await anilistSubmit(ctx, id, mediaType='manga')
 
 
 @manga.subcommand(
@@ -1214,21 +744,7 @@ async def anilist_search(ctx: interactions.ComponentContext, choices: list[str])
 async def info(ctx: interactions.CommandContext, id: int):
     """Get manga information from AniList using AniList ID"""
     await ctx.defer()
-    await ctx.get_channel()
-    trailer = None
-    # get the manga
-    try:
-        rawData = await getAniList(media_id=id, isAnime=False)
-        bypass = await bypassAniListEcchiTag(alm=rawData[0])
-        nsfw_bool = await getNsfwStatus(channel=ctx.channel)
-        dcEm = await generateAnilist(alm=rawData[0], isNsfw=nsfw_bool, bypassEcchi=bypass)
-        if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
-            trailer = generateTrailer(data=rawData[0]['trailer'])
-    except Exception as e:
-        dcEm = exceptionsToEmbed(returnException(e))
-        trailer = None
-
-    await ctx.send("", embeds=dcEm, components=trailer)
+    await anilistSubmit(ctx, id, mediaType='manga')
 
 
 @bot.command(
@@ -1486,13 +1002,7 @@ async def search(ctx: interactions.CommandContext, title: str):
 @bot.component("rawg_search")
 async def rawg_search(ctx: interactions.ComponentContext, choices: list[str]):
     await ctx.defer()
-    try:
-        gameData = await getRawgData(slug=choices[0])
-        dcEm = await generateRawg(data=gameData)
-    except Exception as e:
-        dcEm = exceptionsToEmbed(returnException(e))
-
-    await ctx.edit(embeds=dcEm, components=[])
+    await rawgSubmit(ctx=ctx, slug=choices[0])
 
 
 @games.subcommand(
@@ -1508,13 +1018,8 @@ async def rawg_search(ctx: interactions.ComponentContext, choices: list[str]):
 async def info(ctx: interactions.CommandContext, slug: str):
     """Get game information from RAWG using RAWG slug/ID"""
     await ctx.defer()
-    try:
-        gameData = await getRawgData(slug=slug)
-        dcEm = await generateRawg(data=gameData)
-    except Exception as e:
-        dcEm = exceptionsToEmbed(returnException(e))
+    await rawgSubmit(ctx=ctx, slug=slug)
 
-    await ctx.send("", embeds=dcEm)
 
 @bot.command(
     name="tv",
@@ -1523,12 +1028,14 @@ async def info(ctx: interactions.CommandContext, slug: str):
 async def tv(ctx: interactions.CommandContext):
     pass
 
+
 @bot.command(
     name="movie",
     description="Get information about Movies! Powered by SIMKL and The Movie Database (for NSFW checker)"
 )
 async def movie(ctx: interactions.CommandContext):
     pass
+
 
 @tv.subcommand(
     options=[
@@ -1587,6 +1094,7 @@ async def search(ctx: interactions.CommandContext, title: str):
     except Exception as e:
         dcEm = exceptionsToEmbed(returnException(e))
         await ctx.send("", embeds=dcEm)
+
 
 @movie.subcommand(
     options=[
@@ -1647,6 +1155,7 @@ async def search(ctx: interactions.CommandContext, title: str):
         dcEm = exceptionsToEmbed(returnException(e))
         await ctx.send("", embeds=dcEm)
 
+
 @bot.component("simkl_search")
 async def simkl_search(ctx: interactions.ComponentContext, choices: list[str]):
     await ctx.defer()
@@ -1654,6 +1163,7 @@ async def simkl_search(ctx: interactions.ComponentContext, choices: list[str]):
     mediaType = ids[0]
     simkl_id = ids[1]
     await simklSubmit(ctx=ctx, simkl_id=simkl_id, media=mediaType)
+
 
 @tv.subcommand(
     options=[

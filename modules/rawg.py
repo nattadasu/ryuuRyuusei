@@ -1,5 +1,6 @@
 from modules.commons import *
 from modules.const import *
+from typing import Union
 
 
 async def searchRawg(query: str) -> dict:
@@ -234,3 +235,13 @@ async def generateRawg(data: dict) -> interactions.Embed:
         )
     )
     return embed
+
+
+async def rawgSubmit(ctx, slug: str):
+    try:
+        gameData = await getRawgData(slug=slug)
+        dcEm = await generateRawg(data=gameData)
+    except Exception as e:
+        dcEm = exceptionsToEmbed(returnException(e))
+
+    await ctx.send("", embeds=dcEm)

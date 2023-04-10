@@ -440,3 +440,23 @@ async def bypassAniListEcchiTag(alm: dict) -> bool:
         return True
     else:
         return False
+
+
+async def anilistSubmit(ctx, media_id: int, mediaType: str = 'manga') -> None:
+    if mediaType == 'anime':
+        anime: bool = True
+    else:
+        anime: bool = False
+    await ctx.get_channel()
+    trailer = None
+    try:
+        rawData = await getAniList(media_id=media_id, isAnime=anime)
+        bypass = await bypassAniListEcchiTag(alm=rawData[0])
+        nsfw_bool = await getNsfwStatus(channel=ctx.channel)
+        dcEm = await generateAnilist(alm=rawData[0], isNsfw=nsfw_bool, bypassEcchi=bypass)
+        if (rawData[0]['trailer'] is not None) and (rawData[0]['trailer']['site'] == "youtube"):
+            trailer = generateTrailer(data=rawData[0]['trailer'])
+    except Exception as e:
+        dcEm = exceptionsToEmbed(returnException(e))
+
+    await ctx.send("", embeds=dcEm, components=trailer)

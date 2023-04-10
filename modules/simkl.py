@@ -122,7 +122,8 @@ async def generateSimkl(data: dict, mediaType: str = "tv", isNsfw: bool = False,
     if runtime in ['', None, 0]:
         runtime = ""
     else:
-        runtime = " (" + str(runtime) + " mins/ep)" if mediaType == 'tv' else str(runtime) + " mins"
+        runtime = " (" + str(runtime) + \
+            " mins/ep)" if mediaType == 'tv' else str(runtime) + " mins"
 
     country = data.get('country', None)
     if country in ['', None]:
@@ -341,7 +342,8 @@ async def simklSubmit(ctx, simkl_id, media: str = 'tv'):
         dcEm = await generateSimkl(data=data, mediaType=media, isNsfw=nsfw_bool, mediaNsfw=tmdbNsfw)
         if data.get('trailers', None) is not None:
             try:
-                trailer = generateTrailer(data=data['trailers'][0], isSimkl=True)
+                trailer = generateTrailer(
+                    data=data['trailers'][0], isSimkl=True)
             except KeyError:
                 trailer = None
     except Exception as e:
