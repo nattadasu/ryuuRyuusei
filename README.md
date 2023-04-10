@@ -123,6 +123,15 @@ If you have any questions, feel free to join the
 - `/games info` - Get information about a game using direct RAWG ID
 - `/games search` - Search for a game
 
+### TV and Movie Commands
+
+> Utilize SIMKL for Metadata and TMDB for NSFW check
+
+- `/tv info` - Get information about a TV show using direct SIMKL ID
+- `/tv search` - Search for a TV show
+- `/movie info` - Get information about a movie using direct SIMKL ID
+- `/movie search` - Search for a movie
+
 ### Last.FM Integration Commands
 
 - `/lastfm` - Get your last.fm profile and the scrobble summary
