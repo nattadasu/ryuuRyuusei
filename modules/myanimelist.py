@@ -12,9 +12,8 @@ async def checkClubMembership(username) -> dict:
 def definejikanException(errmsg: str) -> str:
     """Define what HTTP error AioJikan/Jikan/MyAnimeList threw"""
     e = str(errmsg).split('=')
-    print(e)
     try:
-        etype = int(str(e[1]).split(',')[0])
+        etype = int(e[1].split(',')[0])
         errm = e[3].strip()
         if len(e) >= 4:
             for i in range(4, len(e)):
@@ -27,7 +26,7 @@ def definejikanException(errmsg: str) -> str:
             em = f"**Jikan had a timeout while fetching your data**\nPlease try again in 3 seconds."
         else:
             em = f"HTTP {etype}\n{errm}"
-    except IndexError:
+    except Exception:
         em = "Unknown error."
     return em
 

@@ -354,7 +354,7 @@ async def profile(ctx: interactions.CommandContext, user: int = None, mal_userna
                 )
             except Exception as e:
                 sendMessages = ""
-                dcEm = definejikanException(e)
+                dcEm = exceptionsToEmbed(definejikanException(e))
         elif mal_username is not None:
             uname = mal_username.strip()
             try:
