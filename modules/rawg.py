@@ -1,6 +1,5 @@
 from modules.commons import *
 from modules.const import *
-from typing import Union
 
 
 async def searchRawg(query: str) -> dict:
