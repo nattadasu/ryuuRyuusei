@@ -6,8 +6,9 @@ cache/**
 !cache/.gitkeep
 jikanpy/
 i18n/**.json
-!i18n/_index.json
-!i18n/en_US.json
+i18n/_index.json
+i18n/_index.yaml
+**.old.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

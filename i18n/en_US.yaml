@@ -3,8 +3,6 @@ meta:
   dialect: American
   code: en_US
   name: English (American)
-  contributors:
-    - nattadasu
 strings:
   # all of the key names is basically the command name in the bot
   about:
