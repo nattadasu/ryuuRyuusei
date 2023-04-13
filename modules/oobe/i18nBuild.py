@@ -17,19 +17,23 @@ def convertLangsToJson():
             print(f"Converting {file.name} to json", end="")
             code = file.stem
             if code == "lol_US":
-                indexed.append({
+                drip = {
                     'code': code,
                     'name': 'English Lolcat',
                     'native': 'LOLCAT',
                     'dialect': 'United States',
-                })
+                }
+                data['meta'] = drip
+                indexed.append(drip)
             else:
-                indexed.append({
+                drip = {
                     'code': code,
                     'name': lang.get(code).language_name(),
                     'native': lang.get(code).language_name(lang.get(code).language),
                     'dialect': lang.get(code).territory_name(),
-                })
+                }
+                data['meta'] = drip
+                indexed.append(drip)
             print(f"\rConverted {file.name}: {indexed[-1]['name']} ({indexed[-1]['dialect']}) to json", end="\n")
         with file.with_suffix(".json").open("w", encoding='utf-8', newline='\n') as f:
             j.dump(data, f, indent=2, ensure_ascii=False)
