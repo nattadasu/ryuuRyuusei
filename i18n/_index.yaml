@@ -1,0 +1,30 @@
+- native: English
+  dialect: USA
+  code: en_US
+  name: English (USA)
+  status: final
+  contributors:
+    - nattadasu
+- native: Bahasa Indonesia
+  dialect: Indonesia
+  code: id_ID
+  name: Indonesian
+  status: final
+  contributors:
+    - nattadasu
+- native: 日本語
+  dialect: Japan
+  code: ja_JP
+  name: Japanese
+  status: draft
+  contributors:
+    - DeepL
+    - OpenAI ChatGPT-3
+- native: Nihongo Romaji
+  dialect: Japan
+  code: ja_Latn_JP
+  name: Japanese (Romaji)
+  status: draft
+  contributors:
+    - Bing Chat
+    - OpenAI ChatGPT-3

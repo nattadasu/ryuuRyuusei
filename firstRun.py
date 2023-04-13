@@ -4,6 +4,7 @@ from modules.oobe.commons import *
 from modules.oobe.jikan import *
 from modules.oobe.malIndexer import *
 from modules.oobe.getNekomimi import *
+from modules.oobe.i18nBuild import *
 
 def main():
     # check if termux
@@ -25,8 +26,8 @@ def main():
     except ImportError:
         installJikanpy()
     # install dependencies
-    print("Installing dependencies for next step and the bot itself...")
-    os.system(f"{env}{pf} -m pip install -r requirements.txt")
+    print("Installing and upgrading dependencies for next step and the bot itself...")
+    os.system(f"{env}{pf} -m pip install -U -r requirements.txt")
     # run prepFile.py
     print("Preparing database as database.csv in tabbed format...")
     prepare_database()
@@ -45,6 +46,9 @@ def main():
             os.system("cp .env.example .env")
     else:
         print(".env already exists, skipping...")
+    # build language index
+    print("Building language index...")
+    convertLangsToJson()
     print("Initialization finished, you should able to run the bot safely now.")
 
 if __name__ == "__main__":

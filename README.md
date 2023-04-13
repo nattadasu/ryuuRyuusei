@@ -8,12 +8,13 @@
 <!-- omit in toc -->
 <h3 align="center">Ryuuzaki Ryuusei</h3>
 
-<p align="center"><img src="https://img.shields.io/badge/Interactions.py-4.3.4-blue?style=for-the-badge&logo=python">
-<img src="https://img.shields.io/badge/Python-3.9_and_above-blue?style=for-the-badge&logo=python"></p>
+<p align="center"><img src="https://img.shields.io/badge/Interactions.py-5.0.0-blue?style=for-the-badge&logo=python">
+<img src="https://img.shields.io/badge/Python-3.10_and_above-blue?style=for-the-badge&logo=python"></p>
 
 ---
 
-<p align="center"> 🤖 A Discord Bot to verify MAL club members and MAL simple utility commands.
+<p align="center"> 🤖 A Title (Anime, Manga, Game, TV, Movie) Lookup and Member
+Verificator Bot for Discord, With Privacy in Mind.
     <br>
 </p>
 
@@ -22,9 +23,9 @@
 ## 🧐 About <a name = "about"></a>
 
 Ryuuzaki Ryuusei is a Discord bot that can be used to verify MAL club members
-and advanced media title lookup (anime, manga, games) staiically while it
-keeping simple and easy to use, also respecting users under GDPR, CCPA/CPRA, and
-other privacy laws.
+and advanced media title lookup (anime, manga, games, tv, movie) statically
+while it keeping simple and easy to use, also respecting users under GDPR,
+CCPA/CPRA, and other privacy laws.
 
 By inviting this bot to your server or using it, you agree to the
 [Privacy Policy](PRIVACY.md) and [Terms of Service](TERMS_OF_SERVICE.md).
@@ -105,8 +106,6 @@ If you have any questions, feel free to join the
 - `/anime info` - Get information about an anime using direct MyAnimeList ID
 - `/anime random` - Get a random anime from MyAnimeList, powered by
   [AnimeApi](https://nttds.my.id/discord)
-- `/anime relation` - Show external links for an anime, powered by
-  [AnimeApi](https://nttds.my.id/discord) and SIMKL
 - `/anime search` - Search for an anime, using AniList's search API
 
 ### Manga Commands
@@ -132,27 +131,59 @@ If you have any questions, feel free to join the
 - `/movie info` - Get information about a movie using direct SIMKL ID
 - `/movie search` - Search for a movie
 
+### Music Commands
+
+> Utilize Spotify
+
+- `/music track search` - Search for a track
+- `/music album search` - Search for an album
+- `/music artist search` - Search for an artist
+
+### External Link Relation Command
+
+> Utilize nattadasu's AnimeAPI for video type, AniList for manga, and Song.link
+> for music
+
+- `/relations shows` - Get external link relation for an anime, TV, or movie
+- `/relations manga` - Get external link relation for a manga, limited to
+  AniList, MyAnimeList, and Shikimori.
+- `/relations music` - Get external link relation for a music
+
 ### Last.FM Integration Commands
 
 - `/lastfm` - Get your last.fm profile and the scrobble summary
 
 ### Data Control
 
-- `/admin_register` - Register a user's MAL account to the bot (admin only),
-  used for backup process if the user can't register their account
-- `/admin_unregister` - Unregister a user's MAL account from the bot (admin
-  only), used for backup process if the user can't unregister their account
-- `/admin_verify` - Verify a user's MAL account to the server that host the bot
-  (admin only), used for backup process if the user can't verify their account
-- `/export_data` - Export your data from the bot in JSON or Python dictionary
-  format
+- `/export_data` - Export your data from the bot in JSON
 - `/profile` - Get your MAL profile, statistic available on extended view
   (passed from option/argument)
 - `/register` - Register your MAL account to the bot
-- `/unregister` - Unregister your MAL account from the bot
+- `/unregister` - Unregister your MAL account and drops your settings from the
+  bot
 - `/verify` - Verify your MAL account to the server that host the bot (you may
   need to join the club first)
 - `/whois` - Get information about a user, including their MAL account (if any)
+
+### Settings Commands
+
+#### User Settings
+
+- `/usersettings language list` - List all available languages for the bot
+  response
+- `/usersettings language set` - Set your preferred language for the bot
+  response
+
+#### Server Settings
+
+- `/serversettings language set` - Set your preferred language for the bot
+  response
+- `/serversettings member register` - Register member's MAL account to the bot,
+  used when user can't invoke `/register`
+- `/serversettings member unregister` - Unregister member's MAL account from the
+  bot, used when user can't invoke `/unregister`
+- `/serversettings member verify` - Verify member's MAL account to the server
+  that host the bot, used when user can't invoke `/verify`
 
 ### Miscellaneous Commands
 
@@ -182,11 +213,17 @@ Before you begin, ensure you have met the following requirements:
 
 ### Installing
 
+> Depends on your OS, you may need to use `python3` for the command instead of
+> `python`. You may also need to install packages/modules as superuser/root
+> before continuing to ./firstRun.py
+
 To install Ryuuzaki Ryuusei, follow these steps:
 
 ```bash
 git clone https://github.com/nattadasu/ryuuRyuusei.git
 cd ryuuRyuusei
+# you may sudo this command if you're on Linux or macOS to avoid permission error
+python -m pip install -r requirements.txt
 ```
 
 Next, you need to do an initial setup for the bot. Run `firstRun.py` and let the
@@ -218,18 +255,16 @@ Then, when `pip` finished installing all of required modules, copy
 cp .env.example .env
 ```
 
+> **Note**
+>
+> `firstRun.py` already did this for you, but you can do it manually if you
+> want, or if the script unable to do it for you.
+
 Finally, run the bot using `python` command:
 
 ```bash
 python ./main.py
 ```
-
-> **Note**
->
-> You can also use `python3` instead of `python` if you have multiple versions
-> of Python installed. By default (and also `firstRun.py` behavior), the bot
-> will use `python3`/`python` that is currently in your `PATH` environment
-> variable.
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 
@@ -245,7 +280,9 @@ python ./main.py
 | [nattadasu's AnimeApi relation](https://nttds.my.id/discord)          | Relation | A simple relation database of anime to several database sites, including MAL, AniList, and Kitsu. Used for anime relation.                   |
 | [nattadasu/nekomimiDb](https://github.com/nattadasu/nekomimiDb)       | Database | A database site for nekomimi images. Used for random nekomimi image.                                                                         |
 | [RAWG](https://rawg.io)                                               | Database | A database site for games. Used for search, information result, and images.                                                                  |
-| [SIMKL](https://simkl.com)                                            | Database | A database site for anime. Used for anime relations and images.                                                                              |
+| [SIMKL](https://simkl.com)                                            | Database | A database site for anime. Used for TV-movie metadata, anime relations and images.                                                           |
+| [Song.link](https://song.link)                                        | Relation | A relation database for music. Used for music relations.                                                                                     |
+| [Spotify](https://spotify.com)                                        | Database | A music streaming site. Used for track, album, and artist information.                                                                       |
 | [Trakt](https://trakt.tv)                                             | Relation | A database site for movies, TV shows, and anime. Used only for resolving category for relations to TMDB and TVDB.                            |
 <!-- markdownlint-enable MD013 -->
 

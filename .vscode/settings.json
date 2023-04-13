@@ -1,8 +1,8 @@
 {
-    "[markdown]": {
-        "editor.rulers": [
-            80,
-            120
-        ]
-    }
+  "[markdown]": {
+    "editor.rulers": [80, 120]
+  },
+  "[yaml]": {
+    "editor.rulers": [80, 120]
+  }
 }
