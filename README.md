@@ -126,18 +126,21 @@ If you have any questions, feel free to join the
 
 > Utilize SIMKL for Metadata and TMDB for NSFW check
 
-- `/tv info` - Get information about a TV show using direct SIMKL ID
-- `/tv search` - Search for a TV show
 - `/movie info` - Get information about a movie using direct SIMKL ID
 - `/movie search` - Search for a movie
+- `/tv info` - Get information about a TV show using direct SIMKL ID
+- `/tv search` - Search for a TV show
 
 ### Music Commands
 
 > Utilize Spotify
 
-- `/music track search` - Search for a track
+- `/music album info` - Get information about an album using direct Spotify ID
 - `/music album search` - Search for an album
+- `/music artist info` - Get information about an artist using direct Spotify ID
 - `/music artist search` - Search for an artist
+- `/music track info` - Get information about a track using direct Spotify ID
+- `/music track search` - Search for a track
 
 ### External Link Relation Command
 
@@ -147,7 +150,8 @@ If you have any questions, feel free to join the
 - `/relations shows` - Get external link relation for an anime, TV, or movie
 - `/relations manga` - Get external link relation for a manga, limited to
   AniList, MyAnimeList, and Shikimori.
-- `/relations music` - Get external link relation for a music
+- `/relations music track` - Get external link relation for a track.
+- `/relations music album` - Get external link relation for an album.
 
 ### Last.FM Integration Commands
 
