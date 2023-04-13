@@ -95,3 +95,10 @@ strings:
       Or, are you a developer? You can contribute to the bot's code on [GitHub]({GHREPO}). 
 
       If you have any questions (or more payment channels), please join my [support server]({SUPPORT})!
+  random:
+    nekomimi:
+      author: Powered by nattadasu/nekomimiDb
+      source:
+        title: Image Source
+        value: Click here
+      artist: Artist
