@@ -7,6 +7,7 @@ import interactions as ipy
 
 from modules.const import *
 from modules.i18n import lang, readUserLang, paginateLanguage, setLanguage
+from modules.nekomimidb import nekomimiSubmit
 
 now: dtime = dtime.now(tz=tz.utc)
 
@@ -200,6 +201,49 @@ async def support(ctx: ipy.SlashContext):
     )
     await ctx.send(embed=em)
 
+
+@ipy.slash_command(
+    name="random",
+    description="Get a random stuff",
+)
+async def random(ctx: ipy.SlashContext):
+    pass
+
+@random.subcommand(
+    group_name="nekomimi",
+    group_description="Get a random character in cat ears",
+    sub_cmd_name="boy",
+    sub_cmd_description="Get an image of boy character in cat ears",
+)
+async def random_nekomimi_boy(ctx: ipy.SlashContext):
+    await ctx.defer()
+    ul = readUserLang(ctx)
+    l_ = lang(ul)['random']['nekomimi']
+    await nekomimiSubmit(ctx=ctx, gender='boy', lang=l_)
+
+@random.subcommand(
+    group_name="nekomimi",
+    group_description="Get a random character in cat ears",
+    sub_cmd_name="girl",
+    sub_cmd_description="Get an image of girl character in cat ears",
+)
+async def random_nekomimi_girl(ctx: ipy.SlashContext):
+    await ctx.defer()
+    ul = readUserLang(ctx)
+    l_ = lang(ul)['random']['nekomimi']
+    await nekomimiSubmit(ctx=ctx, gender='girl', lang=l_)
+
+@random.subcommand(
+    group_name="nekomimi",
+    group_description="Get a random character in cat ears",
+    sub_cmd_name="randomize",
+    sub_cmd_description="Get an image of random character of any gender in cat ears",
+)
+async def random_nekomimi_randomize(ctx: ipy.SlashContext):
+    await ctx.defer()
+    ul = readUserLang(ctx)
+    l_ = lang(ul)['random']['nekomimi']
+    await nekomimiSubmit(ctx=ctx, lang=l_)
 
 @ipy.slash_command(
     name="usersettings",
