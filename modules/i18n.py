@@ -55,27 +55,20 @@ async def paginateLanguage(bot: Client, ctx: InteractionContext) -> None:
     """Paginate the language list"""
     with open("i18n/_index.json", "r") as f:
         langs = jlo(f.read())
-
-    langs = sorted(langs, key=lambda k: k['code'].lower())
-    # if status is draft, remove it from the list
-    langs = [lang for lang in langs if lang['status'] != "draft"]
-
-    # loop through the langs for 25 langs per page
     pages = []
-    for i in range(0, len(langs), 25):
+    for i in range(0, len(langs), 15):
         paged = []
-        for lang in langs[i:i+25]:
+        for lang in langs[i:i+15]:
             paged += [EmbedField(
-                name=f"`{lang['code']}`",
-                value=f"""{lang['name']}
-                {lang['native']}""",
+                name=f":flag_{(lang['code'].split('_'))[1].lower()}: `{lang['code']}` - {lang['name']}",
+                value=f"{lang['native']}",
                 inline=True
             )]
         pages += [Embed(
             title="Languages",
-            description="List of all available languages.\nUse `/settings language user code:<code>` by replacing `<code>` with the language code (for example `en_US`) to change your language.\n\n~~Yes, i know this is clunky, but it's the best i can do for now.~~",
+            description="List of all available languages.\nUse `/usersettings language set code:<code>` by replacing `<code>` with the language code (for example `en_US`) to change your language.\n\nIf you want to contribute, visit [Crowdin page](https://crowdin.com/project/ryuuRyuusei).",
             color=0x996422,
-            fields=paged
+            fields=paged,
         )]
     pagin = Paginator.create_from_embeds(bot, *pages, timeout=60)
     await pagin.send(ctx)

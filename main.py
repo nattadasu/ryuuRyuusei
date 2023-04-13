@@ -126,15 +126,6 @@ async def ping(ctx: ipy.SlashContext, defer: bool = False):
     ))
 
 
-@ipy.slash_command(name="uptime", description="Get the bot uptime")
-async def uptime(ctx: ipy.SlashContext):
-    """Get bot uptime"""
-    stop = pc()
-    ul = readUserLang(ctx)
-    l_ = lang(ul)['uptime']['text']
-    await ctx.send(f"{EMOJI_SUCCESS} {l_}".format(SECONDS=int(stop - bot_run), MINUTES=int((stop - bot_run) / 60), TIMESTAMP=int(now.timestamp())))
-
-
 @ipy.slash_command(name="invite", description="Get the bot invite link")
 async def invite(ctx: ipy.SlashContext):
     """Get bot invite link"""
