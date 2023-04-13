@@ -1,8 +1,8 @@
 meta:
-  native: Bahasa Indonesia
-  dialect: Indonesia
-  code: id_ID
-  name: Indonesian
+  native: English
+  dialect: American
+  code: en_US
+  name: English (American)
 strings:
   #all of the key names is basically the command name in the bot
   about:
@@ -21,49 +21,49 @@ strings:
   ping:
     ping:
       title: Ping
-      text: Sedang mengirim ping.... Sabar ya sekaligus tunggu sampai Ryuusei dapat hasil tesnya!
+      text: Pinging.... Please wait till I get the results from my tests!
     pong:
       title: Pong!
-      text: Ini dia hasil tesnya!
-      footer: Proyek ini SAMA SEKALI TIDAK terkait dengan Crypton Future Media, meskipun bot ini memiliki banyak referensi Kagamine Len.
+      text: Here's the results from my tests!
+      footer: This project DEFINITELY NOT affiliated by Crypton Future Media, although the bot got a lot of Kagamine Len references.
     bot:
       title: Bot
-      text: Membandingkan timestamp pesan dengan timestamp sekarang
+      text: Compares message timestamp to current timestamp
     websocket:
       title: Websocket API
-      text: Latensi API Websocket Discord
+      text: Discord's Websocket API latency
     dbRead:
-      title: Baca Database
-      text: Waktu baca database CSV
+      title: Database Read
+      text: Read time for CSV database
     langLoad:
-      title: Pemuatan Bahasa
-      text: Waktu pemuatan berkas bahasa
+      title: Language Load
+      text: Load time for language file
     pyTime:
-      title: '`time` Python'
-      text: Berdasarkan dari `time.perf_counter()` di Python; hitung waktu dari sebelum dan sesudah eksekusi perintah
+      title: Python `time`
+      text: Based from Python's `time.perf_counter()`; counts before and after command execution
     uptime:
-      title: Waktu Aktif
-      text: Bot telah aktif sejak {TIMESTAMP}
+      title: Uptime
+      text: Bot has been running since {TIMESTAMP}
   invite:
-    title: Terima kasih udah kepingin mengundang Ryuusei ke server kamu!
+    title: Thanks for your interest in inviting me to your server!
     text: |-
-      Untuk mengundang Ryuusei, tekan tombol "**{INVBUTTON}**" di bawah ini!
-      Untuk pertanyaan, silakan bergabung dengan server dukungan!
+      To invite me, simply press "**{INVBUTTON}**" button below!
+      For any questions, please join my support server!
     fields:
       acc:
-        title: Izin/Akses yang Dibutuhkan
-        value: Baca Pesan, Kirim Pesan, Kirim Pesan dalam Thread, Tautan Embed, Lampirkan File, Gunakan Emoji Eksternal, Menambahkan Reaksi
+        title: Required Permissions/Access
+        value: Read Messages, Send Messages, Send Messages in Thread, Embed Links, Attach Files, Use External Emojis, Add Reactions
       scope:
-        title: Jangkauan (Scope) yang Diperlukan
+        title: Required Scope
         value: |-
           `bot`
           `applications.commands`
     buttons:
-      invite: Undang Ryuusei!
-      support: Server Dukungan
+      invite: Invite Me!
+      support: Support Server
   privacy:
-    title: Kebijakan Privasi (versi singkat) Ryuuzaki Ryuusei
-    read: Lihat versi lengkap (Bahasa Inggris)
+    title: Privacy Policy (tl;dr version) for Ryuuzaki Ryuusei
+    read: Read full Privacy Policy
     text: >-
       Hello and thank you for your interest to read this tl;dr version of Privacy Policy. 
 
@@ -89,7 +89,7 @@ strings:
 
       For any contact information, type `/about`.
   support:
-    title: Dukung Pengembangan Ryuuzaki Ryuusei!
+    title: Support Ryuuzaki Ryuusei Development
     text: >-
       Thanks for your interest in supporting me! 
 
