@@ -283,7 +283,7 @@ async def usersettings_language_list(ctx: ipy.InteractionContext):
 async def usersettings_language_set(ctx: ipy.InteractionContext, code: str):
     try:
         await setLanguage(code=code, ctx=ctx, isGuild=False)
-        await ctx.send(f"{EMOJI_SUCCESS} Language set to {code}")
+        await ctx.send(f"{EMOJI_SUCCESS} Language set to {code}", ephemeral=True)
     except Exception as e:
         await ctx.send(f"{EMOJI_FORBIDDEN} {e}")
 
@@ -313,7 +313,7 @@ async def serversettings(ctx: ipy.InteractionContext):
 async def serversettings_language_set(ctx: ipy.InteractionContext, code: str):
     try:
         await setLanguage(code=code, ctx=ctx, isGuild=True)
-        await ctx.send(f"{EMOJI_SUCCESS} Language set to {code}")
+        await ctx.send(f"{EMOJI_SUCCESS} Server Language set to {code}")
     except Exception as e:
         await ctx.send(f"{EMOJI_FORBIDDEN} {e}")
 
