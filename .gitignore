@@ -6,7 +6,6 @@ cache/**
 !cache/.gitkeep
 jikanpy/
 i18n/**.json
-i18n/_index.json
 i18n/_index.yaml
 **.old.py
 

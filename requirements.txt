@@ -2,6 +2,8 @@ aiohttp
 beautifulsoup4
 discord_py_interactions==5.0.0
 html5lib
+langcodes
+language_data
 pandas
 python-dotenv
 pyyaml
