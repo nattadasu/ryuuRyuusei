@@ -1,11 +1,3 @@
 files:
   - source: /i18n/en_US.yaml
     translation: /i18n/%locale_with_underscore%.yaml
-  - source: README.md
-    ignore:
-      - /i18n/**
-    translation: /docs/%language%/%original_file_name%
-  - source: PRIVACY.md
-    translation: /docs/%language%/%original_file_name%
-  - source: TERMS_OF_SERVICE.md
-    translation: /docs/%language%/%original_file_name%
