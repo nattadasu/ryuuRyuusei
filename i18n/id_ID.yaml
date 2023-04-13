@@ -97,3 +97,10 @@ strings:
       Kalau ada yang mau ditanyain atau mau ngobrol santai, boleh juga langsung gabung ke [server dukungan Ryuusei]({SUPPORT}) ya! 
 
       Terima kasih lagi ya, Ryuusei tunggu dukunganmu!
+  random:
+    nekomimi:
+      author: Powered by nattadasu/nekomimiDb
+      source:
+        title: Image Source
+        value: Click here
+      artist: Artist
