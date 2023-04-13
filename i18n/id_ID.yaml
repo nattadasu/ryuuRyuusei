@@ -6,49 +6,28 @@ meta:
   contributors:
     - nattadasu
 strings:
+  #all of the key names is basically the command name in the bot
   about:
-    header: Tentang Ryuuzaki Ryuusei
     text: >-
-      <@!{BOT_CLIENT_ID}> adalah bot yang dibuat dan digunakan secara pribadi
-      oleh [nattadasu](https://nattadasu.my.id) dengan tujuan awal untuk
-      verifikasi anggota dan integrasi profil MAL. Bot ini didistribusikan di
-      bawah lisensi [AGPL 3.0](https://www.gnu.org/licenses/agpl-3.0.en.html).
-      ([Kode Sumber](https://github.com/nattadasu/ryuuRyuusei), kode sumber di
-      repositori mungkin lebih lama dari produksi utama yang dikelola oleh
-      nattadasu)
+      <@!{BOT_CLIENT_ID}> adalah bot yang dibuat dan digunakan secara pribadi oleh [nattadasu](https://nattadasu.my.id) dengan tujuan awal untuk verifikasi anggota dan integrasi profil MAL. Bot ini didistribusikan di bawah lisensi [AGPL 3.0](https://www.gnu.org/licenses/agpl-3.0.en.html). ([Kode Sumber](https://github.com/nattadasu/ryuuRyuusei), kode sumber di repositori mungkin lebih lama dari produksi utama yang dikelola oleh nattadasu) 
 
+      Namun, karena kemampuan bot dalam mencari informasi tentang pengguna, anime di MAL, dan manga di AniList yang sangat baik, tautan undangan tersedia untuk siapa saja yang tertarik mengundang bot (lihat `/invite`). 
 
-      Namun, karena kemampuan bot dalam mencari informasi tentang pengguna,
-      anime di MAL, dan manga di AniList yang sangat baik, tautan undangan
-      tersedia untuk siapa saja yang tertarik mengundang bot (lihat `/invite`).
+      Bot ini mungkin memerlukan persetujuan kamu untuk mengumpulkan dan menyimpan data kamu saat kamu menggunakan perintah `/register`. Kamu dapat melihat kebijakan privasi dengan menggunakan perintah `/privacy`. 
 
+      Namun, kamu masih dapat menggunakan bot tanpa mengumpulkan data kamu, meskipun penggunaannya terbatas. 
 
-      Bot ini mungkin memerlukan persetujuan kamu untuk mengumpulkan dan
-      menyimpan data kamu saat kamu menggunakan perintah `/register`.
-      Kamu dapat melihat kebijakan privasi dengan menggunakan perintah `/privacy`.
+      Jika kamu ingin menghubungi penulis, kirim DM ke [{AUTHOR_USERNAME}]({ownerUserUrl}) atau melalui [server dukungan]({BOT_SUPPORT_SERVER}). 
 
-
-      Namun, kamu masih dapat menggunakan bot tanpa mengumpulkan data kamu,
-      meskipun penggunaannya terbatas.
-
-
-      Jika kamu ingin menghubungi penulis, kirim DM ke
-      [{AUTHOR_USERNAME}]({ownerUserUrl}) atau melalui
-      [server dukungan]({BOT_SUPPORT_SERVER}).
-
-
-      Versi bot, dalam hash Git:
-      [`{gtHsh}`](https://github.com/nattadasu/ryuuRyuusei/commit/{gittyHash}).
+      Versi bot, dalam hash Git: [`{gtHsh}`](https://github.com/nattadasu/ryuuRyuusei/commit/{gittyHash}).
   ping:
     ping:
       title: Ping
-      text: Sedang mengirim ping.... Sabar ya sekaligus tunggu sampai Ryuusei
-        dapat hasil tesnya!
+      text: Sedang mengirim ping.... Sabar ya sekaligus tunggu sampai Ryuusei dapat hasil tesnya!
     pong:
       title: Pong!
       text: Ini dia hasil tesnya!
-      footer: Proyek ini SAMA SEKALI TIDAK terkait dengan Crypton Future Media,
-        meskipun bot ini memiliki banyak referensi Kagamine Len.
+      footer: Proyek ini SAMA SEKALI TIDAK terkait dengan Crypton Future Media, meskipun bot ini memiliki banyak referensi Kagamine Len.
     bot:
       title: Bot
       text: Membandingkan timestamp pesan dengan timestamp sekarang
@@ -62,9 +41,8 @@ strings:
       title: Pemuatan Bahasa
       text: Waktu pemuatan berkas bahasa
     pyTime:
-      title: "`time` Python"
-      text: Berdasarkan dari `time.perf_counter()` di Python; hitung waktu dari
-        sebelum dan sesudah eksekusi perintah
+      title: '`time` Python'
+      text: Berdasarkan dari `time.perf_counter()` di Python; hitung waktu dari sebelum dan sesudah eksekusi perintah
     uptime:
       title: Waktu Aktif
       text: Bot telah aktif sejak {TIMESTAMP}
@@ -76,8 +54,7 @@ strings:
     fields:
       acc:
         title: Izin/Akses yang Dibutuhkan
-        value: Baca Pesan, Kirim Pesan, Kirim Pesan dalam Thread, Tautan Embed,
-          Lampirkan File, Gunakan Emoji Eksternal, Menambahkan Reaksi
+        value: Baca Pesan, Kirim Pesan, Kirim Pesan dalam Thread, Tautan Embed, Lampirkan File, Gunakan Emoji Eksternal, Menambahkan Reaksi
       scope:
         title: Jangkauan (Scope) yang Diperlukan
         value: |-
@@ -90,82 +67,40 @@ strings:
     title: Kebijakan Privasi (versi singkat) Ryuuzaki Ryuusei
     read: Lihat versi lengkap (Bahasa Inggris)
     text: >-
-      Hai dan terima kasih atas minat Anda untuk membaca versi Privacy Policy
-      yang singkat ini.
+      Hai dan terima kasih atas minat Anda untuk membaca versi Privacy Policy yang singkat ini. 
 
+      Dalam pesan ini, kami akan memberikan ringkasan tentang konten yang kami kumpulkan, simpan, dan gunakan, termasuk layanan pihak ketiga yang kami gunakan agar bot dapat berfungsi sebagaimana mestinya. Anda dapat membaca versi lengkap [Privacy Policy kapan saja yang Anda inginkan](https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md). 
 
-      Dalam pesan ini, kami akan memberikan ringkasan tentang konten yang kami
-      kumpulkan, simpan, dan gunakan, termasuk layanan pihak ketiga yang kami
-      gunakan agar bot dapat berfungsi sebagaimana mestinya. Anda dapat membaca
-      versi lengkap [Privacy Policy kapan saja yang Anda inginkan](https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md).
+      __Kami mengumpulkan, menyimpan, dan menggunakan data berikut__: 
+      - Discord: nama pengguna, discriminator, ID snowflake (UID) pengguna, tanggal bergabung, ID snowflake guild/server saat pendaftaran, nama server, tanggal pendaftaran, referal pengguna (jika ada) 
+      - MyAnimeList: nama pengguna, ID pengguna, tanggal bergabung 
 
+      __Kami membagikan informasi pribadi yang terbatas tentang Anda kepada pihak ketiga__: 
+      Hal ini diperlukan agar bot dapat berfungsi sebagaimana mestinya, dengan menggunakan layanan berikut: 
+      Discord, Last.FM, MAL Heatmap, MyAnimeList 
 
-      __Kami mengumpulkan, menyimpan, dan menggunakan data berikut__:
+      __Kami melakukan caching data untuk fitur terbatas dari bot__: 
+      Digunakan untuk mengurangi jumlah panggilan API ke layanan pihak ketiga, dan untuk mengurangi waktu pemrosesan data dan tidak ada informasi yang terkait dengan Anda. 
 
-      - Discord: nama pengguna, discriminator, ID snowflake (UID) pengguna,
-      tanggal bergabung, ID snowflake guild/server saat pendaftaran, nama
-      server, tanggal pendaftaran, referal pengguna (jika ada)
+      __Namun, kami tidak mengumpulkan data berikut__: 
+      Setiap log pesan yang dikirimkan oleh sistem tentang Anda dalam keadaan apa pun. Pencatatan pesan hanya terjadi ketika Anda memanggil perintah umum (seperti `/help`, `/anime`, `/manga`, dll.) dan selama proses pengembangan bot. Pemeliharaan akan diumumkan di saluran status Bot di Support Server dan Aktivitas Bot. 
 
-      - MyAnimeList: nama pengguna, ID pengguna, tanggal bergabung
+      Data disimpan secara lokal di server/mesin Data Maintainer (baca: pemilik) bot ini sebagai CSV. Untuk membaca profil Anda yang kami kumpulkan, ketikkan `/export_data` setelah nama pengguna Anda. 
 
-
-      __Kami membagikan informasi pribadi yang terbatas tentang Anda kepada pihak
-      ketiga__:
-
-      Hal ini diperlukan agar bot dapat berfungsi sebagaimana mestinya, dengan
-      menggunakan layanan berikut:
-
-      Discord, Last.FM, MAL Heatmap, MyAnimeList
-
-
-      __Kami melakukan caching data untuk fitur terbatas dari bot__:
-
-      Digunakan untuk mengurangi jumlah panggilan API ke layanan pihak ketiga, dan
-      untuk mengurangi waktu pemrosesan data dan tidak ada informasi yang terkait
-      dengan Anda.
-
-
-      __Namun, kami tidak mengumpulkan data berikut__:
-
-      Setiap log pesan yang dikirimkan oleh sistem tentang Anda dalam keadaan apa
-      pun. Pencatatan pesan hanya terjadi ketika Anda memanggil perintah umum (seperti
-      `/help`, `/anime`, `/manga`, dll.) dan selama proses pengembangan bot.
-      Pemeliharaan akan diumumkan di saluran status Bot di Support Server dan
-      Aktivitas Bot.
-
-
-      Data disimpan secara lokal di server/mesin Data Maintainer (baca: pemilik)
-      bot ini sebagai CSV. Untuk membaca profil Anda yang kami kumpulkan, ketikkan
-      `/export_data` setelah nama pengguna Anda.
-
-
-      Sebagai pengguna, Anda memiliki hak untuk mengakses, mengetahui, portabilitas
-      data, memodifikasi/mengoreksi, menghapus, membatasi, tidak berpartisipasi,
-      dan/atau menarik kembali persetujuan Anda untuk menggunakan data Anda.
-
+      Sebagai pengguna, Anda memiliki hak untuk mengakses, mengetahui, portabilitas data, memodifikasi/mengoreksi, menghapus, membatasi, tidak berpartisipasi, dan/atau menarik kembali persetujuan Anda untuk menggunakan data Anda. 
 
       Untuk informasi kontak apa pun, ketikkan `/about`.
-
   support:
     title: Dukung Pengembangan Ryuuzaki Ryuusei!
     text: >-
-      Hai! Terima kasih banget nih sudah mau dukung Ryuusei!
+      Hai! Terima kasih banget nih sudah mau dukung Ryuusei! 
 
+      Kamu bisa dukung Ryuusei lewat [Ko-Fi]({KOFI}), [PayPal]({PAYPAL}), [Patreon]({PATREON}), atau [GitHub Sponsors]({GHSPONSOR}). 
 
-      Kamu bisa dukung Ryuusei lewat [Ko-Fi]({KOFI}), [PayPal]({PAYPAL}),
-      [Patreon]({PATREON}), atau [GitHub Sponsors]({GHSPONSOR}).
+      Kalau kamu cuma punya akun bank/e-money Indonesia, kamu bisa dukung Ryuusei lewat [Trakteer]({TRAKTEER}) atau [Saweria]({SAWERIA}). 
 
+      Atau, kalau kamu seorang pengembang, kamu bisa bantu Ryuusei lebih pandai di [GitHub]({GHREPO}). 
 
-      Kalau kamu cuma punya akun bank/e-money Indonesia, kamu bisa dukung
-      Ryuusei lewat [Trakteer]({TRAKTEER}) atau [Saweria]({SAWERIA}).
-
-
-      Atau, kalau kamu seorang pengembang, kamu bisa bantu Ryuusei lebih pandai
-      di [GitHub]({GHREPO}).
-
-
-      Kalau ada yang mau ditanyain atau mau ngobrol santai, boleh juga langsung
-      gabung ke [server dukungan Ryuusei]({SUPPORT}) ya!
-
+      Kalau ada yang mau ditanyain atau mau ngobrol santai, boleh juga langsung gabung ke [server dukungan Ryuusei]({SUPPORT}) ya! 
 
       Terima kasih lagi ya, Ryuusei tunggu dukunganmu!
