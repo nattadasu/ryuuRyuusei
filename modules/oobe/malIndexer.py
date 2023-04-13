@@ -5,16 +5,19 @@ from modules.oobe.commons import *
 # encode ( and ) to %28 and %29
 MAIN_SITE = 'https://aniapi.nattadasu.my.id/myanimelist%28%29.json'
 
+
 def mal_get_data():
     data = r.get(MAIN_SITE)
     # save data to json file
     with open("cache/mal.json", "w", encoding="utf8") as f:
         json.dump(data.json(), f, ensure_ascii=False)
 
+
 def mal_load_data():
     with open("cache/mal.json", "r") as f:
         data = json.load(f)
     return data
+
 
 def mal_run():
     if not os.path.exists("cache/mal.json"):

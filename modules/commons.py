@@ -4,6 +4,7 @@ This module contains the common functions used by the other modules."""
 
 from uuid import uuid4 as id4
 
+
 def snowflake_to_datetime(snowflake: int) -> int:
     """Convert Discord snowflake to datetime object."""
     timestamp_bin = bin(int(snowflake) >> 22)
@@ -11,6 +12,7 @@ def snowflake_to_datetime(snowflake: int) -> int:
     timestamp_unix = (timestamp_dec + 1420070400000) / 1000
 
     return timestamp_unix
+
 
 def trimCyno(message: str) -> str:
     """Trim synopsys to 1000 characters"""

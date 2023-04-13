@@ -1,8 +1,10 @@
 from modules.oobe.commons import *
 
+
 def revertReqs():
     os.remove("requirements.txt")
     os.system("git checkout HEAD .")
+
 
 def updateJikanpy():
     reqs = ""
@@ -20,6 +22,7 @@ def updateJikanpy():
     os.system(f"{pf} -m pip install -r requirements.txt")
     os.system(f"{pf} setup.py install")
     revertReqs()
+
 
 def installJikanpy():
     # install jikanpy

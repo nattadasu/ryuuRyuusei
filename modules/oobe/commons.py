@@ -1,12 +1,12 @@
 import json
 import os
 import platform
-import time
 import re
+import subprocess as sub
+import time
 
 import pandas as pd
 import requests as r
-import subprocess as sub
 
 
 # check current OS
@@ -20,6 +20,7 @@ def pyBinPath() -> str:
     if os.getenv("PYTHON_BINARY"):
         # eh, just return the env var if it exists
         return os.getenv("PYTHON_BINARY")
+
     def askPython(shellOutput: str) -> bool:
         """Directly ask Python what version it is"""
         so = shellOutput.split(" ")
@@ -31,14 +32,16 @@ def pyBinPath() -> str:
             return False
     if currentOS() == "Windows":
         try:
-            py = sub.check_output("python --version", shell=True).decode("utf-8")
+            py = sub.check_output("python --version",
+                                  shell=True).decode("utf-8")
             if askPython(py):
                 return "python"
             else:
                 raise sub.CalledProcessError()
         except sub.CalledProcessError:
-            paths = sub.check_output("where python", shell=True).decode("utf-8")
-            paths = paths.replace('\r','').split("\n")
+            paths = sub.check_output(
+                "where python", shell=True).decode("utf-8")
+            paths = paths.replace('\r', '').split("\n")
             # reverse the list, so we can get the up to date python version
             paths.reverse()
             # if index 0 is '', drop it
@@ -53,13 +56,15 @@ def pyBinPath() -> str:
                 return "python"
     else:
         try:
-            py3 = sub.check_output("python3 --version", shell=True).decode("utf-8")
+            py3 = sub.check_output("python3 --version",
+                                   shell=True).decode("utf-8")
             if askPython(py3):
                 return "python3"
             else:
                 raise sub.CalledProcessError()
         except sub.CalledProcessError:
-            py = sub.check_output("python --version", shell=True).decode("utf-8")
+            py = sub.check_output("python --version",
+                                  shell=True).decode("utf-8")
             if askPython(py):
                 return "python"
             else:

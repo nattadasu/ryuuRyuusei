@@ -34,7 +34,8 @@ def convertLangsToJson():
                 }
                 data['meta'] = drip
                 indexed.append(drip)
-            print(f"\rConverted {file.name}: {indexed[-1]['name']} ({indexed[-1]['dialect']}) to json", end="\n")
+            print(
+                f"\rConverted {file.name}: {indexed[-1]['name']} ({indexed[-1]['dialect']}) to json", end="\n")
         with file.with_suffix(".json").open("w", encoding='utf-8', newline='\n') as f:
             j.dump(data, f, indent=2, ensure_ascii=False)
     with (i18n_dir / "_index.json").open("w", encoding='utf-8', newline='\n') as f:
@@ -46,6 +47,7 @@ def convertLangsToJson():
         j.dump(indexed, f, indent=2, ensure_ascii=False)
     with open(os.path.join("i18n", "_index.yaml"), "w", encoding='utf-8', newline='\n') as f:
         y.dump(indexed, f, indent=2, allow_unicode=True)
+
 
 if __name__ == "__main__":
     convertLangsToJson()

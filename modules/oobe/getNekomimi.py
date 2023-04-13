@@ -4,6 +4,7 @@ from modules.oobe.commons import *
 
 MAIN_SITE = "https://raw.githubusercontent.com/nattadasu/nekomimiDb/main/index.tsv"
 
+
 def nk_get_data():
     data = r.get(MAIN_SITE).text
     # save data to file

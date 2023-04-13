@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 from modules.oobe.commons import *
-from modules.oobe.jikan import *
-from modules.oobe.malIndexer import *
 from modules.oobe.getNekomimi import *
 from modules.oobe.i18nBuild import *
+from modules.oobe.jikan import *
+from modules.oobe.malIndexer import *
+
 
 def main():
     # check if termux
@@ -15,6 +16,7 @@ def main():
     # check if jikanpy is installed
     try:
         from jikanpy import AioJikan
+
         # using git, fetch latest jikanpy
         # if there's any changes, install it
         print("Checking for jikanpy updates...")
@@ -50,6 +52,7 @@ def main():
     print("Building language index...")
     convertLangsToJson()
     print("Initialization finished, you should able to run the bot safely now.")
+
 
 if __name__ == "__main__":
     main()

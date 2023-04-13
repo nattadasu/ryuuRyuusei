@@ -5,10 +5,12 @@ All language files are stored in the i18n folder. Strings to change and view lan
 
 import csv
 from json import loads as jlo
+
 import pandas as pd
+from interactions import Client, Embed, EmbedField, InteractionContext
 from interactions.ext.paginators import Paginator
-from interactions import Embed, EmbedField, Client, InteractionContext
-from modules.const import LANGUAGE_CODE, database
+
+from modules.const import LANGUAGE_CODE
 
 
 def lang(code: str, useRaw: bool = False) -> dict:

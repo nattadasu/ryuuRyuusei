@@ -1,5 +1,6 @@
 from typing import Union
 
+
 def getPlatformColor(pf: str) -> hex:
     """Get a color code for a specific platform"""
     pf = pf.lower()

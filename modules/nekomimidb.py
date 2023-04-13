@@ -3,10 +3,12 @@
 This module contains the functions used by the nekomimiDb module."""
 
 import pandas as pd
-from interactions import Embed, EmbedAttachment, EmbedAuthor, EmbedField, SlashContext as sctx
+from interactions import Embed, EmbedAttachment, EmbedAuthor, EmbedField
+from interactions import SlashContext as sctx
 
 from modules.commons import getRandom
 from modules.platforms import getPlatformColor
+
 
 def getNekomimi(gender: str | None = None) -> dict:
     """Get a random nekomimi image from the database"""

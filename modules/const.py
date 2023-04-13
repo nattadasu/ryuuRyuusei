@@ -7,8 +7,8 @@ However, you can use the .env.example file as a template to create your own .env
 
 This module also contains some mutable variables/constant that are used oftenly in the bot."""
 
-from subprocess import check_output as chout
 from os import getenv as ge
+from subprocess import check_output as chout
 from typing import Final
 
 from dotenv import load_dotenv as ld
