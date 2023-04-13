@@ -4,4 +4,8 @@ files:
   - source: README.md
     ignore:
       - /i18n/**
-    translation: /README.%locale_with_underscore%.md
+    translation: /docs/%language%/%original_file_name%
+  - source: PRIVACY.md
+    translation: /docs/%language%/%original_file_name%
+  - source: TERMS_OF_SERVICE.md
+    translation: /docs/%language%/%original_file_name%
