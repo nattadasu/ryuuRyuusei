@@ -210,6 +210,7 @@ async def support(ctx: ipy.SlashContext):
 async def random(ctx: ipy.SlashContext):
     pass
 
+
 @random.subcommand(
     group_name="nekomimi",
     group_description="Get a random character in cat ears",
@@ -221,6 +222,7 @@ async def random_nekomimi_boy(ctx: ipy.SlashContext):
     ul = readUserLang(ctx)
     l_ = lang(ul)['random']['nekomimi']
     await nekomimiSubmit(ctx=ctx, gender='boy', lang=l_)
+
 
 @random.subcommand(
     group_name="nekomimi",
@@ -234,6 +236,7 @@ async def random_nekomimi_girl(ctx: ipy.SlashContext):
     l_ = lang(ul)['random']['nekomimi']
     await nekomimiSubmit(ctx=ctx, gender='girl', lang=l_)
 
+
 @random.subcommand(
     group_name="nekomimi",
     group_description="Get a random character in cat ears",
@@ -246,21 +249,12 @@ async def random_nekomimi_randomize(ctx: ipy.SlashContext):
     l_ = lang(ul)['random']['nekomimi']
     await nekomimiSubmit(ctx=ctx, lang=l_)
 
+
 @ipy.slash_command(
     name="usersettings",
     description="Change the bot settings",
 )
 async def usersettings(ctx: ipy.InteractionContext):
-    pass
-
-
-@ipy.slash_command(
-    name="serversettings",
-    description="Change the bot settings",
-    default_member_permissions=ipy.Permissions.ADMINISTRATOR,
-    dm_permission=False,
-)
-async def serversettings(ctx: ipy.InteractionContext):
     pass
 
 
@@ -286,12 +280,22 @@ async def usersettings_language_list(ctx: ipy.InteractionContext):
     required=True,
     opt_type=ipy.OptionType.STRING,
 )
-async def settings_language_set(ctx: ipy.InteractionContext, code: str):
+async def usersettings_language_set(ctx: ipy.InteractionContext, code: str):
     try:
         await setLanguage(code=code, ctx=ctx, isGuild=False)
         await ctx.send(f"{EMOJI_SUCCESS} Language set to {code}")
     except Exception as e:
         await ctx.send(f"{EMOJI_FORBIDDEN} {e}")
+
+
+@ipy.slash_command(
+    name="serversettings",
+    description="Change the bot settings",
+    default_member_permissions=ipy.Permissions.ADMINISTRATOR,
+    dm_permission=False,
+)
+async def serversettings(ctx: ipy.InteractionContext):
+    pass
 
 
 @serversettings.subcommand(
@@ -306,12 +310,13 @@ async def settings_language_set(ctx: ipy.InteractionContext, code: str):
     required=True,
     opt_type=ipy.OptionType.STRING,
 )
-async def settings_language_server(ctx: ipy.InteractionContext, code: str):
+async def serversettings_language_set(ctx: ipy.InteractionContext, code: str):
     try:
         await setLanguage(code=code, ctx=ctx, isGuild=True)
         await ctx.send(f"{EMOJI_SUCCESS} Language set to {code}")
     except Exception as e:
         await ctx.send(f"{EMOJI_FORBIDDEN} {e}")
+
 
 async def main():
     """Main function"""
