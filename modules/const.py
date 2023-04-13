@@ -1,10 +1,8 @@
-import subprocess
+from subprocess import check_output as chout
 from os import getenv as ge
 from typing import Final
 
 from dotenv import load_dotenv as ld
-
-from modules.commons import *
 
 ld()
 
@@ -36,11 +34,11 @@ EMOJI_USER_ERROR: Final[str] = ge('EMOJI_USER_ERROR')
 
 
 def get_git_revision_hash() -> str:
-    return subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
+    return chout(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
 
 
 def get_git_revision_short_hash() -> str:
-    return subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
+    return chout(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
 
 
 gittyHash = get_git_revision_hash()
@@ -148,3 +146,65 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
 # Aliases
 
 warnThreadCW = MESSAGE_WARN_CONTENTS
+
+bannedTags = [
+    'Amputation', 'Anal Sex', 'Ashikoki', 'Asphyxiation',
+    'Blackmail', 'Bondage', 'Boobjob', 'Cumflation',
+    'Cunnilingus', 'Deepthroat', 'DILF', 'Fellatio',
+    'Femdom', 'Futanari', 'Group Sex', 'Handjob',
+    'Human Pet', 'Incest', 'Inseki', 'Irrumatio',
+    'Lactation', 'Masochism', 'Masturbation', 'MILF',
+    'Nakadashi', 'Pregnant', 'Prostitution', 'Public Sex',
+    'Rape', 'Rimjob', 'Sadism', 'Scat',
+    'Scissoring', 'Sex Toys', 'Squirting', 'Sumata',
+    'Sweat', 'Tentacles', 'Threesome', 'Vore',
+    'Voyeur', 'Watersports', 'Omegaverse'
+]
+
+invAa = {
+    'title': None,
+    'anidb': None,
+    'anilist': None,
+    'animeplanet': None,
+    'anisearch': None,
+    'annict': None,
+    'kaize': None,
+    'kitsu': None,
+    'livechart': None,
+    'myanimelist': None,
+    'notify': None,
+    'otakotaku': None,
+    'shikimori': None,
+    'shoboi': None,
+    'silveryasha': None,
+    'trakt': None,
+    'trakt_type': None,
+    'trakt_season': None
+}
+
+simkl0rels = {
+    'title': None,
+    "simkl": None,
+    "slug": None,
+    "poster": None,
+    "fanart": None,
+    "anitype": "tv",
+    "type": "anime",
+    "allcin": None,
+    "anfo": None,
+    "ann": None,
+    "imdb": None,
+    "mal": None,
+    "offjp": None,
+    "tmdb": None,
+    "tvdb": None,
+    "tvdbslug": None,
+    "wikien": None,
+    "wikijp": None,
+}
+
+traktHeader = {
+    'Content-Type': 'applications/json',
+    'trakt-api-key': TRAKT_CLIENT_ID,
+    'trakt-api-version': TRAKT_API_VERSION
+}
