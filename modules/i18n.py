@@ -68,8 +68,7 @@ async def paginateLanguage(bot: Client, ctx: InteractionContext) -> None:
             paged += [EmbedField(
                 name=f"`{lang['code']}`",
                 value=f"""{lang['name']}
-                {lang['native']}
-                Written by {', '.join(lang['contributors'])}""",
+                {lang['native']}""",
                 inline=True
             )]
         pages += [Embed(

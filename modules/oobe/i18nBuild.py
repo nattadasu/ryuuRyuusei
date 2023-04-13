@@ -12,6 +12,7 @@ def convertLangsToJson():
                     data = y.load(f, Loader=y.FullLoader)
                     if file != "_index.yaml":
                         print(f"Converting {file} to json")
+                        data['meta']['code'] = file.replace(".yaml", "")
                         indexed += [data['meta']]
                 with open(os.path.join(root, file).replace(".yaml", ".json"), "w", encoding='utf-8', newline='\n') as f:
                     j.dump(data, f, indent=2, ensure_ascii=False)
