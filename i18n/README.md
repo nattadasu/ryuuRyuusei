@@ -26,10 +26,11 @@ Exclusion only applies to following:
 
 ## Translating
 
-To translate the bot, you need to know the YAML and Markdown syntax, this
-will help you to translate the bot. You can learn YAML syntax from
-[here](https://learnxinyminutes.com/docs/yaml/) and Markdown syntax from
-[here](https://learnxinyminutes.com/docs/markdown/).
+To translate the bot, you need to know the YAML and Discord flavored Markdown
+syntax, this will help you to translate the bot. You can learn YAML syntax from
+[here](https://learnxinyminutes.com/docs/yaml/) and general Markdown syntax from
+[here](https://learnxinyminutes.com/docs/markdown/) then you can learn Discord
+flavored Markdown syntax from [here](https://www.markdownguide.org/tools/discord/).
 
 If you know YAML and Markdown already, there's a few things you need to know
 before translating the bot:
