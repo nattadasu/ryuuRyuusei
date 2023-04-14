@@ -99,8 +99,8 @@ strings:
       Terima kasih lagi ya, Ryuusei tunggu dukunganmu!
   random:
     nekomimi:
-      author: Powered by nattadasu/nekomimiDb
+      author: Ditenagai oleh nattadasu/nekomimiDb
       source:
-        title: Image Source
-        value: Click here
-      artist: Artist
+        title: Sumber Gambar
+        value: Tekan di sini
+      artist: Artis
