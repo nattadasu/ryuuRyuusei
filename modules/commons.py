@@ -2,8 +2,14 @@
 
 This module contains the common functions used by the other modules."""
 
+from re import sub as rSub
 from uuid import uuid4 as id4
 
+from interactions import (Embed, EmbedAttachment, EmbedAuthor, EmbedField,
+                          EmbedFooter, EmbedProvider)
+
+from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
+from modules.const import EMOJI_USER_ERROR as EUSER
 from modules.i18n import lang
 
 
@@ -84,3 +90,37 @@ def generateSearchSelections(
 
     return dcEm
 
+
+def utilitiesExceptionEmbed(
+    description: str,
+    field_name: str,
+    field_value: str,
+    error: str,
+    language: str = "en_US",
+    color: hex = 0xFF0000,
+) -> Embed:
+    """Generate an embed for exceptions in the utilities module."""
+    l_ = lang(code=language, useRaw=True)
+    emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
+    dcEm = Embed(
+        color=color,
+        title=l_['commons']['error'],
+        description=description,
+        fields=[
+            EmbedField(
+                name=field_name,
+                value=field_value,
+                inline=False
+            ),
+            EmbedField(
+                name=l_['commons']['reason'],
+                value=f"```md\n{error}\n```",
+                inline=False
+            )
+        ],
+        thumbnail=EmbedAttachment(
+            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
+        ),
+    )
+
+    return dcEm

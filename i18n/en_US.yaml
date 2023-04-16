@@ -12,6 +12,12 @@ commons:
     ova: OVA
     ona: ONA
     music: Music
+    manga: Manga
+    novel: Novel
+    one_shot: One Shot
+    doujin: Doujin
+    manhwa: Manhwa
+    manhua: Manhua
   season:
     winter: Winter
     spring: Spring
@@ -31,6 +37,54 @@ quantities:
     one: 1 anime
     two: 2 anime
     many: "{count} anime"
+  manga:
+    one: 1 manga
+    two: 2 manga
+    many: "{count} manga"
+  games:
+    one: 1 game
+    two: 2 games
+    many: "{count} games"
+  shows:
+    one: 1 TV show
+    two: 2 TV shows
+    many: "{count} TV shows"
+  movies:
+    one: 1 movie
+    two: 2 movies
+    many: "{count} movies"
+  tracks:
+    one: 1 song track
+    two: 2 song tracks
+    many: "{count} song tracks"
+  albums:
+    one: 1 album
+    two: 2 albums
+    many: "{count} albums"
+  artists:
+    one: 1 artist
+    two: 2 artists
+    many: "{count} artists"
+  years:
+    one: 1 year
+    two: 2 years
+    many: "{count} years"
+  months:
+    one: 1 month
+    two: 2 months
+    many: "{count} months"
+  days:
+    one: 1 day
+    two: 2 days
+    many: "{count} days"
+  hours:
+    one: 1 hour
+    two: 2 hours
+    many: "{count} hours"
+  minutes:
+    one: 1 minute
+    two: 2 minutes
+    many: "{count} minutes"
 strings:
   # all of the key names is basically the command name in the bot
   about:
@@ -205,3 +259,21 @@ strings:
         footer: >
           Pro tip: Use native title to get the most accurate result... that if
           you know how to write it in Japanese :P
+  utilities:
+    commons:
+      result: Result
+      string: String
+    math:
+      expression: Expression
+      exception: An error occurred while evaluating the expression
+    base64:
+      exception: An error occurred while encoding/decoding the string
+    color:
+      color: Color
+      name: Name
+      exception: An error occurred while getting information about the color
+        from The Color API
+      powered: Powered by The Color API
+    qrcode:
+      exception: An error occurred while generating the QR codes
+      powered: Powered by goQR.me

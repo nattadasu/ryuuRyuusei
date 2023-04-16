@@ -1,11 +1,18 @@
 import asyncio
 import csv
+import re
+from base64 import b64decode, b64encode
 from datetime import datetime as dtime
 from datetime import timezone as tz
+from json import dumps as jdu
+from json import loads as jlo
 from time import perf_counter as pc
+from urllib.parse import quote as urlq, urlencode as urlenc
 
 import interactions as ipy
+from plusminus import BaseArithmeticParser as BAP
 
+from modules.classes.thecolorapi import TheColorApi
 from modules.commons import *
 from modules.const import *
 from modules.i18n import lang, paginateLanguage, readUserLang, setLanguage
@@ -318,6 +325,302 @@ async def anime_search(ctx: ipy.SlashContext, query: str):
 
 
 @ipy.slash_command(
+    name="utilities",
+    description="Get some utilities you might need",
+)
+async def utilities(ctx: ipy.SlashContext):
+    pass
+
+
+@utilities.subcommand(
+    sub_cmd_name="math",
+    sub_cmd_description="Evaluate a (safe) math expression",
+    options=[
+        ipy.SlashCommandOption(
+            name="expression",
+            description="The expression to evaluate",
+            type=ipy.OptionType.STRING,
+            required=True
+        )
+    ]
+)
+async def utilities_math(ctx: ipy.SlashContext, expression: str):
+    await ctx.defer()
+    ul = readUserLang(ctx)
+    l_ = lang(ul)['utilities']
+    try:
+        exp = BAP().evaluate(expression)
+        await ctx.send(embed=ipy.Embed(
+            title=l_['commons']['result'],
+            color=0x996422,
+            fields=[
+                ipy.EmbedField(
+                    name=l_['math']['expression'],
+                    value=f"```py\n{expression}```",
+                    inline=False
+                ),
+                ipy.EmbedField(
+                    name=l_['commons']['result'],
+                    value=f"```py\n{exp}```",
+                    inline=False
+                )
+            ]
+        ))
+    except Exception as e:
+        await ctx.send(embed=utilitiesExceptionEmbed(
+            language=ul,
+            description=l_['math']['exception'],
+            field_name=l_['math']['expression'],
+            field_value=f"```py\n{expression}```",
+            error=e
+        ))
+
+
+@utilities.subcommand(
+    sub_cmd_name="base64",
+    sub_cmd_description="Encode/decode a string to/from base64",
+    options=[
+        ipy.SlashCommandOption(
+            name="mode",
+            description="The mode to use",
+            type=ipy.OptionType.STRING,
+            required=True,
+            choices=[
+                ipy.SlashCommandChoice(
+                    name="Encode",
+                    value="encode"
+                ),
+                ipy.SlashCommandChoice(
+                    name="Decode",
+                    value="decode"
+                )
+            ]
+        ),
+        ipy.SlashCommandOption(
+            name="string",
+            description="The string to encode/decode",
+            type=ipy.OptionType.STRING,
+            required=True
+        )
+    ]
+)
+async def utilities_base64(ctx: ipy.SlashContext, mode: str, string: str):
+    await ctx.defer()
+    ul = readUserLang(ctx)
+    l_ = lang(ul)['utilities']
+    try:
+        if mode == "encode":
+            res = b64encode(string.encode()).decode()
+            strVal = f"""```md
+{string}
+```"""
+            resVal = f"""```{res}```"""
+        else:
+            res = b64decode(string.encode()).decode()
+            strVal = f"""```{string}```"""
+            resVal = f"""```md
+{res}
+```"""
+        await ctx.send(embed=ipy.Embed(
+            title=l_['commons']['result'],
+            color=0x996422,
+            fields=[
+                ipy.EmbedField(
+                    name=l_['base64']['string'],
+                    value=strVal,
+                    inline=False
+                ),
+                ipy.EmbedField(
+                    name=l_['commons']['result'],
+                    value=resVal,
+                    inline=False
+                )
+            ]
+        ))
+    except Exception as e:
+        await ctx.send(embed=utilitiesExceptionEmbed(
+            language=ul,
+            description=l_['base64']['exception'],
+            field_name=l_['commons']['string'],
+            field_value=f"```{string}```",
+            error=e
+        ))
+
+
+@utilities.subcommand(
+    sub_cmd_name="color",
+    sub_cmd_description="Get information about a color",
+    options=[
+        ipy.SlashCommandOption(
+            name="format",
+            description="The format to use",
+            type=ipy.OptionType.STRING,
+            required=True,
+            choices=[
+                ipy.SlashCommandChoice(
+                    name="Hex",
+                    value="hex"
+                ),
+                ipy.SlashCommandChoice(
+                    name="RGB",
+                    value="rgb"
+                ),
+                ipy.SlashCommandChoice(
+                    name="HSL",
+                    value="hsl"
+                ),
+                ipy.SlashCommandChoice(
+                    name="CMYK",
+                    value="cmyk"
+                ),
+            ],
+        ),
+        ipy.SlashCommandOption(
+            name="color",
+            description="The color to get information about",
+            type=ipy.OptionType.STRING,
+            required=True
+        ),
+    ]
+)
+async def utilities_color(ctx: ipy.SlashContext, format: str, color: str):
+    await ctx.defer()
+    ul = readUserLang(ctx)
+    l_ = lang(ul)['utilities']
+    res: dict = {}
+    try:
+        if format == "hex" and re.match(r"^#?(?:[0-9a-fA-F]{3}){1,2}$", color) is None:
+            raise ValueError("Invalid hex color")
+        elif format == "hex" and re.match(r"^#", color) is None:
+            color = f"#{color}"
+        async with TheColorApi() as tca:
+            match format:
+                case "hex":
+                    res = await tca.color(hex=color)
+                case "rgb":
+                    res = await tca.color(rgb=color)
+                case "hsl":
+                    res = await tca.color(hsl=color)
+                case "cmyk":
+                    res = await tca.color(cmyk=color)
+            await tca.close()
+        rgb: dict = res['rgb']
+        col: int = (rgb['r'] << 16) + (rgb['g'] << 8) + rgb['b']
+        fields = [
+            ipy.EmbedField(
+                name=l_['color']['name'],
+                value=f"{res['name']['value']}",
+                inline=False
+            ),
+        ]
+        for f in ['hex', 'rgb', 'hsl', 'cmyk', 'hsv']:
+            fields.append(ipy.EmbedField(
+                name=f"{f.upper()}",
+                value=f"```css\n{res[f]['value']}\n```",
+                inline=True
+            ))
+        fields.append(ipy.EmbedField(
+            name="DEC",
+            value=f"```py\n{col}\n```",
+            inline=True
+        ))
+        await ctx.send(embed=ipy.Embed(
+            title=l_['commons']['result'],
+            color=col,
+            fields=fields,
+            thumbnail=ipy.EmbedAttachment(
+                url=res['image']['bare']
+            ),
+            footer=ipy.EmbedFooter(
+                text=l_['color']['powered']
+            )
+        ))
+    except Exception as e:
+        await ctx.send(embed=utilitiesExceptionEmbed(
+            language=ul,
+            description=l_['color']['exception'],
+            field_name=l_['color']['color'],
+            field_value=f"```{color}```",
+            error=e,
+        ))
+
+
+@utilities.subcommand(
+    sub_cmd_name="qrcode",
+    sub_cmd_description="Generate a QR code",
+    options=[
+        ipy.SlashCommandOption(
+            name="string",
+            description="The string to encode",
+            type=ipy.OptionType.STRING,
+            required=True
+        ),
+        ipy.SlashCommandOption(
+            name="error_correction",
+            description="The error correction level",
+            type=ipy.OptionType.STRING,
+            required=False,
+            choices=[
+                ipy.SlashCommandChoice(
+                    name="Low (~7%, default)",
+                    value="L"
+                ),
+                ipy.SlashCommandChoice(
+                    name="Medium (~15%)",
+                    value="M"
+                ),
+                ipy.SlashCommandChoice(
+                    name="Quality (~25%)",
+                    value="Q"
+                ),
+                ipy.SlashCommandChoice(
+                    name="High (~30%)",
+                    value="H"
+                ),
+            ],
+        ),
+    ]
+)
+async def utilities_qrcode(ctx: ipy.SlashContext, string: str, error_correction: str = "L"):
+    await ctx.defer()
+    ul = readUserLang(ctx)
+    l_ = lang(ul)['utilities']
+    try:
+        params = {
+            "data": string,
+            "size": "500x500",
+            "ecc": error_correction,
+            "format": "jpg",
+        }
+        # convert params object to string
+        params = urlenc(params)
+        await ctx.send(embed=ipy.Embed(
+            title=l_['commons']['result'],
+            color=0x000000,
+            fields=[
+                ipy.EmbedField(
+                    name=l_['commons']['string'],
+                    value=f"```{string}```",
+                    inline=False
+                ),
+            ],
+            images=[ipy.EmbedAttachment(
+                url=f"https://api.qrserver.com/v1/create-qr-code/?{params}"
+            )],
+            footer=ipy.EmbedFooter(
+                text=l_['qrcode']['powered']
+            )
+        ))
+    except Exception as e:
+        await ctx.send(embed=utilitiesExceptionEmbed(
+            language=ul,
+            description=l_['qrcode']['exception'],
+            field_name=l_['commons']['string'],
+            field_value=f"```{string}```",
+            error=e,
+        ))
+
+@ipy.slash_command(
     name="random",
     description="Get a random stuff",
 )
@@ -432,6 +735,15 @@ async def serversettings_language_set(ctx: ipy.InteractionContext, code: str):
         await ctx.send(f"{EMOJI_FORBIDDEN} {e}")
 
 
+@ipy.listen()
+async def on_ready():
+    guilds = len(bot.guilds)
+    print("Bot is ready!")
+    print("Logged in as: " + bot.user.display_name + "#" + bot.user.discriminator)
+    print("User ID: " + str(bot.user.id))
+    print("Guilds: " + str(guilds))
+
+
 async def main():
     """Main function"""
     bot.load_extension('interactions.ext.sentry',
@@ -440,7 +752,6 @@ async def main():
     bot.del_unused_app_cmd = True
     bot.sync_interactions = True
     bot.send_command_tracebacks = False
-    bot.sync_ext = True
     await bot.astart()
 
 

@@ -33,5 +33,15 @@ class AniListTypeError(Exception):
         return f"AniListTypeError: {self.message}"
 
 
+class TheColorApiHttpError:
+    def __init__(self, message, status_code):
+        self.message = message
+        self.status_code = status_code
+
+    def __str__(self):
+        return f"TheColorApiHttpError [{self.status_code}]: {self.message}"
+
+
 __all__ = ["MyAnimeListHttpError", "MyAnimeListTypeError",
-           "AniListHttpError", "AniListTypeError",]
+           "AniListHttpError", "AniListTypeError",
+           "TheColorApiHttpError"]
