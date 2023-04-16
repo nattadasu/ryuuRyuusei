@@ -16,3 +16,22 @@ class MyAnimeListTypeError(Exception):
         return f"MyAnimeListTypeError: {self.message} (expected {self.expected_type})"
 
 
+class AniListHttpError(Exception):
+    def __init__(self, message, status_code):
+        self.message = message
+        self.status_code = status_code
+
+    def __str__(self):
+        return f"AniListHttpError [{self.status_code}]: {self.message}"
+
+
+class AniListTypeError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return f"AniListTypeError: {self.message}"
+
+
+__all__ = ["MyAnimeListHttpError", "MyAnimeListTypeError",
+           "AniListHttpError", "AniListTypeError",]
