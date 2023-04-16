@@ -4,6 +4,8 @@ This module contains the common functions used by the other modules."""
 
 from uuid import uuid4 as id4
 
+from modules.i18n import lang
+
 
 def snowflake_to_datetime(snowflake: int) -> int:
     """Convert Discord snowflake to datetime object."""
@@ -38,3 +40,47 @@ def getRandom(value: int = 9) -> int:
     value = -value
     seed = int(str(seed.int)[value:])
     return seed
+
+
+def generateSearchSelections(
+    language: str,
+    mediaType: str,
+    platform: str,
+    homepage: str,
+    title: str,
+    color: hex,
+    icon: str,
+    query: str,
+    results: list[EmbedField],
+) -> Embed:
+    """Generate an embed for search selections."""
+    l_ = lang(code=language, useRaw=True)
+    match len(results):
+        case 1:
+            count = l_["quantities"][f"{mediaType}"]["one"]
+        case 2:
+            count = l_["quantities"][f"{mediaType}"]["two"]
+        case _:
+            count = l_["quantities"][f"{mediaType}"]["many"].format(
+                count=len(results)
+            )
+    dcEm = Embed(
+            author=EmbedAuthor(
+                name=platform,
+                url=homepage,
+                icon_url=icon
+            ),
+            thumbnail=EmbedAttachment(
+                url=icon
+            ),
+            color=color,
+            title=title,
+            description=l_['commons']['search']['result'].format(
+                COUNT=count,
+                QUERY=query
+            ),
+            fields=results,
+        )
+
+    return dcEm
+

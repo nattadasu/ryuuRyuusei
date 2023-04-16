@@ -1,3 +1,36 @@
+commons:
+  unknown: Unknown
+  none: "None"
+  error: Error
+  reason: Reason
+  media_formats:
+    media_format: Media Format
+    tv: TV
+    tv_short: TV Short
+    movie: Movie
+    special: Special
+    ova: OVA
+    ona: ONA
+    music: Music
+  season:
+    winter: Winter
+    spring: Spring
+    summer: Summer
+    fall: Fall
+  search:
+    init_title: Searching...
+    init: Searching `{QUERY}` on `{PLATFORM}`..
+    result_title: Search Results for {QUERY}
+    result: >
+      Found **{COUNT}** for `{QUERY}`, Please select by choosing right option in
+      the dropdown below
+    no_result: No results found for `{QUERY}`, please try again with different
+      query or recheck your spelling
+quantities:
+  anime:
+    one: 1 anime
+    two: 2 anime
+    many: "{count} anime"
 strings:
   # all of the key names is basically the command name in the bot
   about:
@@ -162,3 +195,13 @@ strings:
         title: Image Source
         value: Click here
       artist: Artist
+  anime:
+    search:
+      exception:
+        title: Error
+        text: >-
+          I couldn't able to find any results for {QUERY} on MyAnimeList. Please
+          check your query and try again.
+        footer: >
+          Pro tip: Use native title to get the most accurate result... that if
+          you know how to write it in Japanese :P
