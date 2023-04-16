@@ -7,7 +7,8 @@ from datetime import timezone as tz
 from json import dumps as jdu
 from json import loads as jlo
 from time import perf_counter as pc
-from urllib.parse import quote as urlq, urlencode as urlenc
+from urllib.parse import quote as urlq
+from urllib.parse import urlencode as urlenc
 
 import interactions as ipy
 from plusminus import BaseArithmeticParser as BAP
@@ -619,6 +620,59 @@ async def utilities_qrcode(ctx: ipy.SlashContext, string: str, error_correction:
             field_value=f"```{string}```",
             error=e,
         ))
+
+
+@utilities.subcommand(
+    sub_cmd_name="snowflake",
+    sub_cmd_description="Convert a Discord Snowflake to a timestamp",
+    options=[
+        ipy.SlashCommandOption(
+            name="snowflake",
+            description="The snowflake to convert",
+            required=True,
+            type=ipy.OptionType.STRING,
+        )
+    ]
+)
+async def utilities_snowflake(ctx: ipy.SlashContext, snowflake: str):
+    """Convert a Discord Snowflake to a timestamp"""
+    await ctx.defer()
+    ul = readUserLang(ctx)
+    l_ = lang(ul)['utilities']['snowflake']
+    tmsp = int(snowflake_to_datetime(int(snowflake)))
+    await ctx.send(embed=ipy.Embed(
+        title=l_['title'],
+        description=l_['text'],
+        color=0x1F1F1F,
+        fields=[
+            ipy.EmbedField(
+                name=l_['snowflake'],
+                value=f"```py\n{snowflake}\n```",
+                inline=False
+            ),
+            ipy.EmbedField(
+                name=l_['timestamp'],
+                value=f"```py\n{tmsp}\n```",
+                inline=False
+            ),
+            ipy.EmbedField(
+                name=l_['date'],
+                value=f"<t:{tmsp}:D>",
+                inline=True
+            ),
+            ipy.EmbedField(
+                name=l_['full_date'],
+                value=f"<t:{tmsp}:F>",
+                inline=True
+            ),
+            ipy.EmbedField(
+                name=l_['relative'],
+                value=f"<t:{tmsp}:R>",
+                inline=True
+            ),
+        ]
+    ))
+
 
 @ipy.slash_command(
     name="random",

@@ -277,3 +277,11 @@ strings:
     qrcode:
       exception: An error occurred while generating the QR codes
       powered: Powered by goQR.me
+    snowflake:
+      title: Snowflake Information
+      text: Below is the timestamp for the snowflake
+      snowflake: Snowflake
+      timestamp: Timestamp
+      date: Date
+      full_date: Full Date
+      relative: Relative
