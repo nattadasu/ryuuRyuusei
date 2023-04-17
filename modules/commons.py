@@ -124,3 +124,30 @@ def utilitiesExceptionEmbed(
     )
 
     return dcEm
+
+
+def generalExceptionEmbed(
+    description: str,
+    error: str,
+    lang_dict: dict,
+    color: hex = 0xFF0000,
+) -> Embed:
+    l_ = lang_dict
+    emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
+    dcEm = Embed(
+        color=color,
+        title=l_['commons']['error'],
+        description=description,
+        fields=[
+            EmbedField(
+                name=l_['commons']['reason'],
+                value=f"```md\n{error}\n```",
+                inline=False
+            )
+        ],
+        thumbnail=EmbedAttachment(
+            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
+        ),
+    )
+
+    return dcEm

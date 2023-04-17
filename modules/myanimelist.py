@@ -8,7 +8,7 @@ from interactions import (ComponentContext, Embed, EmbedAttachment,
                           EmbedAuthor, EmbedField, EmbedFooter, EmbedProvider,
                           SlashContext)
 
-from modules.classes.myanimelist import MyAnimeList
+from classes.myanimelist import MyAnimeList
 from modules.const import MYANIMELIST_CLIENT_ID
 
 async def searchMalAnime(title: str) -> dict:

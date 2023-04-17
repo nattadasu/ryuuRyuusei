@@ -13,6 +13,8 @@ from typing import Final
 
 from dotenv import load_dotenv as ld
 
+__version__: Final[str] = "1.0.0"
+
 ld()
 
 database = r"database/database.csv"
@@ -151,9 +153,17 @@ simkl0rels = {
     "type": "anime",
     "allcin": None,
     "anfo": None,
+    "anidb": None,
+    "anilist": None,
+    "animeplanet": None,
+    "anisearch": None,
     "ann": None,
+    "hulu": None,
     "imdb": None,
+    "kitsu": None,
+    "livechart": None,
     "mal": None,
+    "netflix": None,
     "offjp": None,
     "tmdb": None,
     "tvdb": None,

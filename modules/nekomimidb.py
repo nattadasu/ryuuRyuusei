@@ -9,19 +9,7 @@ from interactions import SlashContext as sctx
 from modules.commons import getRandom
 from modules.platforms import getPlatformColor
 
-
-def getNekomimi(gender: str | None = None) -> dict:
-    """Get a random nekomimi image from the database"""
-    seed = getRandom()
-    nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t")
-    nmDb = nmDb.fillna('')
-    if gender is not None:
-        query = nmDb[nmDb['girlOrBoy'] == f'{gender}']
-    else:
-        query = nmDb
-    # get a random row from the query
-    row = query.sample(n=1, random_state=seed)
-    return row
+from classes.nekomimidb import NekomimiDb as neko
 
 
 def generateNekomimi(row: dict, lang: dict) -> Embed:
@@ -65,8 +53,8 @@ def generateNekomimi(row: dict, lang: dict) -> Embed:
     return dcEm
 
 
-async def nekomimiSubmit(ctx: sctx, lang: dict, gender: str | None = None):
+async def nekomimiSubmit(ctx: sctx, lang: dict, gender: neko.Gender = None):
     """Submit a nekomimi image to Discord"""
-    data = getNekomimi(gender=gender)
+    data = neko(gender).get_random_nekomimi()
     dcEm = generateNekomimi(row=data, lang=lang)
     await ctx.send("", embeds=dcEm)
