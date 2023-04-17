@@ -1,3 +1,88 @@
+commons:
+  unknown: Unknown
+  none: "None"
+  error: Error
+  reason: Reason
+  media_formats:
+    media_format: Media Format
+    tv: TV
+    tv_short: TV Short
+    movie: Movie
+    special: Special
+    ova: OVA
+    ona: ONA
+    music: Music
+    manga: Manga
+    novel: Novel
+    one_shot: One Shot
+    doujin: Doujin
+    manhwa: Manhwa
+    manhua: Manhua
+  season:
+    winter: Winter
+    spring: Spring
+    summer: Summer
+    fall: Fall
+  search:
+    init_title: Searching...
+    init: Searching `{QUERY}` on `{PLATFORM}`..
+    result_title: Search Results for {QUERY}
+    result: >
+      Found **{COUNT}** for `{QUERY}`, Please select by choosing right option in the dropdown below
+    no_result: No results found for `{QUERY}`, please try again with different query or recheck your spelling
+quantities:
+  anime:
+    one: 1 anime
+    two: 2 anime
+    many: "{count} anime"
+  manga:
+    one: 1 manga
+    two: 2 manga
+    many: "{count} manga"
+  games:
+    one: 1 game
+    two: 2 games
+    many: "{count} games"
+  shows:
+    one: 1 TV show
+    two: 2 TV shows
+    many: "{count} TV shows"
+  movies:
+    one: 1 movie
+    two: 2 movies
+    many: "{count} movies"
+  tracks:
+    one: 1 song track
+    two: 2 song tracks
+    many: "{count} song tracks"
+  albums:
+    one: 1 album
+    two: 2 albums
+    many: "{count} albums"
+  artists:
+    one: 1 artist
+    two: 2 artists
+    many: "{count} artists"
+  years:
+    one: 1 year
+    two: 2 years
+    many: "{count} years"
+  months:
+    one: 1 month
+    two: 2 months
+    many: "{count} months"
+  days:
+    one: 1 day
+    two: 2 days
+    many: "{count} days"
+  hours:
+    one: 1 hour
+    two: 2 hours
+    many: "{count} hours"
+  minutes:
+    one: 1 minute
+    two: 2 minutes
+    many: "{count} minutes"
 strings:
   #all of the key names is basically the command name in the bot
   about:
@@ -102,3 +187,36 @@ strings:
         title: Image Source
         value: Click here
       artist: Artist
+  anime:
+    search:
+      exception:
+        title: Error
+        text: >-
+          I couldn't able to find any results for {QUERY} on MyAnimeList. Please check your query and try again.
+        footer: >
+          Pro tip: Use native title to get the most accurate result... that if you know how to write it in Japanese :P
+  utilities:
+    commons:
+      result: Result
+      string: String
+    math:
+      expression: Expression
+      exception: An error occurred while evaluating the expression
+    base64:
+      exception: An error occurred while encoding/decoding the string
+    color:
+      color: Color
+      name: Name
+      exception: An error occurred while getting information about the color from The Color API
+      powered: Powered by The Color API
+    qrcode:
+      exception: An error occurred while generating the QR codes
+      powered: Powered by goQR.me
+    snowflake:
+      title: Snowflake Information
+      text: Below is the timestamp for the snowflake
+      snowflake: Snowflake
+      timestamp: Timestamp
+      date: Date
+      full_date: Full Date
+      relative: Relative
