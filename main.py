@@ -1,15 +1,11 @@
 import asyncio
-import csv
 from datetime import datetime as dtime
 from datetime import timezone as tz
 from time import perf_counter as pc
 
 import interactions as ipy
 
-from modules.commons import *
-from modules.const import *
-from modules.i18n import lang, readUserLang
-from modules.myanimelist import searchMalAnime
+from modules.const import SENTRY_DSN, BOT_TOKEN
 
 now: dtime = dtime.now(tz=tz.utc)
 
