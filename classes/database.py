@@ -1,5 +1,4 @@
 import json
-from typing import List, Dict
 import pandas as pd
 from modules.const import *
 
