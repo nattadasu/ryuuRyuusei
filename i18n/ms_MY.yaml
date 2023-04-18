@@ -1,17 +1,17 @@
 commons:
-  unknown: Unknown
-  none: "None"
-  error: Error
-  reason: Reason
+  unknown: Tidak Diketahui
+  none: "Tiada"
+  error: Ralat
+  reason: Sebab
   media_formats:
     media_format: Media Format
     tv: TV
     tv_short: TV Short
-    movie: Movie
-    special: Special
+    movie: Wayang
+    special: Promosi
     ova: OVA
     ona: ONA
-    music: Music
+    music: Muzik
     manga: Manga
     novel: Novel
     one_shot: One Shot
@@ -19,12 +19,12 @@ commons:
     manhwa: Manhwa
     manhua: Manhua
   season:
-    winter: Winter
-    spring: Spring
-    summer: Summer
-    fall: Fall
+    winter: Musim Sejuk
+    spring: Musim Bunga
+    summer: Musim Panas
+    fall: Musim Luruh
   search:
-    init_title: Searching...
+    init_title: Mencari...
     init: Searching `{QUERY}` on `{PLATFORM}`..
     result_title: Search Results for {QUERY}
     result: >
