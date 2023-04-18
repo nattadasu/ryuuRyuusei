@@ -26,10 +26,10 @@ commons:
   search:
     init_title: Mencari...
     init: Mencari `{QUERY}` di `{PLATFORM}`..
-    result_title: Hasil Pencarian untuk {QUERY}
+    result_title: Hasil Cari dari {QUERY}
     result: >
-      **{COUNT}** ditemukan untuk `{QUERY}`, Mohon pilih salah satu opsi yang kamu inginkan di menu dropdown berikut
-    no_result: Tidak ada yang ditemukan untuk `{QUERY}`, mohon dicoba kembali dengan kueri yang berbeda, atau periksa ejaan kamu kembali
+      **{COUNT}** udah ketemu dari kata `{QUERY}`, tolong dipilih opsi yang benar dari dropdown di bawah
+    no_result: Ryuusei ngga bisa ketemu `{QUERY}`, mohon dicoba lagi dengan kueri yang beda atau periksa ejaan kamu
 quantities:
   anime:
     one: 1 anime
@@ -203,22 +203,22 @@ strings:
       string: Untai
     math:
       expression: Ekspresi
-      exception: Terjadi galat ketika mencoba menyelesaikan ekspresi
+      exception: Terjadi kesalahan ketika mencoba menyelesaikan ekspresi
     base64:
-      exception: Terjadi galat saat menyandikan/menguraikan untaian
+      exception: Terjadi kesalahan saat menyandikan/menguraikan untaian
     color:
       color: Warna
       name: Nama
-      exception: An error occurred while getting information about the color from The Color API
-      powered: Powered by The Color API
+      exception: Terjadi kesalahan ketika mengambil informasi tentang warna dari The Color API
+      powered: Ditenagai oleh The Color API
     qrcode:
-      exception: An error occurred while generating the QR codes
-      powered: Powered by goQR.me
+      exception: Terjadi kesalahan saat menghasilkan kode QR
+      powered: Ditenagai oleh goQR.me
     snowflake:
-      title: Snowflake Information
-      text: Below is the timestamp for the snowflake
+      title: Informasi Snowflake
+      text: Berikut adalah stempel waktu dari snowflake
       snowflake: Snowflake
-      timestamp: Timestamp
-      date: Date
-      full_date: Full Date
-      relative: Relative
+      timestamp: Stempel Waktu
+      date: Tanggal
+      full_date: Tanggal Penuh
+      relative: Relatif
