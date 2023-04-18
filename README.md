@@ -273,21 +273,26 @@ python ./main.py
 ## ⛏️ Built Using <a name = "built_using"></a>
 
 <!-- markdownlint-disable MD013 -->
-| Service                                                               | Type     | Description                                                                                                                                  |
-| --------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| [AniList](https://anilist.co)                                         | Database | A database site for anime and manga. Used for anime-manga search, manga information result,  and images.                                     |
-| [interactions.py](https://github.com/interactions-py/interactions.py) | Library  | A Python library for Discord's slash commands. A backbone of the bot.                                                                        |
-| [jikanpy](https://github.com/abhinavk99/jikanpy)                      | Library  | A Python wrapper for the unofficial MyAnimeList API, [Jikan](https://jikan.moe). Used for anime information, user profile, and anime search. |
-| [Kitsu](https://kitsu.io)                                             | Database | A database site for anime and manga. Used only for images and converting Kitsu ID to slug and images.                                        |
-| [Last.FM](https://last.fm)                                            | Database | A music tracking site. Used for scrobble summary.                                                                                            |
-| [MAL Heatmap](https://malheatmap.com)                                 | Add-on   | A simple heatmap of your MAL anime list.                                                                                                     |
-| [nattadasu's AnimeApi relation](https://nttds.my.id/discord)          | Relation | A simple relation database of anime to several database sites, including MAL, AniList, and Kitsu. Used for anime relation.                   |
-| [nattadasu/nekomimiDb](https://github.com/nattadasu/nekomimiDb)       | Database | A database site for nekomimi images. Used for random nekomimi image.                                                                         |
-| [RAWG](https://rawg.io)                                               | Database | A database site for games. Used for search, information result, and images.                                                                  |
-| [SIMKL](https://simkl.com)                                            | Database | A database site for anime. Used for TV-movie metadata, anime relations and images.                                                           |
-| [Song.link](https://song.link)                                        | Relation | A relation database for music. Used for music relations.                                                                                     |
-| [Spotify](https://spotify.com)                                        | Database | A music streaming site. Used for track, album, and artist information.                                                                       |
-| [Trakt](https://trakt.tv)                                             | Relation | A database site for movies, TV shows, and anime. Used only for resolving category for relations to TMDB and TVDB.                            |
+| Service/Package/Module Name                                         | FOSS?      | Scope                              | Type              | Description                                                                                 |
+| ------------------------------------------------------------------- | ---------- | ---------------------------------- | ----------------- | ------------------------------------------------------------------------------------------- |
+| [AniList](https://anilist.co/)                                      | -          | Anime, Censorship, Manga, Relation | Database          | Mainly used for Manga commands, anime for searching                                         |
+| [AnimeAPI](https://nttds.my.id/discord)                             | -          | Anime, Random, Relation            | Relation          | Linking ID from a database to another database                                              |
+| [emoji](https://pypi.org/project/emoji/)                            | MIT        | Language, Utility                  | Module            | Used for converting emoji to Unicode                                                        |
+| [goQr](https://goqr.me/api)                                         | -          | Utility                            | API               | Used for generating QR code                                                                 |
+| [Interactions.py](https://pypi.org/project/discord-py-interactions) | MIT        | Base                               | Wrapper           | The backend of this bot!                                                                    |
+| [Jikan](https://jikan.moe/)                                         | MIT        | Anime, Profile, Verify             | 3rd Party MAL API | Used for showing anime information, verify user, and show user's profile                    |
+| [JikanPy](https://pypi.org/project/jikanpy/)                        | MIT        | Anime, Profile, Verify             | Wrapper           | Wrapper for Jikan API                                                                       |
+| [Kitsu](https://kitsu.io/)                                          | Apache-2.0 | Anime                              | Database          | Used for adding additional information to anime information, mainly background and poster   |
+| [langcodes](https://pypi.org/project/langcodes/)                    | MIT        | Language                           | Wrapper           | Used for getting language name from language code                                           |
+| [Last.fm](https://www.last.fm/)                                     | -          | Profile                            | Database          | Used for getting user's last.fm profile and scrobble summary                                |
+| [MyAnimeList](https://myanimelist.net/)                             | -          | Anime                              | Database          | Search and show anime information                                                           |
+| [nattadasu/nekomimiDb](https://github.com/nattadasu/nekomimiDb)     | MIT        | Random                             | Database          | Used for getting random nekomimi image                                                      |
+| [Random.org](https://www.random.org/)                               | -          | Random                             | Generator         | Used for generating (true) random number and string                                         |
+| [Rawg](https://rawg.io/)                                            | -          | Game                               | Database          | Used for searching and showing game information                                             |
+| [SIMKL](https://simkl.com/)                                         | -          | Anime, Movie, Show, Relation       | Database          | Used for searching and showing movie and show information, anime for additional information |
+| [The Color API](https://github.com/andjosh/thecolorapi)             | ?          | Utility                            | API               | Used for getting color information                                                          |
+| [The Movie Database](https://www.themoviedb.org/)                   | -          | Censorship                         | Database          | Used for getting movie and show censorship information                                      |
+| [Trakt](https://trakt.tv/)                                          | -          | Relation                           | Database          | Used for linking anime, movie, and show IMDb ID (provided by SIMKL and AniAPI) to Trakt ID  |
 <!-- markdownlint-enable MD013 -->
 
 ## ✍️ Authors <a name = "authors"></a>
