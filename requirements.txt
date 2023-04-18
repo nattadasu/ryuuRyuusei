@@ -1,6 +1,8 @@
 aiohttp
 beautifulsoup4
 discord_py_interactions==5.0.0
+fuzzywuzzy
+python-Levenshtein
 html5lib
 langcodes
 language_data

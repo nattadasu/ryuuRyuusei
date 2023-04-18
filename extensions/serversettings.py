@@ -1,7 +1,8 @@
 # File: `serversettings.py`
 
 import interactions as ipy
-from modules.i18n import setLanguage
+from emoji import emojize
+from modules.i18n import setLanguage, searchLanguage
 from modules.const import EMOJI_SUCCESS, EMOJI_FORBIDDEN
 
 
@@ -18,21 +19,43 @@ class ServerSettings(ipy.Extension):
     @serversettings.subcommand(
         group_name="language",
         group_description="Change the bot language",
-        sub_cmd_name="server",
+        sub_cmd_name="set",
         sub_cmd_description="Set the bot language for this server",
     )
     @ipy.slash_option(
-        name="code",
-        description="Language code, check from /usersettings language list",
+        name="lang",
+        description="Language name",
         required=True,
         opt_type=ipy.OptionType.STRING,
+        autocomplete=True,
     )
-    async def serversettings_language_set(self, ctx: ipy.InteractionContext, code: str):
+    async def serversettings_language_set(self, ctx: ipy.InteractionContext, lang: str):
         try:
-            await setLanguage(code=code, ctx=ctx, isGuild=True)
-            await ctx.send(f"{EMOJI_SUCCESS} Server Language set to {code}")
+            await setLanguage(code=lang, ctx=ctx, isGuild=True)
+            await ctx.send(f"{EMOJI_SUCCESS} Server Language set to {lang}")
         except Exception as e:
             await ctx.send(f"{EMOJI_FORBIDDEN} {e}")
+
+    @serversettings_language_set.autocomplete("lang")
+    async def code_autocomplete(self, ctx: ipy.AutocompleteContext):
+        data = searchLanguage(ctx.input_text)
+        # only return the first 10 results
+        data = data[:10]
+        final = []
+        for di in data:
+            try:
+                if di['name'] == 'Serbian':
+                    di['dialect'] = 'Serbia'
+                flag = di['dialect'].replace(' ', '_')
+                flag = emojize(f":{flag}:", language="alias")
+                final.append({
+                    # 'name': flag + " " + di['name'] + " (" + di['native'] + ", " + di['dialect'] + ")",
+                    'name': f"{flag} {di['name']} ({di['native']}, {di['dialect']})",
+                    'value': di['code']
+                })
+            except:
+                break
+        await ctx.send(choices=final)
 
 
 def setup(bot):

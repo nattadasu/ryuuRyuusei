@@ -4,9 +4,11 @@ All language files are stored in the i18n folder. Strings to change and view lan
 
 
 import csv
+from json import load
 from json import loads as jlo
 
 import pandas as pd
+from fuzzywuzzy import fuzz
 from interactions import Client, Embed, EmbedField, InteractionContext
 from interactions.ext.paginators import Paginator
 
@@ -61,8 +63,14 @@ async def paginateLanguage(bot: Client, ctx: InteractionContext) -> None:
     for i in range(0, len(langs), 15):
         paged = []
         for lang in langs[i:i+15]:
+            flag = lang['code'].split('_')[1].lower()
+            match flag:
+                case "sp":
+                    flag = "rs"
+                case _:
+                    flag = flag
             paged += [EmbedField(
-                name=f":flag_{(lang['code'].split('_'))[1].lower()}: `{lang['code']}` - {lang['name']}",
+                name=f":flag_{flag}: `{lang['code']}` - {lang['name']}",
                 value=f"{lang['native']}",
                 inline=True
             )]
@@ -74,6 +82,20 @@ async def paginateLanguage(bot: Client, ctx: InteractionContext) -> None:
         )]
     pagin = Paginator.create_from_embeds(bot, *pages, timeout=60)
     await pagin.send(ctx)
+
+
+def searchLanguage(query: str) -> list[dict]:
+    with open('i18n/_index.json') as f:
+        data = load(f)
+    results = []
+    for item in data:
+        name_ratio = fuzz.token_set_ratio(query, item['name'])
+        native_ratio = fuzz.token_set_ratio(query, item['native'])
+        dialect_ratio = fuzz.token_set_ratio(query, item['dialect'])
+        max_ratio = max(name_ratio, native_ratio, dialect_ratio)
+        if max_ratio >= 70:  # minimum similarity threshold of 70%
+            results.append(item)
+    return results
 
 
 def checkLangExist(code: str) -> bool:

@@ -4,6 +4,9 @@ from modules.i18n import lang, readUserLang
 from modules.commons import generalExceptionEmbed, sanitizeMarkdown
 from datetime import datetime as dtime
 from classes.database import UserDatabase
+from classes.jikan import JikanApi
+from classes.myanimelist import MyAnimeList
+from modules.myanimelist import malExceptionEmbed
 
 class Profile(ipy.Extension):
     def __init__(self, bot: ipy.Client):
@@ -149,6 +152,29 @@ class Profile(ipy.Extension):
                 lang_dict=l_,
             )
             await ctx.send(embed=embed)
+
+    @profile.subcommand(
+        sub_cmd_name="myanimelist",
+        sub_cmd_description="Get your MyAnimeList profile information",
+        options=[
+            ipy.SlashCommandOption(
+                name="user",
+                description="User to get profile information of",
+                type=ipy.OptionType.USER,
+                required=False,
+            ),
+            ipy.SlashCommandOption(
+                name="mal_username",
+                description="Username on MyAnimeList to get profile information of",
+                type=ipy.OptionType.STRING,
+                required=False,
+            )
+        ]
+    )
+    async def profile_myanimelist(self, ctx: ipy.SlashContext, user: ipy.User = None, mal_username: str = None):
+        await ctx.defer()
+        ul = readUserLang(ctx)
+        l_ = lang(ul, useRaw=True)
 
 
 def setup(bot):
