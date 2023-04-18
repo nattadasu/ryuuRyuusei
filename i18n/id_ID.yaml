@@ -1,17 +1,17 @@
 commons:
-  unknown: Unknown
-  none: "None"
-  error: Error
-  reason: Reason
+  unknown: Tidak Diketahui
+  none: "Kosong"
+  error: Galat
+  reason: Alasan
   media_formats:
-    media_format: Media Format
+    media_format: Format Media
     tv: TV
-    tv_short: TV Short
-    movie: Movie
-    special: Special
+    tv_short: TV Pendek
+    movie: Film
+    special: Spesial
     ova: OVA
     ona: ONA
-    music: Music
+    music: Musik
     manga: Manga
     novel: Novel
     one_shot: One Shot
@@ -19,17 +19,17 @@ commons:
     manhwa: Manhwa
     manhua: Manhua
   season:
-    winter: Winter
-    spring: Spring
-    summer: Summer
-    fall: Fall
+    winter: Musim Dingin
+    spring: Musim Semi
+    summer: Musim Panas
+    fall: Musim Gugur
   search:
-    init_title: Searching...
-    init: Searching `{QUERY}` on `{PLATFORM}`..
-    result_title: Search Results for {QUERY}
+    init_title: Mencari...
+    init: Mencari `{QUERY}` di `{PLATFORM}`..
+    result_title: Hasil Pencarian untuk {QUERY}
     result: >
-      Found **{COUNT}** for `{QUERY}`, Please select by choosing right option in the dropdown below
-    no_result: No results found for `{QUERY}`, please try again with different query or recheck your spelling
+      **{COUNT}** ditemukan untuk `{QUERY}`, Mohon pilih salah satu opsi yang kamu inginkan di menu dropdown berikut
+    no_result: Tidak ada yang ditemukan untuk `{QUERY}`, mohon dicoba kembali dengan kueri yang berbeda, atau periksa ejaan kamu kembali
 quantities:
   anime:
     one: 1 anime
@@ -41,48 +41,48 @@ quantities:
     many: "{count} manga"
   games:
     one: 1 game
-    two: 2 games
-    many: "{count} games"
+    two: 2 game
+    many: "{count} game"
   shows:
-    one: 1 TV show
-    two: 2 TV shows
-    many: "{count} TV shows"
+    one: 1 acara TV
+    two: 2 acara TV
+    many: "{count} acara TV"
   movies:
-    one: 1 movie
-    two: 2 movies
-    many: "{count} movies"
+    one: 1 film
+    two: 2 film
+    many: "{count} film"
   tracks:
-    one: 1 song track
-    two: 2 song tracks
-    many: "{count} song tracks"
+    one: 1 trek lagu
+    two: 2 trek lagu
+    many: "{count} trek lagu"
   albums:
     one: 1 album
-    two: 2 albums
-    many: "{count} albums"
+    two: 2 album
+    many: "{count} album"
   artists:
-    one: 1 artist
-    two: 2 artists
-    many: "{count} artists"
+    one: 1 artis
+    two: 2 artis
+    many: "{count} artis"
   years:
-    one: 1 year
-    two: 2 years
-    many: "{count} years"
+    one: 1 tahun
+    two: 2 tahun
+    many: "{count} tahun"
   months:
-    one: 1 month
-    two: 2 months
-    many: "{count} months"
+    one: 1 bulan
+    two: 2 bulan
+    many: "{count} bulan"
   days:
-    one: 1 day
-    two: 2 days
-    many: "{count} days"
+    one: 1 hari
+    two: 2 hari
+    many: "{count} hari"
   hours:
-    one: 1 hour
-    two: 2 hours
-    many: "{count} hours"
+    one: 1 jam
+    two: 2 jam
+    many: "{count} jam"
   minutes:
-    one: 1 minute
-    two: 2 minutes
-    many: "{count} minutes"
+    one: 1 menit
+    two: 2 menit
+    many: "{count} menit"
 strings:
   #all of the key names is basically the command name in the bot
   about:
@@ -192,23 +192,23 @@ strings:
   anime:
     search:
       exception:
-        title: Error
+        title: Galat
         text: >-
-          I couldn't able to find any results for {QUERY} on MyAnimeList. Please check your query and try again.
+          Ryuusei ngga dapat hasil cari buat {QUERY} di MyAnimeList. Coba periksa lagi kuerinya dan coba lagi.
         footer: >
-          Pro tip: Use native title to get the most accurate result... that if you know how to write it in Japanese :P
+          Tip: pakai judul asli/native biar dapat hasil yang akurat... itu kalau kamu tahu cara nulisnya dalam bahasa Jepang :P
   utilities:
     commons:
-      result: Result
-      string: String
+      result: Hasil
+      string: Untai
     math:
-      expression: Expression
-      exception: An error occurred while evaluating the expression
+      expression: Ekspresi
+      exception: Terjadi galat ketika mencoba menyelesaikan ekspresi
     base64:
-      exception: An error occurred while encoding/decoding the string
+      exception: Terjadi galat saat menyandikan/menguraikan untaian
     color:
-      color: Color
-      name: Name
+      color: Warna
+      name: Nama
       exception: An error occurred while getting information about the color from The Color API
       powered: Powered by The Color API
     qrcode:
