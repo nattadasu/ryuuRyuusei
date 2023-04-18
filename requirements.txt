@@ -4,11 +4,14 @@ discord_py_interactions==5.0.0
 fuzzywuzzy
 python-Levenshtein
 html5lib
+jurigged
 langcodes
 language_data
 pandas
+plusminus
 python-dotenv
 pyyaml
 regex
 requests
+sentry_sdk
 tzdata

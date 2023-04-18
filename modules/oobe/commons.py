@@ -93,3 +93,11 @@ def prepare_database():
         # if not, write new header
         with open("database/database.csv", "w") as f:
             f.write("discordId\tdiscordUsername\tdiscordJoined\tmalUsername\tmalId\tmalJoined\tregisteredAt\tregisteredGuild\tregisteredBy")
+    if not os.path.exists("database/member.csv"):
+        # if not, write new header
+        with open("database/member.csv", "w") as f:
+            f.write("discordId\tlanguage")
+    if not os.path.exists("database/server.csv"):
+        # if not, write new header
+        with open("database/server.csv", "w") as f:
+            f.write("guildId\tlanguage")
