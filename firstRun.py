@@ -7,7 +7,7 @@ from modules.oobe.jikan import *
 from modules.oobe.malIndexer import *
 
 
-def main():
+def firstRun(pf: str = pyBinPath()):
     # check if termux
     if checkTermux():
         env = "MATHLAB=\"m\" "
@@ -55,4 +55,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    firstRun()

@@ -2,6 +2,8 @@ import asyncio
 from datetime import datetime as dtime
 from datetime import timezone as tz
 from time import perf_counter as pc
+import sys
+import subprocess
 
 import interactions as ipy
 
@@ -43,6 +45,17 @@ async def main():
     bot.sync_interactions = True
     bot.send_command_tracebacks = False
 
+    # git pull
+    print("[Sys] Checking for updates...")
+    subprocess.run(["git", "pull"])
+
+    from firstRun import firstRun
+    # get this python binary's path
+    python_path = sys.executable
+    python_path = python_path.replace("\\", "/")
+    print("[Sys] Python path: " + python_path)
+    firstRun(pf=python_path)
+
     # Load extensions
     print("[Sys] Loading extensions...")
     bot.load_extension("extensions.commons", now=now)
@@ -51,6 +64,7 @@ async def main():
     bot.load_extension("extensions.random")
     bot.load_extension("extensions.serversettings")
     bot.load_extension("extensions.usersettings")
+    bot.load_extension("extensions.utilities")
 
     await bot.astart()
 
