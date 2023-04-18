@@ -16,24 +16,30 @@ def convertLangsToJson():
             data = y.load(f, Loader=y.FullLoader)
             print(f"Converting {file.name} to json", end="")
             code = file.stem
-            if code == "lol_US":
-                drip = {
-                    'code': code,
-                    'name': 'English Lolcat',
-                    'native': 'LOLCAT',
-                    'dialect': 'United States',
-                }
-                data['meta'] = drip
-                indexed.append(drip)
-            else:
-                drip = {
-                    'code': code,
-                    'name': lang.get(code).language_name(),
-                    'native': lang.get(code).language_name(lang.get(code).language),
-                    'dialect': lang.get(code).territory_name(),
-                }
-                data['meta'] = drip
-                indexed.append(drip)
+            match code:
+                case "lol_US":
+                    drip = {
+                        'code': code,
+                        'name': 'English Lolcat',
+                        'native': 'LOLCAT',
+                        'dialect': 'United States',
+                    }
+                case "ace_ID":
+                    drip = {
+                        'code': code,
+                        'name': 'Achinese',
+                        'native': 'Acèh',
+                        'dialect': 'Indonesia',
+                    }
+                case _:
+                    drip = {
+                        'code': code,
+                        'name': lang.get(code).language_name(),
+                        'native': lang.get(code).language_name(lang.get(code).language),
+                        'dialect': lang.get(code).territory_name(),
+                    }
+            data['meta'] = drip
+            indexed.append(drip)
             print(
                 f"\rConverted {file.name}: {indexed[-1]['name']} ({indexed[-1]['dialect']}) to json", end="\n")
         with file.with_suffix(".json").open("w", encoding='utf-8', newline='\n') as f:
