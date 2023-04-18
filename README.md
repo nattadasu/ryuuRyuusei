@@ -221,7 +221,21 @@ Before you begin, ensure you have met the following requirements:
 > `python`. You may also need to install packages/modules as superuser/root
 > before continuing to ./firstRun.py
 
-To install Ryuuzaki Ryuusei, follow these steps:
+Before we start, you need to set up virtual environment. This is optional, but
+highly recommended, especially if you're using POSIX system (Linux, macOS, etc).
+
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+
+If you're using Windows, you can use `venv\Scripts\activate.bat` instead, or
+on PowerShell, `venv\Scripts\Activate.ps1`.
+
+For Linux and macOS, you can also use `venv/bin/activate.fish` if you're using
+fish shell, or `venv/bin/activate.csh` if you're using csh shell.
+
+Next, to install Ryuuzaki Ryuusei, follow these steps:
 
 ```bash
 git clone https://github.com/nattadasu/ryuuRyuusei.git
@@ -269,6 +283,11 @@ Finally, run the bot using `python` command:
 ```bash
 python ./main.py
 ```
+
+Keep in mind that you might need to reactivate the virtual environment if you
+close the terminal or PowerShell session.
+
+~~don't know how to reactivate? read again!!!~~
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 
