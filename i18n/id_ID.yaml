@@ -197,6 +197,25 @@ strings:
           Ryuusei ngga dapat hasil cari buat {QUERY} di MyAnimeList. Coba periksa lagi kuerinya dan coba lagi.
         footer: >
           Tip: pakai judul asli/native biar dapat hasil yang akurat... itu kalau kamu tahu cara nulisnya dalam bahasa Jepang :P
+  profile:
+    commons:
+      about: "Information about {USER}"
+      username: Username
+      nickname: Nickname
+      default: "*default*"
+      bot: This user is a bot
+    exception:
+      general: An error occurred while getting information about the user
+      unknown: Unknown user, please check your query and try agains
+    discord:
+      title: Discord Profile
+      snowflake: Snowflake/ID
+      joined_discord: Joined Discord
+      joined_server: Joined Server
+      boost_status: Boost Status
+      boost_since: "Boosting server since {TIMESTAMP}"
+      not_boosting: Not boosting
+      registered: This user is registered on this bot
   utilities:
     commons:
       result: Hasil
