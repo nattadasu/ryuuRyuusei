@@ -2,15 +2,150 @@
 
 This module is a wrapper for Simkl API, which is used to search for anime, shows, and movies."""
 
-import aiohttp
-from urllib.parse import quote
+import json
 import os
 import time
-import json
 from enum import Enum
+from typing import List
+from urllib.parse import quote
+
+import aiohttp
 
 from classes.excepts import ProviderHttpError, SimklTypeError
-from modules.const import simkl0rels, SIMKL_CLIENT_ID
+from modules.const import SIMKL_CLIENT_ID, simkl0rels
+
+
+class SimklMediaGenre(Enum):
+    ACTION = "Action"
+    ADVENTURE = "Adventure"
+    ANIMATION = "Animation"
+    COMEDY = "Comedy"
+    CRIME = "Crime"
+    DOCUMENTARY = "Documentary"
+    DRAMA = "Drama"
+    FANTASY = "Fantasy"
+    HORROR = "Horror"
+    MYSTERY = "Mystery"
+    ROMANCE = "Romance"
+    SCIENCE_FICTION = "Science Fiction"
+    THRILLER = "Thriller"
+    WAR = "War"
+    WESTERN = "Western"
+
+
+class SimklMovieGenre(Enum):
+    ACTION = SimklMediaGenre.ACTION.value
+    ADVENTURE = SimklMediaGenre.ADVENTURE.value
+    ANIMATION = SimklMediaGenre.ANIMATION.value
+    COMEDY = SimklMediaGenre.COMEDY.value
+    CRIME = SimklMediaGenre.CRIME.value
+    DOCUMENTARY = SimklMediaGenre.DOCUMENTARY.value
+    DRAMA = SimklMediaGenre.DRAMA.value
+    EROTICA = "Erotica"
+    FAMILY = "Family"
+    FANTASY = SimklMediaGenre.FANTASY.value
+    FOREIGN = "Foreign"
+    HISTORY = "History"
+    MUSIC = "Music"
+    MYSTERY = SimklMediaGenre.MYSTERY.value
+    ROMANCE = SimklMediaGenre.ROMANCE.value
+    SCIENCE_FICTION = SimklMediaGenre.SCIENCE_FICTION.value
+    THRILLER = SimklMediaGenre.THRILLER.value
+    TV_MOVIE = "TV Movie"
+    WAR = SimklMediaGenre.WAR.value
+    WESTERN = SimklMediaGenre.WESTERN.value
+
+
+class SimklTvGenre(Enum):
+    ACTION = SimklMediaGenre.ACTION.value
+    ADVENTURE = SimklMediaGenre.ADVENTURE.value
+    ANIMATION = SimklMediaGenre.ANIMATION.value
+    AWARDS_SHOW = "Awards Show"
+    CHILDREN = "Children's"
+    COMEDY = SimklMediaGenre.COMEDY.value
+    CRIME = SimklMediaGenre.CRIME.value
+    DOCUMENTARY = SimklMediaGenre.DOCUMENTARY.value
+    DRAMA = SimklMediaGenre.DRAMA.value
+    EROTICA = "Erotica"
+    FAMILY = "Family"
+    FANTASY = SimklMediaGenre.FANTASY.value
+    FOOD = "Food"
+    GAME_SHOW = "Game Show"
+    HISTORY = SimklMediaGenre.HISTORY.value
+    HOME_AND_GARDEN = "Home and Garden"
+    HORROR = SimklMediaGenre.HORROR.value
+    INDIE = "Indie"
+    KOREAN_DRAMA = "Korean Drama"
+    MARTIAL_ARTS = "Martial Arts"
+    MINI_SERIES = "Mini-series"
+    MUSICAL = "Musical"
+    MYSTERY = SimklMediaGenre.MYSTERY.value
+    NEWS = "News"
+    PODCAST = "Podcast"
+    REALITY = "Reality"
+    ROMANCE = SimklMediaGenre.ROMANCE.value
+    SCIENCE_FICTION = SimklMediaGenre.SCIENCE_FICTION.value
+    SOAP_OPERA = "Soap Opera"
+    SPECIAL_INTEREST = "Special Interest"
+    SPORTS = "Sports"
+    SUSPENSE = "Suspense"
+    TALK_SHOW = "Talk Show"
+    THRILLER = SimklMediaGenre.THRILLER.value
+    TRAVEL = "Travel"
+    WAR = SimklMediaGenre.WAR.value
+    WESTERN = SimklMediaGenre.WESTERN.value
+
+
+class SimklAnimeGenre(Enum):
+    ACTION = SimklMediaGenre.ACTION.value
+    ADVENTURE = SimklMediaGenre.ADVENTURE.value
+    CARS = "Cars"
+    COMEDY = SimklMediaGenre.COMEDY.value
+    DEMENTIA = "Dementia"
+    DEMONS = "Demons"
+    DRAMA = SimklMediaGenre.DRAMA.value
+    ECCHI = "Ecchi"
+    FANTASY = SimklMediaGenre.FANTASY.value
+    GAME = "Game"
+    HAREM = "Harem"
+    HISTORICAL = "Historical"
+    HORROR = SimklMediaGenre.HORROR.value
+    JOSEI = "Josei"
+    KIDS = "Kids"
+    MAGIC = "Magic"
+    MARTIAL_ARTS = "Martial Arts"
+    MECHA = "Mecha"
+    MILITARY = "Military"
+    MUSIC = "Music"
+    MYSTERY = SimklMediaGenre.MYSTERY.value
+    PARODY = "Parody"
+    POLICE = "Police"
+    PSYCHOLOGICAL = "Psychological"
+    ROMANCE = SimklMediaGenre.ROMANCE.value
+    SAMURAI = "Samurai"
+    SCHOOL = "School"
+    SCI_FI = "Sci-Fi"
+    SEINEN = "Seinen"
+    SHOUJO = "Shoujo"
+    SHOUJO_AI = "Shoujo Ai"
+    SHOUNEN = "Shounen"
+    SHOUNEN_AI = "Shounen Ai"
+    SLICE_OF_LIFE = "Slice of Life"
+    SPACE = "Space"
+    SPORTS = "Sports"
+    SUPER_POWER = "Super Power"
+    SUPERNATURAL = "Supernatural"
+    THRILLER = SimklMediaGenre.THRILLER.value
+    VAMPIRE = "Vampire"
+    YAOI = "Yaoi"
+    YURI = "Yuri"
+
+
+class SimklMediaTypes(Enum):
+    """Media types supported by Simkl API"""
+    ANIME = "anime"
+    MOVIE = "movie"
+    TV = "tv"
 
 
 class Simkl:
@@ -27,7 +162,7 @@ class Simkl:
         self.params = {"client_id": self.client_id}
         self.session = None
         self.cache_directory = 'cache/simkl'
-        self.cache_expiration_time = 86400 # 1 day in seconds
+        self.cache_expiration_time = 86400  # 1 day in seconds
 
     async def __aenter__(self):
         self.session = aiohttp.ClientSession()
@@ -61,12 +196,6 @@ class Simkl:
         SHOW = "show"
         MOVIE = "movie"
 
-    class MediaTypes(Enum):
-        """Media types supported by Simkl API"""
-        ANIME = "anime"
-        MOVIE = "movie"
-        TV = "tv"
-
     async def search_by_id(self, provider: Provider, id: int, media_type: TmdbMediaTypes | str | None = None):
         """Search by ID
 
@@ -90,7 +219,7 @@ class Simkl:
     async def search_by_title(
         self,
         title: str,
-        media_type: MediaTypes | str,
+        media_type: SimklMediaTypes | str,
         page: int = 1,
         limit: int = 10,
         extended: bool = False,
@@ -99,7 +228,7 @@ class Simkl:
 
         Args:
             title (str): Title to search
-            media_type (MediaTypes): Media type of the title, must be ANIME, MOVIE or TV
+            media_type (SimklMediaTypes): Media type of the title, must be ANIME, MOVIE or TV
             page (int, optional): Page number. Defaults to 1.
             limit (int, optional): Limit of results per page. Defaults to 10.
             extended (bool, optional): Get extended info. Defaults to False.
@@ -184,14 +313,58 @@ class Simkl:
                 error_message = await response.text()
                 raise ProviderHttpError(error_message, response.status)
 
-    async def get_title_ids(self, id: int, media_type: MediaTypes | str) -> dict:
+    async def get_random_title(
+        self,
+        media_type: SimklMediaTypes | str,
+        genre: SimklMediaGenre | SimklMovieGenre | SimklTvGenre | SimklAnimeGenre | str,
+        year_from: int,
+        year_to: int,
+        rating_limit: int,
+        rating_from: int = 0,
+        rating_to: int = 10,
+    ) -> dict | List[dict] | None:
+        """Get random title, based on filters"""
+        params = self.params
+        if isinstance(media_type, SimklMediaTypes):
+            media_type = media_type.value
+        params["type"] = media_type
+        if genre:
+            if isinstance(genre, str):
+                match media_type:
+                    case "anime":
+                        genre = SimklAnimeGenre(genre)
+                    case "movie":
+                        genre = SimklMovieGenre(genre)
+                    case "tv":
+                        genre = SimklTvGenre(genre)
+            params["genre"] = genre.value
+        if year_from:
+            params["year_from"] = year_from
+        if year_to:
+            params["year_to"] = year_to
+        if rating_limit:
+            params["rating_limit"] = rating_limit
+        if rating_from:
+            params["rating_from"] = rating_from
+        if rating_to:
+            params["rating_to"] = rating_to
+        async with self.session.get(f"{self.base_url}/search/random/", params=params) as response:
+            if response.status == 200:
+                data = await response.json()
+                return data
+            else:
+                error_message = await response.text()
+                raise ProviderHttpError(error_message, response.status)
+
+    async def get_title_ids(self, id: int, media_type: SimklMediaTypes | str) -> dict:
         """Get IDs of the title
 
         Args:
             id (int): ID of the title
-            media_type (MediaTypes): Media type of the title, must be ANIME, MOVIE or TV
+            media_type (SimklMediaTypes): Media type of the title, must be ANIME, MOVIE or TV
         """
-        cache_file_path = self.get_cache_file_path(f'ids/{media_type}/{id}.json')
+        cache_file_path = self.get_cache_file_path(
+            f'ids/{media_type}/{id}.json')
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -257,5 +430,6 @@ class Simkl:
         os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
         with open(cache_file_path, 'w') as cache_file:
             json.dump(cache_data, cache_file)
+
 
 __all__ = ['Simkl']
