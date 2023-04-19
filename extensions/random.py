@@ -19,6 +19,39 @@ class Random(ipy.Extension):
 
 
     @random.subcommand(
+        sub_cmd_name="anime",
+        sub_cmd_description="Get a random anime",
+    )
+    async def random_anime(self, ctx: ipy.SlashContext):
+        await ctx.defer()
+        # ul = readUserLang(ctx)
+        l_ = lang('en_US', useRaw=True)
+        send = await ctx.send(embed=ipy.Embed(
+            title="Random Anime",
+            description="Getting a random anime...",
+            color=0x213498,
+            footer=ipy.EmbedFooter(
+                text="This may take a while...",
+            ),
+        ))
+        anime = lookupRandomAnime()
+        await send.edit(embed=ipy.Embed(
+            title="Random Anime",
+            description=f"We've found MAL ID [`{anime}`](https://myanimelist.net/anime/{anime}). Fetching info...",
+            color=0x213498,
+            footer=ipy.EmbedFooter(
+                text="This may take a while...",
+            ),
+        ))
+        await ctx.send(embed=malExceptionEmbed(
+            lang_dict=l_,
+            description="We can not proceed your request",
+            error="Anime subcommands is not supported yet as it's on heavy development",
+            error_type=MalErrType.SYSTEM
+        ))
+
+
+    @random.subcommand(
         group_name="nekomimi",
         group_description="Get a random character in cat ears",
         sub_cmd_name="boy",
