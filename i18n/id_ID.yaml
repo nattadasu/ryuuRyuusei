@@ -108,7 +108,7 @@ strings:
       footer: Proyek ini SAMA SEKALI TIDAK terkait dengan Crypton Future Media, meskipun bot ini memiliki banyak referensi Kagamine Len.
     bot:
       title: Bot
-      text: Membandingkan timestamp pesan dengan timestamp sekarang
+      text: Compares message timestamp to current timestamp, might not reliable as benchmark per se
     websocket:
       title: Websocket API
       text: Latensi API Websocket Discord
