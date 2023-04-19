@@ -1,3 +1,88 @@
+commons:
+  unknown: Tidak Diketahui
+  none: "Kosong"
+  error: Galat
+  reason: Alasan
+  media_formats:
+    media_format: Format Media
+    tv: TV
+    tv_short: TV Pendek
+    movie: Film
+    special: Spesial
+    ova: OVA
+    ona: ONA
+    music: Musik
+    manga: Manga
+    novel: Novel
+    one_shot: One Shot
+    doujin: Doujin
+    manhwa: Manhwa
+    manhua: Manhua
+  season:
+    winter: Musim Dingin
+    spring: Musim Semi
+    summer: Musim Panas
+    fall: Musim Gugur
+  search:
+    init_title: Mencari...
+    init: Mencari `{QUERY}` di `{PLATFORM}`..
+    result_title: Hasil Pencarian untuk {QUERY}
+    result: >
+      **{COUNT}** ditemukan untuk `{QUERY}`, Mohon pilih salah satu opsi yang kamu inginkan di menu dropdown berikut
+    no_result: Tidak ada yang ditemukan untuk `{QUERY}`, mohon dicoba kembali dengan kueri yang berbeda, atau periksa ejaan kamu kembali
+quantities:
+  anime:
+    one: 1 anime
+    two: 2 anime
+    many: "{count} anime"
+  manga:
+    one: 1 manga
+    two: 2 manga
+    many: "{count} manga"
+  games:
+    one: 1 game
+    two: 2 game
+    many: "{count} game"
+  shows:
+    one: 1 acara TV
+    two: 2 acara TV
+    many: "{count} acara TV"
+  movies:
+    one: 1 film
+    two: 2 film
+    many: "{count} film"
+  tracks:
+    one: 1 trek lagu
+    two: 2 trek lagu
+    many: "{count} trek lagu"
+  albums:
+    one: 1 album
+    two: 2 album
+    many: "{count} album"
+  artists:
+    one: 1 artis
+    two: 2 artis
+    many: "{count} artis"
+  years:
+    one: 1 tahun
+    two: 2 tahun
+    many: "{count} tahun"
+  months:
+    one: 1 bulan
+    two: 2 bulan
+    many: "{count} bulan"
+  days:
+    one: 1 hari
+    two: 2 hari
+    many: "{count} hari"
+  hours:
+    one: 1 jam
+    two: 2 jam
+    many: "{count} jam"
+  minutes:
+    one: 1 menit
+    two: 2 menit
+    many: "{count} menit"
 strings:
   #all of the key names is basically the command name in the bot
   about:
@@ -97,3 +182,43 @@ strings:
       Kalau ada yang mau ditanyain atau mau ngobrol santai, boleh juga langsung gabung ke [server dukungan Ryuusei]({SUPPORT}) ya! 
 
       Terima kasih lagi ya, Ryuusei tunggu dukunganmu!
+  random:
+    nekomimi:
+      author: Ditenagai oleh nattadasu/nekomimiDb
+      source:
+        title: Sumber Gambar
+        value: Tekan di sini
+      artist: Artis
+  anime:
+    search:
+      exception:
+        title: Galat
+        text: >-
+          Ryuusei ngga dapat hasil cari buat {QUERY} di MyAnimeList. Coba periksa lagi kuerinya dan coba lagi.
+        footer: >
+          Tip: pakai judul asli/native biar dapat hasil yang akurat... itu kalau kamu tahu cara nulisnya dalam bahasa Jepang :P
+  utilities:
+    commons:
+      result: Hasil
+      string: Untai
+    math:
+      expression: Ekspresi
+      exception: Terjadi galat ketika mencoba menyelesaikan ekspresi
+    base64:
+      exception: Terjadi galat saat menyandikan/menguraikan untaian
+    color:
+      color: Warna
+      name: Nama
+      exception: An error occurred while getting information about the color from The Color API
+      powered: Powered by The Color API
+    qrcode:
+      exception: An error occurred while generating the QR codes
+      powered: Powered by goQR.me
+    snowflake:
+      title: Snowflake Information
+      text: Below is the timestamp for the snowflake
+      snowflake: Snowflake
+      timestamp: Timestamp
+      date: Date
+      full_date: Full Date
+      relative: Relative
