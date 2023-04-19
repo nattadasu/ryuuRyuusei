@@ -34,29 +34,21 @@ class AniList:
 
     async def nsfwCheck(self, media_id: int, media_type: str | MediaType = "ANIME"):
         """Check if the media is NSFW"""
-        self.cache_expiration_time = 3600
+        self.cache_expiration_time = 604800
+        if isinstance(media_type, self.MediaType):
+            media_type = media_type.value
         cache_file_path = self.get_cache_file_path(f'nsfw/{media_type.lower()}/{id}.json')
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
         if isinstance(media_type, str):
             media_type = media_type.upper()
-        if media_type == "ANIME":
-            query = f"""query {{
-    Media(id: {media_id}, type: ANIME) {{
+        query = f"""query {{
+    Media(id: {media_id}, type: {media_type}) {{
         id
         isAdult
     }}
 }}"""
-        elif media_type == "MANGA":
-            query = f"""query {{
-    Media(id: {media_id}, type: MANGA) {{
-        id
-        isAdult
-    }}
-}}"""
-        else:
-            raise ProviderTypeError("Media type must be either ANIME or MANGA")
         async with self.session.post(self.base_url, json={"query": query}) as response:
             if response.status == 200:
                 data = await response.json()
@@ -130,14 +122,17 @@ class AniList:
                 error_message = await response.text()
                 raise ProviderHttpError(error_message, response.status)
 
-    async def search_media(self, query: str, limit: int = 10, media_type: str = "MANGA"):
+    async def search_media(self, query: str, limit: int = 10, media_type: str | MediaType = "MANGA"):
         """Search anime by its title"""
         if limit > 10:
             raise ProviderTypeError("limit must be less than or equal to 10", "int")
+        if isinstance(media_type, self.MediaType):
+            media_type = media_type.value
         gqlquery = f"""query ($search: String, $mediaType: MediaType, $limit: Int) {{
     Page(page: 1, perPage: $limit) {{
         results: media(search: $search, type: $mediaType) {{
             id
+            idMal
             title {{
                 romaji
                 english
@@ -148,6 +143,7 @@ class AniList:
             startDate {{
                 year
             }}
+            season
         }}
     }}
 }}"""
