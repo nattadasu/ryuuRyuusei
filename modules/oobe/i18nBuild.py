@@ -31,6 +31,13 @@ def convertLangsToJson():
                         'native': 'Acèh',
                         'dialect': 'Indonesia',
                     }
+                case "sr_SP":
+                    drip = {
+                        'code': code,
+                        'name': 'Serbian Cyrillic',
+                        'native': 'Српски',
+                        'dialect': 'Serbia',
+                    }
                 case _:
                     drip = {
                         'code': code,
