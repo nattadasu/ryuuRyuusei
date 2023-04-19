@@ -15,6 +15,7 @@ from classes.myanimelist import MyAnimeList
 from modules.const import MYANIMELIST_CLIENT_ID, EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR, EMOJI_FORBIDDEN
 from modules.commons import getRandom
 
+
 def lookupRandomAnime() -> int:
     """Lookup random anime from MAL"""
     seed = getRandom()
@@ -39,36 +40,21 @@ async def searchMalAnime(title: str) -> dict:
     fields = ",".join(fields)
     async with MyAnimeList(MYANIMELIST_CLIENT_ID) as mal:
         data = await mal.search(title, limit=5, fields=fields)
-    return data['data']
-
-async def getMalAnime(anime_id: int) -> dict:
-    """Get anime information via MyAnimeList API"""
-    fields = [
-        "id",
-        "title",
-        "start_season",
-        "media_type",
-        "status",
-        "num_episodes",
-        "mean",
-        "rank",
-        "popularity",
-        "favorites",
-        "synopsis",
-        "background",
-        "genres",
-        "source",
-        "duration",
-        "studios",
-        "scored_by",
-        "rating",
-        "image_url",
-        "trailer_url",
-        "url",
-    ]
-    fields = ",".join(fields)
-    async with MyAnimeList(MYANIMELIST_CLIENT_ID) as mal:
-        data = await mal.anime(anime_id, fields=fields)
+    for d in data['data']:
+        # drop main_picture
+        d['node'].pop("main_picture", None)
+        # only keep english and japanese alternative titles
+        d['node']['alternative_titles'] = {
+            k: v for k, v in d['node']['alternative_titles'].items() if k in ["en", "ja"]
+        }
+        # if d['node']['start_season'] is not in the dict, then force add as None:
+        if 'start_season' not in d['node']:
+            d['node']['start_season'] = {
+                "year": None,
+                "season": None
+            }
+        if 'media_type' not in d['node']:
+            d['node']['media_type'] = "unknown"
     return data['data']
 
 
@@ -77,6 +63,7 @@ class MalErrType(Enum):
     USER = EMOJI_USER_ERROR
     NSFW = EMOJI_FORBIDDEN
     SYSTEM = EMOJI_UNEXPECTED_ERROR
+
 
 def malExceptionEmbed(
     description: str,
