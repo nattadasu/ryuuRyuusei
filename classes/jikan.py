@@ -51,7 +51,7 @@ class JikanApi:
 
     async def get_user_data(self, username: str) -> dict:
         try:
-            res = await AioJikan().user(username=username)
+            res = await AioJikan().users(username=username, extension="full")
             return res['data']
         except Exception as e:
             defineJikanException(e)
