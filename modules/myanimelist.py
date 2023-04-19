@@ -91,11 +91,11 @@ def malExceptionEmbed(
     emoji = re.sub(r"(<:.*:)(\d+)(>)", r"\2", error_type)
     dcEm = Embed(
         color=color,
-        title=l_['commons']['error']['title'],
+        title=l_['commons']['error'],
         description=description,
         fields=[
             EmbedField(
-                name=l_['commons']['error']['field']['name'],
+                name=l_['commons']['reason'],
                 value=error,
                 inline=False
             )
