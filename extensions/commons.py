@@ -59,13 +59,13 @@ class CommonCommands(ipy.Extension):
         duration = abs(duration)
         fields = [
             ipy.EmbedField(
-                name="🤖 " + l_['bot']['title'],
-                value=f"`{duration:.2f}`ms\n> *{l_['bot']['text']}*",
+                name="🤝 " + l_['websocket']['title'],
+                value=f"`{self.bot.latency * 1000:.2f}`ms\n> *{l_['websocket']['text']}*",
                 inline=True,
             ),
             ipy.EmbedField(
-                name="🤝 " + l_['websocket']['title'],
-                value=f"`{self.bot.latency * 1000:.2f}`ms\n> *{l_['websocket']['text']}*",
+                name="🤖 " + l_['bot']['title'],
+                value=f"`{duration:.2f}`ms\n> *{l_['bot']['text']}*",
                 inline=True,
             ),
         ]

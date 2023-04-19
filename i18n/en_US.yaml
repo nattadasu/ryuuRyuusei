@@ -129,7 +129,8 @@ strings:
         although the bot got a lot of Kagamine Len references.
     bot:
       title: Bot
-      text: Compares message timestamp to current timestamp
+      text: Compares message timestamp to current timestamp, might not reliable
+        as benchmark per se
     websocket:
       title: Websocket API
       text: Discord's Websocket API latency
