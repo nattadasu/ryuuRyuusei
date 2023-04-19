@@ -15,6 +15,7 @@
         "mechatroner.rainbow-csv",
         "medo64.render-crlf",
         "mikestead.dotenv",
+        "ms-python.isort",
         "ms-python.python",
         "ms-python.vscode-pylance",
         "naumovs.color-highlight",
