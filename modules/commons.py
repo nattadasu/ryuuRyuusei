@@ -6,10 +6,12 @@ from re import sub as rSub
 from uuid import uuid4 as id4
 
 from interactions import (Embed, EmbedAttachment, EmbedAuthor, EmbedField,
-                          EmbedFooter, EmbedProvider)
+                          EmbedFooter, EmbedProvider, Client, Button,
+                          ButtonStyle, PartialEmoji)
 
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
 from modules.const import EMOJI_USER_ERROR as EUSER
+from modules.const import BOT_TOKEN
 from modules.i18n import lang
 
 
@@ -151,3 +153,31 @@ def generalExceptionEmbed(
     )
 
     return dcEm
+
+
+def generateTrailer(data: dict, isMal: bool = False, isSimkl: bool = False) -> Button:
+    """Generate a button to a YouTube video"""
+    if isMal:
+        ytid = data['youtube_id']
+    elif isSimkl:
+        ytid = data['youtube']
+    else:
+        ytid = data['id']
+    final = Button(
+        label="PV/CM on YouTube",
+        style=ButtonStyle.LINK,
+        url=f"https://www.youtube.com/watch?v={ytid}",
+        emoji=PartialEmoji(
+            id=975564205228965918,
+            name="Youtube"
+        )
+    )
+    return final
+
+
+async def getParentNsfwStatus(snowflake: int) -> dict:
+    """Get a channel age restriction status if command was invoked in a thread/forum"""
+    botHttp = Client(token=BOT_TOKEN).http
+    guild = await botHttp.get_channel(channel_id=snowflake)
+    # close the connection
+    return guild['nsfw']
