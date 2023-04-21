@@ -23,6 +23,9 @@ commons:
     spring: Spring
     summer: Summer
     fall: Fall
+    unknown: Unknown Season
+  year:
+    unknown: Unknown Year
   search:
     init_title: Searching...
     init: Searching `{QUERY}` on `{PLATFORM}`..
