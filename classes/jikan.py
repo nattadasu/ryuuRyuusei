@@ -1,3 +1,5 @@
+import traceback
+
 from jikanpy import AioJikan
 
 
@@ -5,11 +7,14 @@ class JikanException(Exception):
     def __init__(self, message, status_code):
         self.message = message
         self.status_code = status_code
+
     def __str__(self):
         return f"JikanException [{self.status_code}]: {self.message}"
 
+
 def defineJikanException(errmsg: str) -> JikanException:
     e = str(errmsg).split('=')
+    etype = 400
     try:
         etype = int(e[1].split(',')[0])
         errm = e[3].strip()
@@ -24,10 +29,11 @@ def defineJikanException(errmsg: str) -> JikanException:
             em = f"**Jikan had a timeout while fetching the data**\nPlease try again in 3 seconds."
         else:
             em = f"HTTP {etype}\n{errm}"
-    except Exception:
-        em = "Unknown error."
+    except Exception as e:
+        em = "Unknown error. Full traceback:\n" + traceback.format_exc()
 
     raise JikanException(em, etype)
+
 
 class JikanApi:
     async def __aenter__(self):
