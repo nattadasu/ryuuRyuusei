@@ -1,12 +1,14 @@
+from datetime import datetime as dtime
+
 import interactions as ipy
 
-from modules.i18n import lang, readUserLang
-from modules.commons import generalExceptionEmbed, sanitizeMarkdown
-from datetime import datetime as dtime
 from classes.database import UserDatabase
 from classes.jikan import JikanApi
 from classes.myanimelist import MyAnimeList
+from modules.commons import generalExceptionEmbed, sanitizeMarkdown
+from modules.i18n import lang, readUserLang
 from modules.myanimelist import malExceptionEmbed
+
 
 class Profile(ipy.Extension):
     def __init__(self, bot: ipy.Client):
@@ -18,7 +20,6 @@ class Profile(ipy.Extension):
     )
     async def profile(self, ctx: ipy.SlashContext):
         pass
-
 
     @profile.subcommand(
         sub_cmd_name="discord",
@@ -168,9 +169,7 @@ class Profile(ipy.Extension):
                 description="Username on MyAnimeList to get profile information of",
                 type=ipy.OptionType.STRING,
                 required=False,
-            )
-        ]
-    )
+            )])
     async def profile_myanimelist(self, ctx: ipy.SlashContext, user: ipy.User = None, mal_username: str = None):
         await ctx.defer()
         ul = readUserLang(ctx)

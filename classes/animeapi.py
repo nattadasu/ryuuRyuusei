@@ -27,7 +27,7 @@ class AnimeApi:
         """Close the session"""
         await self.session.close()
 
-    class AnimeApiPlatforms (Enum):
+    class AnimeApiPlatforms(Enum):
         ANI_SEARCH = ANISEARCH = AS = 'anisearch'
         ANIDB = 'anidb'
         ANILIST = AL = 'anilist'
@@ -61,7 +61,7 @@ class AnimeApi:
                 self.write_data_to_cache(
                     cache_file_path, {'timestamp': final})
             return dt.fromtimestamp(final)
-        except:
+        except BaseException:
             return dt.now()
 
     async def get_relation(self, id, platform: AnimeApiPlatforms) -> dict:
@@ -77,7 +77,7 @@ class AnimeApi:
                 jsonText = json.loads(jsonText)
                 self.write_data_to_cache(cache_file_path, jsonText)
             return jsonText
-        except:
+        except BaseException:
             aaDict = invAa
             return aaDict
 

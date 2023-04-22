@@ -2,8 +2,9 @@
 
 import interactions as ipy
 from emoji import emojize
-from modules.i18n import setLanguage, searchLanguage
-from modules.const import EMOJI_SUCCESS, EMOJI_FORBIDDEN
+
+from modules.const import EMOJI_FORBIDDEN, EMOJI_SUCCESS
+from modules.i18n import searchLanguage, setLanguage
 
 
 class ServerSettings(ipy.Extension):
@@ -53,7 +54,7 @@ class ServerSettings(ipy.Extension):
                     'name': f"{flag} {di['name']} ({di['native']}, {di['dialect']})",
                     'value': di['code']
                 })
-            except:
+            except BaseException:
                 break
         await ctx.send(choices=final)
 

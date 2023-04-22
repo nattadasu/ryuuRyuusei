@@ -1,7 +1,8 @@
 import interactions as ipy
-from modules.i18n import paginateLanguage, setLanguage, searchLanguage
-from modules.const import EMOJI_SUCCESS, EMOJI_FORBIDDEN
 from emoji import emojize
+
+from modules.const import EMOJI_FORBIDDEN, EMOJI_SUCCESS
+from modules.i18n import paginateLanguage, searchLanguage, setLanguage
 
 
 class UserSettings(ipy.Extension):
@@ -57,7 +58,7 @@ class UserSettings(ipy.Extension):
                     'name': f"{flag} {di['name']} ({di['native']}, {di['dialect']})",
                     'value': di['code']
                 })
-            except:
+            except BaseException:
                 break
         await ctx.send(choices=final)
 

@@ -1,13 +1,13 @@
 import asyncio
+import subprocess
+import sys
 from datetime import datetime as dtime
 from datetime import timezone as tz
 from time import perf_counter as pc
-import sys
-import subprocess
 
 import interactions as ipy
 
-from modules.const import SENTRY_DSN, BOT_TOKEN
+from modules.const import BOT_TOKEN, SENTRY_DSN
 
 now: dtime = dtime.now(tz=tz.utc)
 
@@ -50,6 +50,7 @@ async def main():
     subprocess.run(["git", "pull"])
 
     from firstRun import firstRun
+
     # get this python binary's path
     python_path = sys.executable
     python_path = python_path.replace("\\", "/")

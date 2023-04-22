@@ -11,6 +11,7 @@ class TheColorApi:
     """The Color API wrapper
 
     This module is a wrapper for The Color API, which is used to get color information from hex, rgb, hsl, hsv, and cmyk values."""
+
     def __init__(self):
         """Initialize the class"""
         self.base_url = "https://www.thecolorapi.com"

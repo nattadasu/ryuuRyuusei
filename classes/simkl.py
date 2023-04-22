@@ -146,7 +146,7 @@ class SimklMediaTypes(Enum):
     """Media types supported by Simkl API"""
     ANIME = "anime"
     MOVIE = "movie"
-    TV = "tv"
+    SHOW = TV = "tv"
 
 
 class Simkl:
@@ -209,7 +209,8 @@ class Simkl:
             provider = provider.value
         if provider == self.Provider.TMDB and not media_type:
             raise SimklTypeError(
-                "MediaType is required when using TMDB provider", "TmdbMediaTypeRequired")
+                "MediaType is required when using TMDB provider",
+                "TmdbMediaTypeRequired")
         params[f"{provider}"] = id
         async with self.session.get(f"{self.base_url}/search/id", params=params) as response:
             if response.status == 200:
@@ -403,7 +404,17 @@ class Simkl:
 
         mids = {**simkl0rels, **data.get("ids", {})}
         for k, v in mids.items():
-            if k in ["title", "slug", "animeplanet", "tvdbslug", "crunchyrolll", "fb", "instagram", "twitter", "wikien", "wikijp"]:
+            if k in [
+                "title",
+                "slug",
+                "animeplanet",
+                "tvdbslug",
+                "crunchyrolll",
+                "fb",
+                "instagram",
+                "twitter",
+                "wikien",
+                    "wikijp"]:
                 continue
             if isinstance(v, str) and v.isdigit():
                 mids[k] = int(v)

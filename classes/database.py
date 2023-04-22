@@ -1,5 +1,7 @@
 import json
+
 import pandas as pd
+
 from modules.const import *
 
 
@@ -38,7 +40,12 @@ class UserDatabase:
             'guildName': guild_name,
         }
         df = pd.DataFrame(data, index=[0])
-        df.to_csv(self.database_path, sep="\t", index=False, header=not self._database_exists(), mode='a')
+        df.to_csv(
+            self.database_path,
+            sep="\t",
+            index=False,
+            header=not self._database_exists(),
+            mode='a')
 
     async def drop_user(self, discord_id: int) -> bool:
         """Drop a user from the database"""
@@ -52,7 +59,8 @@ class UserDatabase:
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
         row = df[df['discordId'] == str(discord_id)]
         if row.empty:
-            raise DatabaseException(f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error")
+            raise DatabaseException(
+                f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error")
 
         username = row.iloc[0]['malUsername']
         # clubs = await checkClubMembership(username)
@@ -63,14 +71,16 @@ class UserDatabase:
                 verified = True
                 break
         else:
-            raise DatabaseException(f"{EMOJI_UNEXPECTED_ERROR} User is not a member of the club")
+            raise DatabaseException(
+                f"{EMOJI_UNEXPECTED_ERROR} User is not a member of the club")
         return verified
 
     async def export_user_data(self, user_id: int) -> str:
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
         row = df[df['discordId'] == str(user_id)]
         if row.empty:
-            raise DatabaseException(f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error")
+            raise DatabaseException(
+                f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error")
         data = row.to_dict(orient='records')[0]
         for key, value in data.items():
             if value.isdigit():
@@ -93,10 +103,17 @@ class UserDatabase:
         else:
             return
 
-    __all__ = ['check_if_registered', 'save_to_database', 'drop_user', 'verify_user', 'export_user_data', 'close']
+    __all__ = [
+        'check_if_registered',
+        'save_to_database',
+        'drop_user',
+        'verify_user',
+        'export_user_data',
+        'close']
 
 
 class DatabaseException(Exception):
     pass
+
 
 __all__ = ['UserDatabase', 'DatabaseException']

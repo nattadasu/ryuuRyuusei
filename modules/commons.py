@@ -5,13 +5,13 @@ This module contains the common functions used by the other modules."""
 from re import sub as rSub
 from uuid import uuid4 as id4
 
-from interactions import (Embed, EmbedAttachment, EmbedAuthor, EmbedField,
-                          EmbedFooter, EmbedProvider, Client, Button,
-                          ButtonStyle, PartialEmoji)
+from interactions import (Button, ButtonStyle, Client, Embed, EmbedAttachment,
+                          EmbedAuthor, EmbedField, EmbedFooter, EmbedProvider,
+                          PartialEmoji)
 
+from modules.const import BOT_TOKEN
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
 from modules.const import EMOJI_USER_ERROR as EUSER
-from modules.const import BOT_TOKEN
 from modules.i18n import lang
 
 
@@ -35,19 +35,52 @@ def trimCyno(message: str) -> str:
         return message
 
 
-def sanitizeMarkdown(text: str) -> str:
-    text = text.replace("*", "\\*").replace("_", "\\_").replace("`", "\\`").replace("~", "\\~").replace("|", "\\|").replace(">", "\\>").replace(
-        "<", "\\<").replace("[", "\\[").replace("]", "\\]").replace("(", "\\(").replace(")", "\\)").replace("/", "\\/").replace("@", "\\@")
+def sanitize_markdown(text: str) -> str:
+    """
+    Sanitize a string of Markdown-formatted text by escaping certain characters.
+
+    The following characters are escaped: * _ ` ~ | > < [ ] ( ) / @
+
+    Args:
+        text (str): The string of Markdown-formatted text to sanitize.
+
+    Returns:
+        str: The sanitized string of text.
+    """
+    text = (text.replace("*", "\\*")
+                .replace("_", "\\_")
+                .replace("`", "\\`")
+                .replace("~", "\\~")
+                .replace("|", "\\|")
+                .replace(">", "\\>")
+                .replace("<", "\\<")
+                .replace("[", "\\[")
+                .replace("]", "\\]")
+                .replace("(", "\\(")
+                .replace(")", "\\)")
+                .replace("/", "\\/")
+                .replace("@", "\\@"))
     return text
 
 
 def getRandom(value: int = 9) -> int:
-    """Get a random seed number with a specific length"""
+    """
+    Get a random seed number with a specific length.
+
+    Args:
+        value (int): The length of the seed number to generate. Defaults to 9.
+
+    Returns:
+        int: A random seed number with the specified length.
+    """
     seed = id4()
+
     # negate value
     value = -value
+
     seed = int(str(seed.int)[value:])
     return seed
+
 
 
 def generateSearchSelections(
@@ -61,7 +94,23 @@ def generateSearchSelections(
     query: str,
     results: list[EmbedField],
 ) -> Embed:
-    """Generate an embed for search selections."""
+    """
+    Generate an embed for search selections.
+
+    Args:
+        language (str): The language of the search results.
+        mediaType (str): The media type of the search results.
+        platform (str): The platform of the search results.
+        homepage (str): The homepage of the search results.
+        title (str): The title of the search embed.
+        color (hex): The color of the search embed.
+        icon (str): The icon of the search embed.
+        query (str): The search query string.
+        results (list[EmbedField]): The search results to display in the embed.
+
+    Returns:
+        Embed: The generated search selection embed.
+    """
     l_ = lang(code=language, useRaw=True)
     match len(results):
         case 1:
@@ -73,22 +122,22 @@ def generateSearchSelections(
                 count=len(results)
             )
     dcEm = Embed(
-            author=EmbedAuthor(
-                name=platform,
-                url=homepage,
-                icon_url=icon
-            ),
-            thumbnail=EmbedAttachment(
-                url=icon
-            ),
-            color=color,
-            title=title,
-            description=l_['commons']['search']['result'].format(
-                COUNT=count,
-                QUERY=query
-            ),
-            fields=results,
-        )
+        author=EmbedAuthor(
+            name=platform,
+            url=homepage,
+            icon_url=icon
+        ),
+        thumbnail=EmbedAttachment(
+            url=icon
+        ),
+        color=color,
+        title=title,
+        description=l_['commons']['search']['result'].format(
+            COUNT=count,
+            QUERY=query
+        ),
+        fields=results,
+    )
 
     return dcEm
 
@@ -155,7 +204,10 @@ def generalExceptionEmbed(
     return dcEm
 
 
-def generateTrailer(data: dict, isMal: bool = False, isSimkl: bool = False) -> Button:
+def generateTrailer(
+        data: dict,
+        isMal: bool = False,
+        isSimkl: bool = False) -> Button:
     """Generate a button to a YouTube video"""
     if isMal:
         ytid = data['youtube_id']

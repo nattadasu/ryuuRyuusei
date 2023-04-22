@@ -64,9 +64,11 @@ class RandomOrg:
         if base not in [2, 8, 10, 16]:
             raise ProviderTypeError("Base must be 2, 8, 10, or 16", "base")
         if num > 10000 or num < 1:
-            raise ProviderTypeError("Number must be between 1 and 10000", "num")
+            raise ProviderTypeError(
+                "Number must be between 1 and 10000", "num")
         if min > max:
-            raise ProviderTypeError("Min must be less than or equal to max", "minmax")
+            raise ProviderTypeError(
+                "Min must be less than or equal to max", "minmax")
         params = self.params.copy()
         params["num"] = num
         params["min"] = min
@@ -86,7 +88,8 @@ class RandomOrg:
     async def sequences(self, min: int, max: int):
         """Generate random sequences"""
         if min > max:
-            raise ProviderTypeError("Min must be less than or equal to max", "minmax")
+            raise ProviderTypeError(
+                "Min must be less than or equal to max", "minmax")
         params = self.params.copy()
         params["min"] = min
         params["max"] = max
@@ -103,9 +106,11 @@ class RandomOrg:
     async def strings(self, num: int, length: int = 10, digits: str = "on", upperalpha: str = "on", loweralpha: str = "on", unique: str = "on"):
         """Generate random strings"""
         if length > 20:
-            raise ProviderTypeError("Length must be less than or equal to 20", "length")
+            raise ProviderTypeError(
+                "Length must be less than or equal to 20", "length")
         if num > 10000 or num < 1:
-            raise ProviderTypeError("Number must be between 1 and 10000", "num")
+            raise ProviderTypeError(
+                "Number must be between 1 and 10000", "num")
         params = self.params.copy()
         params["num"] = num
         params["len"] = length

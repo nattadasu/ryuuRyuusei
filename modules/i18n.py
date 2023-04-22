@@ -49,7 +49,7 @@ def readUserLang(ctx) -> str:
                     break
             else:
                 language = LANGUAGE_CODE
-    except:
+    except BaseException:
         language = LANGUAGE_CODE
 
     return language
@@ -62,7 +62,7 @@ async def paginateLanguage(bot: Client, ctx: InteractionContext) -> None:
     pages = []
     for i in range(0, len(langs), 15):
         paged = []
-        for lang in langs[i:i+15]:
+        for lang in langs[i:i + 15]:
             flag = lang['code'].split('_')[1].lower()
             match flag:
                 case "sp":
@@ -74,12 +74,13 @@ async def paginateLanguage(bot: Client, ctx: InteractionContext) -> None:
                 value=f"{lang['native']}",
                 inline=True
             )]
-        pages += [Embed(
-            title="Languages",
-            description="List of all available languages.\nUse `/usersettings language set code:<code>` by replacing `<code>` with the language code (for example `en_US`) to change your language.\n\nIf you want to contribute, visit [Crowdin page](https://crowdin.com/project/ryuuRyuusei).",
-            color=0x996422,
-            fields=paged,
-        )]
+        pages += [
+            Embed(
+                title="Languages",
+                description="List of all available languages.\nUse `/usersettings language set code:<code>` by replacing `<code>` with the language code (for example `en_US`) to change your language.\n\nIf you want to contribute, visit [Crowdin page](https://crowdin.com/project/ryuuRyuusei).",
+                color=0x996422,
+                fields=paged,
+            )]
     pagin = Paginator.create_from_embeds(bot, *pages, timeout=60)
     await pagin.send(ctx)
 
@@ -126,7 +127,7 @@ async def setLanguage(code: str, ctx: InteractionContext, isGuild: bool = False)
                 # if it is, update it
                 df.loc[df["serverId"] == ctx.guild.id, "language"] = code
                 df.to_csv("database/server.csv", sep="\t", index=False)
-        except:
+        except BaseException:
             # if the database doesn't exist, create it
             with open("database/server.csv", "w", newline="") as csvfile:
                 writer = csv.writer(csvfile, delimiter="\t")
@@ -151,7 +152,7 @@ async def setLanguage(code: str, ctx: InteractionContext, isGuild: bool = False)
                 df.loc[df["discordId"] == str(
                     ctx.author.id), "language"] = f"{code}"
                 df.to_csv("database/member.csv", sep="\t", index=False)
-        except:
+        except BaseException:
             # if the database doesn't exist, create it
             with open("database/member.csv", "w", newline="") as csvfile:
                 writer = csv.writer(csvfile, delimiter="\t")

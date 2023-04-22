@@ -17,5 +17,6 @@ def nk_run():
         nk_get_data()
     else:
         # check if the file is >= 14 days old
-        if os.stat("database/nekomimiDb.tsv").st_mtime < (time.time() - 14 * 86400):
+        if os.stat(
+                "database/nekomimiDb.tsv").st_mtime < (time.time() - 14 * 86400):
             nk_get_data()

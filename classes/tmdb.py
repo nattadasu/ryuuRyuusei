@@ -1,9 +1,12 @@
-from modules.const import TMDB_API_KEY
-import aiohttp
-from enum import Enum
 import json
 import os
 import time
+from enum import Enum
+
+import aiohttp
+
+from modules.const import TMDB_API_KEY
+
 
 class TheMovieDb:
     def __init__(self, api_key: str = TMDB_API_KEY):

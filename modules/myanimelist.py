@@ -2,18 +2,31 @@
 
 This module contains modules that are related to MyAnimeList or Jikan API."""
 
-from json import dumps
-from enum import Enum
+import html
 import re
+import traceback
+from datetime import datetime, timezone
+from enum import Enum
+from json import dumps
+from zoneinfo import ZoneInfo
 
-from interactions import (ComponentContext, Embed, EmbedAttachment,
-                          EmbedAuthor, EmbedField, EmbedFooter, EmbedProvider,
-                          SlashContext)
 import pandas as pd
+from interactions import (BaseContext, ComponentContext, Embed,
+                          EmbedAttachment, EmbedAuthor, EmbedField,
+                          EmbedFooter, EmbedProvider, SlashContext)
 
+from classes.anilist import AniList
+from classes.animeapi import AnimeApi
+from classes.jikan import JikanApi
+from classes.kitsu import Kitsu
 from classes.myanimelist import MyAnimeList
-from modules.const import MYANIMELIST_CLIENT_ID, EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR, EMOJI_FORBIDDEN
-from modules.commons import getRandom
+from classes.simkl import Simkl
+from modules.commons import (generateTrailer, getParentNsfwStatus, getRandom,
+                             sanitizeMarkdown, trimCyno)
+from modules.const import (EMOJI_FORBIDDEN, EMOJI_UNEXPECTED_ERROR,
+                           EMOJI_USER_ERROR, MYANIMELIST_CLIENT_ID,
+                           SIMKL_CLIENT_ID, simkl0rels, warnThreadCW)
+from modules.i18n import lang, readUserLang
 
 
 def lookupRandomAnime() -> int:
@@ -33,7 +46,7 @@ async def searchMalAnime(title: str) -> dict:
     fields = [
         "id",
         "title",
-        "alternative_titles\{ja\}",
+        "alternative_titles\\{ja\\}",
         "start_season",
         "media_type",
     ]
@@ -45,9 +58,12 @@ async def searchMalAnime(title: str) -> dict:
         d['node'].pop("main_picture", None)
         # only keep english and japanese alternative titles
         d['node']['alternative_titles'] = {
-            k: v for k, v in d['node']['alternative_titles'].items() if k in ["en", "ja"]
-        }
-        # if d['node']['start_season'] is not in the dict, then force add as None:
+            k: v for k,
+            v in d['node']['alternative_titles'].items() if k in [
+                "en",
+                "ja"]}
+        # if d['node']['start_season'] is not in the dict, then force add as
+        # None:
         if 'start_season' not in d['node']:
             d['node']['start_season'] = {
                 "year": None,

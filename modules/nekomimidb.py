@@ -6,10 +6,9 @@ import pandas as pd
 from interactions import Embed, EmbedAttachment, EmbedAuthor, EmbedField
 from interactions import SlashContext as sctx
 
+from classes.nekomimidb import NekomimiDb as neko
 from modules.commons import getRandom
 from modules.platforms import getPlatformColor
-
-from classes.nekomimidb import NekomimiDb as neko
 
 
 def generateNekomimi(row: dict, lang: dict) -> Embed:

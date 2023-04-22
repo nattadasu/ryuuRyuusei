@@ -43,4 +43,3 @@ class NekomimiDb:
         # get a random row from the query
         row = query.sample(n=1, random_state=self.seed)
         return row
-

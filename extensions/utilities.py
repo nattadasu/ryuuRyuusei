@@ -1,11 +1,13 @@
-import interactions as ipy
-from modules.i18n import lang, readUserLang
-from plusminus import BaseArithmeticParser as BAP
-from modules.commons import utilitiesExceptionEmbed, snowflake_to_datetime
-from base64 import b64encode, b64decode
 import re
+from base64 import b64decode, b64encode
 from urllib.parse import urlencode as urlenc
+
+import interactions as ipy
+from plusminus import BaseArithmeticParser as BAP
+
 from classes.thecolorapi import TheColorApi
+from modules.commons import snowflake_to_datetime, utilitiesExceptionEmbed
+from modules.i18n import lang, readUserLang
 
 
 class Utilities(ipy.Extension):
@@ -15,7 +17,6 @@ class Utilities(ipy.Extension):
     )
     async def utilities(self, ctx: ipy.SlashContext):
         pass
-
 
     @utilities.subcommand(
         sub_cmd_name="math",
@@ -59,7 +60,6 @@ class Utilities(ipy.Extension):
                 field_value=f"```py\n{expression}```",
                 error=e
             ))
-
 
     @utilities.subcommand(
         sub_cmd_name="base64",
@@ -131,7 +131,6 @@ class Utilities(ipy.Extension):
                 error=e
             ))
 
-
     @utilities.subcommand(
         sub_cmd_name="color",
         sub_cmd_description="Get information about a color",
@@ -174,7 +173,8 @@ class Utilities(ipy.Extension):
         l_ = lang(ul)['utilities']
         res: dict = {}
         try:
-            if format == "hex" and re.match(r"^#?(?:[0-9a-fA-F]{3}){1,2}$", color) is None:
+            if format == "hex" and re.match(
+                    r"^#?(?:[0-9a-fA-F]{3}){1,2}$", color) is None:
                 raise ValueError("Invalid hex color")
             elif format == "hex" and re.match(r"^#", color) is None:
                 color = f"#{color}"
@@ -228,7 +228,6 @@ class Utilities(ipy.Extension):
                 field_value=f"```{color}```",
                 error=e,
             ))
-
 
     @utilities.subcommand(
         sub_cmd_name="qrcode",
@@ -305,7 +304,6 @@ class Utilities(ipy.Extension):
                 error=e,
             ))
 
-
     @utilities.subcommand(
         sub_cmd_name="snowflake",
         sub_cmd_description="Convert a Discord Snowflake to a timestamp",
@@ -356,6 +354,7 @@ class Utilities(ipy.Extension):
                 ),
             ]
         ))
+
 
 def setup(bot):
     Utilities(bot)

@@ -4,6 +4,7 @@ import aiohttp
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
 
+
 class MyAnimeList:
     """MyAnimeList Asynchronous API Wrapper
 
@@ -21,10 +22,12 @@ class MyAnimeList:
     search(query: str, limit: int = 10, offset: int | None = None, fields: str | None = None)
         Search anime by its title
     """
+
     def __init__(self, client_id, nsfw: bool = False):
         self.client_id = client_id
         if client_id is None:
-            raise ProviderHttpError("Unauthorized, please fill Client ID before using this module", 401)
+            raise ProviderHttpError(
+                "Unauthorized, please fill Client ID before using this module", 401)
         self.base_url = "https://api.myanimelist.net/v2"
         self.headers = {"X-MAL-CLIENT-ID": self.client_id}
         self.nsfw = nsfw
@@ -58,7 +61,8 @@ class MyAnimeList:
     async def search(self, query: str, limit: int = 10, offset: int | None = None, fields: str | None = None):
         """Search anime by its title"""
         if limit > 100:
-            raise ProviderTypeError("limit must be less than or equal to 100", "int")
+            raise ProviderTypeError(
+                "limit must be less than or equal to 100", "int")
         params = {"q": query, "limit": limit}
         if offset:
             params["offset"] = offset
@@ -71,5 +75,6 @@ class MyAnimeList:
             else:
                 error_message = await response.text()
                 raise ProviderHttpError(error_message, response.status)
+
 
 __all__ = ["MyAnimeList"]

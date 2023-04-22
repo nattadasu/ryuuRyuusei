@@ -52,7 +52,8 @@ def get_git_revision_hash() -> str:
 
 
 def get_git_revision_short_hash() -> str:
-    return chout(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
+    return chout(['git', 'rev-parse', '--short', 'HEAD']
+                 ).decode('ascii').strip()
 
 
 gittyHash = get_git_revision_hash()
@@ -100,7 +101,8 @@ If you invoked this command outside (public or private) forum thread channel or 
 
 You can simply access it on `/support`"""
 
-ERR_KAIZE_SLUG_MODDED: Final[str] = '''We've tried to search for the anime using the slug (and even fix the slug itself), but it seems that the anime is not found on Kaize via AnimeApi.
+ERR_KAIZE_SLUG_MODDED: Final[
+    str] = '''We've tried to search for the anime using the slug (and even fix the slug itself), but it seems that the anime is not found on Kaize via AnimeApi.
 Please send a message to AnimeApi maintainer, nattadasu (he is also a developer of this bot)'''
 
 # =============================================================================

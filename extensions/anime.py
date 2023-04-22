@@ -3,10 +3,13 @@ from re import sub as rSub
 
 import interactions as ipy
 
+from classes.jikan import JikanApi
+from modules.anilist import searchAniListAnime
 from modules.commons import generateSearchSelections, sanitizeMarkdown
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import lang, readUserLang
-from modules.myanimelist import searchMalAnime
+from modules.myanimelist import (MalErrType, malExceptionEmbed, malSubmit,
+                                 searchMalAnime)
 
 
 class Anime(ipy.Extension):

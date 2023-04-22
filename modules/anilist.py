@@ -1,5 +1,6 @@
 from classes.anilist import AniList
 
+
 async def searchAniListAnime(title: str) -> dict:
     """Search anime via AniList API, formatted in MAL style"""
     async with AniList() as anilist:
@@ -16,16 +17,12 @@ async def searchAniListAnime(title: str) -> dict:
                 "id": item["idMal"],
                 "title": item["title"]["romaji"],
                 "alternative_titles": {
-                    "en": item["title"]["english"] if  item["title"]["english"] else "",
-                    "ja": item["title"]["native"]
-                },
+                    "en": item["title"]["english"] if item["title"]["english"] else "",
+                    "ja": item["title"]["native"]},
                 "start_season": {
                     "year": item["startDate"]["year"],
-                    "season": item["season"].lower() if item["season"] else None
-                },
-                "media_type": item["format"].lower() if item["format"] else None
-            }
-        }
+                    "season": item["season"].lower() if item["season"] else None},
+                "media_type": item["format"].lower() if item["format"] else None}}
         # Append the formatted data to the list
         formatted_data.append(formatted_item)
 

@@ -1,10 +1,12 @@
 import json
-import time
 import os
-import aiohttp
+import time
 from enum import Enum
 
+import aiohttp
+
 from classes.excepts import ProviderHttpError, ProviderTypeError
+
 
 class Kitsu:
     """Kitsu API wrapper"""
@@ -36,7 +38,8 @@ class Kitsu:
     async def get_anime(self, anime_id: int, media_type: MediaType | str = MediaType.ANIME) -> dict:
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
-        cache_file_path = self.get_cache_path(f"{media_type.value}/{anime_id}.json")
+        cache_file_path = self.get_cache_path(
+            f"{media_type.value}/{anime_id}.json")
         cached_data = self.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -52,7 +55,8 @@ class Kitsu:
     async def resolve_slug(self, slug: str, media_type: MediaType | str = MediaType.ANIME) -> dict:
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
-        cache_file_path = self.get_cache_path(f"{media_type.value}/slug/{slug}.json")
+        cache_file_path = self.get_cache_path(
+            f"{media_type.value}/slug/{slug}.json")
         cached_data = self.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -81,4 +85,3 @@ class Kitsu:
         os.makedirs(os.path.dirname(cache_path), exist_ok=True)
         with open(cache_path, "w") as f:
             json.dump({"timestamp": time.time(), "data": data}, f)
-

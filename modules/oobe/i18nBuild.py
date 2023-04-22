@@ -42,13 +42,15 @@ def convertLangsToJson():
                     drip = {
                         'code': code,
                         'name': lang.get(code).language_name(),
-                        'native': lang.get(code).language_name(lang.get(code).language),
+                        'native': lang.get(code).language_name(
+                            lang.get(code).language),
                         'dialect': lang.get(code).territory_name(),
                     }
             data['meta'] = drip
             indexed.append(drip)
             print(
-                f"\rConverted {file.name}: {indexed[-1]['name']} ({indexed[-1]['dialect']}) to json", end="\n")
+                f"\rConverted {file.name}: {indexed[-1]['name']} ({indexed[-1]['dialect']}) to json",
+                end="\n")
         with file.with_suffix(".json").open("w", encoding='utf-8', newline='\n') as f:
             j.dump(data, f, indent=2, ensure_ascii=False)
     with (i18n_dir / "_index.json").open("w", encoding='utf-8', newline='\n') as f:

@@ -3,7 +3,8 @@ import interactions as ipy
 from classes.nekomimidb import NekomimiDb as neko
 from classes.randomorg import RandomOrg
 from modules.i18n import lang, readUserLang
-from modules.myanimelist import lookupRandomAnime, malExceptionEmbed, MalErrType
+from modules.myanimelist import (MalErrType, lookupRandomAnime,
+                                 malExceptionEmbed, malSubmit)
 from modules.nekomimidb import nekomimiSubmit
 
 gender = neko.Gender
@@ -16,7 +17,6 @@ class Random(ipy.Extension):
     )
     async def random(self, ctx: ipy.SlashContext):
         pass
-
 
     @random.subcommand(
         sub_cmd_name="anime",
@@ -57,7 +57,6 @@ class Random(ipy.Extension):
         l_ = lang(ul)['random']['nekomimi']
         await nekomimiSubmit(ctx=ctx, gender=gender.BOY, lang=l_)
 
-
     @random.subcommand(
         group_name="nekomimi",
         group_description="Get a random character in cat ears",
@@ -70,7 +69,6 @@ class Random(ipy.Extension):
         l_ = lang(ul)['random']['nekomimi']
         await nekomimiSubmit(ctx=ctx, gender=gender.GIRL, lang=l_)
 
-
     @random.subcommand(
         group_name="nekomimi",
         group_description="Get a random character in cat ears",
@@ -82,7 +80,6 @@ class Random(ipy.Extension):
         ul = readUserLang(ctx)
         l_ = lang(ul)['random']['nekomimi']
         await nekomimiSubmit(ctx=ctx, lang=l_)
-
 
     @random.subcommand(
         sub_cmd_name="number",
@@ -144,7 +141,6 @@ class Random(ipy.Extension):
             color=0x1F1F1F,
         ))
 
-
     @random.subcommand(
         sub_cmd_name="string",
         sub_cmd_description="Get a random string",
@@ -194,6 +190,7 @@ class Random(ipy.Extension):
             description=f"```py\n{', '.join(strings)}\n```",
             color=0x1F1F1F,
         ))
+
 
 def setup(bot):
     Random(bot)
