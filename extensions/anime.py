@@ -26,10 +26,26 @@ class Anime(ipy.Extension):
                 description="The anime title to search for",
                 type=ipy.OptionType.STRING,
                 required=True
+            ),
+            ipy.SlashCommandOption(
+                name="provider",
+                description="The anime provider to search for",
+                type=ipy.OptionType.STRING,
+                required=False,
+                choices=[
+                    ipy.SlashCommandChoice(
+                        name="AniList (Default)",
+                        value="anilist"
+                    ),
+                    ipy.SlashCommandChoice(
+                        name="MyAnimeList",
+                        value="mal"
+                    ),
+                ]
             )
         ]
     )
-    async def anime_search(self, ctx: ipy.SlashContext, query: str):
+    async def anime_search(self, ctx: ipy.SlashContext, query: str, provider: str = "anilist"):
         await ctx.defer()
         ul = readUserLang(ctx)
         l_ = lang(ul, useRaw=True)
@@ -37,15 +53,20 @@ class Anime(ipy.Extension):
             title=l_['commons']['search']['init_title'],
             description=l_['commons']['search']['init'].format(
                 QUERY=query,
-                PLATFORM="MyAnimeList",
+                PLATFORM="MyAnimeList" if provider == "mal" else "AniList",
             ),
         ))
         f = []
         so = []
         try:
-            res = await searchMalAnime(title=query)
-            if res is None or len(res) == 0:
-                raise Exception("No result")
+            if provider == "anilist":
+                res = await searchAniListAnime(title=query)
+                if res is None or len(res) == 0:
+                    raise Exception("No result")
+            elif provider == "mal":
+                res = await searchMalAnime(title=query)
+                if res is None or len(res) == 0:
+                    raise Exception("No result")
             for a in res:
                 a = a['node']
                 if a['start_season'] is None:
@@ -55,8 +76,10 @@ class Anime(ipy.Extension):
                     media_type = l_['commons']['media_formats'][media_type]
                 except KeyError:
                     media_type = l_['commons']['unknown']
-                season: str = a['start_season']['season'].title()
-                year = a['start_season']['year']
+                season: str = a['start_season']['season'] if a['start_season']['season'] else 'unknown'
+                season = l_['commons']['season'][season]
+                year = a['start_season']['year'] if a['start_season']['year'] else l_[
+                    'commons']['year']['unknown']
                 title = a['title']
                 mdTitle = sanitizeMarkdown(title)
                 alt = a['alternative_titles']
@@ -67,7 +90,7 @@ class Anime(ipy.Extension):
                     native = ""
                 f += [
                     ipy.EmbedField(
-                        name=mdTitle,
+                        name=mdTitle[:253] + ("..." if len(mdTitle) > 253 else ""),
                         value=f"{native}`{a['id']}`, {media_type}, {season} {year}",
                         inline=False
                     )
@@ -75,15 +98,18 @@ class Anime(ipy.Extension):
                 so += [
                     ipy.StringSelectOption(
                         # trim to 80 chars in total
-                        label=title[:80],
+                        label=title[:77] + ("..." if len(title) > 77 else ""),
                         value=a['id'],
                         description=f"{media_type}, {season} {year}"
                     )
                 ]
             if len(f) >= 1:
+                title = l_['commons']['search']['result_title'].format(
+                    QUERY=query)
+                if provider == "anilist":
+                    title += " (AniList)"
                 result = generateSearchSelections(
-                    title=l_['commons']['search']['result_title'].format(
-                        QUERY=query),
+                    title=title,
                     language=ul,
                     mediaType="anime",
                     query=query,
@@ -106,17 +132,19 @@ class Anime(ipy.Extension):
                 )
             await asyncio.sleep(60)
             await send.edit(components=[])
-        except:
+        except Exception as e:
             l_ = l_['strings']['anime']['search']['exception']
             emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_UNEXPECTED_ERROR)
             await send.edit(content="", embed=ipy.Embed(
                 title=l_['title'],
-                description=l_['text'],
+                description=l_['text'].format(
+                    QUERY=query,
+                ),
                 color=0xFF0000,
                 footer=ipy.EmbedFooter(
                     text=l_['footer']
                 ),
-                thumbnail=ipy.EmbedThumbnail(
+                thumbnail=ipy.EmbedAttachment(
                     url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
                 ),
             ))
