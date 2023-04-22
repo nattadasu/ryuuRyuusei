@@ -55,8 +55,7 @@ def trimCyno(message: str) -> str:
         # trim spaces
         msg = msg.strip()
         return msg + "..."
-    else:
-        return message
+    return message
 
 
 def sanitize_markdown(text: str) -> str:

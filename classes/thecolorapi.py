@@ -60,9 +60,8 @@ class TheColorApi:
                 data = await response.json()
                 self.write_data_to_cache(data, cache_file_path)
                 return data
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     def get_cache_file_path(self, color_params):
         """Get the cache file from path

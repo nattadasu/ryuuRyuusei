@@ -102,9 +102,8 @@ class RandomOrg:
                 data = data.splitlines()
                 data = [int(i) for i in data]
                 return data
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     async def sequences(self, min: int, max: int) -> list[int]:
         """Generate random sequences
@@ -128,9 +127,8 @@ class RandomOrg:
                 data = data.splitlines()
                 data = [int(i) for i in data]
                 return data
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     async def strings(self, num: int, length: int = 10, digits: str | OnOff = "on", upperalpha: str | OnOff = "on", loweralpha: str | OnOff = "on", unique: str | OnOff = "on") -> list[str]:
         """Generate random strings
@@ -195,9 +193,8 @@ class RandomOrg:
                 data = await response.text()
                 data = data.splitlines()
                 return data
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
 
 __all__ = ["RandomOrg"]

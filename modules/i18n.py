@@ -31,8 +31,7 @@ def lang(code: str, useRaw: bool = False) -> dict:
             data = jlo(f.read())
             if useRaw:
                 return data
-            else:
-                return data['strings']
+            return data['strings']
     except FileNotFoundError:
         return lang(LANGUAGE_CODE)
 

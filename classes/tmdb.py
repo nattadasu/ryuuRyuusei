@@ -66,11 +66,10 @@ class TheMovieDb:
         async with self.session.get(url, params=self.params) as resp:
             if resp.status != 200:
                 return False
-            else:
-                jsonText = await resp.text()
-                jsonFinal = json.loads(jsonText)
-                self.write_cache(cache_file_path, jsonFinal["adult"])
-                return jsonFinal["adult"]
+            jsonText = await resp.text()
+            jsonFinal = json.loads(jsonText)
+            self.write_cache(cache_file_path, jsonFinal["adult"])
+            return jsonFinal["adult"]
 
     def get_cache_path(self, cache_name: str):
         """Get the cache path

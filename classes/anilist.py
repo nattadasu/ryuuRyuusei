@@ -72,9 +72,8 @@ class AniList:
                 self.write_data_to_cache(
                     data["data"]["Media"]["isAdult"], cache_file_path)
                 return data["data"]["Media"]["isAdult"]
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     async def anime(self, media_id: int) -> dict:
         """Get anime information by its ID
@@ -147,9 +146,8 @@ class AniList:
                 self.write_data_to_cache(
                     data["data"]["Media"], cache_file_path)
                 return data["data"]["Media"]
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     async def manga(self, media_id: int) -> dict:
         """Get manga information by its ID
@@ -219,9 +217,8 @@ class AniList:
                 self.write_data_to_cache(
                     data["data"]["Media"], cache_file_path)
                 return data["data"]["Media"]
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     async def search_media(self, query: str, limit: int = 10, media_type: str | MediaType = MediaType.MANGA) -> list[dict]:
         """Search anime by its title
@@ -271,9 +268,8 @@ class AniList:
             if response.status == 200:
                 data = await response.json()
                 return data["data"]["Page"]["results"]
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
         """Get cache file path
