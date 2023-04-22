@@ -148,7 +148,8 @@ class Trakt:
                     return data["data"]
         return None
 
-    def write_cache(self, cache_path: str, data):
+    @staticmethod
+    def write_cache(cache_path: str, data):
         """Write data to a cache file
 
         Args:

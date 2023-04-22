@@ -109,7 +109,8 @@ class Kitsu:
                     return data["data"]
         return None
 
-    def write_cache(self, cache_path: str, data):
+    @staticmethod
+    def write_cache(cache_path: str, data):
         """Write the cache"""
         os.makedirs(os.path.dirname(cache_path), exist_ok=True)
         with open(cache_path, "w") as f:

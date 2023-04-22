@@ -522,7 +522,8 @@ class Simkl:
                     return cache_data["data"]
         return None
 
-    def write_data_to_cache(self, data, cache_file_path: str):
+    @staticmethod
+    def write_data_to_cache(data, cache_file_path: str):
         """Write data to cache
 
         Args:
