@@ -43,6 +43,7 @@ from modules.const import (
 )
 from modules.i18n import readUserLang
 
+
 def lookupRandomAnime() -> int:
     """Lookup random anime from MAL
 
