@@ -72,8 +72,8 @@ def py_bin_path() -> str:
                 # Check if version is >= 3.10
                 if int(p[-2].replace("Python", "")) >= 310:
                     return path
-            else:
-                return "python"
+            
+            return "python"
     else:
         try:
             py3 = subprocess.check_output("python3 --version",
