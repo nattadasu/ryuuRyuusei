@@ -23,8 +23,6 @@ class Random(ipy.Extension):
     )
     async def random_anime(self, ctx: ipy.SlashContext):
         await ctx.defer()
-        # ul = readUserLang(ctx)
-        l_ = lang('en_US', useRaw=True)
         send = await ctx.send(embed=ipy.Embed(
             title="Random Anime",
             description="Getting a random anime...",
