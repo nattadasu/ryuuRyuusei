@@ -10,7 +10,7 @@ from modules.const import traktHeader
 
 
 class Trakt:
-    def __init__(self, headers: dict = traktHeader):
+    def __init__(self, headers: dict = None):
         """Initialize the Trakt API Wrapper
 
         Args:
@@ -20,7 +20,8 @@ class Trakt:
         self.base_url = "https://api.trakt.tv/"
         self.cache_directory = "cache/trakt"
         self.cache_time = 86400
-        self.headers = headers
+        if headers is None:
+            self.headers = traktHeader
 
     async def __aenter__(self):
         """Enter the async context manager"""
