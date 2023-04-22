@@ -72,7 +72,7 @@ def py_bin_path() -> str:
                 # Check if version is >= 3.10
                 if int(p[-2].replace("Python", "")) >= 310:
                     return path
-            
+
             return "python"
     else:
         try:
