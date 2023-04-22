@@ -8,7 +8,7 @@ from typing import Dict
 import pandas as pd
 import requests as r
 
-MAIN_SITE = 'https://aniapi.nattadasu.my.id/myanimelist%28%29.json'
+MAIN_SITE = "https://aniapi.nattadasu.my.id/myanimelist%28%29.json"
 
 
 def mal_get_data() -> None:

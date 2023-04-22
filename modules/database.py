@@ -12,7 +12,7 @@ def checkIfRegistered(discordId: int) -> bool:
     Returns:
         bool: True if user is registered, False if not
     """
-    df = pd.read_csv(database, delimiter="\t", dtype={'discordId': str})
-    if str(discordId) in df['discordId'].values:
+    df = pd.read_csv(database, delimiter="\t", dtype={"discordId": str})
+    if str(discordId) in df["discordId"].values:
         return True
     return False

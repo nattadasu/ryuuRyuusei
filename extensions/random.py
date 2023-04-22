@@ -3,7 +3,7 @@ import interactions as ipy
 from classes.nekomimidb import NekomimiDb as neko
 from classes.randomorg import RandomOrg
 from modules.i18n import lang, readUserLang
-from modules.myanimelist import (lookupRandomAnime, malSubmit)
+from modules.myanimelist import lookupRandomAnime, malSubmit
 from modules.nekomimidb import nekomimiSubmit
 
 gender = neko.Gender
@@ -23,23 +23,27 @@ class Random(ipy.Extension):
     )
     async def random_anime(self, ctx: ipy.SlashContext):
         await ctx.defer()
-        send = await ctx.send(embed=ipy.Embed(
-            title="Random Anime",
-            description="Getting a random anime...",
-            color=0x213498,
-            footer=ipy.EmbedFooter(
-                text="This may take a while...",
-            ),
-        ))
+        send = await ctx.send(
+            embed=ipy.Embed(
+                title="Random Anime",
+                description="Getting a random anime...",
+                color=0x213498,
+                footer=ipy.EmbedFooter(
+                    text="This may take a while...",
+                ),
+            )
+        )
         anime = lookupRandomAnime()
-        await send.edit(embed=ipy.Embed(
-            title="Random Anime",
-            description=f"We've found MAL ID [`{anime}`](https://myanimelist.net/anime/{anime}). Fetching info...",
-            color=0x213498,
-            footer=ipy.EmbedFooter(
-                text="This may take a while...",
-            ),
-        ))
+        await send.edit(
+            embed=ipy.Embed(
+                title="Random Anime",
+                description=f"We've found MAL ID [`{anime}`](https://myanimelist.net/anime/{anime}). Fetching info...",
+                color=0x213498,
+                footer=ipy.EmbedFooter(
+                    text="This may take a while...",
+                ),
+            )
+        )
         await malSubmit(ctx, anime)
 
     @random.subcommand(
@@ -51,7 +55,7 @@ class Random(ipy.Extension):
     async def random_nekomimi_boy(self, ctx: ipy.SlashContext):
         await ctx.defer()
         ul = readUserLang(ctx)
-        l_ = lang(ul)['random']['nekomimi']
+        l_ = lang(ul)["random"]["nekomimi"]
         await nekomimiSubmit(ctx=ctx, gender=gender.BOY, lang=l_)
 
     @random.subcommand(
@@ -63,7 +67,7 @@ class Random(ipy.Extension):
     async def random_nekomimi_girl(self, ctx: ipy.SlashContext):
         await ctx.defer()
         ul = readUserLang(ctx)
-        l_ = lang(ul)['random']['nekomimi']
+        l_ = lang(ul)["random"]["nekomimi"]
         await nekomimiSubmit(ctx=ctx, gender=gender.GIRL, lang=l_)
 
     @random.subcommand(
@@ -75,7 +79,7 @@ class Random(ipy.Extension):
     async def random_nekomimi_randomize(self, ctx: ipy.SlashContext):
         await ctx.defer()
         ul = readUserLang(ctx)
-        l_ = lang(ul)['random']['nekomimi']
+        l_ = lang(ul)["random"]["nekomimi"]
         await nekomimiSubmit(ctx=ctx, lang=l_)
 
     @random.subcommand(
@@ -123,20 +127,29 @@ class Random(ipy.Extension):
                         name="Hexadecimal",
                         value=16,
                     ),
-                ]
+                ],
             ),
-        ]
+        ],
     )
-    async def random_number(self, ctx: ipy.SlashContext, numbers: int = 1, min: int = 1, max: int = 10, base: int = 10):
+    async def random_number(
+        self,
+        ctx: ipy.SlashContext,
+        numbers: int = 1,
+        min: int = 1,
+        max: int = 10,
+        base: int = 10,
+    ):
         await ctx.defer()
         async with RandomOrg() as rand:
             numbers = await rand.integers(num=numbers, min=min, max=max, base=base)
         # convert arrays of int to arrays of str
         numbers = [str(i) for i in numbers]
-        await ctx.send(embed=ipy.Embed(
-            description=f"```py\n{', '.join(numbers)}\n```",
-            color=0x1F1F1F,
-        ))
+        await ctx.send(
+            embed=ipy.Embed(
+                description=f"```py\n{', '.join(numbers)}\n```",
+                color=0x1F1F1F,
+            )
+        )
 
     @random.subcommand(
         sub_cmd_name="string",
@@ -174,19 +187,36 @@ class Random(ipy.Extension):
                 required=False,
                 type=ipy.OptionType.BOOLEAN,
             ),
-        ]
+        ],
     )
-    async def random_string(self, ctx: ipy.SlashContext, length: int = 10, amount: int = 1, use_uppercase: bool = True, use_lowercase: bool = True, use_digits: bool = True):
+    async def random_string(
+        self,
+        ctx: ipy.SlashContext,
+        length: int = 10,
+        amount: int = 1,
+        use_uppercase: bool = True,
+        use_lowercase: bool = True,
+        use_digits: bool = True,
+    ):
         upper = "off" if not use_uppercase else "on"
         lower = "off" if not use_lowercase else "on"
         digits = "off" if not use_digits else "on"
         await ctx.defer()
         async with RandomOrg() as rand:
-            strings = await rand.strings(length=length, num=amount, upperalpha=upper, loweralpha=lower, digits=digits, unique="on")
-        await ctx.send(embed=ipy.Embed(
-            description=f"```py\n{', '.join(strings)}\n```",
-            color=0x1F1F1F,
-        ))
+            strings = await rand.strings(
+                length=length,
+                num=amount,
+                upperalpha=upper,
+                loweralpha=lower,
+                digits=digits,
+                unique="on",
+            )
+        await ctx.send(
+            embed=ipy.Embed(
+                description=f"```py\n{', '.join(strings)}\n```",
+                color=0x1F1F1F,
+            )
+        )
 
 
 def setup(bot):

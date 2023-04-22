@@ -16,7 +16,7 @@ class AniList:
         """Initialize the AniList API Wrapper"""
         self.base_url = "https://graphql.anilist.co"
         self.session = None
-        self.cache_directory = 'cache/anilist'
+        self.cache_directory = "cache/anilist"
         self.cache_expiration_time = 86400  # 1 day in seconds
 
     async def __aenter__(self):
@@ -34,10 +34,13 @@ class AniList:
 
     class MediaType(Enum):
         """Media type enum for AniList"""
+
         ANIME = "ANIME"
         MANGA = "MANGA"
 
-    async def nsfwCheck(self, media_id: int, media_type: str | MediaType = MediaType.ANIME) -> bool:
+    async def nsfwCheck(
+        self, media_id: int, media_type: str | MediaType = MediaType.ANIME
+    ) -> bool:
         """Check if the media is NSFW
 
         Args:
@@ -54,7 +57,8 @@ class AniList:
         if isinstance(media_type, self.MediaType):
             media_type = media_type.value
         cache_file_path = self.get_cache_file_path(
-            f'nsfw/{media_type.lower()}/{id}.json')
+            f"nsfw/{media_type.lower()}/{id}.json"
+        )
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -70,7 +74,8 @@ class AniList:
             if response.status == 200:
                 data = await response.json()
                 self.write_data_to_cache(
-                    data["data"]["Media"]["isAdult"], cache_file_path)
+                    data["data"]["Media"]["isAdult"], cache_file_path
+                )
                 return data["data"]["Media"]["isAdult"]
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
@@ -87,7 +92,7 @@ class AniList:
         Returns:
             dict: The anime information
         """
-        cache_file_path = self.get_cache_file_path(f'anime/{media_id}.json')
+        cache_file_path = self.get_cache_file_path(f"anime/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -140,11 +145,12 @@ class AniList:
         }}
     }}
 }}"""
-        async with self.session.post(self.base_url, json={"query": gqlquery}) as response:
+        async with self.session.post(
+            self.base_url, json={"query": gqlquery}
+        ) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(
-                    data["data"]["Media"], cache_file_path)
+                self.write_data_to_cache(data["data"]["Media"], cache_file_path)
                 return data["data"]["Media"]
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
@@ -158,7 +164,7 @@ class AniList:
         Returns:
             dict: The manga information
         """
-        cache_file_path = self.get_cache_file_path(f'manga/{media_id}.json')
+        cache_file_path = self.get_cache_file_path(f"manga/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -211,16 +217,19 @@ class AniList:
         }}
     }}
 }}"""
-        async with self.session.post(self.base_url, json={"query": gqlquery}) as response:
+        async with self.session.post(
+            self.base_url, json={"query": gqlquery}
+        ) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(
-                    data["data"]["Media"], cache_file_path)
+                self.write_data_to_cache(data["data"]["Media"], cache_file_path)
                 return data["data"]["Media"]
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def search_media(self, query: str, limit: int = 10, media_type: str | MediaType = MediaType.MANGA) -> list[dict]:
+    async def search_media(
+        self, query: str, limit: int = 10, media_type: str | MediaType = MediaType.MANGA
+    ) -> list[dict]:
         """Search anime by its title
 
         Args:
@@ -236,8 +245,7 @@ class AniList:
             list[dict]: The search results
         """
         if limit > 10:
-            raise ProviderTypeError(
-                "limit must be less than or equal to 10", "int")
+            raise ProviderTypeError("limit must be less than or equal to 10", "int")
         if isinstance(media_type, self.MediaType):
             media_type = media_type.value
         gqlquery = f"""query ($search: String, $mediaType: MediaType, $limit: Int) {{
@@ -264,7 +272,9 @@ class AniList:
             "mediaType": media_type,
             "limit": limit,
         }
-        async with self.session.post(self.base_url, json={"query": gqlquery, "variables": variables}) as response:
+        async with self.session.post(
+            self.base_url, json={"query": gqlquery, "variables": variables}
+        ) as response:
             if response.status == 200:
                 data = await response.json()
                 return data["data"]["Page"]["results"]
@@ -293,11 +303,11 @@ class AniList:
             None: If cache file does not exist
         """
         if os.path.exists(cache_file_path):
-            with open(cache_file_path, 'r') as cache_file:
+            with open(cache_file_path, "r") as cache_file:
                 cache_data = json.load(cache_file)
-                cache_age = time.time() - cache_data['timestamp']
+                cache_age = time.time() - cache_data["timestamp"]
                 if cache_age < self.cache_expiration_time:
-                    return cache_data['data']
+                    return cache_data["data"]
         return None
 
     def write_data_to_cache(self, data, cache_file_path: str) -> None:
@@ -310,9 +320,9 @@ class AniList:
         Returns:
             None
         """
-        cache_data = {'timestamp': time.time(), 'data': data}
+        cache_data = {"timestamp": time.time(), "data": data}
         os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
-        with open(cache_file_path, 'w') as cache_file:
+        with open(cache_file_path, "w") as cache_file:
             json.dump(cache_data, cache_file)
 
 

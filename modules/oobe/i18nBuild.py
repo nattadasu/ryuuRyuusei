@@ -24,54 +24,54 @@ def convert_langs_to_json() -> None:
     indexed: List[dict] = []
     files = [f for f in i18n_dir.glob("*.yaml") if f.name != "_index.yaml"]
     for file in files:
-        with file.open("r", encoding='utf-8') as f:
+        with file.open("r", encoding="utf-8") as f:
             data = y.safe_load(f)
             print(f"Converting {file.name} to JSON", end="")
             code = file.stem
             match code:
                 case "lol_US":
                     drip = {
-                        'code': code,
-                        'name': 'English Lolcat',
-                        'native': 'LOLCAT',
-                        'dialect': 'United States',
+                        "code": code,
+                        "name": "English Lolcat",
+                        "native": "LOLCAT",
+                        "dialect": "United States",
                     }
                 case "ace_ID":
                     drip = {
-                        'code': code,
-                        'name': 'Achinese',
-                        'native': 'Acèh',
-                        'dialect': 'Indonesia',
+                        "code": code,
+                        "name": "Achinese",
+                        "native": "Acèh",
+                        "dialect": "Indonesia",
                     }
                 case "sr_SP":
                     drip = {
-                        'code': code,
-                        'name': 'Serbian Cyrillic',
-                        'native': 'Српски',
-                        'dialect': 'Serbia',
+                        "code": code,
+                        "name": "Serbian Cyrillic",
+                        "native": "Српски",
+                        "dialect": "Serbia",
                     }
                 case _:
                     drip = {
-                        'code': code,
-                        'name': lang.get(code).language_name(),
-                        'native': lang.get(code).language_name(
-                            lang.get(code).language),
-                        'dialect': lang.get(code).territory_name(),
+                        "code": code,
+                        "name": lang.get(code).language_name(),
+                        "native": lang.get(code).language_name(lang.get(code).language),
+                        "dialect": lang.get(code).territory_name(),
                     }
-            data['meta'] = drip
+            data["meta"] = drip
             indexed.append(drip)
             print(
                 f"\rConverted {file.name}: {indexed[-1]['name']} ({indexed[-1]['dialect']}) to JSON",
-                end="\n")
-        with file.with_suffix(".json").open("w", encoding='utf-8', newline='\n') as f:
+                end="\n",
+            )
+        with file.with_suffix(".json").open("w", encoding="utf-8", newline="\n") as f:
             j.dump(data, f, indent=2, ensure_ascii=False)
 
     # Create index of languages
     print("Indexing languages")
-    indexed.sort(key=lambda x: x['code'].lower())
-    with (i18n_dir / "_index.json").open("w", encoding='utf-8', newline='\n') as f:
+    indexed.sort(key=lambda x: x["code"].lower())
+    with (i18n_dir / "_index.json").open("w", encoding="utf-8", newline="\n") as f:
         j.dump(indexed, f, indent=2, ensure_ascii=False)
-    with (i18n_dir / "_index.yaml").open("w", encoding='utf-8', newline='\n') as f:
+    with (i18n_dir / "_index.yaml").open("w", encoding="utf-8", newline="\n") as f:
         y.dump(indexed, f, indent=2, allow_unicode=True)
 
 

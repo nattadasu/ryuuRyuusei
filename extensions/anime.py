@@ -25,7 +25,7 @@ class Anime(ipy.Extension):
                 name="query",
                 description="The anime title to search for",
                 type=ipy.OptionType.STRING,
-                required=True
+                required=True,
             ),
             ipy.SlashCommandOption(
                 name="provider",
@@ -33,29 +33,27 @@ class Anime(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(
-                        name="AniList (Default)",
-                        value="anilist"
-                    ),
-                    ipy.SlashCommandChoice(
-                        name="MyAnimeList",
-                        value="mal"
-                    ),
-                ]
-            )
-        ]
+                    ipy.SlashCommandChoice(name="AniList (Default)", value="anilist"),
+                    ipy.SlashCommandChoice(name="MyAnimeList", value="mal"),
+                ],
+            ),
+        ],
     )
-    async def anime_search(self, ctx: ipy.SlashContext, query: str, provider: str = "anilist"):
+    async def anime_search(
+        self, ctx: ipy.SlashContext, query: str, provider: str = "anilist"
+    ):
         await ctx.defer()
         ul = readUserLang(ctx)
         l_ = lang(ul, useRaw=True)
-        send = await ctx.send(embed=ipy.Embed(
-            title=l_['commons']['search']['init_title'],
-            description=l_['commons']['search']['init'].format(
-                QUERY=query,
-                PLATFORM="MyAnimeList" if provider == "mal" else "AniList",
-            ),
-        ))
+        send = await ctx.send(
+            embed=ipy.Embed(
+                title=l_["commons"]["search"]["init_title"],
+                description=l_["commons"]["search"]["init"].format(
+                    QUERY=query,
+                    PLATFORM="MyAnimeList" if provider == "mal" else "AniList",
+                ),
+            )
+        )
         f = []
         so = []
         try:
@@ -68,23 +66,30 @@ class Anime(ipy.Extension):
                 if res is None or len(res) == 0:
                     raise Exception("No result")
             for a in res:
-                a = a['node']
-                if a['start_season'] is None:
-                    a['start_season'] = {'season': 'Unknown', 'year': 'Year'}
-                media_type: str = a['media_type'].lower()
+                a = a["node"]
+                if a["start_season"] is None:
+                    a["start_season"] = {"season": "Unknown", "year": "Year"}
+                media_type: str = a["media_type"].lower()
                 try:
-                    media_type = l_['commons']['media_formats'][media_type]
+                    media_type = l_["commons"]["media_formats"][media_type]
                 except KeyError:
-                    media_type = l_['commons']['unknown']
-                season: str = a['start_season']['season'] if a['start_season']['season'] else 'unknown'
-                season = l_['commons']['season'][season]
-                year = a['start_season']['year'] if a['start_season']['year'] else l_[
-                    'commons']['year']['unknown']
-                title = a['title']
+                    media_type = l_["commons"]["unknown"]
+                season: str = (
+                    a["start_season"]["season"]
+                    if a["start_season"]["season"]
+                    else "unknown"
+                )
+                season = l_["commons"]["season"][season]
+                year = (
+                    a["start_season"]["year"]
+                    if a["start_season"]["year"]
+                    else l_["commons"]["year"]["unknown"]
+                )
+                title = a["title"]
                 mdTitle = sanitizeMarkdown(title)
-                alt = a['alternative_titles']
-                if alt is not None and alt['ja'] is not None:
-                    native = sanitizeMarkdown(alt['ja'])
+                alt = a["alternative_titles"]
+                if alt is not None and alt["ja"] is not None:
+                    native = sanitizeMarkdown(alt["ja"])
                     native += "\n"
                 else:
                     native = ""
@@ -92,20 +97,19 @@ class Anime(ipy.Extension):
                     ipy.EmbedField(
                         name=mdTitle[:253] + ("..." if len(mdTitle) > 253 else ""),
                         value=f"{native}`{a['id']}`, {media_type}, {season} {year}",
-                        inline=False
+                        inline=False,
                     )
                 ]
                 so += [
                     ipy.StringSelectOption(
                         # trim to 80 chars in total
                         label=title[:77] + ("..." if len(title) > 77 else ""),
-                        value=a['id'],
-                        description=f"{media_type}, {season} {year}"
+                        value=a["id"],
+                        description=f"{media_type}, {season} {year}",
                     )
                 ]
             if len(f) >= 1:
-                title = l_['commons']['search']['result_title'].format(
-                    QUERY=query)
+                title = l_["commons"]["search"]["result_title"].format(QUERY=query)
                 if provider == "anilist":
                     title += " (AniList)"
                 result = generateSearchSelections(
@@ -124,30 +128,29 @@ class Anime(ipy.Extension):
                     embed=result,
                     components=ipy.ActionRow(
                         ipy.StringSelectMenu(
-                            *so,
-                            placeholder="Choose an anime",
-                            custom_id="mal_search"
+                            *so, placeholder="Choose an anime", custom_id="mal_search"
                         )
-                    )
+                    ),
                 )
             await asyncio.sleep(60)
             await send.edit(components=[])
         except Exception:
-            l_ = l_['strings']['anime']['search']['exception']
+            l_ = l_["strings"]["anime"]["search"]["exception"]
             emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_UNEXPECTED_ERROR)
-            await send.edit(content="", embed=ipy.Embed(
-                title=l_['title'],
-                description=l_['text'].format(
-                    QUERY=query,
+            await send.edit(
+                content="",
+                embed=ipy.Embed(
+                    title=l_["title"],
+                    description=l_["text"].format(
+                        QUERY=query,
+                    ),
+                    color=0xFF0000,
+                    footer=ipy.EmbedFooter(text=l_["footer"]),
+                    thumbnail=ipy.EmbedAttachment(
+                        url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
+                    ),
                 ),
-                color=0xFF0000,
-                footer=ipy.EmbedFooter(
-                    text=l_['footer']
-                ),
-                thumbnail=ipy.EmbedAttachment(
-                    url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
-                ),
-            ))
+            )
 
     @ipy.component_callback("mal_search")
     async def anime_search_data(self, ctx: ipy.ComponentContext) -> None:
@@ -163,9 +166,9 @@ class Anime(ipy.Extension):
                 name="id",
                 description="The anime ID to get information from",
                 type=ipy.OptionType.INTEGER,
-                required=True
+                required=True,
             ),
-        ]
+        ],
     )
     async def anime_info(self, ctx: ipy.SlashContext, id: int):
         await ctx.defer()

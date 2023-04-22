@@ -145,6 +145,7 @@ class SimklAnimeGenre(Enum):
 
 class SimklMediaTypes(Enum):
     """Media types supported by Simkl API"""
+
     ANIME = "anime"
     MOVIE = "movie"
     SHOW = TV = "tv"
@@ -153,7 +154,8 @@ class SimklMediaTypes(Enum):
 class Simkl:
     """Simkl API wrapper
 
-    This module is a wrapper for Simkl API, which is used to search for anime, shows, and movies."""
+    This module is a wrapper for Simkl API, which is used to search for anime, shows, and movies.
+    """
 
     def __init__(self, client_id: str = SIMKL_CLIENT_ID):
         """Initialize the Simkl API wrapper
@@ -164,11 +166,12 @@ class Simkl:
         self.client_id = client_id
         if client_id is None:
             raise ProviderHttpError(
-                "Unauthorized, please fill Client ID before using this module", 401)
+                "Unauthorized, please fill Client ID before using this module", 401
+            )
         self.base_url = "https://api.simkl.com"
         self.params = {"client_id": self.client_id}
         self.session = None
-        self.cache_directory = 'cache/simkl'
+        self.cache_directory = "cache/simkl"
         self.cache_expiration_time = 86400  # 1 day in seconds
 
     async def __aenter__(self):
@@ -186,6 +189,7 @@ class Simkl:
 
     class Provider(Enum):
         """Providers supported by Simkl API"""
+
         ANIDB = "anidb"
         ANILIST = AL = "anilist"
         ANIMEPLANET = AP = "animeplanet"
@@ -202,10 +206,16 @@ class Simkl:
 
     class TmdbMediaTypes(Enum):
         """Media types required to reverse lookup from TMDB ID"""
+
         SHOW = "show"
         MOVIE = "movie"
 
-    async def search_by_id(self, provider: Provider | str, id: int, media_type: TmdbMediaTypes | str | None = None) -> dict:
+    async def search_by_id(
+        self,
+        provider: Provider | str,
+        id: int,
+        media_type: TmdbMediaTypes | str | None = None,
+    ) -> dict:
         """Search by ID
 
         Args:
@@ -226,9 +236,12 @@ class Simkl:
         if provider == self.Provider.TMDB and not media_type:
             raise SimklTypeError(
                 "MediaType is required when using TMDB provider",
-                "TmdbMediaTypeRequired")
+                "TmdbMediaTypeRequired",
+            )
         params[f"{provider}"] = id
-        async with self.session.get(f"{self.base_url}/search/id", params=params) as response:
+        async with self.session.get(
+            f"{self.base_url}/search/id", params=params
+        ) as response:
             if response.status == 200:
                 data = await response.json()
                 return data
@@ -264,7 +277,9 @@ class Simkl:
             params["extended"] = "full"
         params["page"] = page
         params["limit"] = limit
-        async with self.session.get(f"{self.base_url}/search/{media_type}", params=params) as response:
+        async with self.session.get(
+            f"{self.base_url}/search/{media_type}", params=params
+        ) as response:
             if response.status == 200:
                 data = await response.json()
                 return data
@@ -284,13 +299,15 @@ class Simkl:
         Returns:
             dict: Response from Simkl API
         """
-        cache_file_path = self.get_cache_file_path(f'show/{id}.json')
+        cache_file_path = self.get_cache_file_path(f"show/{id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
         params = deepcopy(self.params)
         params["extended"] = "full"
-        async with self.session.get(f"{self.base_url}/tv/{id}", params=params) as response:
+        async with self.session.get(
+            f"{self.base_url}/tv/{id}", params=params
+        ) as response:
             if response.status == 200:
                 data = await response.json()
                 self.write_data_to_cache(data, cache_file_path)
@@ -311,13 +328,15 @@ class Simkl:
         Returns:
             dict: Response from Simkl API
         """
-        cache_file_path = self.get_cache_file_path(f'movie/{id}.json')
+        cache_file_path = self.get_cache_file_path(f"movie/{id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
         params = deepcopy(self.params)
         params["extended"] = "full"
-        async with self.session.get(f"{self.base_url}/movies/{id}", params=params) as response:
+        async with self.session.get(
+            f"{self.base_url}/movies/{id}", params=params
+        ) as response:
             if response.status == 200:
                 data = await response.json()
                 self.write_data_to_cache(data, cache_file_path)
@@ -338,13 +357,15 @@ class Simkl:
         Returns:
             dict: Response from Simkl API
         """
-        cache_file_path = self.get_cache_file_path(f'anime/{id}.json')
+        cache_file_path = self.get_cache_file_path(f"anime/{id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
         params = deepcopy(self.params)
         params["extended"] = "full"
-        async with self.session.get(f"{self.base_url}/anime/{id}", params=params) as response:
+        async with self.session.get(
+            f"{self.base_url}/anime/{id}", params=params
+        ) as response:
             if response.status == 200:
                 data = await response.json()
                 self.write_data_to_cache(data, cache_file_path)
@@ -355,7 +376,12 @@ class Simkl:
     async def get_random_title(
         self,
         media_type: SimklMediaTypes | str,
-        genre: SimklMediaGenre | SimklMovieGenre | SimklTvGenre | SimklAnimeGenre | str | None = None,
+        genre: SimklMediaGenre
+        | SimklMovieGenre
+        | SimklTvGenre
+        | SimklAnimeGenre
+        | str
+        | None = None,
         year_from: int | None = None,
         year_to: int | None = None,
         rating_limit: int | None = None,
@@ -405,7 +431,9 @@ class Simkl:
             params["rating_from"] = rating_from
         if rating_to:
             params["rating_to"] = rating_to
-        async with self.session.get(f"{self.base_url}/search/random/", params=params) as response:
+        async with self.session.get(
+            f"{self.base_url}/search/random/", params=params
+        ) as response:
             if response.status == 200:
                 data = await response.json()
                 return data
@@ -425,8 +453,7 @@ class Simkl:
         Returns:
             dict: Response from Simkl API
         """
-        cache_file_path = self.get_cache_file_path(
-            f'ids/{media_type}/{id}.json')
+        cache_file_path = self.get_cache_file_path(f"ids/{media_type}/{id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -452,16 +479,15 @@ class Simkl:
                 "instagram",
                 "twitter",
                 "wikien",
-                    "wikijp"]:
+                "wikijp",
+            ]:
                 continue
             if isinstance(v, str) and v.isdigit():
                 mids[k] = int(v)
-        keys = [
-            'title', 'poster', 'fanart', 'anime_type', 'type'
-        ]
+        keys = ["title", "poster", "fanart", "anime_type", "type"]
         for k in keys:
-            if k == 'anime_type':
-                mids['anitype'] = data.get(k, None)
+            if k == "anime_type":
+                mids["anitype"] = data.get(k, None)
                 continue
             mids[k] = data.get(k, None)
         self.write_data_to_cache(mids, cache_file_path)
@@ -489,11 +515,11 @@ class Simkl:
             None: If cache file does not exist
         """
         if os.path.exists(cache_file_path):
-            with open(cache_file_path, 'r') as cache_file:
+            with open(cache_file_path, "r") as cache_file:
                 cache_data = json.load(cache_file)
-                cache_age = time.time() - cache_data['timestamp']
+                cache_age = time.time() - cache_data["timestamp"]
                 if cache_age < self.cache_expiration_time:
-                    return cache_data['data']
+                    return cache_data["data"]
         return None
 
     def write_data_to_cache(self, data, cache_file_path: str):
@@ -503,10 +529,10 @@ class Simkl:
             data (any): Data to write to cache
             cache_file_name (str): Cache file name
         """
-        cache_data = {'timestamp': time.time(), 'data': data}
+        cache_data = {"timestamp": time.time(), "data": data}
         os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
-        with open(cache_file_path, 'w') as cache_file:
+        with open(cache_file_path, "w") as cache_file:
             json.dump(cache_data, cache_file)
 
 
-__all__ = ['Simkl']
+__all__ = ["Simkl"]

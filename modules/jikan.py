@@ -33,7 +33,7 @@ async def check_if_club_in_list(clubs: list[dict]) -> bool:
         bool: True if the club is in the list, False if not
     """
     for club in clubs:
-        if str(club['mal_id']) == str(CLUB_ID):
+        if str(club["mal_id"]) == str(CLUB_ID):
             return True
     return False
 

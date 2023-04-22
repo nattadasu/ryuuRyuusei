@@ -11,7 +11,8 @@ class UserDatabase:
         """Initialize the database
 
         Args:
-            database_path (str, optional): Path to the database. Defaults to database."""
+            database_path (str, optional): Path to the database. Defaults to database.
+        """
         self.database_path = database_path
 
     async def __aenter__(self):
@@ -36,11 +37,21 @@ class UserDatabase:
             bool: True if user is registered, False if not
         """
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        return str(discord_id) in df['discordId'].values
+        return str(discord_id) in df["discordId"].values
 
-    async def save_to_database(self, discord_id: int, discord_username: str, discord_joined: int,
-                               mal_username: str, mal_id: int, mal_joined: int, registered_at: int,
-                               registered_guild: int, registered_by: int, guild_name: str):
+    async def save_to_database(
+        self,
+        discord_id: int,
+        discord_username: str,
+        discord_joined: int,
+        mal_username: str,
+        mal_id: int,
+        mal_joined: int,
+        registered_at: int,
+        registered_guild: int,
+        registered_by: int,
+        guild_name: str,
+    ):
         """Save information regarding to user with their consent
 
         Args:
@@ -56,16 +67,16 @@ class UserDatabase:
             guild_name (str): Guild name where the user registered
         """
         data = {
-            'discordId': str(discord_id),
-            'discordUsername': discord_username,
-            'discordJoined': str(discord_joined),
-            'malUsername': mal_username,
-            'malId': str(mal_id),
-            'malJoined': str(mal_joined),
-            'registeredAt': str(registered_at),
-            'registeredGuild': str(registered_guild),
-            'registeredBy': str(registered_by),
-            'guildName': guild_name,
+            "discordId": str(discord_id),
+            "discordUsername": discord_username,
+            "discordJoined": str(discord_joined),
+            "malUsername": mal_username,
+            "malId": str(mal_id),
+            "malJoined": str(mal_joined),
+            "registeredAt": str(registered_at),
+            "registeredGuild": str(registered_guild),
+            "registeredBy": str(registered_by),
+            "guildName": guild_name,
         }
         df = pd.DataFrame(data, index=[0])
         df.to_csv(
@@ -73,7 +84,8 @@ class UserDatabase:
             sep="\t",
             index=False,
             header=not self._database_exists(),
-            mode='a')
+            mode="a",
+        )
 
     async def drop_user(self, discord_id: int) -> bool:
         """Drop a user from the database
@@ -85,7 +97,7 @@ class UserDatabase:
             bool: True if user is dropped, False if not
         """
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        df.drop(df[df['discordId'] == str(discord_id)].index, inplace=True)
+        df.drop(df[df["discordId"] == str(discord_id)].index, inplace=True)
         df.to_csv(self.database_path, sep="\t", index=False)
         return True
 
@@ -99,30 +111,33 @@ class UserDatabase:
             bool: True if user is verified, False if not
         """
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        row = df[df['discordId'] == str(discord_id)]
+        row = df[df["discordId"] == str(discord_id)]
         if row.empty:
             raise DatabaseException(
-                f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error")
+                f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error"
+            )
 
-        username = row.iloc[0]['malUsername']
+        username = row.iloc[0]["malUsername"]
         clubs = await checkClubMembership(username)
         verified = False
         for club in clubs:
-            if str(club['mal_id']) == str(CLUB_ID):
+            if str(club["mal_id"]) == str(CLUB_ID):
                 verified = True
                 break
         else:
             raise DatabaseException(
-                f"{EMOJI_UNEXPECTED_ERROR} User is not a member of the club")
+                f"{EMOJI_UNEXPECTED_ERROR} User is not a member of the club"
+            )
         return verified
 
     async def export_user_data(self, user_id: int) -> str:
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        row = df[df['discordId'] == str(user_id)]
+        row = df[df["discordId"] == str(user_id)]
         if row.empty:
             raise DatabaseException(
-                f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error")
-        data = row.to_dict(orient='records')[0]
+                f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error"
+            )
+        data = row.to_dict(orient="records")[0]
         for key, value in data.items():
             if value.isdigit():
                 data[key] = int(value)
@@ -145,16 +160,17 @@ class UserDatabase:
             return
 
     __all__ = [
-        'check_if_registered',
-        'save_to_database',
-        'drop_user',
-        'verify_user',
-        'export_user_data',
-        'close']
+        "check_if_registered",
+        "save_to_database",
+        "drop_user",
+        "verify_user",
+        "export_user_data",
+        "close",
+    ]
 
 
 class DatabaseException(Exception):
     pass
 
 
-__all__ = ['UserDatabase', 'DatabaseException']
+__all__ = ["UserDatabase", "DatabaseException"]

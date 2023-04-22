@@ -14,10 +14,10 @@ class JikanException(Exception):
 
 
 def defineJikanException(errmsg: str) -> JikanException:
-    e = str(errmsg).split('=')
+    e = str(errmsg).split("=")
     etype = 400
     try:
-        etype = int(e[1].split(',')[0])
+        etype = int(e[1].split(",")[0])
         errm = e[3].strip()
         if len(e) >= 4:
             for i in range(4, len(e)):
@@ -60,18 +60,17 @@ class JikanApi:
         """
         try:
             async with AioJikan() as jikan:
-                res = await jikan.users(username=username, extension='clubs')
-                data: list = res['data']
-                if res['pagination']['last_visible_page'] > 1:
-                    for i in range(
-                            2, res['pagination']['last_visible_page'] + 1):
+                res = await jikan.users(username=username, extension="clubs")
+                data: list = res["data"]
+                if res["pagination"]["last_visible_page"] > 1:
+                    for i in range(2, res["pagination"]["last_visible_page"] + 1):
                         res = await jikan.users(
                             username=username,
-                            extension='clubs',
+                            extension="clubs",
                             page=i,
                         )
                         await asyncio.sleep(1)
-                        data.extend(res['data'])
+                        data.extend(res["data"])
                 return data
         except Exception as e:
             defineJikanException(e)
@@ -88,7 +87,7 @@ class JikanApi:
         try:
             async with AioJikan() as jikan:
                 res = await jikan.users(username=username, extension="full")
-                return res['data']
+                return res["data"]
         except Exception as e:
             defineJikanException(e)
 

@@ -51,15 +51,13 @@ def py_bin_path() -> str:
 
     if current_os() == "Windows":
         try:
-            py = subprocess.check_output("python --version",
-                                         shell=True).decode("utf-8")
+            py = subprocess.check_output("python --version", shell=True).decode("utf-8")
             if ask_python(py):
                 return "python"
             raise subprocess.CalledProcessError()
         except subprocess.CalledProcessError:
-            paths = subprocess.check_output(
-                "where python", shell=True).decode("utf-8")
-            paths = paths.replace('\r', '').split("\n")
+            paths = subprocess.check_output("where python", shell=True).decode("utf-8")
+            paths = paths.replace("\r", "").split("\n")
             # reverse the list, so we can get the up to date python version
             paths.reverse()
             # if index 0 is '', drop it
@@ -74,14 +72,14 @@ def py_bin_path() -> str:
             return "python"
     else:
         try:
-            py3 = subprocess.check_output("python3 --version",
-                                          shell=True).decode("utf-8")
+            py3 = subprocess.check_output("python3 --version", shell=True).decode(
+                "utf-8"
+            )
             if ask_python(py3):
                 return "python3"
             raise subprocess.CalledProcessError()
         except subprocess.CalledProcessError:
-            py = subprocess.check_output("python --version",
-                                         shell=True).decode("utf-8")
+            py = subprocess.check_output("python --version", shell=True).decode("utf-8")
             if ask_python(py):
                 return "python"
             raise Exception("Python version is too old")
@@ -99,7 +97,8 @@ def checkTermux() -> bool:
         bool: True if running on Termux, False otherwise.
     """
     return current_os() == "Linux" and os.path.exists(
-        "/data/data/com.termux/files/usr/bin")
+        "/data/data/com.termux/files/usr/bin"
+    )
 
 
 def prepare_database():
@@ -112,12 +111,14 @@ def prepare_database():
     Returns:
         None
     """
-    files = [{"path": "database/database.csv",
-              "header": "discordId\tdiscordUsername\tdiscordJoined\tmalUsername\tmalId\tmalJoined\tregisteredAt\tregisteredGuild\tregisteredBy"},
-             {"path": "database/member.csv",
-              "header": "discordId\tlanguage"},
-             {"path": "database/server.csv",
-              "header": "guildId\tlanguage"}]
+    files = [
+        {
+            "path": "database/database.csv",
+            "header": "discordId\tdiscordUsername\tdiscordJoined\tmalUsername\tmalId\tmalJoined\tregisteredAt\tregisteredGuild\tregisteredBy",
+        },
+        {"path": "database/member.csv", "header": "discordId\tlanguage"},
+        {"path": "database/server.csv", "header": "guildId\tlanguage"},
+    ]
 
     for file in files:
         if not os.path.exists(file["path"]):

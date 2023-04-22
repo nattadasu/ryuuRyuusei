@@ -20,8 +20,10 @@ class NekomimiDb:
     embed = nm.get_random_nekomimi()
     await ctx.send(embed=embed)
     ```"""
+
     class Gender(Enum):
         """Supported Gender Enum"""
+
         BOY = "boy"
         GIRL = "girl"
         UNKNOWN = NONBINARY = NB = "nb"
@@ -35,7 +37,7 @@ class NekomimiDb:
         """
         self.gender = gender
         self.seed = getRandom()
-        self.nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t").fillna('')
+        self.nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t").fillna("")
 
     def get_random_nekomimi(self) -> pd.Series:
         """Get a random nekomimi image from the database
@@ -44,7 +46,7 @@ class NekomimiDb:
             Series: a random row from the database
         """
         if self.gender is not None:
-            query = self.nmDb[self.nmDb['girlOrBoy'] == self.gender.value]
+            query = self.nmDb[self.nmDb["girlOrBoy"] == self.gender.value]
         else:
             query = self.nmDb
         # get a random row from the query

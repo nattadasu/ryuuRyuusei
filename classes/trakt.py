@@ -38,15 +38,22 @@ class Trakt:
 
     class Platform(Enum):
         """Supported Platform Enum"""
+
         IMDB = "imdb"
         TMDB = "tmdb"
 
     class MediaType(Enum):
         """Media type enum"""
+
         TV = SHOW = ONA = "show"
         MOVIE = "movie"
 
-    async def lookup(self, id: int | str, platform: Platform | str = Platform.IMDB, media_type: MediaType | str = MediaType.TV) -> dict:
+    async def lookup(
+        self,
+        id: int | str,
+        platform: Platform | str = Platform.IMDB,
+        media_type: MediaType | str = MediaType.TV,
+    ) -> dict:
         """Lookup a TV show or movie by ID on a supported platform
 
         Args:
@@ -69,7 +76,8 @@ class Trakt:
             raise ProviderTypeError("TMDB requires a media type", "MediaType")
         self.cache_time = 2592000
         cache_file_path = self.get_cache_path(
-            f"lookup/{platform.value}/{media_type.value}/{id}.json")
+            f"lookup/{platform.value}/{media_type.value}/{id}.json"
+        )
         cached_data = self.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -106,9 +114,7 @@ class Trakt:
         if cached_data is not None:
             return cached_data
         url = f"{self.base_url}{media_type.value}/{id}"
-        param = {
-            "extended": "full"
-        }
+        param = {"extended": "full"}
         async with self.session.get(url, params=param) as resp:
             if resp.status != 200:
                 raise ProviderHttpError(resp.text(), resp.status)
