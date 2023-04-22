@@ -3,8 +3,7 @@ import interactions as ipy
 from classes.nekomimidb import NekomimiDb as neko
 from classes.randomorg import RandomOrg
 from modules.i18n import lang, readUserLang
-from modules.myanimelist import (MalErrType, lookupRandomAnime,
-                                 malExceptionEmbed, malSubmit)
+from modules.myanimelist import (lookupRandomAnime, malSubmit)
 from modules.nekomimidb import nekomimiSubmit
 
 gender = neko.Gender

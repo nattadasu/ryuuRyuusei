@@ -3,11 +3,8 @@ from datetime import datetime as dtime
 import interactions as ipy
 
 from classes.database import UserDatabase
-from classes.jikan import JikanApi
-from classes.myanimelist import MyAnimeList
 from modules.commons import generalExceptionEmbed, sanitizeMarkdown
 from modules.i18n import lang, readUserLang
-from modules.myanimelist import malExceptionEmbed
 
 
 class Profile(ipy.Extension):
@@ -171,9 +168,10 @@ class Profile(ipy.Extension):
                 required=False,
             )])
     async def profile_myanimelist(self, ctx: ipy.SlashContext, user: ipy.User = None, mal_username: str = None):
-        await ctx.defer()
-        ul = readUserLang(ctx)
-        l_ = lang(ul, useRaw=True)
+        # await ctx.defer()
+        # ul = readUserLang(ctx)
+        # l_ = lang(ul, useRaw=True)
+        await ctx.send("This command is currently disabled as it not have been implemented yet.")
 
 
 def setup(bot):

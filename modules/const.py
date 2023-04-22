@@ -104,7 +104,7 @@ MESSAGE_INVITE: Final[str] = "To invite me, simply press \"**Invite me!**\" butt
 
 MESSAGE_SELECT_TIMEOUT: Final[str] = "*Selection menu has reached timeout, please try again if you didn't pick the option!*"
 
-MESSAGE_WARN_CONTENTS: Final[str] = f"""
+MESSAGE_WARN_CONTENTS: Final[str] = """
 
 If you invoked this command outside (public or private) forum thread channel or regular text channel and **Age Restriction** is enabled, please contact developer of this bot as the feature only tested in forum thread and text channel.
 

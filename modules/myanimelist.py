@@ -7,13 +7,12 @@ import re
 import traceback
 from datetime import datetime, timezone
 from enum import Enum
-from json import dumps
 from zoneinfo import ZoneInfo
 
 import pandas as pd
-from interactions import (BaseContext, ComponentContext, Embed,
+from interactions import ( Embed,
                           EmbedAttachment, EmbedAuthor, EmbedField,
-                          EmbedFooter, EmbedProvider, SlashContext)
+                          EmbedFooter, SlashContext)
 
 from classes.anilist import AniList
 from classes.animeapi import AnimeApi
@@ -161,7 +160,7 @@ async def generateMal(entry_id: int, code: str, isNsfw: bool = False, alDict: di
         Embed: Embed object
     """
     # get locale
-    l_ = lang(code)
+    # l_ = lang(code)
     async with JikanApi() as jikan:
         j = await jikan.get_anime_data(entry_id)
     if alDict is not None:
@@ -463,7 +462,7 @@ async def generateMal(entry_id: int, code: str, isNsfw: bool = False, alDict: di
     elif pvd > 1:
         pvd = f"{pvd:,} people voted"
     elif pvd == 1:
-        pvd = f"1 person voted"
+        pvd = "1 person voted"
 
     eps = j['episodes']
     if (eps == 0) or (eps is None):

@@ -6,7 +6,7 @@ from re import sub as rSub
 from uuid import uuid4 as id4
 
 from interactions import (Button, ButtonStyle, Client, Embed, EmbedAttachment,
-                          EmbedAuthor, EmbedField, EmbedFooter, EmbedProvider,
+                          EmbedAuthor, EmbedField,
                           PartialEmoji)
 
 from modules.const import BOT_TOKEN

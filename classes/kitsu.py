@@ -5,7 +5,7 @@ from enum import Enum
 
 import aiohttp
 
-from classes.excepts import ProviderHttpError, ProviderTypeError
+from classes.excepts import ProviderHttpError
 
 
 class Kitsu:

@@ -1,4 +1,3 @@
-from enum import Enum
 from json import loads
 
 from aiohttp import ClientSession

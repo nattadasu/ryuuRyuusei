@@ -8,8 +8,7 @@ from modules.anilist import searchAniListAnime
 from modules.commons import generateSearchSelections, sanitizeMarkdown
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import lang, readUserLang
-from modules.myanimelist import (MalErrType, malExceptionEmbed, malSubmit,
-                                 searchMalAnime)
+from modules.myanimelist import malSubmit, searchMalAnime
 
 
 class Anime(ipy.Extension):
@@ -135,7 +134,7 @@ class Anime(ipy.Extension):
                 )
             await asyncio.sleep(60)
             await send.edit(components=[])
-        except Exception as e:
+        except Exception:
             l_ = l_['strings']['anime']['search']['exception']
             emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_UNEXPECTED_ERROR)
             await send.edit(content="", embed=ipy.Embed(

@@ -5,7 +5,7 @@ This module contains only functions to interact with the Jikan API.
 API wrapper specifically are saved in classes/jikan.py
 """
 
-from classes.jikan import JikanApi, JikanException
+from classes.jikan import JikanApi
 from modules.const import CLUB_ID
 
 

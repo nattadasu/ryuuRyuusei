@@ -1,5 +1,3 @@
-# File: `serversettings.py`
-
 import interactions as ipy
 from emoji import emojize
 

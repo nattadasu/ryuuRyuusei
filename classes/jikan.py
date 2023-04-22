@@ -1,5 +1,4 @@
 import asyncio
-import json
 import traceback
 
 from jikanpy import AioJikan
@@ -24,14 +23,14 @@ def defineJikanException(errmsg: str) -> JikanException:
             for i in range(4, len(e)):
                 errm += f"={e[i]}"
         if etype == 403:
-            em = f"**Jikan unable to reach MyAnimeList at the moment.**\nPlease try again in 3 seconds."
+            em = "**Jikan unable to reach MyAnimeList at the moment.**\nPlease try again in 3 seconds."
         elif etype == 404:
-            em = f"**I couldn't find the query on MAL.**\nCheck the spelling or well, maybe they don't exist? 🤔"
+            em = "**I couldn't find the query on MAL.**\nCheck the spelling or well, maybe they don't exist? 🤔"
         elif etype == 408:
-            em = f"**Jikan had a timeout while fetching the data**\nPlease try again in 3 seconds."
+            em = "**Jikan had a timeout while fetching the data**\nPlease try again in 3 seconds."
         else:
             em = f"HTTP {etype}\n{errm}"
-    except Exception as e:
+    except Exception:
         em = "Unknown error. Full traceback:\n" + traceback.format_exc()
 
     raise JikanException(em, etype)
