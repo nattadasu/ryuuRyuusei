@@ -10,7 +10,7 @@ class Kitsu:
     """Kitsu API wrapper"""
 
     def __init__(self):
-        self.session = None
+        self.session = aiohttp.ClientSession()
         self.base_url = "https://kitsu.io/api/edge/"
         self.params = {
             # public client ID provided by Kitsu themselves
@@ -21,7 +21,6 @@ class Kitsu:
         self.cache_time = 86400
 
     def __aenter__(self):
-        self.session = aiohttp.ClientSession()
         return self
 
     def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -79,6 +78,7 @@ class Kitsu:
         return None
 
     def write_cache(self, cache_path: str, data):
+        os.makedirs(os.path.dirname(cache_path), exist_ok=True)
         with open(cache_path, "w") as f:
             json.dump({"timestamp": time.time(), "data": data}, f)
 
