@@ -23,6 +23,9 @@ commons:
     spring: Musim Semi
     summer: Musim Panas
     fall: Musim Gugur
+    unknown: Unknown Season
+  year:
+    unknown: Unknown Year
   search:
     init_title: Mencari...
     init: Mencari `{QUERY}` di `{PLATFORM}`..
