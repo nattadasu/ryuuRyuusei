@@ -24,6 +24,7 @@ class SimklMediaGenre(Enum):
     DOCUMENTARY = "Documentary"
     DRAMA = "Drama"
     FANTASY = "Fantasy"
+    HISTORY = "History"
     HORROR = "Horror"
     MYSTERY = "Mystery"
     ROMANCE = "Romance"
@@ -196,7 +197,7 @@ class Simkl:
         SHOW = "show"
         MOVIE = "movie"
 
-    async def search_by_id(self, provider: Provider, id: int, media_type: TmdbMediaTypes | str | None = None):
+    async def search_by_id(self, provider: Provider | str, id: int, media_type: TmdbMediaTypes | str | None = None):
         """Search by ID
 
         Args:
@@ -204,11 +205,13 @@ class Simkl:
             id (int): ID of the provider
             media_type (TmdbMediaTypes, optional): Media type of the title, must be SHOW or MOVIE. Defaults to None."""
         params = self.params
+        if isinstance(provider, self.Provider):
+            provider = provider.value
         if provider == self.Provider.TMDB and not media_type:
             raise SimklTypeError(
                 "MediaType is required when using TMDB provider", "TmdbMediaTypeRequired")
         params[f"{provider}"] = id
-        async with self.session.get(f"{self.base_url}/search/{provider}/{id}", params=params) as response:
+        async with self.session.get(f"{self.base_url}/search/id", params=params) as response:
             if response.status == 200:
                 data = await response.json()
                 return data
@@ -260,6 +263,12 @@ class Simkl:
             return cached_data
         params = self.params
         params["extended"] = "full"
+        # drop any params that isnt client_id and extended
+        params = {
+            k: v for k,
+            v in params.items() if k in [
+                "extended",
+                "client_id"]}
         async with self.session.get(f"{self.base_url}/tv/{id}", params=params) as response:
             if response.status == 200:
                 data = await response.json()
@@ -282,6 +291,12 @@ class Simkl:
             return cached_data
         params = self.params
         params["extended"] = "full"
+        # drop any params that isnt client_id and extended
+        params = {
+            k: v for k,
+            v in params.items() if k in [
+                "extended",
+                "client_id"]}
         async with self.session.get(f"{self.base_url}/movies/{id}", params=params) as response:
             if response.status == 200:
                 data = await response.json()
@@ -304,6 +319,12 @@ class Simkl:
             return cached_data
         params = self.params
         params["extended"] = "full"
+        # drop any params that isnt client_id and extended
+        params = {
+            k: v for k,
+            v in params.items() if k in [
+                "extended",
+                "client_id"]}
         async with self.session.get(f"{self.base_url}/anime/{id}", params=params) as response:
             if response.status == 200:
                 data = await response.json()
@@ -316,10 +337,10 @@ class Simkl:
     async def get_random_title(
         self,
         media_type: SimklMediaTypes | str,
-        genre: SimklMediaGenre | SimklMovieGenre | SimklTvGenre | SimklAnimeGenre | str,
-        year_from: int,
-        year_to: int,
-        rating_limit: int,
+        genre: SimklMediaGenre | SimklMovieGenre | SimklTvGenre | SimklAnimeGenre | str | None = None,
+        year_from: int | None = None,
+        year_to: int | None = None,
+        rating_limit: int | None = None,
         rating_from: int = 0,
         rating_to: int = 10,
     ) -> dict | List[dict] | None:
@@ -327,6 +348,8 @@ class Simkl:
         params = self.params
         if isinstance(media_type, SimklMediaTypes):
             media_type = media_type.value
+        if media_type == "show":
+            media_type = "tv"
         params["type"] = media_type
         if genre:
             if isinstance(genre, str):
