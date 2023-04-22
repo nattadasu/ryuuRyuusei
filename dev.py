@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import json
 import os
 import subprocess
@@ -35,5 +37,5 @@ for root, dirs, files in os.walk('.'):
             with open(file_path, 'r+') as f:
                 data = json.load(f)
                 f.seek(0)
-                json.dump(data, f, indent=4)
+                json.dump(data, f, indent=2)
                 f.truncate()
