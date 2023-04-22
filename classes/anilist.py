@@ -310,7 +310,8 @@ class AniList:
                     return cache_data["data"]
         return None
 
-    def write_data_to_cache(self, data, cache_file_path: str) -> None:
+    @staticmethod
+    def write_data_to_cache(data, cache_file_path: str) -> None:
         """Write data to cache
 
         Args:
