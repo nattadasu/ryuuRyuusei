@@ -8,6 +8,7 @@ import aiohttp
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
 
+
 class AniList:
     """AniList Asynchronous API Wrapper"""
 
@@ -15,7 +16,7 @@ class AniList:
         self.base_url = "https://graphql.anilist.co"
         self.session = None
         self.cache_directory = 'cache/anilist'
-        self.cache_expiration_time = 86400 # 1 day in seconds
+        self.cache_expiration_time = 86400  # 1 day in seconds
 
     async def __aenter__(self):
         self.session = aiohttp.ClientSession()
@@ -37,7 +38,8 @@ class AniList:
         self.cache_expiration_time = 604800
         if isinstance(media_type, self.MediaType):
             media_type = media_type.value
-        cache_file_path = self.get_cache_file_path(f'nsfw/{media_type.lower()}/{id}.json')
+        cache_file_path = self.get_cache_file_path(
+            f'nsfw/{media_type.lower()}/{id}.json')
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -52,8 +54,74 @@ class AniList:
         async with self.session.post(self.base_url, json={"query": query}) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(cache_file_path, data["data"]["Media"]["isAdult"])
+                self.write_data_to_cache(
+                    cache_file_path, data["data"]["Media"]["isAdult"])
                 return data["data"]["Media"]["isAdult"]
+            else:
+                error_message = await response.text()
+                raise ProviderHttpError(error_message, response.status)
+
+    async def anime(self, media_id: int):
+        """Get anime information by its ID"""
+        cache_file_path = self.get_cache_file_path(f'anime/{media_id}.json')
+        cached_data = self.read_cached_data(cache_file_path)
+        if cached_data is not None:
+            return cached_data
+        gqlquery = f"""query {{
+    Media(id: {media_id}, type: ANIME) {{
+        id
+        idMal
+        title {{
+            romaji
+            english
+            native
+        }}
+        isAdult
+        description(asHtml: false)
+        synonyms
+        format
+        startDate {{
+            year
+            month
+            day
+        }}
+        endDate {{
+            year
+            month
+            day
+        }}
+        status
+        chapters
+        volumes
+        coverImage {{
+            large
+            extraLarge
+        }}
+        bannerImage
+        genres
+        tags {{
+            name
+            isMediaSpoiler
+        }}
+        averageScore
+        stats {{
+            scoreDistribution {{
+                score
+                amount
+            }}
+        }}
+        trailer {{
+            id
+            site
+        }}
+    }}
+}}"""
+        async with self.session.post(self.base_url, json={"query": gqlquery}) as response:
+            if response.status == 200:
+                data = await response.json()
+                self.write_data_to_cache(
+                    cache_file_path, data["data"]["Media"])
+                return data["data"]["Media"]
             else:
                 error_message = await response.text()
                 raise ProviderHttpError(error_message, response.status)
@@ -116,7 +184,8 @@ class AniList:
         async with self.session.post(self.base_url, json={"query": gqlquery}) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(cache_file_path, data["data"]["Media"])
+                self.write_data_to_cache(
+                    cache_file_path, data["data"]["Media"])
                 return data["data"]["Media"]
             else:
                 error_message = await response.text()
@@ -125,7 +194,8 @@ class AniList:
     async def search_media(self, query: str, limit: int = 10, media_type: str | MediaType = "MANGA"):
         """Search anime by its title"""
         if limit > 10:
-            raise ProviderTypeError("limit must be less than or equal to 10", "int")
+            raise ProviderTypeError(
+                "limit must be less than or equal to 10", "int")
         if isinstance(media_type, self.MediaType):
             media_type = media_type.value
         gqlquery = f"""query ($search: String, $mediaType: MediaType, $limit: Int) {{
@@ -195,5 +265,6 @@ class AniList:
         os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
         with open(cache_file_path, 'w') as cache_file:
             json.dump(cache_data, cache_file)
+
 
 __all__ = ["AniList"]
