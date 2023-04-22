@@ -49,13 +49,13 @@ async def main():
     print("[Sys] Checking for updates...")
     subprocess.run(["git", "pull"])
 
-    from firstRun import firstRun
+    from firstRun import first_run
 
     # get this python binary's path
     python_path = sys.executable
     python_path = python_path.replace("\\", "/")
     print("[Sys] Python path: " + python_path)
-    firstRun(pf=python_path)
+    first_run(py_bin=python_path)
 
     # Load extensions
     print("[Sys] Loading extensions...")

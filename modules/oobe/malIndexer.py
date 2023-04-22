@@ -1,25 +1,42 @@
 #!/usr/bin/env python3
 
-from modules.oobe.commons import *
+import json
+import os
+import time
+from typing import Dict
 
-# encode ( and ) to %28 and %29
+import pandas as pd
+import requests as r
+
 MAIN_SITE = 'https://aniapi.nattadasu.my.id/myanimelist%28%29.json'
 
 
-def mal_get_data():
+def mal_get_data() -> None:
+    """
+    Fetches data from MAIN_SITE and saves it to a JSON file.
+    """
     data = r.get(MAIN_SITE)
     # save data to json file
     with open("cache/mal.json", "w", encoding="utf8") as f:
         json.dump(data.json(), f, ensure_ascii=False)
 
 
-def mal_load_data():
+def mal_load_data() -> Dict:
+    """
+    Loads data from the JSON file and returns it as a dictionary.
+
+    Returns:
+        dict: Loaded data.
+    """
     with open("cache/mal.json", "r") as f:
         data = json.load(f)
     return data
 
 
-def mal_run():
+def mal_run() -> None:
+    """
+    Fetches MyAnimeList data, processes it, and saves it to a CSV file.
+    """
     if not os.path.exists("cache/mal.json"):
         mal_get_data()
     else:

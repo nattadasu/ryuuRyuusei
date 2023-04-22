@@ -1,20 +1,32 @@
 import json as j
-import os
 import pathlib
+from typing import List
 
 import yaml as y
 from langcodes import Language as lang
 
 
-def convertLangsToJson():
-    # loop i18n folder and convert all yaml files to json
-    indexed = []
+def convert_langs_to_json() -> None:
+    """
+    Convert all YAML files in the i18n folder to JSON format and create an index of languages.
+
+    Raises:
+        FileNotFoundError: If the i18n folder does not exist.
+
+    Returns:
+        None.
+
+    """
     i18n_dir = pathlib.Path("i18n")
+    if not i18n_dir.exists():
+        raise FileNotFoundError("i18n folder does not exist")
+
+    indexed: List[dict] = []
     files = [f for f in i18n_dir.glob("*.yaml") if f.name != "_index.yaml"]
     for file in files:
         with file.open("r", encoding='utf-8') as f:
             data = y.load(f, Loader=y.FullLoader)
-            print(f"Converting {file.name} to json", end="")
+            print(f"Converting {file.name} to JSON", end="")
             code = file.stem
             match code:
                 case "lol_US":
@@ -49,20 +61,19 @@ def convertLangsToJson():
             data['meta'] = drip
             indexed.append(drip)
             print(
-                f"\rConverted {file.name}: {indexed[-1]['name']} ({indexed[-1]['dialect']}) to json",
+                f"\rConverted {file.name}: {indexed[-1]['name']} ({indexed[-1]['dialect']}) to JSON",
                 end="\n")
         with file.with_suffix(".json").open("w", encoding='utf-8', newline='\n') as f:
             j.dump(data, f, indent=2, ensure_ascii=False)
+
+    # Create index of languages
+    print("Indexing languages")
+    indexed.sort(key=lambda x: x['code'].lower())
     with (i18n_dir / "_index.json").open("w", encoding='utf-8', newline='\n') as f:
         j.dump(indexed, f, indent=2, ensure_ascii=False)
-    print("Indexing languages")
-    # sort by code, ignore case
-    indexed.sort(key=lambda x: x['code'].lower())
-    with open(os.path.join("i18n", "_index.json"), "w", encoding='utf-8', newline='\n') as f:
-        j.dump(indexed, f, indent=2, ensure_ascii=False)
-    with open(os.path.join("i18n", "_index.yaml"), "w", encoding='utf-8', newline='\n') as f:
+    with (i18n_dir / "_index.yaml").open("w", encoding='utf-8', newline='\n') as f:
         y.dump(indexed, f, indent=2, allow_unicode=True)
 
 
 if __name__ == "__main__":
-    convertLangsToJson()
+    convert_langs_to_json()
