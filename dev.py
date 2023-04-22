@@ -21,7 +21,7 @@ def print_file(path_name: str) -> None:
 
 
 # for each py files exclude from specific folders, sort import
-excluded_folders = ['jikanpy', 'venv', '__pycache__', '.vscode']
+excluded_folders = ['jikanpy', 'venv', '__pycache__']
 
 for root, dirs, files in os.walk('.'):
     # exclude the folders in the excluded_folders list
