@@ -41,8 +41,7 @@ from modules.const import (
     simkl0rels,
     warnThreadCW,
 )
-from modules.i18n import lang, readUserLang
-
+from modules.i18n import readUserLang
 
 def lookupRandomAnime() -> int:
     """Lookup random anime from MAL
