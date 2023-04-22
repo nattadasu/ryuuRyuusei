@@ -8,6 +8,14 @@ import isort
 
 
 def print_file(path_name: str) -> None:
+    """Prints the file name.
+
+    Args:
+        path_name (str): The path name of the file.
+
+    Returns:
+        None
+    """
     print(f'Formatting file: {path_name}')
     return None
 

@@ -11,16 +11,19 @@ from modules.const import invAa
 
 class AnimeApi:
     def __init__(self):
+        """Initialize the AniAPI API Wrapper"""
         self.base_url = "https://aniapi.nattadasu.my.id"
         self.session = None
         self.cache_directory = "cache/animeapi"
         self.cache_expiration_time = 86400  # 1 day in seconds
 
     async def __aenter__(self):
+        """Create the session with aiohttp"""
         self.session = ClientSession()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Close the session"""
         await self.session.close()
 
     async def close(self) -> None:
@@ -28,6 +31,7 @@ class AnimeApi:
         await self.session.close()
 
     class AnimeApiPlatforms(Enum):
+        """Anime API supported platforms enum"""
         ANI_SEARCH = ANISEARCH = AS = 'anisearch'
         ANIDB = 'anidb'
         ANILIST = AL = 'anilist'
@@ -45,7 +49,11 @@ class AnimeApi:
         TRAKT = 'trakt'
 
     async def get_update_time(self) -> dt:
-        """Get the last update time of AniAPI's database"""
+        """Get the last update time of AniAPI's database
+
+        Returns:
+            datetime: The last update time of AniAPI's database
+        """
         cache_file_path = self.get_cache_file_path('updated')
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
@@ -64,9 +72,18 @@ class AnimeApi:
         except BaseException:
             return dt.now()
 
-    async def get_relation(self, id, platform: AnimeApiPlatforms) -> dict:
-        """Get a relation between anime and other platform via Natsu's AniAPI"""
-        platform = platform.value
+    async def get_relation(self, id: str | int, platform: AnimeApiPlatforms | str) -> dict:
+        """Get a relation between anime and other platform via Natsu's AniAPI
+
+        Args:
+            id (str | int): Anime ID
+            platform (AnimeApiPlatforms | str): Platform to get the relation
+
+        Returns:
+            dict: Relation between anime and other platform
+        """
+        if isinstance(platform, self.AnimeApiPlatforms):
+            platform = platform.value
         cache_file_path = self.get_cache_file_path(f'{platform}/{id}.json')
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
@@ -75,7 +92,7 @@ class AnimeApi:
             async with self.session.get(f'https://aniapi.nattadasu.my.id/{platform}/{id}') as resp:
                 jsonText = await resp.text()
                 jsonText = json.loads(jsonText)
-                self.write_data_to_cache(cache_file_path, jsonText)
+                self.write_data_to_cache(jsonText, cache_file_path)
             return jsonText
         except BaseException:
             aaDict = invAa
@@ -110,8 +127,13 @@ class AnimeApi:
                     return cache_data['data']
         return None
 
-    def write_data_to_cache(self, cache_file_path, data):
-        """Write data to cache"""
+    def write_data_to_cache(self, data, cache_file_path: str):
+        """Write data to cache
+
+        Args:
+            data (any): Data to write to cache
+            cache_file_name (str): Cache file name
+        """
         cache_data = {'timestamp': time.time(), 'data': data}
         os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
         with open(cache_file_path, 'w') as cache_file:

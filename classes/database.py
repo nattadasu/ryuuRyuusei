@@ -2,31 +2,59 @@ import json
 
 import pandas as pd
 
-from modules.const import *
+from modules.const import database, EMOJI_UNEXPECTED_ERROR, CLUB_ID
+from modules.jikan import checkClubMembership
 
 
 class UserDatabase:
     def __init__(self, database_path: str = database):
+        """Initialize the database
+
+        Args:
+            database_path (str, optional): Path to the database. Defaults to database."""
         self.database_path = database_path
 
     async def __aenter__(self):
+        """Async context manager entry point"""
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit point"""
         await self.close()
 
     async def close(self):
+        """Close the database"""
         pass
 
     async def check_if_registered(self, discord_id: int) -> bool:
-        """Check if user is registered on Database"""
+        """Check if user is registered on Database
+
+        Args:
+            discord_id (int): Discord ID of the user
+
+        Returns:
+            bool: True if user is registered, False if not
+        """
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
         return str(discord_id) in df['discordId'].values
 
     async def save_to_database(self, discord_id: int, discord_username: str, discord_joined: int,
                                mal_username: str, mal_id: int, mal_joined: int, registered_at: int,
                                registered_guild: int, registered_by: int, guild_name: str):
-        """Save information regarding to user with their consent"""
+        """Save information regarding to user with their consent
+
+        Args:
+            discord_id (int): Discord ID of the user
+            discord_username (str): Discord username of the user
+            discord_joined (int): Discord join date of the user in Epoch
+            mal_username (str): MAL username of the user
+            mal_id (int): MAL ID of the user
+            mal_joined (int): MAL join date of the user in Epoch
+            registered_at (int): Date when the user registered in Epoch
+            registered_guild (int): Guild ID where the user registered
+            registered_by (int): User ID who registered the user
+            guild_name (str): Guild name where the user registered
+        """
         data = {
             'discordId': str(discord_id),
             'discordUsername': discord_username,
@@ -48,14 +76,28 @@ class UserDatabase:
             mode='a')
 
     async def drop_user(self, discord_id: int) -> bool:
-        """Drop a user from the database"""
+        """Drop a user from the database
+
+        Args:
+            discord_id (int): Discord ID of the user
+
+        Returns:
+            bool: True if user is dropped, False if not
+        """
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
         df.drop(df[df['discordId'] == str(discord_id)].index, inplace=True)
         df.to_csv(self.database_path, sep="\t", index=False)
         return True
 
     async def verify_user(self, discord_id: int) -> bool:
-        """Verify a user on the database"""
+        """Verify a user on the database
+
+        Args:
+            discord_id (int): Discord ID of the user
+
+        Returns:
+            bool: True if user is verified, False if not
+        """
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
         row = df[df['discordId'] == str(discord_id)]
         if row.empty:
@@ -63,7 +105,7 @@ class UserDatabase:
                 f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error")
 
         username = row.iloc[0]['malUsername']
-        # clubs = await checkClubMembership(username)
+        clubs = await checkClubMembership(username)
         clubs = []
         verified = False
         for club in clubs:

@@ -2,17 +2,23 @@
 
 This module contains the functions used by the nekomimiDb module."""
 
-import pandas as pd
 from interactions import Embed, EmbedAttachment, EmbedAuthor, EmbedField
 from interactions import SlashContext as sctx
 
 from classes.nekomimidb import NekomimiDb as neko
-from modules.commons import getRandom
 from modules.platforms import getPlatformColor
 
 
 def generateNekomimi(row: dict, lang: dict) -> Embed:
-    """Generate nekomimi embed"""
+    """Generate nekomimi embed
+
+    Args:
+        row (dict): A row from the database.
+        lang (dict): The language dictionary.
+
+    Returns:
+        Embed: The generated nekomimi embed.
+    """
     img = row['imageUrl'].values[0]
     mediaSource = row['mediaSource'].values[0]
     if mediaSource == '':
@@ -53,7 +59,16 @@ def generateNekomimi(row: dict, lang: dict) -> Embed:
 
 
 async def nekomimiSubmit(ctx: sctx, lang: dict, gender: neko.Gender = None):
-    """Submit a nekomimi image to Discord"""
+    """Submit a nekomimi image to Discord
+
+    Args:
+        ctx (interactions.SlashContext): Discord Slash Context
+        lang (dict): The language dictionary
+        gender (neko.Gender, optional): Gender of a character. Defaults to None.
+
+    Returns:
+        None
+    """
     data = neko(gender).get_random_nekomimi()
     dcEm = generateNekomimi(row=data, lang=lang)
     await ctx.send("", embeds=dcEm)

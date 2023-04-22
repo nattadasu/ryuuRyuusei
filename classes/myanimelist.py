@@ -24,6 +24,12 @@ class MyAnimeList:
     """
 
     def __init__(self, client_id, nsfw: bool = False):
+        """Initialize the MyAnimeList Asynchronous API Wrapper
+
+        Args:
+            client_id (str): Your MyAnimeList Client ID
+            nsfw (bool, optional): Whether to include NSFW content in the search results or not. Defaults to False.
+        """
         self.client_id = client_id
         if client_id is None:
             raise ProviderHttpError(
@@ -34,17 +40,28 @@ class MyAnimeList:
         self.session = None
 
     async def __aenter__(self):
+        """Enter the async context manager"""
         self.session = aiohttp.ClientSession(headers=self.headers)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Exit the async context manager"""
         await self.close()
 
     async def close(self) -> None:
+        """Close the aiohttp session"""
         await self.session.close()
 
-    async def anime(self, anime_id: int, fields: str | None = None):
-        """Get anime information by its ID"""
+    async def anime(self, anime_id: int, fields: str | None = None) -> dict:
+        """Get anime information by its ID
+
+        Args:
+            anime_id (int): The anime ID
+            fields (str | None, optional): The fields to return. Defaults to None.
+
+        Returns:
+            dict: Anime data
+        """
         params = {}
         if fields:
             params["fields"] = fields
@@ -59,7 +76,17 @@ class MyAnimeList:
                 raise ProviderHttpError(error_message, response.status)
 
     async def search(self, query: str, limit: int = 10, offset: int | None = None, fields: str | None = None):
-        """Search anime by its title"""
+        """Search anime by its title
+
+        Args:
+            query (str): The query to search
+            limit (int, optional): The number of results to return. Defaults to 10.
+            offset (int | None, optional): The offset of the results. Defaults to None.
+            fields (str | None, optional): The fields to return. Defaults to None.
+
+        Returns:
+            dict: Search results
+        """
         if limit > 100:
             raise ProviderTypeError(
                 "limit must be less than or equal to 100", "int")

@@ -1,6 +1,8 @@
 import traceback
 
 from jikanpy import AioJikan
+import json
+import asyncio
 
 
 class JikanException(Exception):
@@ -37,34 +39,71 @@ def defineJikanException(errmsg: str) -> JikanException:
 
 class JikanApi:
     async def __aenter__(self):
+        """Enter the session"""
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Exit the session"""
         await self.close()
 
     async def close(self):
-        await AioJikan().close()
+        """Close the session"""
+        pass
 
-    async def get_member_clubs(self, username: str) -> dict:
+    async def get_member_clubs(self, username: str) -> list[dict]:
+        """Get member clubs
+
+        Args:
+            username (str): MyAnimeList username
+
+        Returns:
+            list[dict]: List of clubs
+        """
         try:
-            res = await AioJikan().users(
-                username=username,
-                request='clubs',
-            )
-            return res['data']
+            async with AioJikan() as jikan:
+                res = await jikan.users(username=username, extension='clubs')
+                data: list = res['data']
+                if res['pagination']['last_visible_page'] > 1:
+                    for i in range(2, res['pagination']['last_visible_page'] + 1):
+                        res = await jikan.users(
+                            username=username,
+                            extension='clubs',
+                            page=i,
+                        )
+                        await asyncio.sleep(1)
+                        data.extend(res['data'])
+                return data
         except Exception as e:
             defineJikanException(e)
 
     async def get_user_data(self, username: str) -> dict:
+        """Get user data
+
+        Args:
+            username (str): MyAnimeList username
+
+        Returns:
+            dict: User data
+        """
         try:
-            res = await AioJikan().users(username=username, extension="full")
-            return res['data']
+            async with AioJikan() as jikan:
+                res = await jikan.users(username=username, extension="full")
+                return res['data']
         except Exception as e:
             defineJikanException(e)
 
     async def get_anime_data(self, anime_id: int) -> dict:
+        """Get anime data
+
+        Args:
+            anime_id (int): MyAnimeList anime ID
+
+        Returns:
+            dict: Anime data
+        """
         try:
-            res = await AioJikan().anime(anime_id)
-            return res['data']
+            async with AioJikan() as jikan:
+                res = await jikan.anime(anime_id)
+                return res
         except Exception as e:
             defineJikanException(e)

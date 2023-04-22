@@ -1,17 +1,110 @@
 from typing import Union
+from enum import Enum
+from collections import defaultdict
+
+class Platform(Enum):
+    """Enum for all supported platforms.
+
+    Attributes:
+        ARTSTATION (str): ArtStation.
+        DEVIANTART | DA (str): DeviantArt.
+        DISCORD (str): Discord.
+        FACEBOOK | FB (str): Facebook.
+        FLICKR (str): Flickr.
+        HOYOLAB | HOYO (str): Hoyoverse/miHoYo forums.
+        INSTAGRAM | IG (str): Instagram.
+        LOFTER (str): Lofter.
+        NICONICOSEIGA | NICONICO | SEIGA | NNS (str): Niconico Seiga.
+        PATREON (str): Patreon.
+        PIXIV (str): Pixiv.
+        REDDIT (str): Reddit.
+        TUMBLR (str): Tumblr.
+        TWITTER | TW (str): Twitter.
+        WEIBO (str): Weibo.
+        ALLCINEMA | ALLCIN (str): All Cinema.
+        ANIDB (str): AniDB.
+        ANILIST | AL (str): AniList.
+        ANIMENEWSNETWORK | ANN (str): Anime News Network.
+        ANIMEPLANET | AP (str): Anime-Planet.
+        ANISEARCH | AS (str): AniSearch.
+        ANNICT (str): Annict.
+        IMDB (str): IMDb.
+        KAIZE (str): Kaize.
+        KITSU (str): Kitsu.
+        LASTFM | LAST | LFM (str): Last.fm.
+        LIVECHART | LC (str): LiveChart.me.
+        MYANIMELIST | MAL (str): MyAnimeList.
+        NOTIFYMOE | NOTIFY (str): Notify.moe.
+        OTAKOTAKU | OTAKU | OO (str): Otakotaku.
+        SHIKIMORI | SHIKI (str): Shikimori.
+        SHOBOI | SYOBOI (str): Syoboi Calendar.
+        SILVERYASHA | DBTI | SY (str): SilverYasha DB Tontonan Indonesia.
+        SIMKL (str): Simkl.
+        THEMOVIEDATABASE | TMDB (str): The Movie Database.
+        THETVDB | TVDB (str): TheTVDB.
+        TRAKT (str): Trakt.tv.
+        TVTIME (str): TV Time.
+    """
+    # SNS
+    ARTSTATION = "artstation"
+    DEVIANTART = DA = "deviantart"
+    DISCORD = "discord"
+    FACEBOOK = FB = "facebook"
+    FLICKR = "flickr"
+    HOYOLAB = HOYO = "hoyolab"
+    INSTAGRAM = IG = "instagram"
+    LOFTER = "lofter"
+    NICONICOSEIGA = NICONICO = SEIGA = NNS = "seiga"
+    PATREON = "patreon"
+    PIXIV = "pixiv"
+    REDDIT = "reddit"
+    TUMBLR = "tumblr"
+    TWITTER = TW = "twitter"
+    WEIBO = "weibo"
+    # Media tracking
+    ALLCINEMA = ALLCIN = "allcin"
+    ANIDB = "anidb"
+    ANILIST = AL = "anilist"
+    ANIMENEWSNETWORK = ANN = "ann"
+    ANIMEPLANET = AP = "animeplanet"
+    ANISEARCH = AS = "anisearch"
+    ANNICT = "annict"
+    IMDB = "imdb"
+    KAIZE = "kaize"
+    KITSU = "kitsu"
+    LASTFM = LAST = LFM = "lastfm"
+    LIVECHART = LC ="livechart"
+    MYANIMELIST = MAL = "myanimelist"
+    NOTIFYMOE = NOTIFY = "notify"
+    OTAKOTAKU = OTAKU = OO = "otakotaku"
+    SHIKIMORI = SHIKI = "shikimori"
+    SHOBOI = SYOBOI = "shoboi"
+    SILVERYASHA = DBTI = SY = "silveryasha"
+    SIMKL = "simkl"
+    THEMOVIEDATABASE = TMDB = "tmdb"
+    THETVDB = TVDB = "tvdb"
+    TRAKT = "trakt"
+    TVTIME = "tvtime"
 
 
-def getPlatformColor(pf: str) -> hex:
-    """Get a color code for a specific platform"""
-    pf = pf.lower()
-    if pf == "syoboi":
-        pf = "shoboi"
-    elif pf == "last":
-        pf = "lastfm"
-    pfDict = {
+def getPlatformColor(pf: str | Platform) -> hex:
+    """Get a color code for a specific platform
+
+    Args:
+        pf (str | Platform): The platform to get the color code for.
+
+    Returns:
+        hex: The color code for the platform, or 0x000000 if the platform is not supported.
+    """
+    if isinstance(pf, str):
+        pf = Platform(pf)
+    pfDict = defaultdict(lambda: 0x000000, {
         # SNS
         "artstation": 0x0F0F0F,
         "deviantart": 0x05CC47,
+        "discord": 0x7289DA,
+        "facebook": 0x3B5998,
+        "flickr": 0xFF0084,
         "hoyolab": 0x1B75BB,
         "instagram": 0x833AB4,
         "lofter": 0x335F60,
@@ -47,20 +140,29 @@ def getPlatformColor(pf: str) -> hex:
         "trakt": 0xED1C24,
         "tvdb": 0x6CD491,
         "tvtime": 0xFBD737,
-    }
+    })
 
-    return pfDict.get(pf, 0x000000)
+    return pfDict[pf.value]
 
 
-def getPlatformName(pf: str) -> str:
-    """Get a platform name from its abbreviation"""
-    pf = pf.lower()
-    if pf == "syoboi":
-        pf = "shoboi"
+def getPlatformName(pf: str | Platform) -> str:
+    """Get a platform name from its abbreviation
+
+    Args:
+        pf (str | Platform): The platform to get the name for.
+
+    Returns:
+        str: The name of the platform, or "Unknown" if the platform is not supported.
+    """
+    if isinstance(pf, str):
+        pf = Platform(pf)
     pfDict = {
         # SNS
         "artstation": "ArtStation",
         "deviantart": "DeviantArt",
+        "discord": "Discord",
+        "facebook": "Facebook",
+        "flickr": "Flickr",
         "hoyolab": "Hoyolab",
         "instagram": "Instagram",
         "lofter": "Lofter",
@@ -100,9 +202,23 @@ def getPlatformName(pf: str) -> str:
     return pfDict.get(pf, "Unknown")
 
 
-def mediaIdToPlatform(media_id: str, platform: str,
+def mediaIdToPlatform(media_id: str, platform: str | Platform,
                       simklType: Union[str, None] = None) -> dict:
-    """Convert a media ID to a platform-specific ID"""
+    """Convert a media ID to a platform-specific ID
+
+    Args:
+        media_id (str): The media ID to convert
+        platform (str | Platform): The platform to convert the ID to
+        simklType (Union[str, None], optional): The type of media to convert the ID to. Defaults to None.
+
+    Raises:
+        ValueError: If the platform is not supported
+
+    Returns:
+        dict: A dictionary containing the converted ID and the emoji ID for the platform
+    """
+    if isinstance(platform, str):
+        platform = Platform(platform)
     platform_dict = {
         'anidb': {
             'uid': f'https://anidb.net/anime/{media_id}',
@@ -172,7 +288,10 @@ def mediaIdToPlatform(media_id: str, platform: str,
             'emoid': '1091550459023605790'},
     }
 
-    data = platform_dict[platform]
-    data['pf'] = getPlatformName(platform)
+    try:
+        data = platform_dict[platform]
+        data['pf'] = getPlatformName(platform)
 
-    return data
+        return data
+    except KeyError:
+        raise ValueError(f"Invalid platform: {platform}")

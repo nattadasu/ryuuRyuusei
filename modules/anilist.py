@@ -2,7 +2,14 @@ from classes.anilist import AniList
 
 
 async def searchAniListAnime(title: str) -> dict:
-    """Search anime via AniList API, formatted in MAL style"""
+    """Search anime via AniList API, formatted in MAL style
+
+    Args:
+        title (str): Title of the anime to search for
+
+    Returns:
+        dict: The formatted data
+    """
     async with AniList() as anilist:
         data = await anilist.search_media(title, limit=5, media_type=anilist.MediaType.ANIME)
 

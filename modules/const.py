@@ -48,10 +48,19 @@ LANGUAGE_CODE: Final[str] = ge('LANGUAGE_CODE')
 
 
 def get_git_revision_hash() -> str:
+    """Get the current git revision hash
+
+    Returns:
+        str: The current git revision hash
+    """
     return chout(['git', 'rev-parse', 'HEAD']).decode('ascii').strip()
 
 
 def get_git_revision_short_hash() -> str:
+    """Get the current git revision short hash
+
+    Returns:
+        """
     return chout(['git', 'rev-parse', '--short', 'HEAD']
                  ).decode('ascii').strip()
 

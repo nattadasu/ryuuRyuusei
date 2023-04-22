@@ -8,6 +8,7 @@ import time
 from enum import Enum
 from typing import List
 from urllib.parse import quote
+from copy import deepcopy
 
 import aiohttp
 
@@ -155,6 +156,11 @@ class Simkl:
     This module is a wrapper for Simkl API, which is used to search for anime, shows, and movies."""
 
     def __init__(self, client_id: str = SIMKL_CLIENT_ID):
+        """Initialize the Simkl API wrapper
+
+        Args:
+            client_id (str): Client ID for SIMKL API, defaults to SIMKL_CLIENT_ID
+        """
         self.client_id = client_id
         if client_id is None:
             raise ProviderHttpError(
@@ -166,10 +172,12 @@ class Simkl:
         self.cache_expiration_time = 86400  # 1 day in seconds
 
     async def __aenter__(self):
+        """Enter the async context manager"""
         self.session = aiohttp.ClientSession()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Exit the async context manager"""
         await self.session.close()
 
     async def close(self) -> None:
@@ -197,14 +205,22 @@ class Simkl:
         SHOW = "show"
         MOVIE = "movie"
 
-    async def search_by_id(self, provider: Provider | str, id: int, media_type: TmdbMediaTypes | str | None = None):
+    async def search_by_id(self, provider: Provider | str, id: int, media_type: TmdbMediaTypes | str | None = None) -> dict:
         """Search by ID
 
         Args:
-            provider (Provider): Provider to search
+            provider (Provider | str): Provider to search
             id (int): ID of the provider
-            media_type (TmdbMediaTypes, optional): Media type of the title, must be SHOW or MOVIE. Defaults to None."""
-        params = self.params
+            media_type (TmdbMediaTypes | str | None, optional): Media type of the title, must be SHOW or MOVIE. Defaults to None
+
+        Raises:
+            SimklTypeError: If provider is TMDB and media_type is not provided
+            ProviderHttpError: If response status is not 200
+
+        Returns:
+            dict: Response from Simkl API
+        """
+        params = deepcopy(self.params)
         if isinstance(provider, self.Provider):
             provider = provider.value
         if provider == self.Provider.TMDB and not media_type:
@@ -232,12 +248,18 @@ class Simkl:
 
         Args:
             title (str): Title to search
-            media_type (SimklMediaTypes): Media type of the title, must be ANIME, MOVIE or TV
+            media_type (SimklMediaTypes | str): Media type of the title, must be ANIME, MOVIE or TV
             page (int, optional): Page number. Defaults to 1.
             limit (int, optional): Limit of results per page. Defaults to 10.
             extended (bool, optional): Get extended info. Defaults to False.
+
+        Raises:
+            ProviderHttpError: If response status is not 200
+
+        Returns:
+            dict: Response from Simkl API
         """
-        params = self.params
+        params = deepcopy(self.params)
         params["q"] = quote(title)
         if extended:
             params["extended"] = "full"
@@ -257,23 +279,23 @@ class Simkl:
         Args:
             id (int): Show ID on SIMKL or IMDB
             extended (bool, optional): Get extended info. Defaults to False.
+
+        Raises:
+            ProviderHttpError: If response status is not 200
+
+        Returns:
+            dict: Response from Simkl API
         """
         cache_file_path = self.get_cache_file_path(f'show/{id}.json')
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
-        params = self.params
+        params = deepcopy(self.params)
         params["extended"] = "full"
-        # drop any params that isnt client_id and extended
-        params = {
-            k: v for k,
-            v in params.items() if k in [
-                "extended",
-                "client_id"]}
         async with self.session.get(f"{self.base_url}/tv/{id}", params=params) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(cache_file_path, data)
+                self.write_data_to_cache(data, cache_file_path)
                 return data
             else:
                 error_message = await response.text()
@@ -285,23 +307,23 @@ class Simkl:
         Args:
             id (int): Movie ID on SIMKL or IMDB
             extended (bool, optional): Get extended info. Defaults to False.
+
+        Raises:
+            ProviderHttpError: If response status is not 200
+
+        Returns:
+            dict: Response from Simkl API
         """
         cache_file_path = self.get_cache_file_path(f'movie/{id}.json')
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
-        params = self.params
+        params = deepcopy(self.params)
         params["extended"] = "full"
-        # drop any params that isnt client_id and extended
-        params = {
-            k: v for k,
-            v in params.items() if k in [
-                "extended",
-                "client_id"]}
         async with self.session.get(f"{self.base_url}/movies/{id}", params=params) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(cache_file_path, data)
+                self.write_data_to_cache(data, cache_file_path)
                 return data
             else:
                 error_message = await response.text()
@@ -313,23 +335,23 @@ class Simkl:
         Args:
             id (int): Anime ID on SIMKL or IMDB
             extended (bool, optional): Get extended info. Defaults to False.
+
+        Raises:
+            ProviderHttpError: If response status is not 200
+
+        Returns:
+            dict: Response from Simkl API
         """
         cache_file_path = self.get_cache_file_path(f'anime/{id}.json')
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
-        params = self.params
+        params = deepcopy(self.params)
         params["extended"] = "full"
-        # drop any params that isnt client_id and extended
-        params = {
-            k: v for k,
-            v in params.items() if k in [
-                "extended",
-                "client_id"]}
         async with self.session.get(f"{self.base_url}/anime/{id}", params=params) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(cache_file_path, data)
+                self.write_data_to_cache(data, cache_file_path)
                 return data
             else:
                 error_message = await response.text()
@@ -345,7 +367,23 @@ class Simkl:
         rating_from: int = 0,
         rating_to: int = 10,
     ) -> dict | List[dict] | None:
-        """Get random title, based on filters"""
+        """Get random title, based on filters
+
+        Args:
+            media_type (SimklMediaTypes | str): Media type of the title, must be ANIME, MOVIE or TV
+            genre (SimklMediaGenre | SimklMovieGenre | SimklTvGenre | SimklAnimeGenre | str | None, optional): Genre of the title. Defaults to None.
+            year_from (int | None, optional): Year from. Defaults to None.
+            year_to (int | None, optional): Year to. Defaults to None.
+            rating_limit (int | None, optional): Rating limit. Defaults to None.
+            rating_from (int, optional): Rating from. Defaults to 0.
+            rating_to (int, optional): Rating to. Defaults to 10.
+
+        Raises:
+            ProviderHttpError: If response status is not 200
+
+        Returns:
+            dict | List[dict] | None: Response from Simkl API
+        """
         params = self.params
         if isinstance(media_type, SimklMediaTypes):
             media_type = media_type.value
@@ -385,7 +423,13 @@ class Simkl:
 
         Args:
             id (int): ID of the title
-            media_type (SimklMediaTypes): Media type of the title, must be ANIME, MOVIE or TV
+            media_type (SimklMediaTypes | str): Media type of the title, must be ANIME, MOVIE or TV
+
+        Raises:
+            ProviderHttpError: If response status is not 200
+
+        Returns:
+            dict: Response from Simkl API
         """
         cache_file_path = self.get_cache_file_path(
             f'ids/{media_type}/{id}.json')
@@ -426,7 +470,7 @@ class Simkl:
                 mids['anitype'] = data.get(k, None)
                 continue
             mids[k] = data.get(k, None)
-        self.write_data_to_cache(cache_file_path, mids)
+        self.write_data_to_cache(mids, cache_file_path)
         return mids
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
@@ -458,8 +502,13 @@ class Simkl:
                     return cache_data['data']
         return None
 
-    def write_data_to_cache(self, cache_file_path, data):
-        """Write data to cache"""
+    def write_data_to_cache(self, data, cache_file_path: str):
+        """Write data to cache
+
+        Args:
+            data (any): Data to write to cache
+            cache_file_name (str): Cache file name
+        """
         cache_data = {'timestamp': time.time(), 'data': data}
         os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
         with open(cache_file_path, 'w') as cache_file:

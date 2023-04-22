@@ -1,6 +1,7 @@
 """Random.org True Random Number Generator API Wrapper"""
 
 import aiohttp
+from enum import Enum
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
 
@@ -42,6 +43,7 @@ class RandomOrg:
     """
 
     def __init__(self):
+        """Initialize the Random.org True Random Number Generator API Wrapper"""
         self.base_url = "https://www.random.org"
         self.session = None
         self.params = {
@@ -50,17 +52,35 @@ class RandomOrg:
         }
 
     async def __aenter__(self):
+        """Enter the async context manager"""
         self.session = aiohttp.ClientSession()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Exit the async context manager"""
         await self.close()
 
     async def close(self) -> None:
+        """Close the aiohttp session"""
         await self.session.close()
 
-    async def integers(self, num: int, min: int, max: int, base: int = 10):
-        """Generate random integers"""
+    class OnOff(Enum):
+        """OnOff enum"""
+        ON = "on"
+        OFF = "off"
+
+    async def integers(self, num: int, min: int, max: int, base: int = 10) -> list[int]:
+        """Generate random integers
+
+        Args:
+            num (int): Number of integers to generate
+            min (int): Minimum value
+            max (int): Maximum value
+            base (int): Base of the integers, defaults to 10
+
+        Returns:
+            list[int]: List of random integers
+        """
         if base not in [2, 8, 10, 16]:
             raise ProviderTypeError("Base must be 2, 8, 10, or 16", "base")
         if num > 10000 or num < 1:
@@ -85,8 +105,16 @@ class RandomOrg:
                 error_message = await response.text()
                 raise ProviderHttpError(error_message, response.status)
 
-    async def sequences(self, min: int, max: int):
-        """Generate random sequences"""
+    async def sequences(self, min: int, max: int) -> list[int]:
+        """Generate random sequences
+
+        Args:
+            min (int): Minimum value
+            max (int): Maximum value
+
+        Returns:
+            list[int]: List of random sequences
+        """
         if min > max:
             raise ProviderTypeError(
                 "Min must be less than or equal to max", "minmax")
@@ -103,14 +131,47 @@ class RandomOrg:
                 error_message = await response.text()
                 raise ProviderHttpError(error_message, response.status)
 
-    async def strings(self, num: int, length: int = 10, digits: str = "on", upperalpha: str = "on", loweralpha: str = "on", unique: str = "on"):
-        """Generate random strings"""
+    async def strings(self, num: int, length: int = 10, digits: str | OnOff = "on", upperalpha: str | OnOff = "on", loweralpha: str | OnOff = "on", unique: str | OnOff = "on") -> list[str]:
+        """Generate random strings
+
+        Args:
+            num (int): Number of strings to generate
+            length (int): Length of the strings, defaults to 10
+            digits (str | OnOff): Include digits, defaults to "on"
+            upperalpha (str | OnOff): Include uppercase letters, defaults to "on"
+            loweralpha (str | OnOff): Include lowercase letters, defaults to "on"
+            unique (str | OnOff): Unique strings, defaults to "on"
+
+        Raises:
+            ProviderTypeError: If arguments are invalid
+            ProviderHttpError: If the API returns an error
+
+        Returns:
+            list[str]: List of random strings
+        """
         if length > 20:
             raise ProviderTypeError(
                 "Length must be less than or equal to 20", "length")
         if num > 10000 or num < 1:
             raise ProviderTypeError(
                 "Number must be between 1 and 10000", "num")
+        if isinstance(digits, self.OnOff):
+            digits = digits.value
+        if isinstance(upperalpha, self.OnOff):
+            upperalpha = upperalpha.value
+        if isinstance(loweralpha, self.OnOff):
+            loweralpha = loweralpha.value
+        if isinstance(unique, self.OnOff):
+            unique = unique.value
+        if isinstance(digits, str) or isinstance(upperalpha, str) or isinstance(loweralpha, str) or isinstance(unique, str):
+            if digits not in ["on", "off"]:
+                raise ProviderTypeError("Digits must be on or off", "digits")
+            elif upperalpha not in ["on", "off"]:
+                raise ProviderTypeError("Upperalpha must be on or off", "upperalpha")
+            elif loweralpha not in ["on", "off"]:
+                raise ProviderTypeError("Loweralpha must be on or off", "loweralpha")
+            elif unique not in ["on", "off"]:
+                raise ProviderTypeError("Unique must be on or off", "unique")
         params = self.params.copy()
         params["num"] = num
         params["len"] = length

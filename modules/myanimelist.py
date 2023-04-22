@@ -30,7 +30,14 @@ from modules.i18n import lang, readUserLang
 
 
 def lookupRandomAnime() -> int:
-    """Lookup random anime from MAL"""
+    """Lookup random anime from MAL
+
+    Args:
+        None
+
+    Returns:
+        int: MAL ID of a random anime
+    """
     seed = getRandom()
     # open database/mal.csv
     df = pd.read_csv("database/mal.csv", sep="\t")
@@ -41,8 +48,15 @@ def lookupRandomAnime() -> int:
     return randomAnimeId
 
 
-async def searchMalAnime(title: str) -> dict:
-    """Search anime via MyAnimeList API"""
+async def searchMalAnime(title: str) -> dict | list:
+    """Search anime via MyAnimeList API
+
+    Args:
+        title (str): Anime title
+
+    Returns:
+        dict | list: Anime data
+    """
     fields = [
         "id",
         "title",
@@ -88,6 +102,18 @@ def malExceptionEmbed(
     error_type: MalErrType | str = MalErrType.SYSTEM,
     color: hex = 0xFF0000,
 ) -> Embed:
+    """Generate an embed for MyAnimeList exceptions
+
+    Args:
+        description (str): Description of the error
+        error (str): Error message
+        lang_dict (dict): Language dictionary
+        error_type (MalErrType | str, optional): Error type. Defaults to MalErrType.SYSTEM.
+        color (hex, optional): Embed color. Defaults to 0xFF0000.
+
+    Returns:
+        Embed: Embed object
+    """
     l_ = lang_dict
     if isinstance(error_type, MalErrType):
         error_type = error_type.value
@@ -111,10 +137,29 @@ def malExceptionEmbed(
     return dcEm
 
 
+class MediaIsNsfw(Exception):
+    """Media is NSFW exception"""
+    pass
+
+
 # old code taken from ipy/v4.3.4
 #! TODO: respect ipy/v5.0.0 and introduce locale
 async def generateMal(entry_id: int, code: str, isNsfw: bool = False, alDict: dict = None, animeApi: dict = None) -> Embed:
-    """Generate an embed for /anime with MAL via Jikan"""
+    """Generate an embed for /anime with MAL via Jikan
+
+    Args:
+        entry_id (int): MAL ID
+        code (str): Language code
+        isNsfw (bool, optional): NSFW status. Defaults to False.
+        alDict (dict, optional): AniList data. Defaults to None.
+        animeApi (dict, optional): Anime API data. Defaults to None.
+
+    Raises:
+        MediaIsNsfw: NSFW is not allowed
+
+    Returns:
+        Embed: Embed object
+    """
     # get locale
     l_ = lang(code)
     async with JikanApi() as jikan:
@@ -131,7 +176,7 @@ async def generateMal(entry_id: int, code: str, isNsfw: bool = False, alDict: di
         for g in j['genres']:
             gn = g['name']
             if "Hentai" in gn:
-                raise Exception(
+                raise MediaIsNsfw(
                     f'{EMOJI_FORBIDDEN} **NSFW is not allowed!**\nOnly NSFW channels are allowed to search NSFW content.{msgForThread}')
 
     m = j['mal_id']
@@ -490,6 +535,15 @@ async def generateMal(entry_id: int, code: str, isNsfw: bool = False, alDict: di
 
 
 async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
+    """Send anime information from MAL to the channel
+
+    Args:
+        ctx (SlashContext): The context of the command
+        ani_id (int): The anime ID
+
+    Raises:
+        *None*
+    """
     channel = ctx.channel
     ul = readUserLang(ctx)
     alData = {}
@@ -514,6 +568,9 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
                 trailer = []
         dcEm = await generateMal(ani_id, isNsfw=nsfwBool, code=ul, alDict=alData, animeApi=aniApi)
         await ctx.send("", embeds=dcEm, components=trailer)
+    except MediaIsNsfw as e:
+        await ctx.send(
+            f"**{e}**\n")
     except Exception:
         #! TODO: Implement the embed
         raise NotImplementedError(

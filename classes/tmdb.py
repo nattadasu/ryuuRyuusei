@@ -10,6 +10,10 @@ from modules.const import TMDB_API_KEY
 
 class TheMovieDb:
     def __init__(self, api_key: str = TMDB_API_KEY):
+        """Initialize the TheMovieDb API Wrapper
+
+        Args:
+            api_key (str): TheMovieDb API key, defaults to TMDB_API_KEY"""
         self.api_key = api_key
         self.session = None
         self.base_url = "https://api.themoviedb.org/3/"
@@ -21,20 +25,32 @@ class TheMovieDb:
         self.cache_time = 2592000
 
     async def __aenter__(self):
+        """Enter the async context manager"""
         self.session = aiohttp.ClientSession()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Exit the async context manager"""
         await self.close()
 
     async def close(self):
+        """Close the aiohttp session"""
         await self.session.close()
 
     class MediaType(Enum):
+        """Media type enum"""
         TV = SHOW = "tv"
         MOVIE = "movie"
 
     async def get_nsfw_status(self, id: int, media_type: MediaType | str = MediaType.TV) -> bool:
+        """Get the NSFW status of a TV show or movie
+
+        Args:
+            id (int): The ID of the TV show or movie
+            media_type (MediaType | str): The media type, defaults to MediaType.TV
+
+        Returns:
+            bool: True if the TV show or movie is NSFW, False otherwise"""
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
         cache_file_path = self.get_cache_path(f"{media_type.value}/{id}.json")
@@ -48,15 +64,29 @@ class TheMovieDb:
         else:
             raise ValueError("Invalid mediaType")
         async with self.session.get(url, params=self.params) as resp:
-            jsonText = await resp.text()
-            jsonFinal = json.loads(jsonText)
-        self.write_cache(cache_file_path, jsonFinal["adult"])
-        return jsonFinal["adult"]
+            if resp.status != 200:
+                return False
+            else:
+                jsonText = await resp.text()
+                jsonFinal = json.loads(jsonText)
+                self.write_cache(cache_file_path, jsonFinal["adult"])
+                return jsonFinal["adult"]
 
     def get_cache_path(self, cache_name: str):
+        """Get the cache path
+
+        Args:
+            cache_name (str): The cache name"""
         return os.path.join(self.cache_directory, cache_name)
 
-    def read_cache(self, cache_path: str):
+    def read_cache(self, cache_path: str) -> dict | bool | None:
+        """Read the cache
+
+        Args:
+            cache_path (str): The cache path
+
+        Returns:
+            dict | bool | None: The cache data or None if the cache is invalid"""
         if os.path.exists(cache_path):
             with open(cache_path, "r") as f:
                 data = json.load(f)
@@ -66,6 +96,11 @@ class TheMovieDb:
         return None
 
     def write_cache(self, cache_path: str, data):
+        """Write the cache
+
+        Args:
+            cache_path (str): The cache path
+            data: The data to write"""
         cache_data = {
             "timestamp": time.time(),
             "data": data,

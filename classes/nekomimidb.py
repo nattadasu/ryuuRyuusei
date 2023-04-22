@@ -1,10 +1,8 @@
 from enum import Enum
 
 import pandas as pd
-from interactions import Embed, EmbedAttachment, EmbedAuthor, EmbedField
 
 from modules.commons import getRandom
-from modules.platforms import getPlatformColor
 
 
 class NekomimiDb:
@@ -23,19 +21,28 @@ class NekomimiDb:
     await ctx.send(embed=embed)
     ```"""
     class Gender(Enum):
+        """Supported Gender Enum"""
         BOY = "boy"
         GIRL = "girl"
-        NB = "nb"
+        UNKNOWN = NONBINARY = NB = "nb"
         BOTH = "both"
 
-    def __init__(self, gender: Gender = None):
-        """Initialize a Nekomimi object"""
+    def __init__(self, gender: Gender | None = None):
+        """Initialize a Nekomimi object
+
+        Args:
+            gender (Gender | None): gender of a character to get the image, defaults to None
+        """
         self.gender = gender
         self.seed = getRandom()
         self.nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t").fillna('')
 
     def get_random_nekomimi(self) -> pd.Series:
-        """Get a random nekomimi image from the database"""
+        """Get a random nekomimi image from the database
+
+        Returns:
+            Series: a random row from the database
+        """
         if self.gender is not None:
             query = self.nmDb[self.nmDb['girlOrBoy'] == self.gender.value]
         else:

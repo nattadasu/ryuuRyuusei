@@ -27,6 +27,10 @@ bot = ipy.Client(
 
 @ipy.listen()
 async def on_ready():
+    """When the bot is ready
+
+    This function will be called when the bot is ready.
+    """
     guilds = len(bot.guilds)
     print("[Sys] Bot is ready!")
     print("      Logged in as: " + bot.user.display_name +
@@ -36,7 +40,10 @@ async def on_ready():
 
 
 async def main():
-    """Main function"""
+    """Main function
+
+    This function will be run before the bot starts.
+    """
     if SENTRY_DSN:
         bot.load_extension('interactions.ext.sentry',
                            token=SENTRY_DSN)

@@ -9,14 +9,22 @@ from json import loads as jlo
 
 import pandas as pd
 from fuzzywuzzy import fuzz
-from interactions import Client, Embed, EmbedField, InteractionContext
+from interactions import Client, Embed, EmbedField, InteractionContext, BaseContext
 from interactions.ext.paginators import Paginator
 
 from modules.const import LANGUAGE_CODE
 
 
 def lang(code: str, useRaw: bool = False) -> dict:
-    """Get the language strings for a given language code"""
+    """Get the language strings for a given language code
+
+    Args:
+        code (str): The language code to get the strings for
+        useRaw (bool): Whether to return the raw JSON data or not
+
+    Returns:
+        dict: The language strings for the given language code
+    """
     try:
         with open(f"i18n/{code}.json", "r", encoding="utf-8") as f:
             data = jlo(f.read())
@@ -28,8 +36,15 @@ def lang(code: str, useRaw: bool = False) -> dict:
         return lang(LANGUAGE_CODE)
 
 
-def readUserLang(ctx) -> str:
-    """Read the user's language preference from the database"""
+def readUserLang(ctx: BaseContext | InteractionContext) -> str:
+    """Read the user's language preference from the database
+
+    Args:
+        ctx (BaseContext | InteractionContext): The context to read the user's language preference from
+
+    Returns:
+        str: The user's language preference
+    """
     user_df = pd.read_csv("database/member.csv", sep="\t")
 
     # find the row in the user DataFrame that matches the user's ID
@@ -56,7 +71,12 @@ def readUserLang(ctx) -> str:
 
 
 async def paginateLanguage(bot: Client, ctx: InteractionContext) -> None:
-    """Paginate the language list"""
+    """Paginate the language list
+
+    Args:
+        bot (Client): The bot client
+        ctx (InteractionContext): The context to send the language list to
+    """
     with open("i18n/_index.json", "r") as f:
         langs = jlo(f.read())
     pages = []
@@ -86,6 +106,14 @@ async def paginateLanguage(bot: Client, ctx: InteractionContext) -> None:
 
 
 def searchLanguage(query: str) -> list[dict]:
+    """Search for a language for auto-complete
+
+    Args:
+        query (str): The query to search for
+
+    Returns:
+        list[dict]: The list of languages that match the query
+    """
     with open('i18n/_index.json') as f:
         data = load(f)
     results = []
@@ -100,7 +128,14 @@ def searchLanguage(query: str) -> list[dict]:
 
 
 def checkLangExist(code: str) -> bool:
-    """Check if a language exists"""
+    """Check if a language exists
+
+    Args:
+        code (str): The language code to check
+
+    Returns:
+        bool: Whether the language exists or not
+    """
     with open("i18n/_index.json", "r") as f:
         langs = jlo(f.read())
     for lang in langs:
@@ -110,7 +145,13 @@ def checkLangExist(code: str) -> bool:
 
 
 async def setLanguage(code: str, ctx: InteractionContext, isGuild: bool = False) -> None:
-    """Set the user's/guild's language preference"""
+    """Set the user's/guild's language preference
+
+    Args:
+        code (str): The language code to set the user's/guild's language preference to
+        ctx (InteractionContext): The context to send the language list to
+        isGuild (bool, optional): Whether to set the guild's language preference or not. Defaults to False.
+    """
     if isGuild is True:
         if checkLangExist(code) is False:
             raise Exception(

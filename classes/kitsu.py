@@ -12,6 +12,7 @@ class Kitsu:
     """Kitsu API wrapper"""
 
     def __init__(self):
+        """Initialize the Kitsu API Wrapper"""
         self.session = aiohttp.ClientSession()
         self.base_url = "https://kitsu.io/api/edge/"
         self.params = {
@@ -23,19 +24,32 @@ class Kitsu:
         self.cache_time = 86400
 
     def __aenter__(self):
+        """Enter the async context manager"""
         return self
 
     def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Exit the async context manager"""
         self.close()
 
     def close(self):
+        """Close the aiohttp session"""
         self.session.close()
 
     class MediaType(Enum):
+        """Media type enum"""
         ANIME = "anime"
         MANGA = "manga"
 
     async def get_anime(self, anime_id: int, media_type: MediaType | str = MediaType.ANIME) -> dict:
+        """Get anime data
+
+        Args:
+            anime_id (int): The anime ID
+            media_type (MediaType | str, optional): The media type. Defaults to MediaType.ANIME.
+
+        Returns:
+            dict: Anime data
+        """
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
         cache_file_path = self.get_cache_path(
@@ -53,6 +67,15 @@ class Kitsu:
         return jsonFinal
 
     async def resolve_slug(self, slug: str, media_type: MediaType | str = MediaType.ANIME) -> dict:
+        """Resolve slug to anime ID
+
+        Args:
+            slug (str): The anime slug
+            media_type (MediaType | str, optional): The media type. Defaults to MediaType.ANIME.
+
+        Returns:
+            dict: Anime data
+        """
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
         cache_file_path = self.get_cache_path(
@@ -70,9 +93,11 @@ class Kitsu:
         return jsonFinal
 
     def get_cache_path(self, file_name: str) -> str:
+        """Get the cache path"""
         return os.path.join(self.cache_directory, file_name)
 
     def read_cache(self, cache_path: str):
+        """Read the cache"""
         if os.path.exists(cache_path):
             with open(cache_path, "r") as f:
                 data = json.load(f)
@@ -82,6 +107,7 @@ class Kitsu:
         return None
 
     def write_cache(self, cache_path: str, data):
+        """Write the cache"""
         os.makedirs(os.path.dirname(cache_path), exist_ok=True)
         with open(cache_path, "w") as f:
             json.dump({"timestamp": time.time(), "data": data}, f)
