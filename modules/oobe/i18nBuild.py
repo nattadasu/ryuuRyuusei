@@ -25,7 +25,7 @@ def convert_langs_to_json() -> None:
     files = [f for f in i18n_dir.glob("*.yaml") if f.name != "_index.yaml"]
     for file in files:
         with file.open("r", encoding='utf-8') as f:
-            data = y.load(f, Loader=y.FullLoader)
+            data = y.safe_load(f)
             print(f"Converting {file.name} to JSON", end="")
             code = file.stem
             match code:
