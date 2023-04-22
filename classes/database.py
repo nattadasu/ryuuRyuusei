@@ -106,7 +106,6 @@ class UserDatabase:
 
         username = row.iloc[0]['malUsername']
         clubs = await checkClubMembership(username)
-        clubs = []
         verified = False
         for club in clubs:
             if str(club['mal_id']) == str(CLUB_ID):
