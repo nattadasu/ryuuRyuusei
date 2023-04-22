@@ -71,9 +71,8 @@ class MyAnimeList:
             if response.status == 200:
                 data = await response.json()
                 return data
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     async def search(self, query: str, limit: int = 10, offset: int | None = None, fields: str | None = None):
         """Search anime by its title
@@ -99,9 +98,8 @@ class MyAnimeList:
             if response.status == 200:
                 data = await response.json()
                 return data
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
 
 __all__ = ["MyAnimeList"]

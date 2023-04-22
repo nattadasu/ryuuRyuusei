@@ -232,9 +232,8 @@ class Simkl:
             if response.status == 200:
                 data = await response.json()
                 return data
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     async def search_by_title(
         self,
@@ -269,9 +268,8 @@ class Simkl:
             if response.status == 200:
                 data = await response.json()
                 return data
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     async def get_show(self, id: int) -> dict:
         """Get show by ID
@@ -297,9 +295,8 @@ class Simkl:
                 data = await response.json()
                 self.write_data_to_cache(data, cache_file_path)
                 return data
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     async def get_movie(self, id: int) -> dict:
         """Get movie by ID
@@ -325,9 +322,8 @@ class Simkl:
                 data = await response.json()
                 self.write_data_to_cache(data, cache_file_path)
                 return data
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     async def get_anime(self, id: int) -> dict:
         """Get anime by ID
@@ -353,9 +349,8 @@ class Simkl:
                 data = await response.json()
                 self.write_data_to_cache(data, cache_file_path)
                 return data
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     async def get_random_title(
         self,
@@ -414,9 +409,8 @@ class Simkl:
             if response.status == 200:
                 data = await response.json()
                 return data
-            else:
-                error_message = await response.text()
-                raise ProviderHttpError(error_message, response.status)
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
 
     async def get_title_ids(self, id: int, media_type: SimklMediaTypes | str) -> dict:
         """Get IDs of the title

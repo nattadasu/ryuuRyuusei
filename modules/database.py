@@ -15,5 +15,4 @@ def checkIfRegistered(discordId: int) -> bool:
     df = pd.read_csv(database, delimiter="\t", dtype={'discordId': str})
     if str(discordId) in df['discordId'].values:
         return True
-    else:
-        return False
+    return False

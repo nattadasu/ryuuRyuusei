@@ -47,8 +47,7 @@ def py_bin_path() -> str:
         # return True if version >= 3.10, False otherwise
         if (int(v[0]) >= 3) and (int(v[1]) >= 10):
             return True
-        else:
-            return False
+        return False
 
     if current_os() == "Windows":
         try:
@@ -56,8 +55,7 @@ def py_bin_path() -> str:
                                          shell=True).decode("utf-8")
             if ask_python(py):
                 return "python"
-            else:
-                raise subprocess.CalledProcessError()
+            raise subprocess.CalledProcessError()
         except subprocess.CalledProcessError:
             paths = subprocess.check_output(
                 "where python", shell=True).decode("utf-8")
@@ -80,15 +78,13 @@ def py_bin_path() -> str:
                                           shell=True).decode("utf-8")
             if ask_python(py3):
                 return "python3"
-            else:
-                raise subprocess.CalledProcessError()
+            raise subprocess.CalledProcessError()
         except subprocess.CalledProcessError:
             py = subprocess.check_output("python --version",
                                          shell=True).decode("utf-8")
             if ask_python(py):
                 return "python"
-            else:
-                raise Exception("Python version is too old")
+            raise Exception("Python version is too old")
 
 
 pf = py_bin_path()
