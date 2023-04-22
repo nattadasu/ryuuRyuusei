@@ -1,4 +1,6 @@
 import os
+import shlex
+import subprocess
 
 from .commons import pf
 
@@ -55,8 +57,12 @@ def update_jikanpy(pf: str = pf):
                 reqs += line
     with open("requirements.txt", "w") as f:
         f.write(reqs)
-    os.system(f"{pf} -m pip install -r requirements.txt")
-    os.system(f"{pf} setup.py install")
+    if os.name == "nt":
+        subprocess.run([pf, "-m", "pip", "install", "-r", "requirements.txt"], shell=False)
+    else:
+        os.system(shlex.join([shlex.quote(pf), "-m", "pip", "install", "-r", "requirements.txt"]))
+        # os.system(f"{pf} setup.py install")
+        os.system(shlex.join([shlex.quote(pf), "setup.py", "install"]))
     revert_reqs()
 
 
