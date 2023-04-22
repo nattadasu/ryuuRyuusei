@@ -25,7 +25,7 @@ from modules.commons import (generateTrailer, getParentNsfwStatus, getRandom,
 from modules.const import (EMOJI_FORBIDDEN, EMOJI_UNEXPECTED_ERROR,
                            EMOJI_USER_ERROR, MYANIMELIST_CLIENT_ID,
                            SIMKL_CLIENT_ID, simkl0rels, warnThreadCW)
-from modules.i18n import lang, readUserLang
+from modules.i18n import readUserLang
 
 
 def lookupRandomAnime() -> int:

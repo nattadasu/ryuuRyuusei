@@ -11,7 +11,6 @@ from interactions import (Button, ButtonStyle, Client, Embed, EmbedAttachment,
 
 from modules.const import BOT_TOKEN
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
-from modules.const import EMOJI_USER_ERROR as EUSER
 from modules.i18n import lang
 
 
