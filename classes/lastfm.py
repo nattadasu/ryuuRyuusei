@@ -2,7 +2,7 @@ from json import loads
 
 from aiohttp import ClientSession
 
-from classes.excepts import ProviderHttpError, ProviderTypeError
+from classes.excepts import ProviderHttpError
 from modules.const import LASTFM_API_KEY
 
 
