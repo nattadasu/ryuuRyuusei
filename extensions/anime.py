@@ -149,6 +149,28 @@ class Anime(ipy.Extension):
                 ),
             ))
 
+    @ipy.component_callback("mal_search")
+    async def anime_search_data(self, ctx: ipy.ComponentContext) -> None:
+        await ctx.defer()
+        ani_id: int = int(ctx.values[0])
+        await malSubmit(ctx, ani_id)
+
+    @anime.subcommand(
+        sub_cmd_name="info",
+        sub_cmd_description="Get anime information",
+        options=[
+            ipy.SlashCommandOption(
+                name="id",
+                description="The anime ID to get information from",
+                type=ipy.OptionType.INTEGER,
+                required=True
+            ),
+        ]
+    )
+    async def anime_info(self, ctx: ipy.SlashContext, id: int):
+        await ctx.defer()
+        await malSubmit(ctx, id)
+
 
 def setup(bot):
     Anime(bot)

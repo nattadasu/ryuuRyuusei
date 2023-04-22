@@ -43,13 +43,7 @@ class Random(ipy.Extension):
                 text="This may take a while...",
             ),
         ))
-        await ctx.send(embed=malExceptionEmbed(
-            lang_dict=l_,
-            description="We can not proceed your request",
-            error="Anime subcommands is not supported yet as it's on heavy development",
-            error_type=MalErrType.SYSTEM
-        ))
-
+        await malSubmit(ctx, anime)
 
     @random.subcommand(
         group_name="nekomimi",
