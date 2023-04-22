@@ -16,7 +16,19 @@ from modules.i18n import lang
 
 
 def snowflake_to_datetime(snowflake: int) -> int:
-    """Convert Discord snowflake to datetime object."""
+    """
+    Convert a Discord snowflake ID to a Unix timestamp.
+
+    Args:
+        snowflake (int): A snowflake ID, which is a unique identifier used by Discord to identify objects such as messages and users.
+
+    Returns:
+        int: A Unix timestamp representing the time at which the Discord object associated with the snowflake was created.
+
+    Example:
+        >>> snowflake_to_datetime(81906984837386880)
+        1326169600
+    """
     timestamp_bin = bin(int(snowflake) >> 22)
     timestamp_dec = int(timestamp_bin, 0)
     timestamp_unix = (timestamp_dec + 1420070400000) / 1000
@@ -25,7 +37,19 @@ def snowflake_to_datetime(snowflake: int) -> int:
 
 
 def trimCyno(message: str) -> str:
-    """Trim synopsys to 1000 characters"""
+    """
+    Trim a string to 1000 characters and add ellipsis if it exceeds that length.
+
+    Args:
+        message (str): The string to be trimmed.
+
+    Returns:
+        str: The trimmed string with ellipsis appended if the original string exceeded 1000 characters.
+
+    Example:
+        >>> trimCyno("This is a very long string that is over 1000 characters and needs to be trimmed.")
+        'This is a very long string that is over 1000 characters and needs to be trimmed...'
+    """
     if len(message) > 1000:
         msg = message[:1000]
         # trim spaces
@@ -80,7 +104,6 @@ def getRandom(value: int = 9) -> int:
 
     seed = int(str(seed.int)[value:])
     return seed
-
 
 
 def generateSearchSelections(
@@ -150,7 +173,24 @@ def utilitiesExceptionEmbed(
     language: str = "en_US",
     color: hex = 0xFF0000,
 ) -> Embed:
-    """Generate an embed for exceptions in the utilities module."""
+    """
+    Generate an embed for exceptions in the utilities module.
+
+    Args:
+        description (str): A description of the error that occurred.
+        field_name (str): The name of the field to include in the embed.
+        field_value (str): The value of the field to include in the embed.
+        error (str): The error message to include in the embed.
+        language (str, optional): The language code to use for the error message. Defaults to "en_US".
+        color (hex, optional): The color of the embed. Defaults to 0xFF0000 (red).
+
+    Returns:
+        Embed: A Discord embed object containing information about the error.
+
+    Example:
+        >>> utilitiesExceptionEmbed("An error occurred while processing the request.", "Field", "Value", "Error message")
+        <discord.Embed object at 0x...>
+    """
     l_ = lang(code=language, useRaw=True)
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
     dcEm = Embed(
@@ -183,6 +223,23 @@ def generalExceptionEmbed(
     lang_dict: dict,
     color: hex = 0xFF0000,
 ) -> Embed:
+    """
+    Generate an embed for general exceptions.
+
+    Args:
+        description (str): A description of the error that occurred.
+        error (str): The error message to include in the embed.
+        lang_dict (dict): A dictionary containing language codes and their associated values.
+        color (hex, optional): The color of the embed. Defaults to 0xFF0000 (red).
+
+    Returns:
+        Embed: A Discord embed object containing information about the error.
+
+    Example:
+        >>> lang_dict = lang(code="en_US", useRaw=True)
+        >>> generalExceptionEmbed("An error occurred while processing the request.", "Error message", lang_dict)
+        <discord.Embed object at 0x...>
+    """
     l_ = lang_dict
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
     dcEm = Embed(
@@ -204,14 +261,29 @@ def generalExceptionEmbed(
     return dcEm
 
 
-def generateTrailer(
+def generate_trailer(
         data: dict,
-        isMal: bool = False,
-        isSimkl: bool = False) -> Button:
-    """Generate a button to a YouTube video"""
-    if isMal:
+        is_mal: bool = False,
+        is_simkl: bool = False) -> Button:
+    """
+    Generate a button for playing the trailer of a given anime.
+
+    Args:
+        data (dict): A dictionary containing information about the anime.
+        is_mal (bool, optional): Whether the anime is from MyAnimeList. Defaults to False.
+        is_simkl (bool, optional): Whether the anime is from Simkl. Defaults to False.
+
+    Returns:
+        Button: A Discord button object for playing the anime's trailer.
+
+    Example:
+        >>> data = {"id": "https://www.youtube.com/watch?v=WSrw7cTpNkM"}
+        >>> generate_trailer(data)
+        <discord_components.button.Button object at 0x...>
+    """
+    if is_mal:
         ytid = data['youtube_id']
-    elif isSimkl:
+    elif is_simkl:
         ytid = data['youtube']
     else:
         ytid = data['id']
@@ -227,9 +299,23 @@ def generateTrailer(
     return final
 
 
-async def getParentNsfwStatus(snowflake: int) -> dict:
-    """Get a channel age restriction status if command was invoked in a thread/forum"""
-    botHttp = Client(token=BOT_TOKEN).http
-    guild = await botHttp.get_channel(channel_id=snowflake)
+async def get_parent_nsfw_status(snowflake: int) -> bool:
+    """
+    Get the age restriction status of a channel's parent if the command was invoked in a thread or forum.
+
+    Args:
+        snowflake (int): The ID of the channel.
+
+    Returns:
+        bool: The age restriction status of the channel's parent, or False if the channel does not have a parent or
+              the parent's age restriction status could not be determined.
+
+    Example:
+        >>> result = await get_parent_nsfw_status(123456789)
+        >>> print(result)
+        True
+    """
+    bot_http = Client(token=BOT_TOKEN).http
+    guild = await bot_http.get_channel(channel_id=snowflake)
     # close the connection
-    return guild['nsfw']
+    return guild.get('nsfw', False)
