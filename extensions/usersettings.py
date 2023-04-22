@@ -50,14 +50,16 @@ class UserSettings(ipy.Extension):
         final = []
         for di in data:
             try:
-                if di['name'] == 'Serbian':
-                    di['dialect'] = 'Serbia'
-                flag = di['dialect'].replace(' ', '_')
+                if di["name"] == "Serbian":
+                    di["dialect"] = "Serbia"
+                flag = di["dialect"].replace(" ", "_")
                 flag = emojize(f":{flag}:", language="alias")
-                final.append({
-                    'name': f"{flag} {di['name']} ({di['native']}, {di['dialect']})",
-                    'value': di['code']
-                })
+                final.append(
+                    {
+                        "name": f"{flag} {di['name']} ({di['native']}, {di['dialect']})",
+                        "value": di["code"],
+                    }
+                )
             except BaseException:
                 break
         await ctx.send(choices=final)

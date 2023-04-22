@@ -19,14 +19,14 @@ def generateNekomimi(row: dict, lang: dict) -> Embed:
     Returns:
         Embed: The generated nekomimi embed.
     """
-    img = row['imageUrl'].values[0]
-    mediaSource = row['mediaSource'].values[0]
-    if mediaSource == '':
-        mediaSource = 'Original Character'
-    artist = row['artist'].values[0]
-    artistUrl = row['artistUrl'].values[0]
-    imageSourceUrl = row['imageSourceUrl'].values[0]
-    col = getPlatformColor(row['platform'].values[0])
+    img = row["imageUrl"].values[0]
+    mediaSource = row["mediaSource"].values[0]
+    if mediaSource == "":
+        mediaSource = "Original Character"
+    artist = row["artist"].values[0]
+    artistUrl = row["artistUrl"].values[0]
+    imageSourceUrl = row["imageSourceUrl"].values[0]
+    col = getPlatformColor(row["platform"].values[0])
     # Send the image url to the user
     dcEm = Embed(
         title=f"{mediaSource}",
@@ -37,20 +37,18 @@ def generateNekomimi(row: dict, lang: dict) -> Embed:
         ],
         color=col,
         author=EmbedAuthor(
-            name=lang['author'],
+            name=lang["author"],
             url="https://github.com/nattadasu/nekomimiDb",
             icon_url="https://cdn.discordapp.com/avatars/1080049635621609513/6f79d106de439f917179b7ef052a6ca8.png",
         ),
         fields=[
             EmbedField(
-                name=lang['source']['title'],
+                name=lang["source"]["title"],
                 value=f"[{lang['source']['value']}]({imageSourceUrl})",
-                inline=True
+                inline=True,
             ),
             EmbedField(
-                name=lang['artist'],
-                value=f"[{artist}]({artistUrl})",
-                inline=True
+                name=lang["artist"], value=f"[{artist}]({artistUrl})", inline=True
             ),
         ],
     )

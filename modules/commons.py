@@ -5,9 +5,16 @@ This module contains the common functions used by the other modules."""
 from re import sub as rSub
 from uuid import uuid4 as id4
 
-from interactions import (Button, ButtonStyle, Client, Embed, EmbedAttachment,
-                          EmbedAuthor, EmbedField,
-                          PartialEmoji)
+from interactions import (
+    Button,
+    ButtonStyle,
+    Client,
+    Embed,
+    EmbedAttachment,
+    EmbedAuthor,
+    EmbedField,
+    PartialEmoji,
+)
 
 from modules.const import BOT_TOKEN
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
@@ -70,19 +77,21 @@ def sanitize_markdown(text: str) -> str:
     Returns:
         str: The sanitized string of text.
     """
-    text = (text.replace("*", "\\*")
-                .replace("_", "\\_")
-                .replace("`", "\\`")
-                .replace("~", "\\~")
-                .replace("|", "\\|")
-                .replace(">", "\\>")
-                .replace("<", "\\<")
-                .replace("[", "\\[")
-                .replace("]", "\\]")
-                .replace("(", "\\(")
-                .replace(")", "\\)")
-                .replace("/", "\\/")
-                .replace("@", "\\@"))
+    text = (
+        text.replace("*", "\\*")
+        .replace("_", "\\_")
+        .replace("`", "\\`")
+        .replace("~", "\\~")
+        .replace("|", "\\|")
+        .replace(">", "\\>")
+        .replace("<", "\\<")
+        .replace("[", "\\[")
+        .replace("]", "\\]")
+        .replace("(", "\\(")
+        .replace(")", "\\)")
+        .replace("/", "\\/")
+        .replace("@", "\\@")
+    )
     return text
 
 
@@ -140,24 +149,13 @@ def generateSearchSelections(
         case 2:
             count = l_["quantities"][f"{mediaType}"]["two"]
         case _:
-            count = l_["quantities"][f"{mediaType}"]["many"].format(
-                count=len(results)
-            )
+            count = l_["quantities"][f"{mediaType}"]["many"].format(count=len(results))
     dcEm = Embed(
-        author=EmbedAuthor(
-            name=platform,
-            url=homepage,
-            icon_url=icon
-        ),
-        thumbnail=EmbedAttachment(
-            url=icon
-        ),
+        author=EmbedAuthor(name=platform, url=homepage, icon_url=icon),
+        thumbnail=EmbedAttachment(url=icon),
         color=color,
         title=title,
-        description=l_['commons']['search']['result'].format(
-            COUNT=count,
-            QUERY=query
-        ),
+        description=l_["commons"]["search"]["result"].format(COUNT=count, QUERY=query),
         fields=results,
     )
 
@@ -194,19 +192,13 @@ def utilitiesExceptionEmbed(
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
     dcEm = Embed(
         color=color,
-        title=l_['commons']['error'],
+        title=l_["commons"]["error"],
         description=description,
         fields=[
+            EmbedField(name=field_name, value=field_value, inline=False),
             EmbedField(
-                name=field_name,
-                value=field_value,
-                inline=False
+                name=l_["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
             ),
-            EmbedField(
-                name=l_['commons']['reason'],
-                value=f"```md\n{error}\n```",
-                inline=False
-            )
         ],
         thumbnail=EmbedAttachment(
             url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
@@ -243,13 +235,11 @@ def generalExceptionEmbed(
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
     dcEm = Embed(
         color=color,
-        title=l_['commons']['error'],
+        title=l_["commons"]["error"],
         description=description,
         fields=[
             EmbedField(
-                name=l_['commons']['reason'],
-                value=f"```md\n{error}\n```",
-                inline=False
+                name=l_["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
             )
         ],
         thumbnail=EmbedAttachment(
@@ -261,9 +251,8 @@ def generalExceptionEmbed(
 
 
 def generate_trailer(
-        data: dict,
-        is_mal: bool = False,
-        is_simkl: bool = False) -> Button:
+    data: dict, is_mal: bool = False, is_simkl: bool = False
+) -> Button:
     """
     Generate a button for playing the trailer of a given anime.
 
@@ -281,19 +270,16 @@ def generate_trailer(
         <discord_components.button.Button object at 0x...>
     """
     if is_mal:
-        ytid = data['youtube_id']
+        ytid = data["youtube_id"]
     elif is_simkl:
-        ytid = data['youtube']
+        ytid = data["youtube"]
     else:
-        ytid = data['id']
+        ytid = data["id"]
     final = Button(
         label="PV/CM on YouTube",
         style=ButtonStyle.LINK,
         url=f"https://www.youtube.com/watch?v={ytid}",
-        emoji=PartialEmoji(
-            id=975564205228965918,
-            name="Youtube"
-        )
+        emoji=PartialEmoji(id=975564205228965918, name="Youtube"),
     )
     return final
 
@@ -317,4 +303,4 @@ async def get_parent_nsfw_status(snowflake: int) -> bool:
     bot_http = Client(token=BOT_TOKEN).http
     guild = await bot_http.get_channel(channel_id=snowflake)
     # close the connection
-    return guild.get('nsfw', False)
+    return guild.get("nsfw", False)

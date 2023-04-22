@@ -9,8 +9,7 @@ from json import loads as jlo
 
 import pandas as pd
 from fuzzywuzzy import fuzz
-from interactions import (BaseContext, Client, Embed, EmbedField,
-                          InteractionContext)
+from interactions import BaseContext, Client, Embed, EmbedField, InteractionContext
 from interactions.ext.paginators import Paginator
 
 from modules.const import LANGUAGE_CODE
@@ -31,7 +30,7 @@ def lang(code: str, useRaw: bool = False) -> dict:
             data = jlo(f.read())
             if useRaw:
                 return data
-            return data['strings']
+            return data["strings"]
     except FileNotFoundError:
         return lang(LANGUAGE_CODE)
 
@@ -82,25 +81,28 @@ async def paginateLanguage(bot: Client, ctx: InteractionContext) -> None:
     pages = []
     for i in range(0, len(langs), 15):
         paged = []
-        for lang in langs[i:i + 15]:
-            flag = lang['code'].split('_')[1].lower()
+        for lang in langs[i : i + 15]:
+            flag = lang["code"].split("_")[1].lower()
             match flag:
                 case "sp":
                     flag = "rs"
                 case _:
                     flag = flag
-            paged += [EmbedField(
-                name=f":flag_{flag}: `{lang['code']}` - {lang['name']}",
-                value=f"{lang['native']}",
-                inline=True
-            )]
+            paged += [
+                EmbedField(
+                    name=f":flag_{flag}: `{lang['code']}` - {lang['name']}",
+                    value=f"{lang['native']}",
+                    inline=True,
+                )
+            ]
         pages += [
             Embed(
                 title="Languages",
                 description="List of all available languages.\nUse `/usersettings language set code:<code>` by replacing `<code>` with the language code (for example `en_US`) to change your language.\n\nIf you want to contribute, visit [Crowdin page](https://crowdin.com/project/ryuuRyuusei).",
                 color=0x996422,
                 fields=paged,
-            )]
+            )
+        ]
     pagin = Paginator.create_from_embeds(bot, *pages, timeout=60)
     await pagin.send(ctx)
 
@@ -114,13 +116,13 @@ def searchLanguage(query: str) -> list[dict]:
     Returns:
         list[dict]: The list of languages that match the query
     """
-    with open('i18n/_index.json') as f:
+    with open("i18n/_index.json") as f:
         data = load(f)
     results = []
     for item in data:
-        name_ratio = fuzz.token_set_ratio(query, item['name'])
-        native_ratio = fuzz.token_set_ratio(query, item['native'])
-        dialect_ratio = fuzz.token_set_ratio(query, item['dialect'])
+        name_ratio = fuzz.token_set_ratio(query, item["name"])
+        native_ratio = fuzz.token_set_ratio(query, item["native"])
+        dialect_ratio = fuzz.token_set_ratio(query, item["dialect"])
         max_ratio = max(name_ratio, native_ratio, dialect_ratio)
         if max_ratio >= 70:  # minimum similarity threshold of 70%
             results.append(item)
@@ -144,7 +146,9 @@ def checkLangExist(code: str) -> bool:
     return False
 
 
-async def setLanguage(code: str, ctx: InteractionContext, isGuild: bool = False) -> None:
+async def setLanguage(
+    code: str, ctx: InteractionContext, isGuild: bool = False
+) -> None:
     """Set the user's/guild's language preference
 
     Args:
@@ -154,14 +158,14 @@ async def setLanguage(code: str, ctx: InteractionContext, isGuild: bool = False)
     """
     if isGuild is True:
         if checkLangExist(code) is False:
-            raise Exception(
-                "Language not found, recheck the spelling and try again")
+            raise Exception("Language not found, recheck the spelling and try again")
         # check if guild is already in database
         try:
             df = pd.read_csv("database/server.csv", sep="\t")
             if df.query(f"serverId == {ctx.guild.id}").empty:
-                df = pd.DataFrame([[ctx.guild.id, code]], columns=[
-                                  "serverId", "language"])
+                df = pd.DataFrame(
+                    [[ctx.guild.id, code]], columns=["serverId", "language"]
+                )
                 df = df.append(df, ignore_index=True)
                 df.to_csv("database/server.csv", sep="\t", index=False)
             else:
@@ -176,22 +180,25 @@ async def setLanguage(code: str, ctx: InteractionContext, isGuild: bool = False)
                 writer.writerow([ctx.guild.id, code])
     else:
         if checkLangExist(code) is False:
-            raise Exception(
-                "Language not found, recheck the spelling and try again")
+            raise Exception("Language not found, recheck the spelling and try again")
 
         try:
-            df = pd.read_csv("database/member.csv", sep="\t",
-                             encoding="utf-8", dtype={"discordId": str})
+            df = pd.read_csv(
+                "database/member.csv",
+                sep="\t",
+                encoding="utf-8",
+                dtype={"discordId": str},
+            )
 
             if df.query(f"discordId == '{str(ctx.author.id)}'").empty:
-                df = pd.DataFrame([[str(ctx.author.id), code]], columns=[
-                                  "discordId", "language"])
+                df = pd.DataFrame(
+                    [[str(ctx.author.id), code]], columns=["discordId", "language"]
+                )
                 df = df.append(df, ignore_index=True)
                 df.to_csv("database/member.csv", sep="\t", index=False)
             else:
                 # if it is, update it
-                df.loc[df["discordId"] == str(
-                    ctx.author.id), "language"] = f"{code}"
+                df.loc[df["discordId"] == str(ctx.author.id), "language"] = f"{code}"
                 df.to_csv("database/member.csv", sep="\t", index=False)
         except BaseException:
             # if the database doesn't exist, create it

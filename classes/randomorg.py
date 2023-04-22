@@ -47,10 +47,7 @@ class RandomOrg:
         """Initialize the Random.org True Random Number Generator API Wrapper"""
         self.base_url = "https://www.random.org"
         self.session = None
-        self.params = {
-            "format": "plain",
-            "rnd": "new"
-        }
+        self.params = {"format": "plain", "rnd": "new"}
 
     async def __aenter__(self):
         """Enter the async context manager"""
@@ -67,6 +64,7 @@ class RandomOrg:
 
     class OnOff(Enum):
         """OnOff enum"""
+
         ON = "on"
         OFF = "off"
 
@@ -85,18 +83,18 @@ class RandomOrg:
         if base not in [2, 8, 10, 16]:
             raise ProviderTypeError("Base must be 2, 8, 10, or 16", "base")
         if num > 10000 or num < 1:
-            raise ProviderTypeError(
-                "Number must be between 1 and 10000", "num")
+            raise ProviderTypeError("Number must be between 1 and 10000", "num")
         if min > max:
-            raise ProviderTypeError(
-                "Min must be less than or equal to max", "minmax")
+            raise ProviderTypeError("Min must be less than or equal to max", "minmax")
         params = self.params.copy()
         params["num"] = num
         params["min"] = min
         params["max"] = max
         params["col"] = 1
         params["base"] = base
-        async with self.session.get(f"{self.base_url}/integers", params=params) as response:
+        async with self.session.get(
+            f"{self.base_url}/integers", params=params
+        ) as response:
             if response.status == 200:
                 data = await response.text()
                 data = data.splitlines()
@@ -116,12 +114,13 @@ class RandomOrg:
             list[int]: List of random sequences
         """
         if min > max:
-            raise ProviderTypeError(
-                "Min must be less than or equal to max", "minmax")
+            raise ProviderTypeError("Min must be less than or equal to max", "minmax")
         params = self.params.copy()
         params["min"] = min
         params["max"] = max
-        async with self.session.get(f"{self.base_url}/sequences", params=params) as response:
+        async with self.session.get(
+            f"{self.base_url}/sequences", params=params
+        ) as response:
             if response.status == 200:
                 data = await response.text()
                 data = data.splitlines()
@@ -130,7 +129,15 @@ class RandomOrg:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def strings(self, num: int, length: int = 10, digits: str | OnOff = "on", upperalpha: str | OnOff = "on", loweralpha: str | OnOff = "on", unique: str | OnOff = "on") -> list[str]:
+    async def strings(
+        self,
+        num: int,
+        length: int = 10,
+        digits: str | OnOff = "on",
+        upperalpha: str | OnOff = "on",
+        loweralpha: str | OnOff = "on",
+        unique: str | OnOff = "on",
+    ) -> list[str]:
         """Generate random strings
 
         Args:
@@ -149,11 +156,9 @@ class RandomOrg:
             list[str]: List of random strings
         """
         if length > 20:
-            raise ProviderTypeError(
-                "Length must be less than or equal to 20", "length")
+            raise ProviderTypeError("Length must be less than or equal to 20", "length")
         if num > 10000 or num < 1:
-            raise ProviderTypeError(
-                "Number must be between 1 and 10000", "num")
+            raise ProviderTypeError("Number must be between 1 and 10000", "num")
         if isinstance(digits, self.OnOff):
             digits = digits.value
         if isinstance(upperalpha, self.OnOff):
@@ -162,23 +167,18 @@ class RandomOrg:
             loweralpha = loweralpha.value
         if isinstance(unique, self.OnOff):
             unique = unique.value
-        if isinstance(
-                digits,
-                str) or isinstance(
-                upperalpha,
-                str) or isinstance(
-                loweralpha,
-                str) or isinstance(
-                    unique,
-                str):
+        if (
+            isinstance(digits, str)
+            or isinstance(upperalpha, str)
+            or isinstance(loweralpha, str)
+            or isinstance(unique, str)
+        ):
             if digits not in ["on", "off"]:
                 raise ProviderTypeError("Digits must be on or off", "digits")
             elif upperalpha not in ["on", "off"]:
-                raise ProviderTypeError(
-                    "Upperalpha must be on or off", "upperalpha")
+                raise ProviderTypeError("Upperalpha must be on or off", "upperalpha")
             elif loweralpha not in ["on", "off"]:
-                raise ProviderTypeError(
-                    "Loweralpha must be on or off", "loweralpha")
+                raise ProviderTypeError("Loweralpha must be on or off", "loweralpha")
             elif unique not in ["on", "off"]:
                 raise ProviderTypeError("Unique must be on or off", "unique")
         params = self.params.copy()
@@ -188,7 +188,9 @@ class RandomOrg:
         params["upperalpha"] = upperalpha
         params["loweralpha"] = loweralpha
         params["unique"] = unique
-        async with self.session.get(f"{self.base_url}/strings", params=params) as response:
+        async with self.session.get(
+            f"{self.base_url}/strings", params=params
+        ) as response:
             if response.status == 200:
                 data = await response.text()
                 data = data.splitlines()

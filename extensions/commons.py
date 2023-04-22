@@ -5,8 +5,15 @@ from time import perf_counter as pc
 
 import interactions as ipy
 
-from modules.const import (AUTHOR_USERNAME, BOT_CLIENT_ID, BOT_SUPPORT_SERVER,
-                           database, gittyHash, gtHsh, ownerUserUrl)
+from modules.const import (
+    AUTHOR_USERNAME,
+    BOT_CLIENT_ID,
+    BOT_SUPPORT_SERVER,
+    database,
+    gittyHash,
+    gtHsh,
+    ownerUserUrl,
+)
 from modules.i18n import lang, readUserLang
 
 
@@ -15,11 +22,10 @@ class CommonCommands(ipy.Extension):
         self.bot = bot
         self.now = now
 
-    @ipy.slash_command(name="about",
-                       description="Get information about the bot")
+    @ipy.slash_command(name="about", description="Get information about the bot")
     async def about(self, ctx: ipy.SlashContext):
         ul = readUserLang(ctx)
-        l_ = lang(ul)['about']
+        l_ = lang(ul)["about"]
         embed = ipy.Embed(
             title=l_["header"],
             description=l_["text"].format(
@@ -28,7 +34,7 @@ class CommonCommands(ipy.Extension):
                 ownerUserUrl=ownerUserUrl,
                 BOT_SUPPORT_SERVER=BOT_SUPPORT_SERVER,
                 gtHsh=gtHsh,
-                gittyHash=gittyHash
+                gittyHash=gittyHash,
             ),
             color=0x996422,
         )
@@ -44,17 +50,18 @@ class CommonCommands(ipy.Extension):
     async def ping(self, ctx: ipy.SlashContext, defer: bool = False):
         start = pc()
         ul = readUserLang(ctx)
-        l_ = lang(ul)['ping']
+        l_ = lang(ul)["ping"]
         langEnd = pc()
         if defer:
             await ctx.defer()  # to make sure if benchmark reflects other commands with .defer()
         send = await ctx.send(
             "",
             embed=ipy.Embed(
-                title=l_['ping']['title'],
-                description=l_['ping']['text'],
+                title=l_["ping"]["title"],
+                description=l_["ping"]["text"],
                 color=0xDD2288,
-            ))
+            ),
+        )
         ping = send.created_at.timestamp()
         pnow = dtime.now(tz=tz.utc).timestamp()
         end = pc()
@@ -64,14 +71,12 @@ class CommonCommands(ipy.Extension):
         duration = abs(duration)
         fields = [
             ipy.EmbedField(
-                name="🤝 " +
-                l_['websocket']['title'],
+                name="🤝 " + l_["websocket"]["title"],
                 value=f"`{self.bot.latency * 1000:.2f}`ms\n> *{l_['websocket']['text']}*",
                 inline=True,
             ),
             ipy.EmbedField(
-                name="🤖 " +
-                l_['bot']['title'],
+                name="🤖 " + l_["bot"]["title"],
                 value=f"`{duration:.2f}`ms\n> *{l_['bot']['text']}*",
                 inline=True,
             ),
@@ -83,98 +88,103 @@ class CommonCommands(ipy.Extension):
         readLat_end = pc()
         fields += [
             ipy.EmbedField(
-                name="🔎 " + l_['dbRead']['title'],
+                name="🔎 " + l_["dbRead"]["title"],
                 value=f"`{(readLat_end - readLat_start) * 1000:.2f}`ms\n> *{l_['dbRead']['text']}*",
                 inline=True,
             ),
             ipy.EmbedField(
-                name="🌐 " + l_['langLoad']['title'],
+                name="🌐 " + l_["langLoad"]["title"],
                 value=f"`{langPerfCount:.2f}`ms\n> *{l_['langLoad']['text']}*",
                 inline=True,
             ),
             ipy.EmbedField(
-                name="🐍 " + l_['pyTime']['title'],
+                name="🐍 " + l_["pyTime"]["title"],
                 value=f"`{pyPerfCount:.2f}`ms\n> *{l_['pyTime']['text']}*",
                 inline=True,
             ),
             ipy.EmbedField(
-                name="📅 " + l_['uptime']['title'],
-                value=l_['uptime']['text'].format(
-                    TIMESTAMP=f"<t:{int(self.now.timestamp())}:R>"),
+                name="📅 " + l_["uptime"]["title"],
+                value=l_["uptime"]["text"].format(
+                    TIMESTAMP=f"<t:{int(self.now.timestamp())}:R>"
+                ),
                 inline=True,
-            )]
-        await send.edit(content="", embed=ipy.Embed(
-            title=l_['pong']['title'],
-            description=l_['pong']['text'],
-            color=0x996422,
-            thumbnail=ipy.EmbedAttachment(
-                url="https://cdn.discordapp.com/attachments/1078005713349115964/1095771964783734874/main.png"
             ),
-            fields=fields,
-            footer=ipy.EmbedFooter(
-                text=l_['pong']['footer']
-            )
-        ))
+        ]
+        await send.edit(
+            content="",
+            embed=ipy.Embed(
+                title=l_["pong"]["title"],
+                description=l_["pong"]["text"],
+                color=0x996422,
+                thumbnail=ipy.EmbedAttachment(
+                    url="https://cdn.discordapp.com/attachments/1078005713349115964/1095771964783734874/main.png"
+                ),
+                fields=fields,
+                footer=ipy.EmbedFooter(text=l_["pong"]["footer"]),
+            ),
+        )
 
     @ipy.slash_command(name="invite", description="Get the bot invite link")
     async def invite(self, ctx: ipy.SlashContext):
         ul = readUserLang(ctx)
-        l_ = lang(ul)['invite']
+        l_ = lang(ul)["invite"]
         invLink = f"https://discord.com/api/oauth2/authorize?client_id={BOT_CLIENT_ID}&permissions=274878221376&scope=bot%20applications.commands"
         dcEm = ipy.Embed(
-            title=l_['title'],
-            description=l_['text'].format(INVBUTTON=l_['buttons']['invite']),
+            title=l_["title"],
+            description=l_["text"].format(INVBUTTON=l_["buttons"]["invite"]),
             color=0x996422,
             fields=[
                 ipy.EmbedField(
-                    name=l_['fields']['acc']['title'],
-                    value=l_['fields']['acc']['value'],
-                    inline=True
+                    name=l_["fields"]["acc"]["title"],
+                    value=l_["fields"]["acc"]["value"],
+                    inline=True,
                 ),
                 ipy.EmbedField(
-                    name=l_['fields']['scope']['title'],
-                    value=l_['fields']['scope']['value'],
-                    inline=True
+                    name=l_["fields"]["scope"]["title"],
+                    value=l_["fields"]["scope"]["value"],
+                    inline=True,
                 ),
-            ]
+            ],
         )
         invButton = ipy.Button(
-            label=l_['buttons']['invite'],
+            label=l_["buttons"]["invite"],
             url=invLink,
             style=ipy.ButtonStyle.URL,
         )
         serverButton = ipy.Button(
-            label=l_['buttons']['support'],
+            label=l_["buttons"]["support"],
             url=BOT_SUPPORT_SERVER,
             style=ipy.ButtonStyle.URL,
         )
         await ctx.send(embed=dcEm, components=[ipy.ActionRow(invButton, serverButton)])
 
-    @ipy.slash_command(name="privacy",
-                       description="Get the bot's tl;dr version of privacy policy")
+    @ipy.slash_command(
+        name="privacy", description="Get the bot's tl;dr version of privacy policy"
+    )
     async def privacy(self, ctx: ipy.SlashContext):
         ul = readUserLang(ctx)
-        l_ = lang(ul)['privacy']
+        l_ = lang(ul)["privacy"]
         butt = ipy.Button(
-            label=l_['read'],
+            label=l_["read"],
             url="https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md",
             style=ipy.ButtonStyle.URL,
         )
         em = ipy.Embed(
-            title=l_['title'],
-            description=l_['text'],
+            title=l_["title"],
+            description=l_["text"],
             color=0x996422,
         )
         await ctx.send(embed=em, components=[ipy.ActionRow(butt)])
 
-    @ipy.slash_command(name="support",
-                       description="Give (financial) support to the bot")
+    @ipy.slash_command(
+        name="support", description="Give (financial) support to the bot"
+    )
     async def support(self, ctx: ipy.SlashContext):
         ul = readUserLang(ctx)
-        l_ = lang(ul)['support']
-        txt: str = l_['text']
+        l_ = lang(ul)["support"]
+        txt: str = l_["text"]
         em = ipy.Embed(
-            title=l_['title'],
+            title=l_["title"],
             description=txt.format(
                 KOFI="https://ko-fi.com/nattadasu",
                 PAYPAL="https://paypal.me/nattadasu",
@@ -183,7 +193,7 @@ class CommonCommands(ipy.Extension):
                 SAWERIA="https://saweria.co/nattadasu",
                 TRAKTEER="https://trakteer.id/nattadasu",
                 GHREPO="https://github.com/nattadasu/ryuuRyuusei",
-                SUPPORT=BOT_SUPPORT_SERVER
+                SUPPORT=BOT_SUPPORT_SERVER,
             ),
             color=0x996422,
         )

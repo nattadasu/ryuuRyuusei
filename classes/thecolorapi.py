@@ -10,13 +10,14 @@ from classes.excepts import ProviderHttpError
 class TheColorApi:
     """The Color API wrapper
 
-    This module is a wrapper for The Color API, which is used to get color information from hex, rgb, hsl, hsv, and cmyk values."""
+    This module is a wrapper for The Color API, which is used to get color information from hex, rgb, hsl, hsv, and cmyk values.
+    """
 
     def __init__(self):
         """Initialize the class"""
         self.base_url = "https://www.thecolorapi.com"
         self.session = None
-        self.cache_directory = 'cache/thecolorapi'
+        self.cache_directory = "cache/thecolorapi"
         self.cache_expiration_time = 604800  # 1 week in seconds
 
     async def __aenter__(self):
@@ -69,8 +70,7 @@ class TheColorApi:
         Args:
             color_params (dict): Color parameters
         """
-        filename = '-'.join([f"{k}_{v}" for k,
-                            v in color_params.items()]) + '.json'
+        filename = "-".join([f"{k}_{v}" for k, v in color_params.items()]) + ".json"
         return os.path.join(self.cache_directory, filename)
 
     def read_cached_data(self, cache_file_path) -> dict | None:
@@ -84,11 +84,11 @@ class TheColorApi:
             None: If cache file does not exist or cache is expired
         """
         if os.path.exists(cache_file_path):
-            with open(cache_file_path, 'r') as cache_file:
+            with open(cache_file_path, "r") as cache_file:
                 cache_data = json.load(cache_file)
-                cache_age = time.time() - cache_data['timestamp']
+                cache_age = time.time() - cache_data["timestamp"]
                 if cache_age < self.cache_expiration_time:
-                    return cache_data['data']
+                    return cache_data["data"]
         return None
 
     def write_data_to_cache(self, data, cache_file_path: str):
@@ -98,7 +98,7 @@ class TheColorApi:
             data (any): Data to write to cache
             cache_file_path (str): Cache file path
         """
-        cache_data = {'timestamp': time.time(), 'data': data}
+        cache_data = {"timestamp": time.time(), "data": data}
         os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
-        with open(cache_file_path, 'w') as cache_file:
+        with open(cache_file_path, "w") as cache_file:
             json.dump(cache_data, cache_file)

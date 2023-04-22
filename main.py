@@ -21,7 +21,7 @@ bot = ipy.Client(
     activity=ipy.Activity(
         name="Kagamine Len's Live Concert",
         type=ipy.ActivityType.WATCHING,
-    )
+    ),
 )
 
 
@@ -33,8 +33,7 @@ async def on_ready():
     """
     guilds = len(bot.guilds)
     print("[Sys] Bot is ready!")
-    print("      Logged in as: " + bot.user.display_name +
-          "#" + bot.user.discriminator)
+    print("      Logged in as: " + bot.user.display_name + "#" + bot.user.discriminator)
     print("      User ID: " + str(bot.user.id))
     print("      Guilds: " + str(guilds))
 
@@ -45,8 +44,7 @@ async def main():
     This function will be run before the bot starts.
     """
     if SENTRY_DSN:
-        bot.load_extension('interactions.ext.sentry',
-                           token=SENTRY_DSN)
+        bot.load_extension("interactions.ext.sentry", token=SENTRY_DSN)
     bot.load_extension("interactions.ext.jurigged")
     bot.del_unused_app_cmd = True
     bot.sync_interactions = True
@@ -88,5 +86,10 @@ if __name__ == "__main__":
         print("[Sys] Bot stopped by user.")
         now: dtime = dtime.now(tz=tz.utc)
         print("[Bcm] Date: " + now.strftime("%d/%m/%Y %H:%M:%S"))
-        print("      Uptime: " + str(int(bot_stop - bot_run)) +
-              "s, or around " + str(int((bot_stop - bot_run) / 60)) + "m")
+        print(
+            "      Uptime: "
+            + str(int(bot_stop - bot_run))
+            + "s, or around "
+            + str(int((bot_stop - bot_run) / 60))
+            + "m"
+        )

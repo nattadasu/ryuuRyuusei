@@ -17,7 +17,7 @@ class Kitsu:
         self.base_url = "https://kitsu.io/api/edge/"
         self.params = {
             # public client ID provided by Kitsu themselves
-            'client_id': 'dd031b32d2f56c990b1425efe6c42ad847e7fe3ab46bf1299f05ecd856bdb7dd'
+            "client_id": "dd031b32d2f56c990b1425efe6c42ad847e7fe3ab46bf1299f05ecd856bdb7dd"
         }
         self.content_type = "application/vnd.api+json"
         self.cache_directory = "cache/kitsu"
@@ -37,10 +37,13 @@ class Kitsu:
 
     class MediaType(Enum):
         """Media type enum"""
+
         ANIME = "anime"
         MANGA = "manga"
 
-    async def get_anime(self, anime_id: int, media_type: MediaType | str = MediaType.ANIME) -> dict:
+    async def get_anime(
+        self, anime_id: int, media_type: MediaType | str = MediaType.ANIME
+    ) -> dict:
         """Get anime data
 
         Args:
@@ -52,8 +55,7 @@ class Kitsu:
         """
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
-        cache_file_path = self.get_cache_path(
-            f"{media_type.value}/{anime_id}.json")
+        cache_file_path = self.get_cache_path(f"{media_type.value}/{anime_id}.json")
         cached_data = self.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -66,7 +68,9 @@ class Kitsu:
         self.write_cache(cache_file_path, jsonFinal)
         return jsonFinal
 
-    async def resolve_slug(self, slug: str, media_type: MediaType | str = MediaType.ANIME) -> dict:
+    async def resolve_slug(
+        self, slug: str, media_type: MediaType | str = MediaType.ANIME
+    ) -> dict:
         """Resolve slug to anime ID
 
         Args:
@@ -78,8 +82,7 @@ class Kitsu:
         """
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
-        cache_file_path = self.get_cache_path(
-            f"{media_type.value}/slug/{slug}.json")
+        cache_file_path = self.get_cache_path(f"{media_type.value}/slug/{slug}.json")
         cached_data = self.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data

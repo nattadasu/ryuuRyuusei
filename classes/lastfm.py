@@ -53,14 +53,17 @@ class LastFM:
         async with self.session.get(self.base_url, params=params) as resp:
             if resp.status == 404:
                 raise ProviderHttpError(
-                    "User can not be found on Last.fm. Check the name or register?")
+                    "User can not be found on Last.fm. Check the name or register?"
+                )
             else:
                 jsonText = await resp.text()
                 jsonFinal = loads(jsonText)
-                ud = jsonFinal['user']
+                ud = jsonFinal["user"]
         return ud
 
-    async def get_user_recent_tracks(self, username: str, maximum: int = 9) -> list[dict]:
+    async def get_user_recent_tracks(
+        self, username: str, maximum: int = 9
+    ) -> list[dict]:
         """Get recent tracks
 
         Args:
@@ -79,5 +82,5 @@ class LastFM:
         async with self.session.get(self.base_url, params=params) as resp:
             jsonText = await resp.text()
             jsonFinal = loads(jsonText)
-            scb = jsonFinal['recenttracks']['track']
+            scb = jsonFinal["recenttracks"]["track"]
         return scb

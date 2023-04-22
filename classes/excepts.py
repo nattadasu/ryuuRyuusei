@@ -25,8 +25,4 @@ class SimklTypeError(Exception):
         return f"SimklTypeError: {self.message} (expected {self.expected_type})"
 
 
-__all__ = [
-    "ProviderHttpError",
-    "ProviderTypeError",
-    "SimklTypeError"
-]
+__all__ = ["ProviderHttpError", "ProviderTypeError", "SimklTypeError"]

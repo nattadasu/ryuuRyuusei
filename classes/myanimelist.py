@@ -33,7 +33,8 @@ class MyAnimeList:
         self.client_id = client_id
         if client_id is None:
             raise ProviderHttpError(
-                "Unauthorized, please fill Client ID before using this module", 401)
+                "Unauthorized, please fill Client ID before using this module", 401
+            )
         self.base_url = "https://api.myanimelist.net/v2"
         self.headers = {"X-MAL-CLIENT-ID": self.client_id}
         self.nsfw = nsfw
@@ -67,14 +68,22 @@ class MyAnimeList:
             params["fields"] = fields
         if self.nsfw:
             params["nsfw"] = "true"
-        async with self.session.get(f"{self.base_url}/anime/{anime_id}", params=params) as response:
+        async with self.session.get(
+            f"{self.base_url}/anime/{anime_id}", params=params
+        ) as response:
             if response.status == 200:
                 data = await response.json()
                 return data
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def search(self, query: str, limit: int = 10, offset: int | None = None, fields: str | None = None):
+    async def search(
+        self,
+        query: str,
+        limit: int = 10,
+        offset: int | None = None,
+        fields: str | None = None,
+    ):
         """Search anime by its title
 
         Args:
@@ -87,14 +96,15 @@ class MyAnimeList:
             dict: Search results
         """
         if limit > 100:
-            raise ProviderTypeError(
-                "limit must be less than or equal to 100", "int")
+            raise ProviderTypeError("limit must be less than or equal to 100", "int")
         params = {"q": query, "limit": limit}
         if offset:
             params["offset"] = offset
         if fields:
             params["fields"] = fields
-        async with self.session.get(f"{self.base_url}/anime", params=params) as response:
+        async with self.session.get(
+            f"{self.base_url}/anime", params=params
+        ) as response:
             if response.status == 200:
                 data = await response.json()
                 return data

@@ -39,10 +39,13 @@ class TheMovieDb:
 
     class MediaType(Enum):
         """Media type enum"""
+
         TV = SHOW = "tv"
         MOVIE = "movie"
 
-    async def get_nsfw_status(self, id: int, media_type: MediaType | str = MediaType.TV) -> bool:
+    async def get_nsfw_status(
+        self, id: int, media_type: MediaType | str = MediaType.TV
+    ) -> bool:
         """Get the NSFW status of a TV show or movie
 
         Args:

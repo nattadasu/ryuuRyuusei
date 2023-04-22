@@ -13,8 +13,7 @@ import os
 import shlex
 import subprocess
 
-from modules.oobe.commons import (checkTermux, current_os, prepare_database,
-                                  py_bin_path)
+from modules.oobe.commons import checkTermux, current_os, prepare_database, py_bin_path
 from modules.oobe.getNekomimi import nk_run
 from modules.oobe.i18nBuild import convert_langs_to_json
 from modules.oobe.jikan import install_jikanpy, update_jikanpy
@@ -37,10 +36,11 @@ def first_run(py_bin: str = py_bin_path()):
     if not os.path.exists("requirements.txt"):
         raise Exception("Please run the script from the root directory.")
     # Check if Termux is used
-    env = "MATHLAB=\"m\" " if checkTermux() else ""
+    env = 'MATHLAB="m" ' if checkTermux() else ""
     # Check if jikanpy is installed and up-to-date
     try:
         from jikanpy import AioJikan
+
         print("Checking for jikanpy updates...")
         os.chdir("jikanpy")
         os.system("git pull")
@@ -51,12 +51,29 @@ def first_run(py_bin: str = py_bin_path()):
     except ImportError:
         install_jikanpy()
     # Install dependencies
-    print("Installing and upgrading dependencies for the next step and the bot itself...")
+    print(
+        "Installing and upgrading dependencies for the next step and the bot itself..."
+    )
     # os.system(f"{env}{py_bin} -m pip install -U -r requirements.txt")
     if current_os() == "Windows":
-        subprocess.run([env + py_bin, "-m", "pip", "install", "-U", "-r", "requirements.txt"], shell=False)
+        subprocess.run(
+            [env + py_bin, "-m", "pip", "install", "-U", "-r", "requirements.txt"],
+            shell=False,
+        )
     else:
-        os.system(shlex.join([env + shlex.quote(py_bin), "-m", "pip", "install", "-U", "-r", "requirements.txt"]))
+        os.system(
+            shlex.join(
+                [
+                    env + shlex.quote(py_bin),
+                    "-m",
+                    "pip",
+                    "install",
+                    "-U",
+                    "-r",
+                    "requirements.txt",
+                ]
+            )
+        )
     # Prepare the database
     print("Preparing the database as database.csv in tabbed format...")
     prepare_database()
