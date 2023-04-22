@@ -5,10 +5,10 @@ This module is a wrapper for Simkl API, which is used to search for anime, shows
 import json
 import os
 import time
+from copy import deepcopy
 from enum import Enum
 from typing import List
 from urllib.parse import quote
-from copy import deepcopy
 
 import aiohttp
 

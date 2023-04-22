@@ -1,8 +1,8 @@
+import asyncio
+import json
 import traceback
 
 from jikanpy import AioJikan
-import json
-import asyncio
 
 
 class JikanException(Exception):
@@ -64,7 +64,8 @@ class JikanApi:
                 res = await jikan.users(username=username, extension='clubs')
                 data: list = res['data']
                 if res['pagination']['last_visible_page'] > 1:
-                    for i in range(2, res['pagination']['last_visible_page'] + 1):
+                    for i in range(
+                            2, res['pagination']['last_visible_page'] + 1):
                         res = await jikan.users(
                             username=username,
                             extension='clubs',

@@ -2,7 +2,7 @@ import json
 
 import pandas as pd
 
-from modules.const import database, EMOJI_UNEXPECTED_ERROR, CLUB_ID
+from modules.const import CLUB_ID, EMOJI_UNEXPECTED_ERROR, database
 from modules.jikan import checkClubMembership
 
 

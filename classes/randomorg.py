@@ -1,7 +1,8 @@
 """Random.org True Random Number Generator API Wrapper"""
 
-import aiohttp
 from enum import Enum
+
+import aiohttp
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
 
@@ -163,13 +164,23 @@ class RandomOrg:
             loweralpha = loweralpha.value
         if isinstance(unique, self.OnOff):
             unique = unique.value
-        if isinstance(digits, str) or isinstance(upperalpha, str) or isinstance(loweralpha, str) or isinstance(unique, str):
+        if isinstance(
+                digits,
+                str) or isinstance(
+                upperalpha,
+                str) or isinstance(
+                loweralpha,
+                str) or isinstance(
+                    unique,
+                str):
             if digits not in ["on", "off"]:
                 raise ProviderTypeError("Digits must be on or off", "digits")
             elif upperalpha not in ["on", "off"]:
-                raise ProviderTypeError("Upperalpha must be on or off", "upperalpha")
+                raise ProviderTypeError(
+                    "Upperalpha must be on or off", "upperalpha")
             elif loweralpha not in ["on", "off"]:
-                raise ProviderTypeError("Loweralpha must be on or off", "loweralpha")
+                raise ProviderTypeError(
+                    "Loweralpha must be on or off", "loweralpha")
             elif unique not in ["on", "off"]:
                 raise ProviderTypeError("Unique must be on or off", "unique")
         params = self.params.copy()

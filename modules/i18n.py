@@ -9,7 +9,8 @@ from json import loads as jlo
 
 import pandas as pd
 from fuzzywuzzy import fuzz
-from interactions import Client, Embed, EmbedField, InteractionContext, BaseContext
+from interactions import (BaseContext, Client, Embed, EmbedField,
+                          InteractionContext)
 from interactions.ext.paginators import Paginator
 
 from modules.const import LANGUAGE_CODE

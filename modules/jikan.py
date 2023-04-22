@@ -22,6 +22,7 @@ async def get_member_clubs(username: str) -> list[dict]:
         clubs = await jikan.get_member_clubs(username)
         return clubs
 
+
 async def check_if_club_in_list(clubs: list[dict]) -> bool:
     """Check if the club is in the list of clubs
 
@@ -36,6 +37,7 @@ async def check_if_club_in_list(clubs: list[dict]) -> bool:
             return True
     return False
 
+
 async def checkClubMembership(username: str) -> bool:
     """Check if a user is a member of the club
 
@@ -47,4 +49,3 @@ async def checkClubMembership(username: str) -> bool:
     """
     clubs = await get_member_clubs(username)
     return await check_if_club_in_list(clubs)
-

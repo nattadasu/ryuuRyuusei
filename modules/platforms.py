@@ -1,6 +1,7 @@
-from typing import Union
-from enum import Enum
 from collections import defaultdict
+from enum import Enum
+from typing import Union
+
 
 class Platform(Enum):
     """Enum for all supported platforms.
@@ -73,7 +74,7 @@ class Platform(Enum):
     KAIZE = "kaize"
     KITSU = "kitsu"
     LASTFM = LAST = LFM = "lastfm"
-    LIVECHART = LC ="livechart"
+    LIVECHART = LC = "livechart"
     MYANIMELIST = MAL = "myanimelist"
     NOTIFYMOE = NOTIFY = "notify"
     OTAKOTAKU = OTAKU = OO = "otakotaku"

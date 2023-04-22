@@ -69,7 +69,8 @@ class AniList:
         async with self.session.post(self.base_url, json={"query": query}) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(data["data"]["Media"]["isAdult"], cache_file_path)
+                self.write_data_to_cache(
+                    data["data"]["Media"]["isAdult"], cache_file_path)
                 return data["data"]["Media"]["isAdult"]
             else:
                 error_message = await response.text()
@@ -143,7 +144,8 @@ class AniList:
         async with self.session.post(self.base_url, json={"query": gqlquery}) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(data["data"]["Media"], cache_file_path)
+                self.write_data_to_cache(
+                    data["data"]["Media"], cache_file_path)
                 return data["data"]["Media"]
             else:
                 error_message = await response.text()
@@ -214,7 +216,8 @@ class AniList:
         async with self.session.post(self.base_url, json={"query": gqlquery}) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(data["data"]["Media"], cache_file_path)
+                self.write_data_to_cache(
+                    data["data"]["Media"], cache_file_path)
                 return data["data"]["Media"]
             else:
                 error_message = await response.text()
