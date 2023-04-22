@@ -1,8 +1,6 @@
 import json
 import os
 import time
-
-# deep copy the params
 from copy import deepcopy
 
 from aiohttp import ClientSession

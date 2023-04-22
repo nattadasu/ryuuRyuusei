@@ -2,6 +2,7 @@ import asyncio
 from re import sub as rSub
 
 import interactions as ipy
+
 from modules.anilist import searchAniListAnime
 from modules.commons import generateSearchSelections, sanitizeMarkdown
 from modules.const import EMOJI_UNEXPECTED_ERROR
