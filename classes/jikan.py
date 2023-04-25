@@ -47,7 +47,6 @@ class JikanApi:
 
     async def close(self):
         """Close the session"""
-        pass
 
     async def get_member_clubs(self, username: str) -> list[dict]:
         """Get member clubs
