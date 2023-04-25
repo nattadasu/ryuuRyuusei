@@ -89,7 +89,7 @@ class Platform(Enum):
     TVTIME = "tvtime"
 
 
-def getPlatformColor(pf: str | Platform) -> hex:
+def get_platform_color(pf: str | Platform) -> hex:
     """Get a color code for a specific platform
 
     Args:
@@ -150,7 +150,7 @@ def getPlatformColor(pf: str | Platform) -> hex:
     return pfDict[pf.value]
 
 
-def getPlatformName(pf: str | Platform) -> str:
+def get_platform_name(pf: str | Platform) -> str:
     """Get a platform name from its abbreviation
 
     Args:
@@ -207,7 +207,7 @@ def getPlatformName(pf: str | Platform) -> str:
     return pfDict.get(pf, "Unknown")
 
 
-def mediaIdToPlatform(
+def media_id_to_platform(
     media_id: str, platform: str | Platform, simklType: Union[str, None] = None
 ) -> dict:
     """Convert a media ID to a platform-specific ID
@@ -315,7 +315,7 @@ def mediaIdToPlatform(
 
     try:
         data = platform_dict[platform]
-        data["pf"] = getPlatformName(platform)
+        data["pf"] = get_platform_name(platform)
 
         return data
     except KeyError:

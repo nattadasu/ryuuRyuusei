@@ -38,7 +38,7 @@ async def check_if_club_in_list(clubs: list[dict]) -> bool:
     return False
 
 
-async def checkClubMembership(username: str) -> bool:
+async def check_club_membership(username: str) -> bool:
     """Check if a user is a member of the club
 
     Args:

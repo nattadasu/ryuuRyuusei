@@ -6,10 +6,10 @@ from interactions import Embed, EmbedAttachment, EmbedAuthor, EmbedField
 from interactions import SlashContext as sctx
 
 from classes.nekomimidb import NekomimiDb as neko
-from modules.platforms import getPlatformColor
+from modules.platforms import get_platform_color
 
 
-def generateNekomimi(row: dict, lang: dict) -> Embed:
+def generate_nekomimi_embed(row: dict, lang: dict) -> Embed:
     """Generate nekomimi embed
 
     Args:
@@ -26,7 +26,7 @@ def generateNekomimi(row: dict, lang: dict) -> Embed:
     artist = row["artist"].values[0]
     artistUrl = row["artistUrl"].values[0]
     imageSourceUrl = row["imageSourceUrl"].values[0]
-    col = getPlatformColor(row["platform"].values[0])
+    col = get_platform_color(row["platform"].values[0])
     # Send the image url to the user
     dcEm = Embed(
         title=f"{mediaSource}",
@@ -56,7 +56,7 @@ def generateNekomimi(row: dict, lang: dict) -> Embed:
     return dcEm
 
 
-async def nekomimiSubmit(ctx: sctx, lang: dict, gender: neko.Gender = None):
+async def submit_nekomimi(ctx: sctx, lang: dict, gender: neko.Gender = None):
     """Submit a nekomimi image to Discord
 
     Args:
@@ -68,5 +68,5 @@ async def nekomimiSubmit(ctx: sctx, lang: dict, gender: neko.Gender = None):
         None
     """
     data = neko(gender).get_random_nekomimi()
-    dcEm = generateNekomimi(row=data, lang=lang)
+    dcEm = generate_nekomimi_embed(row=data, lang=lang)
     await ctx.send("", embeds=dcEm)

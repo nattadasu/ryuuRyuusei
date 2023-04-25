@@ -2,7 +2,7 @@ from enum import Enum
 
 import pandas as pd
 
-from modules.commons import getRandom
+from modules.commons import get_random_seed
 
 
 class NekomimiDb:
@@ -36,7 +36,7 @@ class NekomimiDb:
             gender (Gender | None): gender of a character to get the image, defaults to None
         """
         self.gender = gender
-        self.seed = getRandom()
+        self.seed = get_random_seed()
         self.nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t").fillna("")
 
     def get_random_nekomimi(self) -> pd.Series:

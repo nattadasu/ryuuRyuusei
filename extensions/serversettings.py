@@ -2,7 +2,7 @@ import interactions as ipy
 from emoji import emojize
 
 from modules.const import EMOJI_FORBIDDEN, EMOJI_SUCCESS
-from modules.i18n import searchLanguage, setLanguage
+from modules.i18n import search_language, set_default_language
 
 
 class ServerSettings(ipy.Extension):
@@ -30,14 +30,14 @@ class ServerSettings(ipy.Extension):
     )
     async def serversettings_language_set(self, ctx: ipy.InteractionContext, lang: str):
         try:
-            await setLanguage(code=lang, ctx=ctx, isGuild=True)
+            await set_default_language(code=lang, ctx=ctx, isGuild=True)
             await ctx.send(f"{EMOJI_SUCCESS} Server Language set to {lang}")
         except Exception as e:
             await ctx.send(f"{EMOJI_FORBIDDEN} {e}")
 
     @serversettings_language_set.autocomplete("lang")
     async def code_autocomplete(self, ctx: ipy.AutocompleteContext):
-        data = searchLanguage(ctx.input_text)
+        data = search_language(ctx.input_text)
         # only return the first 10 results
         data = data[:10]
         final = []

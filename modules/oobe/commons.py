@@ -89,7 +89,7 @@ pf = py_bin_path()
 
 
 # check if termux
-def checkTermux() -> bool:
+def check_termux() -> bool:
     """
     Check if the script is running on Termux.
 

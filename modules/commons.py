@@ -18,7 +18,7 @@ from interactions import (
 
 from modules.const import BOT_TOKEN
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
-from modules.i18n import lang
+from modules.i18n import fetch_language_data
 
 
 def snowflake_to_datetime(snowflake: int) -> int:
@@ -42,7 +42,7 @@ def snowflake_to_datetime(snowflake: int) -> int:
     return timestamp_unix
 
 
-def trimCyno(message: str) -> str:
+def trim_cyno(message: str) -> str:
     """
     Trim a string to 1000 characters and add ellipsis if it exceeds that length.
 
@@ -53,7 +53,7 @@ def trimCyno(message: str) -> str:
         str: The trimmed string with ellipsis appended if the original string exceeded 1000 characters.
 
     Example:
-        >>> trimCyno("This is a very long string that is over 1000 characters and needs to be trimmed.")
+        >>> trim_cyno("This is a very long string that is over 1000 characters and needs to be trimmed.")
         'This is a very long string that is over 1000 characters and needs to be trimmed...'
     """
     if len(message) > 1000:
@@ -94,7 +94,7 @@ def sanitize_markdown(text: str) -> str:
     return text
 
 
-def getRandom(value: int = 9) -> int:
+def get_random_seed(value: int = 9) -> int:
     """
     Get a random seed number with a specific length.
 
@@ -113,7 +113,7 @@ def getRandom(value: int = 9) -> int:
     return seed
 
 
-def generateSearchSelections(
+def genrate_search_embed(
     language: str,
     mediaType: str,
     platform: str,
@@ -141,7 +141,7 @@ def generateSearchSelections(
     Returns:
         Embed: The generated search selection embed.
     """
-    l_ = lang(code=language, useRaw=True)
+    l_ = fetch_language_data(code=language, useRaw=True)
     match len(results):
         case 1:
             count = l_["quantities"][f"{mediaType}"]["one"]
@@ -161,7 +161,7 @@ def generateSearchSelections(
     return dcEm
 
 
-def utilitiesExceptionEmbed(
+def generate_utils_except_embed(
     description: str,
     field_name: str,
     field_value: str,
@@ -184,10 +184,10 @@ def utilitiesExceptionEmbed(
         Embed: A Discord embed object containing information about the error.
 
     Example:
-        >>> utilitiesExceptionEmbed("An error occurred while processing the request.", "Field", "Value", "Error message")
+        >>> generate_utils_except_embed("An error occurred while processing the request.", "Field", "Value", "Error message")
         <discord.Embed object at 0x...>
     """
-    l_ = lang(code=language, useRaw=True)
+    l_ = fetch_language_data(code=language, useRaw=True)
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
     dcEm = Embed(
         color=color,
@@ -207,7 +207,7 @@ def utilitiesExceptionEmbed(
     return dcEm
 
 
-def generalExceptionEmbed(
+def generate_commons_except_embed(
     description: str,
     error: str,
     lang_dict: dict,
@@ -226,8 +226,8 @@ def generalExceptionEmbed(
         Embed: A Discord embed object containing information about the error.
 
     Example:
-        >>> lang_dict = lang(code="en_US", useRaw=True)
-        >>> generalExceptionEmbed("An error occurred while processing the request.", "Error message", lang_dict)
+        >>> lang_dict = fetch_language_data(code="en_US", useRaw=True)
+        >>> generate_commons_except_embed("An error occurred while processing the request.", "Error message", lang_dict)
         <discord.Embed object at 0x...>
     """
     l_ = lang_dict

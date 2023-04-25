@@ -14,7 +14,7 @@ from modules.const import (
     gtHsh,
     ownerUserUrl,
 )
-from modules.i18n import lang, readUserLang
+from modules.i18n import fetch_language_data, read_user_language
 
 
 class CommonCommands(ipy.Extension):
@@ -24,8 +24,8 @@ class CommonCommands(ipy.Extension):
 
     @ipy.slash_command(name="about", description="Get information about the bot")
     async def about(self, ctx: ipy.SlashContext):
-        ul = readUserLang(ctx)
-        l_ = lang(ul)["about"]
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul)["about"]
         embed = ipy.Embed(
             title=l_["header"],
             description=l_["text"].format(
@@ -49,8 +49,8 @@ class CommonCommands(ipy.Extension):
     )
     async def ping(self, ctx: ipy.SlashContext, defer: bool = False):
         start = pc()
-        ul = readUserLang(ctx)
-        l_ = lang(ul)["ping"]
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul)["ping"]
         langEnd = pc()
         if defer:
             await ctx.defer()  # to make sure if benchmark reflects other commands with .defer()
@@ -126,8 +126,8 @@ class CommonCommands(ipy.Extension):
 
     @ipy.slash_command(name="invite", description="Get the bot invite link")
     async def invite(self, ctx: ipy.SlashContext):
-        ul = readUserLang(ctx)
-        l_ = lang(ul)["invite"]
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul)["invite"]
         invLink = f"https://discord.com/api/oauth2/authorize?client_id={BOT_CLIENT_ID}&permissions=274878221376&scope=bot%20applications.commands"
         dcEm = ipy.Embed(
             title=l_["title"],
@@ -162,8 +162,8 @@ class CommonCommands(ipy.Extension):
         name="privacy", description="Get the bot's tl;dr version of privacy policy"
     )
     async def privacy(self, ctx: ipy.SlashContext):
-        ul = readUserLang(ctx)
-        l_ = lang(ul)["privacy"]
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul)["privacy"]
         butt = ipy.Button(
             label=l_["read"],
             url="https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md",
@@ -180,8 +180,8 @@ class CommonCommands(ipy.Extension):
         name="support", description="Give (financial) support to the bot"
     )
     async def support(self, ctx: ipy.SlashContext):
-        ul = readUserLang(ctx)
-        l_ = lang(ul)["support"]
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul)["support"]
         txt: str = l_["text"]
         em = ipy.Embed(
             title=l_["title"],

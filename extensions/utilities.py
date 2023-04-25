@@ -6,8 +6,8 @@ import interactions as ipy
 from plusminus import BaseArithmeticParser as BAP
 
 from classes.thecolorapi import TheColorApi
-from modules.commons import snowflake_to_datetime, utilitiesExceptionEmbed
-from modules.i18n import lang, readUserLang
+from modules.commons import snowflake_to_datetime, generate_utils_except_embed
+from modules.i18n import fetch_language_data, read_user_language
 
 
 class Utilities(ipy.Extension):
@@ -32,8 +32,8 @@ class Utilities(ipy.Extension):
     )
     async def utilities_math(self, ctx: ipy.SlashContext, expression: str):
         await ctx.defer()
-        ul = readUserLang(ctx)
-        l_ = lang(ul)["utilities"]
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul)["utilities"]
         try:
             exp = BAP().evaluate(expression)
             await ctx.send(
@@ -56,7 +56,7 @@ class Utilities(ipy.Extension):
             )
         except Exception as e:
             await ctx.send(
-                embed=utilitiesExceptionEmbed(
+                embed=generate_utils_except_embed(
                     language=ul,
                     description=l_["math"]["exception"],
                     field_name=l_["math"]["expression"],
@@ -89,8 +89,8 @@ class Utilities(ipy.Extension):
     )
     async def utilities_base64(self, ctx: ipy.SlashContext, mode: str, string: str):
         await ctx.defer()
-        ul = readUserLang(ctx)
-        l_ = lang(ul)["utilities"]
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul)["utilities"]
         try:
             if mode == "encode":
                 res = b64encode(string.encode()).decode()
@@ -120,7 +120,7 @@ class Utilities(ipy.Extension):
             )
         except Exception as e:
             await ctx.send(
-                embed=utilitiesExceptionEmbed(
+                embed=generate_utils_except_embed(
                     language=ul,
                     description=l_["base64"]["exception"],
                     field_name=l_["commons"]["string"],
@@ -155,8 +155,8 @@ class Utilities(ipy.Extension):
     )
     async def utilities_color(self, ctx: ipy.SlashContext, format: str, color: str):
         await ctx.defer()
-        ul = readUserLang(ctx)
-        l_ = lang(ul)["utilities"]
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul)["utilities"]
         res: dict = {}
         try:
             if (
@@ -208,7 +208,7 @@ class Utilities(ipy.Extension):
             )
         except Exception as e:
             await ctx.send(
-                embed=utilitiesExceptionEmbed(
+                embed=generate_utils_except_embed(
                     language=ul,
                     description=l_["color"]["exception"],
                     field_name=l_["color"]["color"],
@@ -245,8 +245,8 @@ class Utilities(ipy.Extension):
         self, ctx: ipy.SlashContext, string: str, error_correction: str = "L"
     ):
         await ctx.defer()
-        ul = readUserLang(ctx)
-        l_ = lang(ul)["utilities"]
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul)["utilities"]
         try:
             params = {
                 "data": string,
@@ -277,7 +277,7 @@ class Utilities(ipy.Extension):
             )
         except Exception as e:
             await ctx.send(
-                embed=utilitiesExceptionEmbed(
+                embed=generate_utils_except_embed(
                     language=ul,
                     description=l_["qrcode"]["exception"],
                     field_name=l_["commons"]["string"],
@@ -301,8 +301,8 @@ class Utilities(ipy.Extension):
     async def utilities_snowflake(self, ctx: ipy.SlashContext, snowflake: str):
         """Convert a Discord Snowflake to a timestamp"""
         await ctx.defer()
-        ul = readUserLang(ctx)
-        l_ = lang(ul)["utilities"]["snowflake"]
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul)["utilities"]["snowflake"]
         tmsp = int(snowflake_to_datetime(int(snowflake)))
         await ctx.send(
             embed=ipy.Embed(

@@ -15,7 +15,7 @@ from interactions.ext.paginators import Paginator
 from modules.const import LANGUAGE_CODE
 
 
-def lang(code: str, useRaw: bool = False) -> dict:
+def fetch_language_data(code: str, useRaw: bool = False) -> dict:
     """Get the language strings for a given language code
 
     Args:
@@ -32,10 +32,10 @@ def lang(code: str, useRaw: bool = False) -> dict:
                 return data
             return data["strings"]
     except FileNotFoundError:
-        return lang(LANGUAGE_CODE)
+        return fetch_language_data(LANGUAGE_CODE)
 
 
-def readUserLang(ctx: BaseContext | InteractionContext) -> str:
+def read_user_language(ctx: BaseContext | InteractionContext) -> str:
     """Read the user's language preference from the database
 
     Args:
@@ -69,7 +69,7 @@ def readUserLang(ctx: BaseContext | InteractionContext) -> str:
     return language
 
 
-async def paginateLanguage(bot: Client, ctx: InteractionContext) -> None:
+async def paginate_language(bot: Client, ctx: InteractionContext) -> None:
     """Paginate the language list
 
     Args:
@@ -107,7 +107,7 @@ async def paginateLanguage(bot: Client, ctx: InteractionContext) -> None:
     await pagin.send(ctx)
 
 
-def searchLanguage(query: str) -> list[dict]:
+def search_language(query: str) -> list[dict]:
     """Search for a language for auto-complete
 
     Args:
@@ -129,7 +129,7 @@ def searchLanguage(query: str) -> list[dict]:
     return results
 
 
-def checkLangExist(code: str) -> bool:
+def check_lang_exist(code: str) -> bool:
     """Check if a language exists
 
     Args:
@@ -146,7 +146,7 @@ def checkLangExist(code: str) -> bool:
     return False
 
 
-async def setLanguage(
+async def set_default_language(
     code: str, ctx: InteractionContext, isGuild: bool = False
 ) -> None:
     """Set the user's/guild's language preference
@@ -157,7 +157,7 @@ async def setLanguage(
         isGuild (bool, optional): Whether to set the guild's language preference or not. Defaults to False.
     """
     if isGuild is True:
-        if checkLangExist(code) is False:
+        if check_lang_exist(code) is False:
             raise Exception("Language not found, recheck the spelling and try again")
         # check if guild is already in database
         try:
@@ -179,7 +179,7 @@ async def setLanguage(
                 writer.writerow(["serverId", "language"])
                 writer.writerow([ctx.guild.id, code])
     else:
-        if checkLangExist(code) is False:
+        if check_lang_exist(code) is False:
             raise Exception("Language not found, recheck the spelling and try again")
 
         try:

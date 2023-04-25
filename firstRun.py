@@ -12,7 +12,7 @@ import os
 import shlex
 import subprocess
 
-from modules.oobe.commons import checkTermux, current_os, prepare_database, py_bin_path
+from modules.oobe.commons import check_termux, current_os, prepare_database, py_bin_path
 from modules.oobe.getNekomimi import nk_run
 from modules.oobe.i18nBuild import convert_langs_to_json
 from modules.oobe.jikan import install_jikanpy, update_jikanpy
@@ -35,7 +35,7 @@ def first_run(py_bin: str = py_bin_path()):
     if not os.path.exists("requirements.txt"):
         raise Exception("Please run the script from the root directory.")
     # Check if Termux is used
-    env = 'MATHLAB="m" ' if checkTermux() else ""
+    env = 'MATHLAB="m" ' if check_termux() else ""
     # Check if jikanpy is installed and up-to-date
     try:
         from jikanpy import AioJikan

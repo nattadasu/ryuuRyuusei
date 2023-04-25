@@ -2,7 +2,7 @@ import interactions as ipy
 from emoji import emojize
 
 from modules.const import EMOJI_FORBIDDEN, EMOJI_SUCCESS
-from modules.i18n import paginateLanguage, searchLanguage, setLanguage
+from modules.i18n import paginate_language, search_language, set_default_language
 
 
 class UserSettings(ipy.Extension):
@@ -20,7 +20,7 @@ class UserSettings(ipy.Extension):
         sub_cmd_description="List the available languages",
     )
     async def usersettings_language_list(self, ctx: ipy.InteractionContext):
-        await paginateLanguage(bot=self.bot, ctx=ctx)
+        await paginate_language(bot=self.bot, ctx=ctx)
 
     @usersettings.subcommand(
         group_name="language",
@@ -37,14 +37,14 @@ class UserSettings(ipy.Extension):
     )
     async def usersettings_language_set(self, ctx: ipy.InteractionContext, lang: str):
         try:
-            await setLanguage(code=lang, ctx=ctx, isGuild=False)
+            await set_default_language(code=lang, ctx=ctx, isGuild=False)
             await ctx.send(f"{EMOJI_SUCCESS} Language set to {lang}", ephemeral=True)
         except Exception as e:
             await ctx.send(f"{EMOJI_FORBIDDEN} {e}")
 
     @usersettings_language_set.autocomplete("lang")
     async def code_autocomplete(self, ctx: ipy.AutocompleteContext):
-        data = searchLanguage(ctx.input_text)
+        data = search_language(ctx.input_text)
         # only return the first 10 results
         data = data[:10]
         final = []

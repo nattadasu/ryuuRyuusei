@@ -1,7 +1,7 @@
 from classes.anilist import AniList
 
 
-async def searchAniListAnime(title: str) -> dict:
+async def search_al_anime(title: str) -> dict:
     """Search anime via AniList API, formatted in MAL style
 
     Args:

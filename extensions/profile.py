@@ -3,8 +3,8 @@ from datetime import datetime as dtime
 import interactions as ipy
 
 from classes.database import UserDatabase
-from modules.commons import generalExceptionEmbed, sanitizeMarkdown
-from modules.i18n import lang, readUserLang
+from modules.commons import generate_commons_except_embed, sanitize_markdown
+from modules.i18n import fetch_language_data, read_user_language
 
 
 class Profile(ipy.Extension):
@@ -32,8 +32,8 @@ class Profile(ipy.Extension):
     )
     async def profile_discord(self, ctx: ipy.SlashContext, user: ipy.User = None):
         await ctx.defer()
-        ul = readUserLang(ctx)
-        l_ = lang(ul, useRaw=True)
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul, useRaw=True)
         lp = l_["strings"]["profile"]
         try:
             if user is None:
@@ -78,9 +78,9 @@ class Profile(ipy.Extension):
                         avatar += ".png"
                     avatar += "?size=4096"
                 if servData["nick"] is not None:
-                    nick = sanitizeMarkdown(servData["nick"])
+                    nick = sanitize_markdown(servData["nick"])
                 else:
-                    nick = sanitizeMarkdown(data.username)
+                    nick = sanitize_markdown(data.username)
                     nick += " " + lp["commons"]["default"]
                 joined = dtime.strptime(servData["joined_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
                 joined = int(joined.timestamp())
@@ -139,7 +139,7 @@ class Profile(ipy.Extension):
 
             await ctx.send(embed=embed)
         except Exception as e:
-            embed = generalExceptionEmbed(
+            embed = generate_commons_except_embed(
                 description=l_["strings"]["profile"]["commons"]["exception"]["general"],
                 error=e,
                 lang_dict=l_,
@@ -168,8 +168,8 @@ class Profile(ipy.Extension):
         self, ctx: ipy.SlashContext, user: ipy.User = None, mal_username: str = None
     ):
         # await ctx.defer()
-        # ul = readUserLang(ctx)
-        # l_ = lang(ul, useRaw=True)
+        # ul = read_user_language(ctx)
+        # l_ = fetch_language_data(ul, useRaw=True)
         await ctx.send(
             "This command is currently disabled as it not have been implemented yet."
         )

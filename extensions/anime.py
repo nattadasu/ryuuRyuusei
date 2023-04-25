@@ -3,10 +3,10 @@ from re import sub as rSub
 
 import interactions as ipy
 
-from modules.anilist import searchAniListAnime
-from modules.commons import generateSearchSelections, sanitizeMarkdown
+from modules.anilist import search_al_anime
+from modules.commons import genrate_search_embed, sanitize_markdown
 from modules.const import EMOJI_UNEXPECTED_ERROR
-from modules.i18n import lang, readUserLang
+from modules.i18n import fetch_language_data, read_user_language
 from modules.myanimelist import malSubmit, searchMalAnime
 
 
@@ -44,8 +44,8 @@ class Anime(ipy.Extension):
         self, ctx: ipy.SlashContext, query: str, provider: str = "anilist"
     ):
         await ctx.defer()
-        ul = readUserLang(ctx)
-        l_ = lang(ul, useRaw=True)
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul, useRaw=True)
         send = await ctx.send(
             embed=ipy.Embed(
                 title=l_["commons"]["search"]["init_title"],
@@ -59,7 +59,7 @@ class Anime(ipy.Extension):
         so = []
         try:
             if provider == "anilist":
-                res = await searchAniListAnime(title=query)
+                res = await search_al_anime(title=query)
                 if res is None or len(res) == 0:
                     raise Exception("No result")
             elif provider == "mal":
@@ -87,10 +87,10 @@ class Anime(ipy.Extension):
                     else l_["commons"]["year"]["unknown"]
                 )
                 title = a["title"]
-                mdTitle = sanitizeMarkdown(title)
+                mdTitle = sanitize_markdown(title)
                 alt = a["alternative_titles"]
                 if alt is not None and alt["ja"] is not None:
-                    native = sanitizeMarkdown(alt["ja"])
+                    native = sanitize_markdown(alt["ja"])
                     native += "\n"
                 else:
                     native = ""
@@ -113,7 +113,7 @@ class Anime(ipy.Extension):
                 title = l_["commons"]["search"]["result_title"].format(QUERY=query)
                 if provider == "anilist":
                     title += " (AniList)"
-                result = generateSearchSelections(
+                result = genrate_search_embed(
                     title=title,
                     language=ul,
                     mediaType="anime",

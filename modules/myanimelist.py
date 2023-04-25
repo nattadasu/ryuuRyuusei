@@ -26,11 +26,11 @@ from classes.kitsu import Kitsu
 from classes.myanimelist import MyAnimeList
 from classes.simkl import Simkl
 from modules.commons import (
-    generateTrailer,
-    getParentNsfwStatus,
-    getRandom,
-    sanitizeMarkdown,
-    trimCyno,
+    generate_trailer,
+    get_parent_nsfw_status,
+    get_random_seed,
+    sanitize_markdown,
+    trim_cyno,
 )
 from modules.const import (
     EMOJI_FORBIDDEN,
@@ -41,7 +41,7 @@ from modules.const import (
     simkl0rels,
     warnThreadCW,
 )
-from modules.i18n import readUserLang
+from modules.i18n import read_user_language
 
 
 def lookupRandomAnime() -> int:
@@ -53,7 +53,7 @@ def lookupRandomAnime() -> int:
     Returns:
         int: MAL ID of a random anime
     """
-    seed = getRandom()
+    seed = get_random_seed()
     # open database/mal.csv
     df = pd.read_csv("database/mal.csv", sep="\t")
     # get random anime
@@ -175,7 +175,7 @@ async def generateMal(
         Embed: Embed object
     """
     # get locale
-    # l_ = lang(code)
+    # l_ = fetch_language_data(code)
     async with JikanApi() as jikan:
         j = await jikan.get_anime_data(entry_id)
     if alDict is not None:
@@ -210,16 +210,16 @@ async def generateMal(
         )
 
         if len(str(cynoin)) <= 150:
-            cyno = sanitizeMarkdown(cynoin)
+            cyno = sanitize_markdown(cynoin)
             if synl >= 3:
                 cyno += "\n> \n> "
-                cyno += trimCyno(sanitizeMarkdown(j_spl[2]))
+                cyno += trim_cyno(sanitize_markdown(j_spl[2]))
         elif len(str(cynoin)) >= 1000:
-            cyno = trimCyno(sanitizeMarkdown(cynoin))
+            cyno = trim_cyno(sanitize_markdown(cynoin))
             # when cyno has ... at the end, it means it's trimmed, then add
             # read more
         else:
-            cyno = sanitizeMarkdown(cynoin)
+            cyno = sanitize_markdown(cynoin)
 
         if (
             (cyno[-3:] == "...")
@@ -583,11 +583,11 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
         *None*
     """
     channel = ctx.channel
-    ul = readUserLang(ctx)
+    ul = read_user_language(ctx)
     alData = {}
     if channel.type in (11, 12):
         prId = channel.parent_id
-        nsfwBool = await getParentNsfwStatus(prId)
+        nsfwBool = await get_parent_nsfw_status(prId)
     else:
         nsfwBool = channel.nsfw
     trailer = None
@@ -602,7 +602,7 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
             if (alData["trailer"] is not None) and (
                 alData["trailer"]["site"] == "youtube"
             ):
-                trailer = generateTrailer(data=alData["trailer"], isMal=False)
+                trailer = generate_trailer(data=alData["trailer"], isMal=False)
                 trailer = [trailer]
             else:
                 trailer = []

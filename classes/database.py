@@ -3,7 +3,7 @@ import json
 import pandas as pd
 
 from modules.const import CLUB_ID, EMOJI_UNEXPECTED_ERROR, database
-from modules.jikan import checkClubMembership
+from modules.jikan import check_club_membership
 
 
 class UserDatabase:
@@ -37,7 +37,10 @@ class UserDatabase:
             bool: True if user is registered, False if not
         """
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        return str(discord_id) in df["discordId"].values
+        val = False
+        if str(discord_id) in df["discordId"].values:
+            val = True
+        return val
 
     async def save_to_database(
         self,
@@ -118,7 +121,7 @@ class UserDatabase:
             )
 
         username = row.iloc[0]["malUsername"]
-        clubs = await checkClubMembership(username)
+        clubs = await check_club_membership(username)
         verified = False
         for club in clubs:
             if str(club["mal_id"]) == str(CLUB_ID):
