@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """A script to run first-time setup for a Discord bot.
 
 This script installs dependencies, prepares the database, fetches data from GitHub,
@@ -54,7 +53,6 @@ def first_run(py_bin: str = py_bin_path()):
     print(
         "Installing and upgrading dependencies for the next step and the bot itself..."
     )
-    # os.system(f"{env}{py_bin} -m pip install -U -r requirements.txt")
     if current_os() == "Windows":
         subprocess.run(
             [env + py_bin, "-m", "pip", "install", "-U", "-r", "requirements.txt"],
