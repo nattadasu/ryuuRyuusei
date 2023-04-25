@@ -83,7 +83,8 @@ class CommonCommands(ipy.Extension):
         ]
         readLat_start = pc()
         with open(database, "r", encoding="utf-8") as f:
-            reader = csv.reader(f, delimiter="\t")
+            # skipcq: PYL-W0612
+            reader = csv.reader(f, delimiter="\t") # pyright: ignore
         readLat_end = pc()
         fields += [
             ipy.EmbedField(
