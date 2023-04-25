@@ -585,7 +585,7 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
     channel = ctx.channel
     ul = readUserLang(ctx)
     alData = {}
-    if channel.type == 11 or channel.type == 12:
+    if channel.type in (11, 12):
         prId = channel.parent_id
         nsfwBool = await getParentNsfwStatus(prId)
     else:
