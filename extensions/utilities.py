@@ -164,7 +164,7 @@ class Utilities(ipy.Extension):
                 and re.match(r"^#?(?:[0-9a-fA-F]{3}){1,2}$", color) is None
             ):
                 raise ValueError("Invalid hex color")
-            elif format == "hex" and re.match(r"^#", color) is None:
+            if format == "hex" and re.match(r"^#", color) is None:
                 color = f"#{color}"
             async with TheColorApi() as tca:
                 match format:

@@ -175,11 +175,11 @@ class RandomOrg:
         ):
             if digits not in ["on", "off"]:
                 raise ProviderTypeError("Digits must be on or off", "digits")
-            elif upperalpha not in ["on", "off"]:
+            if upperalpha not in ["on", "off"]:
                 raise ProviderTypeError("Upperalpha must be on or off", "upperalpha")
-            elif loweralpha not in ["on", "off"]:
+            if loweralpha not in ["on", "off"]:
                 raise ProviderTypeError("Loweralpha must be on or off", "loweralpha")
-            elif unique not in ["on", "off"]:
+            if unique not in ["on", "off"]:
                 raise ProviderTypeError("Unique must be on or off", "unique")
         params = self.params.copy()
         params["num"] = num
