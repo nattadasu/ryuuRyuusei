@@ -39,6 +39,7 @@ By inviting this bot to your server or using it, you agree to the
 
 To use the bot, invite it to your server using this link:
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/abdcfba3715242ff8d1d9de6cf98d27a)](https://app.codacy.com/gh/nattadasu/ryuuRyuusei?utm_source=github.com&utm_medium=referral&utm_content=nattadasu/ryuuRyuusei&utm_campaign=Badge_Grade)
 [![Shield](https://img.shields.io/badge/Invite%20to%20your%20server-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=811887256368840744&permissions=274878221376&scope=bot%20applications.commands)
 
 Next, go to the channel you want to use the bot in and type `/` to see the list
