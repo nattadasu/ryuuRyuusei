@@ -46,7 +46,6 @@ def first_run(py_bin: str = py_bin_path()):
         if os.system("git diff --exit-code origin/master") != 0:
             update_jikanpy()
         os.chdir("..")
-        del AioJikan
     except ImportError:
         install_jikanpy()
     # Install dependencies
