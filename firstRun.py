@@ -56,7 +56,7 @@ def first_run(py_bin: str = py_bin_path()):
         subprocess.run(
             [env + py_bin, "-m", "pip", "install", "-U", "-r", "requirements.txt"],
             shell=False,
-        )
+        check=True)
     else:
         os.system(
             shlex.join(

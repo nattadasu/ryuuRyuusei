@@ -52,7 +52,7 @@ async def main():
 
     # git pull
     print("[Sys] Checking for updates...")
-    subprocess.run(["git", "pull"])
+    subprocess.run(["git", "pull"], check=True)
 
     from firstRun import first_run
 
