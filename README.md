@@ -6,10 +6,14 @@
 </p>
 
 <!-- omit in toc -->
-<h3 align="center">Ryuuzaki Ryuusei</h3>
+<h2 align="center">Ryuuzaki Ryuusei</h2><br>
 
-<p align="center"><img src="https://img.shields.io/badge/Interactions.py-5.0.0-blue?style=for-the-badge&logo=python">
-<img src="https://img.shields.io/badge/Python-3.10_and_above-blue?style=for-the-badge&logo=python"></p>
+<p align="center"><img src="https://img.shields.io/badge/Interactions.py-5.0.0-blue?logo=python">
+<img src="https://img.shields.io/badge/Python-3.10_and_above-blue?logo=python"><br>
+<a href="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei/?ref=repository-badge}" target="_blank"><img alt="DeepSource" title="DeepSource" src="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei.svg/?label=active+issues&show_trend=true&token=e6p1rkAiFj4re6lheVEBPfd5"/></a>
+<a href="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei/?ref=repository-badge}" target="_blank"><img alt="DeepSource" title="DeepSource" src="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei.svg/?label=resolved+issues&show_trend=true&token=e6p1rkAiFj4re6lheVEBPfd5"/></a>
+<a href="https://app.codacy.com/gh/nattadasu/ryuuRyuusei/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8109d97c7cca49ef9dbc96a82796ad66"/></a>
+<a title="Crowdin" target="_blank" href="https://crowdin.com/project/ryuuRyuusei"><img src="https://badges.crowdin.net/ryuuRyuusei/localized.svg"></a></p>
 
 ---
 
@@ -99,75 +103,83 @@ If you have any questions, feel free to join the
 
 ## 📣 Available Commands <a name = "commands"></a>
 
+> **Note**
+>
+> Since you're accessing this rewrite branch of the bot...
+> Any command that has ⌚ as prefix means that the command is not currently
+> available during heavy rewrite. It will be available soon, well... hopefully.
+
 ### Anime Commands
 
 > Utilize MyAnimeList via Jikan
 
-- `/anime info` - Get information about an anime using direct MyAnimeList ID
-- `/anime random` - Get a random anime from MyAnimeList, powered by
-  [AnimeApi](https://nttds.my.id/discord)
+- ⌚ `/anime info` - Get information about an anime using direct MyAnimeList ID
 - `/anime search` - Search for an anime, using AniList's search API
 
 ### Manga Commands
 
 > Utilize AniList
 
-- `/manga info` - Get information about a manga using direct AniList ID
-- `/manga search` - Search for a manga
+- ⌚ `/manga info` - Get information about a manga using direct AniList ID
+- ⌚ `/manga search` - Search for a manga
 
 ### Game Commands
 
 > Utilize RAWG
 
-- `/games info` - Get information about a game using direct RAWG ID
-- `/games search` - Search for a game
+- ⌚ `/games info` - Get information about a game using direct RAWG ID
+- ⌚ `/games search` - Search for a game
 
 ### TV and Movie Commands
 
 > Utilize SIMKL for Metadata and TMDB for NSFW check
 
-- `/movie info` - Get information about a movie using direct SIMKL ID
-- `/movie search` - Search for a movie
-- `/tv info` - Get information about a TV show using direct SIMKL ID
-- `/tv search` - Search for a TV show
+- ⌚ `/movie info` - Get information about a movie using direct SIMKL ID
+- ⌚ `/movie search` - Search for a movie
+- ⌚ `/tv info` - Get information about a TV show using direct SIMKL ID
+- ⌚ `/tv search` - Search for a TV show
 
 ### Music Commands
 
 > Utilize Spotify
 
-- `/music album info` - Get information about an album using direct Spotify ID
-- `/music album search` - Search for an album
-- `/music artist info` - Get information about an artist using direct Spotify ID
-- `/music artist search` - Search for an artist
-- `/music track info` - Get information about a track using direct Spotify ID
-- `/music track search` - Search for a track
+- ⌚ `/music album info` - Get information about an album using direct Spotify ID
+- ⌚ `/music album search` - Search for an album
+- ⌚ `/music artist info` - Get information about an artist using direct Spotify ID
+- ⌚ `/music artist search` - Search for an artist
+- ⌚ `/music track info` - Get information about a track using direct Spotify ID
+- ⌚ `/music track search` - Search for a track
 
 ### External Link Relation Command
 
 > Utilize nattadasu's AnimeAPI for video type, AniList for manga, and Song.link
 > for music
 
-- `/relations shows` - Get external link relation for an anime, TV, or movie
-- `/relations manga` - Get external link relation for a manga, limited to
-  AniList, MyAnimeList, and Shikimori.
-- `/relations music track` - Get external link relation for a track.
-- `/relations music album` - Get external link relation for an album.
+- ⌚ `/relations manga` - Get external link relation for a manga, limited to
+  AniList, MyAnimeList, and Shikimori
+- ⌚ `/relations music album` - Get external link relation for an album
+- ⌚ `/relations music track` - Get external link relation for a track
+- ⌚ `/relations shows` - Get external link relation for an anime, TV, or movie
 
-### Last.FM Integration Commands
+### Profile Lookup Commands
 
-- `/lastfm` - Get your last.fm profile and the scrobble summary
+> Shows your profile information from supported platforms.
+
+- ⌚ `/profile anilist` - Get your AniList profile
+- `/profile discord` - Get your Discord profile
+- ⌚ `/profile lastfm` - Get your Last.fm profile
+- ⌚ `/profile myanimelist` - Get your MyAnimeList profile
+- ⌚ `/whoami` - Show stored information and settings about you on the bot
+  graphically and interactively.
 
 ### Data Control
 
-- `/export_data` - Export your data from the bot in JSON
-- `/profile` - Get your MAL profile, statistic available on extended view
-  (passed from option/argument)
-- `/register` - Register your MAL account to the bot
-- `/unregister` - Unregister your MAL account and drops your settings from the
+- ⌚ `/export data` - Export your data from the bot in JSON
+- ⌚ `/register` - Register your MAL account to the bot
+- ⌚ `/unregister` - Unregister your MAL account and drops your settings from the
   bot
-- `/verify` - Verify your MAL account to the server that host the bot (you may
+- ⌚ `/verify` - Verify your MAL account to the server that host the bot (you may
   need to join the club first)
-- `/whois` - Get information about a user, including their MAL account (if any)
 
 ### Settings Commands
 
@@ -182,22 +194,39 @@ If you have any questions, feel free to join the
 
 - `/serversettings language set` - Set your preferred language for the bot
   response
-- `/serversettings member register` - Register member's MAL account to the bot,
+- ⌚ `/serversettings member register` - Register member's MAL account to the bot,
   used when user can't invoke `/register`
-- `/serversettings member unregister` - Unregister member's MAL account from the
+- ⌚ `/serversettings member unregister` - Unregister member's MAL account from the
   bot, used when user can't invoke `/unregister`
-- `/serversettings member verify` - Verify member's MAL account to the server
+- ⌚ `/serversettings member verify` - Verify member's MAL account to the server
   that host the bot, used when user can't invoke `/verify`
 
-### Miscellaneous Commands
+### Randomization Commands
 
-- `/random_nekomimi` - Get a random nekomimi image from the database, powered by
-  [nattadasu/nekomimiDb](https://github.com/nattadasu/nekomimiDb)
-  - `/random_nekomimi bois` - Get a random male nekomimi image
-  - `/random_nekomimi gurls` - Get a random female nekomimi image
-  - `/random_nekomimi true_random` - *Harness the true power of having a random*
-    *nekomimi image*
-- `/snowflake` - Convert Discord snowflake to UNIX/Epoch timestamp
+> Collection of commands that returns random result.
+
+- `/random anime` - Get a random anime from MyAnimeList, powered by
+  [AnimeApi](https://nttds.my.id/discord)
+- ⌚ `/random movie` - Get a random movie from SIMKL
+- `/random nekomimi` - Get a random nekomimi image from nattadasu's nekomimiDb
+  - `/random nekomimi boy` - Show an image of a boy in nekomimi
+  - `/random nekomimi girl` - Show an image of a girl in nekomimi
+  - `/random nekomimi randomize` - Show an image of a character in nekomimi
+    regardless the gender.
+- `/random number` - Get a random number from Random.org
+- `/random string` - Get a random string from Random.org
+- ⌚ `/random tv` - Get a random TV show from SIMKL
+
+### Utility Commands
+
+> Collection of commands that are (might be) useful for everyday use.
+
+- ⌚ `/utilities avatar` - Get a user's avatar
+- `/utilities base64` - Encode or decode a string to or from Base64
+- `/utilities color` - Get a color's information
+- `/utilities math` - Evaluate a mathematical expression
+- `/utilities qrcode` - Generate a QR code from a string
+- `/utilities snowflake` - Get a snowflake's information
 
 ### Commons Bot Commands
 
@@ -205,6 +234,8 @@ If you have any questions, feel free to join the
 - `/invite` - Get the bot's invite link
 - `/ping` - Check the bot latency
 - `/privacy` - Get information about the bot's privacy policy
+- `/support` - Support the bot by donating or contributing to the bot's
+  development
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
