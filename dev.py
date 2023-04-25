@@ -37,7 +37,8 @@ for root, dirs, files in os.walk("."):
 
             # format the file using autopep8
             subprocess.run(
-                ["autopep8", "--in-place", "--aggressive", "--aggressive", file_path]
+                ["autopep8", "--in-place", "--aggressive", "--aggressive", file_path],
+                check=True,
             )
 
         elif file.endswith(".json"):

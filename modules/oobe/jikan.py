@@ -59,7 +59,9 @@ def update_jikanpy(pf: str = pf):
         f.write(reqs)
     if os.name == "nt":
         subprocess.run(
-            [pf, "-m", "pip", "install", "-r", "requirements.txt"], shell=False
+            [pf, "-m", "pip", "install", "-r", "requirements.txt"],
+            shell=False,
+            check=True,
         )
     else:
         os.system(
