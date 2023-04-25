@@ -55,10 +55,9 @@ class LastFM:
                 raise ProviderHttpError(
                     "User can not be found on Last.fm. Check the name or register?"
                 )
-            else:
-                jsonText = await resp.text()
-                jsonFinal = loads(jsonText)
-                ud = jsonFinal["user"]
+            jsonText = await resp.text()
+            jsonFinal = loads(jsonText)
+            ud = jsonFinal["user"]
         return ud
 
     async def get_user_recent_tracks(
