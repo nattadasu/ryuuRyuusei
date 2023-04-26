@@ -22,8 +22,10 @@ def current_os() -> str:
 class UnsupportedOS(Exception):
     """Unsupported operating system."""
 
+
 class UnsupportedVersion(Exception):
     """Unsupported version of Python."""
+
     def __init__(self, message: str, version: str):
         super().__init__(message)
         self.version = version
