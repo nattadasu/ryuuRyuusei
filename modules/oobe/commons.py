@@ -1,6 +1,6 @@
 import os
 import platform
-import subprocess
+import sys
 
 
 def current_os() -> str:
@@ -17,6 +17,16 @@ def current_os() -> str:
         'Windows'
     """
     return platform.system()
+
+
+class UnsupportedOS(Exception):
+    """Unsupported operating system."""
+
+class UnsupportedVersion(Exception):
+    """Unsupported version of Python."""
+    def __init__(self, message: str, version: str):
+        super().__init__(message)
+        self.version = version
 
 
 def py_bin_path() -> str:
@@ -40,49 +50,13 @@ def py_bin_path() -> str:
         # return the env var if it exists
         return os.getenv("PYTHON_BINARY")
 
-    def ask_python(shell_output: str) -> bool:
-        """Directly ask Python what version it is"""
-        so = shell_output.split(" ")
-        v = so[1].split(".")
-        # return True if version >= 3.10, False otherwise
-        if (int(v[0]) >= 3) and (int(v[1]) >= 10):
-            return True
-        return False
-
-    if current_os() == "Windows":
-        try:
-            py = subprocess.check_output("python --version", shell=True).decode("utf-8")
-            if ask_python(py):
-                return "python"
-            raise subprocess.CalledProcessError()
-        except subprocess.CalledProcessError:
-            paths = subprocess.check_output("where python", shell=True).decode("utf-8")
-            paths = paths.replace("\r", "").split("\n")
-            # reverse the list, so we can get the up to date python version
-            paths.reverse()
-            # if index 0 is '', drop it
-            if paths[0] == "":
-                paths = paths[1:]
-            for path in paths:
-                p = path.split("\\")
-                # Check if version is >= 3.10
-                if int(p[-2].replace("Python", "")) >= 310:
-                    return path
-
-            return "python"
-    else:
-        try:
-            py3 = subprocess.check_output("python3 --version", shell=True).decode(
-                "utf-8"
-            )
-            if ask_python(py3):
-                return "python3"
-            raise subprocess.CalledProcessError()
-        except subprocess.CalledProcessError:
-            py = subprocess.check_output("python --version", shell=True).decode("utf-8")
-            if ask_python(py):
-                return "python"
-            raise Exception("Python version is too old")
+    # get current python version with sys.version_info
+    py_version = sys.version_info
+    # if python version is >= 3.10, return the path to the binary
+    if py_version >= (3, 10):
+        return sys.executable
+    # if python version is < 3.10, raise an exception
+    raise UnsupportedVersion(version=sys.version, message="Python version is too old.")
 
 
 pf = py_bin_path()
