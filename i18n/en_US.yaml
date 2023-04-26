@@ -88,6 +88,337 @@ quantities:
     one: 1 minute
     two: 2 minutes
     many: "{count} minutes"
+genres:
+  4_koma: 4-koma
+  achromatic: Achromatic
+  achronological_order: Achronological Order
+  acting: Acting
+  action: Action
+  adoption: Adoption
+  adventure: Adventure
+  advertisement: Advertisement
+  afterlife: Afterlife
+  age_gap: Age Gap
+  age_regression: Age Regression
+  agender: Agender
+  agriculture: Agriculture
+  airsoft: Airsoft
+  alchemy: Alchemy
+  aliens: Aliens
+  alternate_universe: Alternate Universe
+  american_football: American Football
+  amnesia: Amnesia
+  anachronism: Anachronism
+  angels: Angels
+  animals: Animals
+  anthology: Anthology
+  anthropomorphic: Anthropomorphic
+  anti_hero: Anti-Hero
+  archery: Archery
+  artificial_intelligence: Artificial Intelligence
+  asexual: Asexual
+  assassins: Assassins
+  astronomy: Astronomy
+  athletics: Athletics
+  augmented_reality: Augmented Reality
+  autobiographical: Autobiographical
+  aviation: Aviation
+  award_winning: Award Winning
+  badminton: Badminton
+  band: Band
+  bar: Bar
+  baseball: Baseball
+  basketball: Basketball
+  battle_royale: Battle Royale
+  biographical: Biographical
+  bisexual: Bisexual
+  body_horror: Body Horror
+  body_swapping: Body Swapping
+  boxing: Boxing
+  boys_love: Boys' Love
+  bullying: Bullying
+  butler: Butler
+  calligraphy: Calligraphy
+  cannibalism: Cannibalism
+  card_battle: Card Battle
+  cars: Cars
+  centaur: Centaur
+  cgi: CGI
+  cheerleading: Cheerleading
+  chibi: Chibi
+  childcare: Childcare
+  chimera: Chimera
+  chuunibyou: Chuunibyou
+  circus: Circus
+  classic_literature: Classic Literature
+  clone: Clone
+  college: College
+  combat_sports: Combat Sports
+  comedy: Comedy
+  coming_of_age: Coming of Age
+  conspiracy: Conspiracy
+  cosmic_horror: Cosmic Horror
+  cosplay: Cosplay
+  crime: Crime
+  crossdressing: Crossdressing
+  crossover: Crossover
+  cult: Cult
+  cultivation: Cultivation
+  cute_boys_doing_cute_things: Cute Boys Doing Cute Things
+  cute_girls_doing_cute_things: Cute Girls Doing Cute Things
+  cyberpunk: Cyberpunk
+  cyborg: Cyborg
+  cycling: Cycling
+  dancing: Dancing
+  death_game: Death Game
+  delinquents: Delinquents
+  demons: Demons
+  denpa: Denpa
+  desert: Desert
+  detective: Detective
+  dinosaurs: Dinosaurs
+  disability: Disability
+  dissociative_identities: Dissociative Identities
+  dragons: Dragons
+  drama: Drama
+  drawing: Drawing
+  drugs: Drugs
+  dullahan: Dullahan
+  dungeon: Dungeon
+  dystopian: Dystopian
+  e_sports: E-Sports
+  ecchi: Ecchi
+  economics: Economics
+  educational: Educational
+  elf: Elf
+  ensemble_cast: Ensemble Cast
+  environmental: Environmental
+  episodic: Episodic
+  ero_guro: Ero Guro
+  erotica: Erotica
+  espionage: Espionage
+  fairy_tale: Fairy Tale
+  fairy: Fairy
+  family_life: Family Life
+  fantasy: Fantasy
+  fashion: Fashion
+  female_harem: Female Harem
+  female_protagonist: Female Protagonist
+  femboy: Femboy
+  fencing: Fencing
+  firefighters: Firefighters
+  fishing: Fishing
+  fitness: Fitness
+  flash: Flash
+  food: Food
+  football: Football
+  foreign: Foreign
+  found_family: Found Family
+  fugitive: Fugitive
+  full_cgi: Full CGI
+  full_color: Full Color
+  gag_humor: Gag Humor
+  gambling: Gambling
+  gangs: Gangs
+  gender_bending: Gender Bending
+  ghost: Ghost
+  girls_love: Girls' Love
+  go: Go
+  goblin: Goblin
+  gods: Gods
+  golf: Golf
+  gore: Gore
+  gourmet: Gourmet
+  gyaru: Gyaru
+  handball: Handball
+  harem: Harem
+  henshin: Henshin
+  heterosexual: Heterosexual
+  high_stakes_game: High Stakes Game
+  hikikomori: Hikikomori
+  historical: Historical
+  homeless: Homeless
+  horror: Horror
+  ice_skating: Ice Skating
+  idol: Idol
+  idols_female: Idol (Female)
+  idols_male: Idol (Male)
+  isekai: Isekai
+  iyashikei: Iyashikei
+  josei: Josei
+  judo: Judo
+  kaiju: Kaiju
+  karuta: Karuta
+  kemonomimi: Kemonomimi
+  kids: Kids
+  kuudere: Kuudere
+  lacrosse: Lacrosse
+  language_barrier: Language Barrier
+  lgbtq_themes: LGBTQ+ Themes
+  lost_civilization: Lost Civilization
+  love_polygon: Love Polygon
+  love_triangle: Love Triangle
+  mafia: Mafia
+  magic: Magic
+  magical_sex_shift: Magical Sex Shift
+  mahjong: Mahjong
+  mahou_shoujo: Mahou Shoujo
+  maids: Maids
+  makeup: Makeup
+  male_harem: Male Harem
+  male_protagonist: Male Protagonist
+  marriage: Marriage
+  martial_arts: Martial Arts
+  mecha: Mecha
+  medical: Medical
+  memory_manipulation: Memory Manipulation
+  mermaid: Mermaid
+  meta: Meta
+  military: Military
+  mixed_gender_harem: Mixed Gender Harem
+  monster_boy: Monster Boy
+  monster_girl: Monster Girl
+  mopeds: Mopeds
+  motorcycles: Motorcycles
+  music: Music
+  musical: Musical
+  mystery: Mystery
+  mythology: Mythology
+  necromancy: Necromancy
+  nekomimi: Nekomimi
+  ninja: Ninja
+  no_dialogue: No Dialogue
+  noir: Noir
+  non_fiction: Non-fiction
+  nudity: Nudity
+  nun: Nun
+  office_lady: Office Lady
+  oiran: Oiran
+  ojou_sama: Ojou-sama
+  organized_crime: Organized Crime
+  orphan: Orphan
+  otaku_culture: Otaku Culture
+  outdoor: Outdoor
+  pandemic: Pandemic
+  parkour: Parkour
+  parody: Parody
+  performing_arts: Performing Arts
+  pets: Pets
+  philosophy: Philosophy
+  photography: Photography
+  pirates: Pirates
+  poker: Poker
+  police: Police
+  politics: Politics
+  post_apocalyptic: Post-Apocalyptic
+  pov: POV
+  primarily_adult_cast: Primarily Adult Cast
+  primarily_child_cast: Primarily Child Cast
+  primarily_female_cast: Primarily Female Cast
+  primarily_male_cast: Primarily Male Cast
+  primarily_teen_cast: Primarily Teen Cast
+  prison: Prison
+  psychological: Psychological
+  puppetry: Puppetry
+  racing: Racing
+  rakugo: Rakugo
+  real_robot: Real Robot
+  rehabilitation: Rehabilitation
+  reincarnation: Reincarnation
+  religion: Religion
+  revenge: Revenge
+  reverse_harem: Reverse Harem
+  robots: Robots
+  romance: Romance
+  romantic_subtext: Romantic Subtext
+  rotoscoping: Rotoscoping
+  rugby: Rugby
+  rural: Rural
+  samurai: Samurai
+  satire: Satire
+  school_club: School Club
+  school: School
+  sci_fi: Sci-Fi
+  scuba_diving: Scuba Diving
+  seinen: Seinen
+  shapeshifting: Shapeshifting
+  ships: Ships
+  shogi: Shogi
+  shoujo: Shoujo
+  shounen: Shounen
+  showbiz: Showbiz
+  shrine_maiden: Shrine Maiden
+  skateboarding: Skateboarding
+  skeleton: Skeleton
+  slapstick: Slapstick
+  slavery: Slavery
+  slice_of_life: Slice of Life
+  software_development: Software Development
+  space_opera: Space Opera
+  space: Space
+  spearplay: Spearplay
+  sports: Sports
+  steampunk: Steampunk
+  stop_motion: Stop Motion
+  strategy_game: Strategy Game
+  succubus: Succubus
+  suicide: Suicide
+  sumo: Sumo
+  super_power: Super Power
+  super_robot: Super Robot
+  superhero: Superhero
+  supernatural: Supernatural
+  surfing: Surfing
+  surreal_comedy: Surreal Comedy
+  survival: Survival
+  suspense: Suspense
+  swimming: Swimming
+  swordplay: Swordplay
+  table_tennis: Table Tennis
+  tanks: Tanks
+  tanned_skin: Tanned Skin
+  teacher: Teacher
+  team_sports: Team Sports
+  teens_love: Teens' Love
+  tennis: Tennis
+  terrorism: Terrorism
+  thriller: Thriller
+  time_manipulation: Time Manipulation
+  time_skip: Time Skip
+  time_travel: Time Travel
+  tokusatsu: Tokusatsu
+  tomboy: Tomboy
+  torture: Torture
+  tragedy: Tragedy
+  trains: Trains
+  transgender: Transgender
+  travel: Travel
+  triads: Triads
+  tsundere: Tsundere
+  twins: Twins
+  urban_fantasy: Urban Fantasy
+  urban: Urban
+  vampire: Vampire
+  video_game: Video Game
+  vikings: Vikings
+  villainess: Villainess
+  virtual_world: Virtual World
+  visual_arts: Visual Arts
+  volleyball: Volleyball
+  vtuber: VTuber
+  war: War
+  werewolf: Werewolf
+  witch: Witch
+  work: Work
+  workplace: Wor kplace
+  wrestling: Wrestling
+  writing: Writing
+  wuxia: Wuxia
+  yakuza: Yakuza
+  yandere: Yandere
+  youkai: Youkai
+  yuri: Yuri
+  zombie: Zombie
 strings:
   # all of the key names is basically the command name in the bot
   about:
@@ -268,6 +599,7 @@ strings:
       about: "Information about {USER}"
       username: Username
       nickname: Nickname
+      realname: Real Name
       default: "*default*"
       bot: This user is a bot
     exception:
@@ -282,6 +614,11 @@ strings:
       boost_since: "Boosting server since {TIMESTAMP}"
       not_boosting: Not boosting
       registered: This user is registered on this bot
+    lastfm:
+      created: Account Created
+      total_scrobbles: Total Scrobbles
+      curr_playing: Currently playing
+      link: Link
   utilities:
     commons:
       result: Result
