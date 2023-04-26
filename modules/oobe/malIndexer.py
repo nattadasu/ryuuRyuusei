@@ -12,9 +12,7 @@ MAIN_SITE = "https://aniapi.nattadasu.my.id/myanimelist%28%29.json"
 
 
 def mal_get_data() -> None:
-    """
-    Fetches data from MAIN_SITE and saves it to a JSON file.
-    """
+    """Fetches data from MAIN_SITE and saves it to a JSON file."""
     data = r.get(MAIN_SITE)
     # save data to json file
     with open("cache/mal.json", "w", encoding="utf8") as f:
@@ -34,9 +32,7 @@ def mal_load_data() -> Dict:
 
 
 def mal_run() -> None:
-    """
-    Fetches MyAnimeList data, processes it, and saves it to a CSV file.
-    """
+    """Fetches MyAnimeList data, processes it, and saves it to a CSV file."""
     if not os.path.exists("cache/mal.json"):
         mal_get_data()
     else:
