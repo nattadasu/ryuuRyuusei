@@ -57,7 +57,8 @@ class LastFM:
                 )
             if resp.status != 200:
                 raise ProviderHttpError(
-                    f"Last.fm API returned {resp.status}. Reason: {resp.text()}", resp.status
+                    f"Last.fm API returned {resp.status}. Reason: {resp.text()}",
+                    resp.status,
                 )
             jsonText = await resp.text()
             jsonFinal = loads(jsonText)
