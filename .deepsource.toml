@@ -4,9 +4,6 @@ version = 1
 name = "shell"
 
 [[analyzers]]
-name = "test-coverage"
-
-[[analyzers]]
 name = "python"
 
   [analyzers.meta]
