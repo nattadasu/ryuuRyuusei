@@ -212,7 +212,8 @@ class Simkl:
 
     async def search_by_id(
         self,
-        provider: Provider | str,        id: int | str,
+        provider: Provider | str,
+        id: int | str,
         media_type: TmdbMediaTypes | str | None = None,
     ) -> dict:
         """Search by ID
