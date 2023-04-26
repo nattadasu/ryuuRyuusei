@@ -53,7 +53,11 @@ class LastFM:
         async with self.session.get(self.base_url, params=params) as resp:
             if resp.status == 404:
                 raise ProviderHttpError(
-                    "User can not be found on Last.fm. Check the name or register?"
+                    "User can not be found on Last.fm. Check the name or register?", 404
+                )
+            elif resp.status != 200:
+                raise ProviderHttpError(
+                    f"Last.fm API returned {resp.status}. Reason: {resp.text()}", resp.status
                 )
             jsonText = await resp.text()
             jsonFinal = loads(jsonText)
