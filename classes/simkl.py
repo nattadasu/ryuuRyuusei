@@ -212,8 +212,7 @@ class Simkl:
 
     async def search_by_id(
         self,
-        provider: Provider | str,
-        id: int,
+        provider: Provider | str,        id: int | str,
         media_type: TmdbMediaTypes | str | None = None,
     ) -> dict:
         """Search by ID
@@ -286,7 +285,7 @@ class Simkl:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def get_show(self, id: int) -> dict:
+    async def get_show(self, id: int | str) -> dict:
         """Get show by ID
 
         Args:
@@ -315,7 +314,7 @@ class Simkl:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def get_movie(self, id: int) -> dict:
+    async def get_movie(self, id: int | str)  -> dict:
         """Get movie by ID
 
         Args:
@@ -344,7 +343,7 @@ class Simkl:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def get_anime(self, id: int) -> dict:
+    async def get_anime(self, id: int | str) -> dict:
         """Get anime by ID
 
         Args:
