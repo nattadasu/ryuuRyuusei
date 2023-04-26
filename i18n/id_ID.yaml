@@ -215,10 +215,10 @@ genres:
   fugitive: Buronan
   full_cgi: CGI Penuh
   full_color: Warna Penuh
-  gag_humor: Gag Humor
+  gag_humor: Humor Gag
   gambling: Perjudian
-  gangs: Gangs
-  gender_bending: Gender Bending
+  gangs: Gang
+  gender_bending: Genderbend
   ghost: Hantu
   girls_love: Percintaan Gadis
   go: Go
@@ -228,19 +228,19 @@ genres:
   gore: Gore
   gourmet: Gourmet
   gyaru: Gyaru
-  handball: Handball
+  handball: Bola Tangan
   harem: Harem
   henshin: Henshin
-  heterosexual: Heterosexual
-  high_stakes_game: High Stakes Game
+  heterosexual: Heteroseksual
+  high_stakes_game: Game Taruhan Tinggi
   hikikomori: Hikikomori
-  historical: Historical
-  homeless: Homeless
-  horror: Horror
-  ice_skating: Ice Skating
-  idol: Idol
-  idols_female: Idol (Female)
-  idols_male: Idol (Male)
+  historical: Historis
+  homeless: Tunawisma
+  horror: Horor
+  ice_skating: Seluncur Es
+  idol: Idola
+  idols_female: Idola (Wanita)
+  idols_male: Idola (Pria)
   isekai: Isekai
   iyashikei: Iyashikei
   josei: Josei
@@ -248,32 +248,32 @@ genres:
   kaiju: Kaiju
   karuta: Karuta
   kemonomimi: Kemonomimi
-  kids: Kids
+  kids: Anak-Anak
   kuudere: Kuudere
-  lacrosse: Lacrosse
-  language_barrier: Language Barrier
-  lgbtq_themes: LGBTQ+ Themes
-  lost_civilization: Lost Civilization
-  love_polygon: Love Polygon
-  love_triangle: Love Triangle
+  lacrosse: Lacrosa
+  language_barrier: Hambatan Berbahasa
+  lgbtq_themes: Tema LGBTQ+
+  lost_civilization: Peradaban yang Hilang
+  love_polygon: Cinta Poligon
+  love_triangle: Cinta Segitiga
   mafia: Mafia
-  magic: Magic
-  magical_sex_shift: Magical Sex Shift
+  magic: Sihir
+  magical_sex_shift: Perubahan Ajaib Kelamin
   mahjong: Mahjong
   mahou_shoujo: Mahou Shoujo
-  maids: Maids
+  maids: Pembantu
   makeup: Makeup
-  male_harem: Male Harem
-  male_protagonist: Male Protagonist
+  male_harem: Harem Pria
+  male_protagonist: Protagonis Pria
   marriage: Pernikahan
-  martial_arts: Martial Arts
+  martial_arts: Seni Bela Diri
   mecha: Mecha
   medical: Medis
   memory_manipulation: Manipulasi Ingatan
   mermaid: Putri Duyung
   meta: Meta
   military: Kemiliteran
-  mixed_gender_harem: Mixed Gender Harem
+  mixed_gender_harem: Harem Gender Campuran
   monster_boy: Monster Laki-Laki
   monster_girl: Monster Perempuan
   mopeds: Moped
@@ -282,7 +282,7 @@ genres:
   musical: Musikal
   mystery: Misteri
   mythology: Mitologi
-  necromancy: Necromancy
+  necromancy: Nujum
   nekomimi: Nekomimi
   ninja: Ninja
   no_dialogue: Bisu
@@ -293,7 +293,7 @@ genres:
   office_lady: Wanita Kantoran
   oiran: Oiran
   ojou_sama: Ojou-sama
-  organized_crime: Organized Crime
+  organized_crime: Kejahatan Terorganisir
   orphan: Yatim Piatu
   otaku_culture: Budaya Otaku
   outdoor: Luar Ruangan
@@ -366,8 +366,8 @@ genres:
   super_robot: Robot Super
   superhero: Pahlawan Super
   supernatural: Supranatural
-  surfing: Surfing
-  surreal_comedy: Surreal Comedy
+  surfing: Berselancar
+  surreal_comedy: Komedi Surealis
   survival: Bertahan Hidup
   suspense: Ketegangan
   swimming: Berenang
@@ -421,7 +421,17 @@ strings:
   #all of the key names is basically the command name in the bot
   about:
     text: >-
-      <@!{BOT_CLIENT_ID}> is a bot personally created and used by [nattadasu](https://nattadasu.my.id) with the initial purpose as for member verification and MAL profile integration bot, which is distributed under [AGPL 3.0](https://www.gnu.org/licenses/agpl-3.0.en.html) license. ([Source Code](https://github.com/nattadasu/ryuuRyuusei), source code in repository may be older than main production maintained by nattadasu). However, due to how advanced the bot in querying information regarding user, anime on MAL, and manga on AniList, invite link is available for anyone who's interested to invite the bot (see `/invite`). This bot may requires your consent to collect and store your data when you invoke `/register` command. You can see the privacy policy by using `/privacy` command. However, you still able to use the bot without collecting your data, albeit limited usage. If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({ownerUserUrl}) or via [support server]({BOT_SUPPORT_SERVER}). Bot version, in Git hash: [`{gtHsh}`](https://github.com/nattadasu/ryuuRyuusei/commit/{gittyHash})
+      <@!{BOT_CLIENT_ID}> adalah bot yang dibuat dan digunakan secara pribadi oleh [nattadasu](https://nattadasu.my.id) dengan tujuan awal untuk verifikasi anggota dan integrasi profil MAL. Bot ini didistribusikan di bawah lisensi [AGPL 3.0](https://www.gnu.org/licenses/agpl-3.0.en.html). ([Kode Sumber](https://github.com/nattadasu/ryuuRyuusei), kode sumber di repositori mungkin lebih lama dari produksi utama yang dikelola oleh nattadasu).
+
+      Namun, karena kemampuan bot dalam mencari informasi tentang pengguna, anime di MAL, dan manga di AniList yang sangat baik, tautan undangan tersedia untuk siapa saja yang tertarik mengundang bot (lihat `/invite`). 
+
+      Bot ini mungkin memerlukan persetujuan kamu untuk mengumpulkan dan menyimpan data kamu saat kamu menggunakan perintah `/register`. Kamu dapat melihat kebijakan privasi dengan menggunakan perintah `/privacy`. 
+
+      Namun, kamu masih dapat menggunakan bot tanpa mengumpulkan data kamu, meskipun penggunaannya terbatas. 
+
+      Jika kamu ingin menghubungi penulis, kirim DM ke [{AUTHOR_USERNAME}]({ownerUserUrl}) atau melalui [server dukungan]({BOT_SUPPORT_SERVER}). 
+
+      Versi bot, dalam hash Git: [`{gtHsh}`](https://github.com/nattadasu/ryuuRyuusei/commit/{gittyHash})
   ping:
     ping:
       title: Ping
@@ -473,7 +483,7 @@ strings:
   support:
     title: Dukung Pengembangan Ryuuzaki Ryuusei!
     text: >-
-      Thanks for your interest in supporting me! You can support me on [Ko-Fi]({KOFI}), [PayPal]({PAYPAL}}), [Patreon]({PATREON}),or [GitHub Sponsors]({GHSPONSOR}). For Indonesian users, you can use [Trakteer]({TRAKTEER}) or [Saweria]({SAWERIA}). Or, are you a developer? You can contribute to the bot's code on [GitHub]({GHREPO}). If you have any questions (or more payment channels), please join my [support server]({SUPPORT})!
+      Hai! Terima kasih banget nih sudah mau dukung Ryuusei! Kamu bisa dukung Ryuusei lewat [Ko-Fi]({KOFI}), [PayPal]({PAYPAL}), [Patreon]({PATREON}), atau [GitHub Sponsors]({GHSPONSOR}). Kalau kamu cuma punya akun bank/e-money Indonesia, kamu bisa dukung Ryuusei lewat [Trakteer]({TRAKTEER}) atau [Saweria]({SAWERIA}). Atau, kalau kamu seorang pengembang, kamu bisa bantu Ryuusei lebih pandai di [GitHub]({GHREPO}). Kalau ada yang mau ditanyain atau mau ngobrol santai, boleh juga langsung gabung ke [server dukungan Ryuusei]({SUPPORT}) ya!
   random:
     nekomimi:
       author: Ditenagai oleh nattadasu/nekomimiDb
