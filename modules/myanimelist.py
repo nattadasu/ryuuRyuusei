@@ -485,8 +485,7 @@ async def generateMal(
                 # grab group 1
                 ent = s
                 break
-            else:
-                ent = rot
+            ent = rot
         else:
             ent = rot
         enChkMark = "\\*"
