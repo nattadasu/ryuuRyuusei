@@ -147,8 +147,6 @@ def malExceptionEmbed(
 class MediaIsNsfw(Exception):
     """Media is NSFW exception"""
 
-    pass
-
 
 # old code taken from ipy/v4.3.4
 #! TODO: respect ipy/v5.0.0 and introduce locale

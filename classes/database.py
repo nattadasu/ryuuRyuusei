@@ -25,7 +25,6 @@ class UserDatabase:
 
     async def close(self):
         """Close the database"""
-        pass
 
     async def check_if_registered(self, discord_id: int) -> bool:
         """Check if user is registered on Database
