@@ -5,6 +5,7 @@ discord_py_interactions==5.0.0
 fuzzywuzzy
 html5lib
 isort
+jikanpy-v4
 jurigged
 langcodes
 language_data

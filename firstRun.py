@@ -15,7 +15,6 @@ import subprocess
 from modules.oobe.commons import check_termux, current_os, prepare_database, py_bin_path
 from modules.oobe.getNekomimi import nk_run
 from modules.oobe.i18nBuild import convert_langs_to_json
-from modules.oobe.jikan import install_jikanpy, update_jikanpy
 from modules.oobe.malIndexer import mal_run
 
 
@@ -36,25 +35,13 @@ def first_run(py_bin: str = py_bin_path()):
         raise Exception("Please run the script from the root directory.")
     # Check if Termux is used
     env = 'MATHLAB="m" ' if check_termux() else ""
-    # Check if jikanpy is installed and up-to-date
-    try:
-        from jikanpy import AioJikan
-
-        print("Checking for jikanpy updates...")
-        os.chdir("jikanpy")
-        os.system("git pull")
-        if os.system("git diff --exit-code origin/master") != 0:
-            update_jikanpy()
-        os.chdir("..")
-    except ImportError:
-        install_jikanpy()
     # Install dependencies
     print(
         "Installing and upgrading dependencies for the next step and the bot itself..."
     )
     if current_os() == "Windows":
         subprocess.run(
-            [env + py_bin, "-m", "pip", "install", "-U", "-r", "requirements.txt"],
+            [env + "pip", "install", "-U", "-r", "requirements.txt"],
             shell=False,
             check=True,
         )
