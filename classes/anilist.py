@@ -248,25 +248,25 @@ class AniList:
             raise ProviderTypeError("limit must be less than or equal to 10", "int")
         if isinstance(media_type, self.MediaType):
             media_type = media_type.value
-        gqlquery = f"""query ($search: String, $mediaType: MediaType, $limit: Int) {{
-    Page(page: 1, perPage: $limit) {{
-        results: media(search: $search, type: $mediaType) {{
+        gqlquery = """query ($search: String, $mediaType: MediaType, $limit: Int) {
+    Page(page: 1, perPage: $limit) {
+        results: media(search: $search, type: $mediaType) {
             id
             idMal
-            title {{
+            title {
                 romaji
                 english
                 native
-            }}
+            }
             format
             isAdult
-            startDate {{
+            startDate {
                 year
-            }}
+            }
             season
-        }}
-    }}
-}}"""
+        }
+    }
+}"""
         variables = {
             "search": query,
             "mediaType": media_type,
