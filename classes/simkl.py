@@ -315,7 +315,7 @@ class Simkl:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def get_movie(self, id: int | str)  -> dict:
+    async def get_movie(self, id: int | str) -> dict:
         """Get movie by ID
 
         Args:
