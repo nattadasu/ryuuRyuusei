@@ -16,7 +16,11 @@ from modules.const import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
 class SpotifyApi:
     """Spotify Unofficial Class"""
 
-    def __init__(self, client_id: str = SPOTIFY_CLIENT_ID, client_secret: str = SPOTIFY_CLIENT_SECRET):
+    def __init__(
+        self,
+        client_id: str = SPOTIFY_CLIENT_ID,
+        client_secret: str = SPOTIFY_CLIENT_SECRET,
+    ):
         """Spotify Unofficial Class
 
         Args:
@@ -26,7 +30,7 @@ class SpotifyApi:
         self.client_id = client_id
         self.client_secret = client_secret
         self.base_url = "https://api.spotify.com"
-        self.cache_directory = 'cache/spotify'
+        self.cache_directory = "cache/spotify"
         # cache up to 2 weeks in seconds
         self.cache_expiration_time = 1209600
         self.token = None
@@ -53,7 +57,8 @@ class SpotifyApi:
         if cached is not None:
             self.token = cached["access_token"]
         basic = b64.b64encode(
-            f"{self.client_id}:{self.client_secret}".encode("ascii")).decode("ascii")
+            f"{self.client_id}:{self.client_secret}".encode("ascii")
+        ).decode("ascii")
         async with self.session.post(
             "https://accounts.spotify.com/api/token",
             headers={"Authorization": f"Basic {basic}"},
@@ -79,7 +84,7 @@ class SpotifyApi:
         query: str,
         media_type: Union[List[MediaType], MediaType, str] = MediaType.TRACK,
         limit: int = 10,
-        offset: int = 0
+        offset: int = 0,
     ) -> dict:
         """Search for a track
 
@@ -100,15 +105,11 @@ class SpotifyApi:
             media_type = media_type.value
         if limit > 50:
             raise ProviderTypeError(
-                "Limit cannot be greater than 50", "limit >= 0, <= 50")
+                "Limit cannot be greater than 50", "limit >= 0, <= 50"
+            )
         async with self.session.get(
             f"{self.base_url}/v1/search",
-            params={
-                "q": query,
-                "type": media_type,
-                "limit": limit,
-                "offset": offset
-            },
+            params={"q": query, "type": media_type, "limit": limit, "offset": offset},
             headers={"Authorization": f"Bearer {self.token}"},
         ) as response:
             if response.status == 200:
