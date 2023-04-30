@@ -95,9 +95,7 @@ class Trakt:
         return jsonFinal[0]
 
     async def get_title_data(
-        self,
-        media_id: int | str,
-        media_type: MediaType | str
+        self, media_id: int | str, media_type: MediaType | str
     ) -> dict:
         """Get the data of a TV show or movie by ID
 
