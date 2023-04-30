@@ -222,7 +222,7 @@ async def generateMal(
         if (
             (cyno[-3:] == "...")
             or ((len(str(cynoin)) >= 150) and (synl > 3))
-            or ((len(str(cynoin)) >= 1000) and (synsl > 1))
+            or ((len(str(cynoin)) >= 1000) and (synl > 1))
         ):
             cyno += cynmo
 

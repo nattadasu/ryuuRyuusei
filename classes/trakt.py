@@ -50,7 +50,7 @@ class Trakt:
 
     async def lookup(
         self,
-        id: int | str,
+        media_id: int | str,
         platform: Platform | str = Platform.IMDB,
         media_type: MediaType | str = MediaType.TV,
     ) -> dict:
@@ -76,7 +76,7 @@ class Trakt:
             raise ProviderTypeError("TMDB requires a media type", "MediaType")
         self.cache_time = 2592000
         cache_file_path = self.get_cache_path(
-            f"lookup/{platform.value}/{media_type.value}/{id}.json"
+            f"lookup/{platform.value}/{media_type.value}/{media_id}.json"
         )
         cached_data = self.read_cache(cache_file_path)
         if cached_data is not None:
@@ -85,7 +85,7 @@ class Trakt:
             params = {"type": media_type.value}
         else:
             params = {}
-        url = f"{self.base_url}search/{platform.value}/{id}"
+        url = f"{self.base_url}search/{platform.value}/{media_id}"
         async with self.session.get(url, params=params) as resp:
             if resp.status != 200:
                 raise ProviderHttpError(resp.text(), resp.status)
@@ -94,11 +94,15 @@ class Trakt:
         self.write_cache(cache_file_path, jsonFinal[0])
         return jsonFinal[0]
 
-    async def get_title_data(self, id: int | str, media_type: MediaType | str) -> dict:
+    async def get_title_data(
+        self,
+        media_id: int | str,
+        media_type: MediaType | str
+    ) -> dict:
         """Get the data of a TV show or movie by ID
 
         Args:
-            id (int | str): The ID of the TV show or movie
+            media_id (int | str): The ID of the TV show or movie
             media_type (MediaType | str): The media type
 
         Raises:
@@ -109,11 +113,11 @@ class Trakt:
         """
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
-        cache_file_path = self.get_cache_path(f"{media_type.value}/{id}.json")
+        cache_file_path = self.get_cache_path(f"{media_type.value}/{media_id}.json")
         cached_data = self.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data
-        url = f"{self.base_url}{media_type.value}/{id}"
+        url = f"{self.base_url}{media_type.value}/{media_id}"
         param = {"extended": "full"}
         async with self.session.get(url, params=param) as resp:
             if resp.status != 200:

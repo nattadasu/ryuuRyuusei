@@ -44,26 +44,26 @@ class TheMovieDb:
         MOVIE = "movie"
 
     async def get_nsfw_status(
-        self, id: int, media_type: MediaType | str = MediaType.TV
+        self, media_id: int, media_type: MediaType | str = MediaType.TV
     ) -> bool:
         """Get the NSFW status of a TV show or movie
 
         Args:
-            id (int): The ID of the TV show or movie
+            media_id (int): The ID of the TV show or movie
             media_type (MediaType | str): The media type, defaults to MediaType.TV
 
         Returns:
             bool: True if the TV show or movie is NSFW, False otherwise"""
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
-        cache_file_path = self.get_cache_path(f"{media_type.value}/{id}.json")
+        cache_file_path = self.get_cache_path(f"{media_type.value}/{media_id}.json")
         cached_data = self.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data
         if media_type == self.MediaType.TV:
-            url = f"{self.base_url}tv/{id}"
+            url = f"{self.base_url}tv/{media_id}"
         elif media_type == self.MediaType.MOVIE:
-            url = f"{self.base_url}movie/{id}"
+            url = f"{self.base_url}movie/{media_id}"
         else:
             raise ValueError("Invalid mediaType")
         async with self.session.get(url, params=self.params) as resp:

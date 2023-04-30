@@ -68,13 +68,19 @@ class RandomOrg:
         ON = "on"
         OFF = "off"
 
-    async def integers(self, num: int, min: int, max: int, base: int = 10) -> list[int]:
+    async def integers(
+        self,
+        num: int,
+        min_val: int,
+        max_val: int,
+        base: int = 10
+    ) -> list[int]:
         """Generate random integers
 
         Args:
             num (int): Number of integers to generate
-            min (int): Minimum value
-            max (int): Maximum value
+            min_val (int): Minimum value
+            max_val (int): Maximum value
             base (int): Base of the integers, defaults to 10
 
         Returns:
@@ -84,12 +90,12 @@ class RandomOrg:
             raise ProviderTypeError("Base must be 2, 8, 10, or 16", "base")
         if num > 10000 or num < 1:
             raise ProviderTypeError("Number must be between 1 and 10000", "num")
-        if min > max:
+        if min_val > max_val:
             raise ProviderTypeError("Min must be less than or equal to max", "minmax")
         params = self.params.copy()
         params["num"] = num
-        params["min"] = min
-        params["max"] = max
+        params["min"] = min_val
+        params["max"] = max_val
         params["col"] = 1
         params["base"] = base
         async with self.session.get(
@@ -103,21 +109,21 @@ class RandomOrg:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def sequences(self, min: int, max: int) -> list[int]:
+    async def sequences(self, min_val: int, max_val: int) -> list[int]:
         """Generate random sequences
 
         Args:
-            min (int): Minimum value
-            max (int): Maximum value
+            min_val (int): Minimum value
+            max_val (int): Maximum value
 
         Returns:
             list[int]: List of random sequences
         """
-        if min > max:
+        if min_val > max_val:
             raise ProviderTypeError("Min must be less than or equal to max", "minmax")
         params = self.params.copy()
-        params["min"] = min
-        params["max"] = max
+        params["min"] = min_val
+        params["max"] = max_val
         async with self.session.get(
             f"{self.base_url}/sequences", params=params
         ) as response:

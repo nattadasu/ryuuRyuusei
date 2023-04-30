@@ -164,16 +164,16 @@ class Anime(ipy.Extension):
         sub_cmd_description="Get anime information",
         options=[
             ipy.SlashCommandOption(
-                name="id",
-                description="The anime ID to get information from",
+                name="mal_id",
+                description="The anime ID on MyAnimeList to get information from",
                 type=ipy.OptionType.INTEGER,
                 required=True,
             ),
         ],
     )
-    async def anime_info(self, ctx: ipy.SlashContext, id: int):
+    async def anime_info(self, ctx: ipy.SlashContext, mal_id: int):
         await ctx.defer()
-        await malSubmit(ctx, id)
+        await malSubmit(ctx, mal_id)
 
 
 def setup(bot):

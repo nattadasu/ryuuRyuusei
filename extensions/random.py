@@ -94,13 +94,13 @@ class Random(ipy.Extension):
                 max_value=10000,
             ),
             ipy.SlashCommandOption(
-                name="min",
+                name="min_value",
                 description="Minimum value",
                 required=False,
                 type=ipy.OptionType.INTEGER,
             ),
             ipy.SlashCommandOption(
-                name="max",
+                name="max_value",
                 description="Maximum value",
                 required=False,
                 type=ipy.OptionType.INTEGER,
@@ -135,13 +135,13 @@ class Random(ipy.Extension):
         self,
         ctx: ipy.SlashContext,
         numbers: int = 1,
-        min: int = 1,
-        max: int = 10,
+        min_value: int = 1,
+        max_value: int = 10,
         base: int = 10,
     ):
         await ctx.defer()
         async with RandomOrg() as rand:
-            numbers = await rand.integers(num=numbers, min=min, max=max, base=base)
+            numbers = await rand.integers(num=numbers, min_val=min_value, max_val=max_value, base=base)
         # convert arrays of int to arrays of str
         numbers = [str(i) for i in numbers]
         await ctx.send(

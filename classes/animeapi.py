@@ -73,12 +73,12 @@ class AnimeApi:
             return dt.now()
 
     async def get_relation(
-        self, id: str | int, platform: AnimeApiPlatforms | str
+        self, media_id: str | int, platform: AnimeApiPlatforms | str
     ) -> dict:
         """Get a relation between anime and other platform via Natsu's AniAPI
 
         Args:
-            id (str | int): Anime ID
+            media_id (str | int): Anime ID
             platform (AnimeApiPlatforms | str): Platform to get the relation
 
         Returns:
@@ -86,13 +86,13 @@ class AnimeApi:
         """
         if isinstance(platform, self.AnimeApiPlatforms):
             platform = platform.value
-        cache_file_path = self.get_cache_file_path(f"{platform}/{id}.json")
+        cache_file_path = self.get_cache_file_path(f"{platform}/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
         try:
             async with self.session.get(
-                f"https://aniapi.nattadasu.my.id/{platform}/{id}"
+                f"https://aniapi.nattadasu.my.id/{platform}/{media_id}"
             ) as resp:
                 jsonText = await resp.text()
                 jsonText = json.loads(jsonText)
