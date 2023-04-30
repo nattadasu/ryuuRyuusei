@@ -69,11 +69,7 @@ class RandomOrg:
         OFF = "off"
 
     async def integers(
-        self,
-        num: int,
-        min_val: int,
-        max_val: int,
-        base: int = 10
+        self, num: int, min_val: int, max_val: int, base: int = 10
     ) -> list[int]:
         """Generate random integers
 
