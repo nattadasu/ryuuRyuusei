@@ -141,7 +141,9 @@ class Random(ipy.Extension):
     ):
         await ctx.defer()
         async with RandomOrg() as rand:
-            numbers = await rand.integers(num=numbers, min_val=min_value, max_val=max_value, base=base)
+            numbers = await rand.integers(
+                num=numbers, min_val=min_value, max_val=max_value, base=base
+            )
         # convert arrays of int to arrays of str
         numbers = [str(i) for i in numbers]
         await ctx.send(
