@@ -1,6 +1,7 @@
 import asyncio
 import subprocess
 import sys
+import os
 from datetime import datetime as dtime
 from datetime import timezone as tz
 from time import perf_counter as pc
@@ -64,14 +65,17 @@ async def main():
     first_run(py_bin=python_path)
 
     # Load extensions
-    print("[Sys] Loading extensions...")
+    print("[Cog] Loading extensions...")
+    print("[Cog] Loading extension: commons")
     bot.load_extension("extensions.commons", now=now)
-    bot.load_extension("extensions.anime")
-    bot.load_extension("extensions.profile")
-    bot.load_extension("extensions.random")
-    bot.load_extension("extensions.serversettings")
-    bot.load_extension("extensions.usersettings")
-    bot.load_extension("extensions.utilities")
+
+    # for each .py files in extensions folder, load it, except for commons.py
+    for ext in os.listdir("extensions"):
+        if ext.endswith(".py"):
+            ext = ext[:-3]
+            if ext != "commons":
+                print("[Cog] Loading extension: " + ext)
+                bot.load_extension("extensions." + ext)
 
     await bot.astart()
 
