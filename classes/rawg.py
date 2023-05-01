@@ -26,11 +26,7 @@ class RawgAPI:
 
     async def __aenter__(self):
         """Enter the async context manager"""
-        self.session = ClientSession(
-            headers={
-                "User-Agent": USER_AGENT
-            }
-        )
+        self.session = ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
