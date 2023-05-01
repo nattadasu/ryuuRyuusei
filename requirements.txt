@@ -1,6 +1,6 @@
 aiohttp
 beautifulsoup4
-discord_py_interactions==4.3.4
+discord_py_interactions==5.2.0
 html5lib
 pandas
 python-dotenv
