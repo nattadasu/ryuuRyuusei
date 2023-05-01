@@ -86,8 +86,6 @@ async def paginate_language(bot: Client, ctx: InteractionContext) -> None:
             match flag:
                 case "sp":
                     flag = "rs"
-                case _:
-                    flag = flag
             paged += [
                 EmbedField(
                     name=f":flag_{flag}: `{lang['code']}` - {lang['name']}",

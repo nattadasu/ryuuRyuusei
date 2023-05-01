@@ -52,7 +52,7 @@ class SpotifyApi:
     async def authorize_client(self):
         """Authorize client without requiring user resource access"""
         self.cache_expiration_time = 3600
-        auth = self.get_cache_file_path(f"auth.json")
+        auth = self.get_cache_file_path("auth.json")
         cached = self.read_cached_data(auth)
         if cached is not None:
             self.token = cached["access_token"]
@@ -98,8 +98,7 @@ class SpotifyApi:
             dict: Track data
         """
         await self.authorize_client()
-        if isinstance(media_type, list):
-            if len(media_type) > 1:
+        if isinstance(media_type, list) and len(media_type) > 1:
                 media_type = ",".join([m.value for m in media_type])
         if isinstance(media_type, self.MediaType):
             media_type = media_type.value
