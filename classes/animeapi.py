@@ -6,7 +6,7 @@ from enum import Enum
 
 from aiohttp import ClientSession
 
-from modules.const import invAa
+from modules.const import invAa, USER_AGENT
 
 
 class AnimeApi:
@@ -19,7 +19,7 @@ class AnimeApi:
 
     async def __aenter__(self):
         """Create the session with aiohttp"""
-        self.session = ClientSession()
+        self.session = ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:

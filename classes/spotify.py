@@ -10,7 +10,7 @@ from typing import List, Union
 import aiohttp
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
-from modules.const import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
+from modules.const import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, USER_AGENT
 
 
 class SpotifyApi:
@@ -38,7 +38,9 @@ class SpotifyApi:
 
     async def __aenter__(self):
         """Enter the session"""
-        self.session = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession(
+            headers={"User-Agent": USER_AGENT}
+        )
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):

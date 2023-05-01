@@ -6,7 +6,7 @@ from copy import deepcopy
 from aiohttp import ClientSession
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
-from modules.const import RAWG_API_KEY
+from modules.const import RAWG_API_KEY, USER_AGENT
 
 
 class RawgAPI:
@@ -26,7 +26,11 @@ class RawgAPI:
 
     async def __aenter__(self):
         """Enter the async context manager"""
-        self.session = ClientSession()
+        self.session = ClientSession(
+            headers={
+                "User-Agent": USER_AGENT
+            }
+        )
         return self
 
     async def __aexit__(self, exc_type, exc, tb):

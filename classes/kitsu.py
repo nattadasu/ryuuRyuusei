@@ -6,6 +6,7 @@ from enum import Enum
 import aiohttp
 
 from classes.excepts import ProviderHttpError
+from modules.const import USER_AGENT
 
 
 class Kitsu:
@@ -13,13 +14,18 @@ class Kitsu:
 
     def __init__(self):
         """Initialize the Kitsu API Wrapper"""
-        self.session = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession(
+            headers={
+                "User-Agent": USER_AGENT,
+                "Accept": "application/vnd.api+json",
+                "Content-Type": "application/vnd.api+json",
+            }
+        )
         self.base_url = "https://kitsu.io/api/edge/"
         self.params = {
             # public client ID provided by Kitsu themselves
             "client_id": "dd031b32d2f56c990b1425efe6c42ad847e7fe3ab46bf1299f05ecd856bdb7dd"
         }
-        self.content_type = "application/vnd.api+json"
         self.cache_directory = "cache/kitsu"
         self.cache_time = 86400
 

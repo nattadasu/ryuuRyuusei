@@ -6,7 +6,7 @@ from enum import Enum
 import aiohttp
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
-from modules.const import traktHeader
+from modules.const import traktHeader, USER_AGENT
 
 
 class Trakt:
@@ -22,6 +22,10 @@ class Trakt:
         self.cache_time = 86400
         if headers is None:
             self.headers = traktHeader
+        else:
+            self.headers = headers
+        self.headers["User-Agent"] = USER_AGENT
+
 
     async def __aenter__(self):
         """Enter the async context manager"""

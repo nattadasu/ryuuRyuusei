@@ -3,7 +3,7 @@ from json import loads
 from aiohttp import ClientSession
 
 from classes.excepts import ProviderHttpError
-from modules.const import LASTFM_API_KEY
+from modules.const import LASTFM_API_KEY, USER_AGENT
 
 
 class LastFM:
@@ -25,7 +25,7 @@ class LastFM:
 
     async def __aenter__(self):
         """Enter the async context manager"""
-        self.session = ClientSession()
+        self.session = ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):

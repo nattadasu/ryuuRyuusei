@@ -5,6 +5,7 @@ import time
 import aiohttp
 
 from classes.excepts import ProviderHttpError
+from modules.const import USER_AGENT
 
 
 class TheColorApi:
@@ -22,7 +23,7 @@ class TheColorApi:
 
     async def __aenter__(self):
         """Create a session if class invoked with `with` statement"""
-        self.session = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:

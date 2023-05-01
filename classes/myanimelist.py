@@ -3,6 +3,7 @@
 import aiohttp
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
+from modules.const import USER_AGENT, MYANIMELIST_CLIENT_ID
 
 
 class MyAnimeList:
@@ -23,20 +24,20 @@ class MyAnimeList:
         Search anime by its title
     """
 
-    def __init__(self, client_id, nsfw: bool = False):
+    def __init__(self, client_id: str = MYANIMELIST_CLIENT_ID, nsfw: bool = False):
         """Initialize the MyAnimeList Asynchronous API Wrapper
 
         Args:
-            client_id (str): Your MyAnimeList Client ID
+            client_id (str): Your MyAnimeList Client ID, default to MYANIMELIST_CLIENT_ID
             nsfw (bool, optional): Whether to include NSFW content in the search results or not. Defaults to False.
         """
-        self.client_id = client_id
         if client_id is None:
             raise ProviderHttpError(
                 "Unauthorized, please fill Client ID before using this module", 401
             )
+        self.client_id = client_id
         self.base_url = "https://api.myanimelist.net/v2"
-        self.headers = {"X-MAL-CLIENT-ID": self.client_id}
+        self.headers = {"X-MAL-CLIENT-ID": self.client_id, "User-Agent": USER_AGENT}
         self.nsfw = nsfw
         self.session = None
 

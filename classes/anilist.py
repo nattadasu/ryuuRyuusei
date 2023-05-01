@@ -4,9 +4,11 @@ import os
 import time
 from enum import Enum
 
-import aiohttp
+from aiohttp import ClientSession
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
+
+from modules.const import USER_AGENT
 
 
 class AniList:
@@ -21,7 +23,11 @@ class AniList:
 
     async def __aenter__(self):
         """Create the session"""
-        self.session = aiohttp.ClientSession()
+        self.session = ClientSession(
+            headers={
+                "User-Agent": USER_AGENT
+            }
+        )
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:

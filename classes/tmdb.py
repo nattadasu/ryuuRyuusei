@@ -5,7 +5,7 @@ from enum import Enum
 
 import aiohttp
 
-from modules.const import TMDB_API_KEY
+from modules.const import TMDB_API_KEY, USER_AGENT
 
 
 class TheMovieDb:
@@ -26,7 +26,11 @@ class TheMovieDb:
 
     async def __aenter__(self):
         """Enter the async context manager"""
-        self.session = aiohttp.ClientSession()
+        self.session = aiohttp.ClientSession(
+            headers={
+                "User-Agent": USER_AGENT
+            }
+        )
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
