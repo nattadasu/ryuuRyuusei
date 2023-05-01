@@ -99,7 +99,7 @@ class SpotifyApi:
         """
         await self.authorize_client()
         if isinstance(media_type, list) and len(media_type) > 1:
-                media_type = ",".join([m.value for m in media_type])
+            media_type = ",".join([m.value for m in media_type])
         if isinstance(media_type, self.MediaType):
             media_type = media_type.value
         if limit > 50:

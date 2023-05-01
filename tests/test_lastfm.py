@@ -9,6 +9,7 @@ except ImportError:
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     from classes.lastfm import LastFM
 
+
 class LastFmTest(unittest.IsolatedAsyncioTestCase):
     async def test_get_user_info(self):
         async with LastFM() as lastfm:
