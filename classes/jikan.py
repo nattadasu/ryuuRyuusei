@@ -57,11 +57,7 @@ class JikanApi:
 
     async def __aenter__(self):
         """Enter the session"""
-        self.session = ClientSession(
-            headers={
-                "User-Agent": USER_AGENT
-            }
-        )
+        self.session = ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -82,21 +78,23 @@ class JikanApi:
             list[dict]: List of clubs
         """
         try:
-            async with self.session.get(f"{self.base_url}/users/{username}/clubs") as resp:
+            async with self.session.get(
+                f"{self.base_url}/users/{username}/clubs"
+            ) as resp:
                 if resp.status in [200, 304]:
                     resp_data: dict = await resp.json()
                 else:
                     defineJikanException(resp.status, resp.reason)
-            clubs: list = resp_data['data']
-            paging: int = resp_data['pagination']['last_visible_page']
+            clubs: list = resp_data["data"]
+            paging: int = resp_data["pagination"]["last_visible_page"]
             if paging > 1:
                 for i in range(2, paging + 1):
-                    params = {
-                        "page": i
-                    }
-                    async with self.session.get(f"{self.base_url}/users/{username}/clubs", params=params) as resp:
+                    params = {"page": i}
+                    async with self.session.get(
+                        f"{self.base_url}/users/{username}/clubs", params=params
+                    ) as resp:
                         if resp.status in [200, 304]:
-                            clubs.extend(resp['data'])
+                            clubs.extend(resp["data"])
                             await asyncio.sleep(2)
                         else:
                             defineJikanException(resp.status, resp.reason)
@@ -125,10 +123,12 @@ class JikanApi:
         retries = 0
         while retries < 3:
             try:
-                async with self.session.get(f"{self.base_url}/users/{username}/full") as resp:
+                async with self.session.get(
+                    f"{self.base_url}/users/{username}/full"
+                ) as resp:
                     if resp.status in [200, 304]:
                         res = await resp.json()
-                        res: dict = res['data']
+                        res: dict = res["data"]
                     else:
                         raise Exception(await resp.json())
                 self.write_data_to_cache(res, cache_file_path)
@@ -136,13 +136,11 @@ class JikanApi:
             except Exception as e:
                 retries += 1
                 if retries == 3:
-                    errcode: int = e.status_code if hasattr(
-                        e, "status_code") else 500
-                    errmsg: str | dict = e.message if hasattr(
-                        e, "message") else e
+                    errcode: int = e.status_code if hasattr(e, "status_code") else 500
+                    errmsg: str | dict = e.message if hasattr(e, "message") else e
                     defineJikanException(errcode, errmsg)
                 else:
-                    backoff_time = 3 ** retries
+                    backoff_time = 3**retries
                     await asyncio.sleep(backoff_time)
 
     async def get_anime_data(self, anime_id: int) -> dict:
@@ -159,10 +157,12 @@ class JikanApi:
         if cached_file:
             return cached_file
         try:
-            async with self.session.get(f"{self.base_url}/anime/{anime_id}/full") as resp:
+            async with self.session.get(
+                f"{self.base_url}/anime/{anime_id}/full"
+            ) as resp:
                 if resp.status in [200, 304]:
                     res = await resp.json()
-                    res = res['data']
+                    res = res["data"]
                 else:
                     raise Exception(await resp.text())
             self.write_data_to_cache(res, cache_file_path)
