@@ -7,7 +7,7 @@ from time import perf_counter as pc
 
 import interactions as ipy
 
-from modules.const import BOT_TOKEN, SENTRY_DSN
+from modules.const import BOT_TOKEN, SENTRY_DSN, USER_AGENT
 
 now: dtime = dtime.now(tz=tz.utc)
 
@@ -34,8 +34,9 @@ async def on_ready():
     guilds = len(bot.guilds)
     print("[Sys] Bot is ready!")
     print("      Logged in as: " + bot.user.display_name + "#" + bot.user.discriminator)
-    print("      User ID: " + str(bot.user.id))
-    print("      Guilds: " + str(guilds))
+    print("      User ID     : " + str(bot.user.id))
+    print("      Guilds      : " + str(guilds))
+    print("      User Agent  : " + USER_AGENT)
 
 
 async def main():

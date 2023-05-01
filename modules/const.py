@@ -62,12 +62,38 @@ def get_git_revision_short_hash() -> str:
     """Get the current git revision short hash
 
     Returns:
+        str: The current git revision short hash
     """
     return chout(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
 
+def get_git_remote_url() -> str:
+    """Get the URL of the origin remote
 
+    Returns:
+        str: The URL of the origin remote
+    """
+    output = chout(["git", "remote", "get-url", "origin"]).decode("utf-8")
+    output = output.strip()
+    return output
+
+def get_current_git_branch() -> str:
+    """Get the current git branch
+    
+    Returns:
+        str: The current git branch
+    """
+    output = chout(["git", "branch", "--show-current"]).decode("utf-8")
+    output = output.strip()
+    return output
+
+# Call the get_current_git_branch() funct
+
+git_remote = get_git_remote_url()
+git_branch = get_current_git_branch()
 gittyHash = get_git_revision_hash()
 gtHsh = get_git_revision_short_hash()
+
+USER_AGENT: Final[str] = f"RyuuzakiRyuusei/1.0 ({git_remote}/{gtHsh}; branch:{git_branch}; author:{AUTHOR_USERNAME}:{AUTHOR_USERID}; https://discord.com/users/{BOT_CLIENT_ID})"
 
 # =============================================================================
 # About Bot
