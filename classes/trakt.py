@@ -26,7 +26,6 @@ class Trakt:
             self.headers = headers
         self.headers["User-Agent"] = USER_AGENT
 
-
     async def __aenter__(self):
         """Enter the async context manager"""
         self.session = aiohttp.ClientSession(headers=self.headers)
