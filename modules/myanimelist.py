@@ -591,7 +591,7 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
     try:
         async with AnimeApi() as aniapi:
             aniApi = await aniapi.get_relation(
-                id=ani_id, platform=aniapi.AnimeApiPlatforms.MYANIMELIST
+                media_id=ani_id, platform=aniapi.AnimeApiPlatforms.MYANIMELIST
             )
         if aniApi["anilist"] is not None:
             async with AniList() as al:
@@ -599,7 +599,7 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
             if (alData["trailer"] is not None) and (
                 alData["trailer"]["site"] == "youtube"
             ):
-                trailer = generate_trailer(data=alData["trailer"], isMal=False)
+                trailer = generate_trailer(data=alData["trailer"], is_mal=False)
                 trailer = [trailer]
             else:
                 trailer = []
