@@ -25,6 +25,7 @@ def print_file(path_name: str) -> None:
     print(f"Formatting file: {path_name}")
     return None
 
+
 def format_scripts():
     """Formats all python scripts in project file
 
@@ -45,7 +46,13 @@ def format_scripts():
 
                 # format the file using autopep8
                 subprocess.run(
-                    ["autopep8", "--in-place", "--aggressive", "--aggressive", file_path],
+                    [
+                        "autopep8",
+                        "--in-place",
+                        "--aggressive",
+                        "--aggressive",
+                        file_path,
+                    ],
                     check=True,
                 )
 
@@ -57,6 +64,7 @@ def format_scripts():
                     f.seek(0)
                     json.dump(data, f, indent=2)
                     f.truncate()
+
 
 async def loop_test():
     """Do a test for each API calls
@@ -70,10 +78,9 @@ async def loop_test():
             if file.endswith(".py"):
                 print("Testing " + file)
                 file_path = os.path.join(root, file)
-                sub = subprocess.Popen(
-                    [sys.executable, file_path]
-                )
+                sub = subprocess.Popen([sys.executable, file_path])
                 sub.wait()
+
 
 async def main():
     """Main function of the script
