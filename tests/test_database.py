@@ -25,7 +25,7 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
                 tmp,
                 9876543210,
                 1234567890,
-                "Test Guild"
+                "Test Guild",
             )
         self.assertTrue(resp is None)
 

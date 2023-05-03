@@ -197,7 +197,9 @@ async def generate_mal(
         j_spl = jdata.split("\n")
         synl = len(j_spl)
         cynoin = j_spl[0]
-        cynmo = f"\n> \n> Read more on [MyAnimeList](<https://myanimelist.net/anime/{m}>)"
+        cynmo = (
+            f"\n> \n> Read more on [MyAnimeList](<https://myanimelist.net/anime/{m}>)"
+        )
 
         if len(str(cynoin)) <= 150:
             cyno = sanitize_markdown(cynoin)
@@ -209,7 +211,11 @@ async def generate_mal(
         else:
             cyno = sanitize_markdown(cynoin)
 
-        if (cyno[-3:] == "...") or ((len(str(cynoin)) >= 150) and (synl > 3)) or ((len(str(cynoin)) >= 1000) and (synl > 1)):
+        if (
+            (cyno[-3:] == "...")
+            or ((len(str(cynoin)) >= 150) and (synl > 3))
+            or ((len(str(cynoin)) >= 1000) and (synl > 1))
+        ):
             cyno += cynmo
 
     jJpg = j["images"]["jpg"]
@@ -233,7 +239,9 @@ async def generate_mal(
     smkPost = f"https://simkl.in/posters/{smkPost}_m.webp" if smkPost else None
     smkBg = f"https://simkl.in/fanart/{smkBg}_w.webp" if smkBg else None
 
-    if anime_api["kitsu"] and ((not alPost and not alBg) or (not smkPost and not smkBg)):
+    if anime_api["kitsu"] and (
+        (not alPost and not alBg) or (not smkPost and not smkBg)
+    ):
         kts = await Kitsu().get_anime(anime_api["kitsu"])
     else:
         kts = {"data": {"attributes": {"posterImage": None, "coverImage": None}}}
@@ -248,17 +256,17 @@ async def generate_mal(
 
     poster = next((img for img in (alPost, smkPost, ktsPost, malPost) if img), None)
     postNote = (
-        "AniList" if alPost else
-        "SIMKL" if smkPost else
-        "Kitsu" if ktsPost else
-        "MyAnimeList"
+        "AniList"
+        if alPost
+        else "SIMKL"
+        if smkPost
+        else "Kitsu"
+        if ktsPost
+        else "MyAnimeList"
     )
     background = next((img for img in (alBg, smkBg, ktsBg, malBg) if img), None)
     bgNote = (
-        "AniList" if alBg else
-        "SIMKL" if smkBg else
-        "Kitsu" if ktsBg else
-        "MyAnimeList"
+        "AniList" if alBg else "SIMKL" if smkBg else "Kitsu" if ktsBg else "MyAnimeList"
     )
 
     if postNote == bgNote:
@@ -295,7 +303,10 @@ async def generate_mal(
             ast = astr.split(" to ")[0]
             tsa = ""
         elif re.match(r"^([a-zA-Z]{3} [\d]{1,2}, [\d]{4})", astr):
-            if all(bcast.get(k) is None or bcast[k] == "Unknown" for k in ("string", "time")):
+            if all(
+                bcast.get(k) is None or bcast[k] == "Unknown"
+                for k in ("string", "time")
+            ):
                 astn = astn.replace("+00:00", "+0000")
                 ast = (datetime.fromisoformat(astn) - daten).total_seconds()
             else:
@@ -303,7 +314,17 @@ async def generate_mal(
                 bct = bcast["time"].split(":")
                 prop = j["aired"]["prop"]["from"]
                 # Convert bct to datetime
-                ast = (datetime(prop["year"], prop["month"], prop["day"], int(bct[0]), int(bct[1]), tzinfo=ZoneInfo(bcast["timezone"])) - daten).total_seconds()
+                ast = (
+                    datetime(
+                        prop["year"],
+                        prop["month"],
+                        prop["day"],
+                        int(bct[0]),
+                        int(bct[1]),
+                        tzinfo=ZoneInfo(bcast["timezone"]),
+                    )
+                    - daten
+                ).total_seconds()
             ast = str(ast).removesuffix(".0")
             tsa = f"(<t:{ast}:R>)"
             ast = f"<t:{ast}:D>"
@@ -318,7 +339,9 @@ async def generate_mal(
                 # Set timezone offset
                 aenn = aenn.replace("+00:00", "+0000")
                 # Calculate time delta
-                aen = (datetime.strptime(aenn, "%Y-%m-%dT%H:%M:%S%z") - daten).total_seconds()
+                aen = (
+                    datetime.strptime(aenn, "%Y-%m-%dT%H:%M:%S%z") - daten
+                ).total_seconds()
             else:
                 # Split bcast.time into hours and minutes
                 bct = bcast["time"].split(":")
@@ -423,7 +446,13 @@ async def generate_mal(
 
     # Format number of votes
     pvd = j.get("scored_by", 0)
-    pvd = f"{pvd:,} people voted" if pvd > 1 else "1 person voted" if pvd == 1 else "0 person voted"
+    pvd = (
+        f"{pvd:,} people voted"
+        if pvd > 1
+        else "1 person voted"
+        if pvd == 1
+        else "0 person voted"
+    )
 
     # Format number of episodes
     eps = j.get("episodes", "*??*")
@@ -447,7 +476,9 @@ async def generate_mal(
     if str(eps) in ["1", "0", None]:
         episodeField = EmbedField(name="Duration", value=f"{dur}", inline=True)
     else:
-        episodeField = EmbedField(name="Eps/Duration", value=f"{eps} ({dur})", inline=True)
+        episodeField = EmbedField(
+            name="Eps/Duration", value=f"{eps} ({dur})", inline=True
+        )
 
     embed = Embed(
         author=EmbedAuthor(
@@ -510,7 +541,9 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
                 alData = await al.anime(media_id=aniApi["anilist"])
 
                 if alData["trailer"] and alData["trailer"]["site"] == "youtube":
-                    trailer.append(generate_trailer(data=alData["trailer"], is_mal=False))
+                    trailer.append(
+                        generate_trailer(data=alData["trailer"], is_mal=False)
+                    )
         else:
             alData = {}
 

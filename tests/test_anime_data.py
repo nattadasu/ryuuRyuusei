@@ -22,6 +22,7 @@ except ImportError:
     from modules.commons import generate_trailer
     from modules.myanimelist import generate_mal
 
+
 async def do_anime(ani_id: int, nsfwBool: bool = False) -> Embed:
     alData = {}
     trailer = None
@@ -32,9 +33,7 @@ async def do_anime(ani_id: int, nsfwBool: bool = False) -> Embed:
     if aniApi["anilist"] is not None:
         async with AniList() as al:
             alData = await al.anime(media_id=aniApi["anilist"])
-        if (alData["trailer"] is not None) and (
-            alData["trailer"]["site"] == "youtube"
-        ):
+        if (alData["trailer"] is not None) and (alData["trailer"]["site"] == "youtube"):
             trailer = generate_trailer(data=alData["trailer"], is_mal=False)
             trailer = [trailer]
         else:
@@ -43,6 +42,7 @@ async def do_anime(ani_id: int, nsfwBool: bool = False) -> Embed:
         ani_id, code="en_US", is_nsfw=nsfwBool, al_dict=alData, anime_api=aniApi
     )
     return dcEm
+
 
 class AnimeShowcaseTest(unittest.IsolatedAsyncioTestCase):
     async def test_anime_info(self):
