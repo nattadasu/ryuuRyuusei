@@ -150,21 +150,21 @@ class MediaIsNsfw(Exception):
 
 # old code taken from ipy/v4.3.4
 #! TODO: respect ipy/v5.0.0 and introduce locale
-async def generateMal(
+async def generate_mal(
     entry_id: int,
     code: str,
-    isNsfw: bool = False,
-    alDict: dict = None,
-    animeApi: dict = None,
+    is_nsfw: bool = False,
+    al_dict: dict = None,
+    anime_api: dict = None,
 ) -> Embed:
     """Generate an embed for /anime with MAL via Jikan
 
     Args:
         entry_id (int): MAL ID
         code (str): Language code
-        isNsfw (bool, optional): NSFW status. Defaults to False.
-        alDict (dict, optional): AniList data. Defaults to None.
-        animeApi (dict, optional): Anime API data. Defaults to None.
+        is_nsfw (bool, optional): NSFW status. Defaults to False.
+        al_dict (dict, optional): AniList data. Defaults to None.
+        anime_api (dict, optional): Anime API data. Defaults to None.
 
     Raises:
         MediaIsNsfw: NSFW is not allowed
@@ -172,40 +172,32 @@ async def generateMal(
     Returns:
         Embed: Embed object
     """
-    # get locale
-    # l_ = fetch_language_data(code)
+
     async with JikanApi() as jikan:
         j = await jikan.get_anime_data(entry_id)
-    if alDict is not None:
-        al = alDict
-    else:
-        al = None
-    if isNsfw is None:
-        msgForThread = warnThreadCW
-    else:
-        msgForThread = ""
-    if isNsfw is not True:
+
+    al = al_dict
+
+    msg_for_thread = warnThreadCW if is_nsfw is not None else ""
+
+    if not is_nsfw:
         for g in j["genres"]:
             gn = g["name"]
             if "Hentai" in gn:
                 raise MediaIsNsfw(
-                    f"{EMOJI_FORBIDDEN} **NSFW is not allowed!**\nOnly NSFW channels are allowed to search NSFW content.{msgForThread}"
+                    f"{EMOJI_FORBIDDEN} **NSFW is not allowed!**\nOnly NSFW channels are allowed to search NSFW content.{msg_for_thread}"
                 )
 
     m = j["mal_id"]
+    cyno = "*None*"
 
     if j["synopsis"] is not None:
-        # remove \n\n[Written by MAL Rewrite]
         jdata = j["synopsis"].replace("\n\n[Written by MAL Rewrite]", "")
-        # try to decode ampersands
         jdata = html.unescape(jdata)
         j_spl = jdata.split("\n")
         synl = len(j_spl)
         cynoin = j_spl[0]
-
-        cynmo = (
-            f"\n> \n> Read more on [MyAnimeList](<https://myanimelist.net/anime/{m}>)"
-        )
+        cynmo = f"\n> \n> Read more on [MyAnimeList](<https://myanimelist.net/anime/{m}>)"
 
         if len(str(cynoin)) <= 150:
             cyno = sanitize_markdown(cynoin)
@@ -214,27 +206,16 @@ async def generateMal(
                 cyno += trim_cyno(sanitize_markdown(j_spl[2]))
         elif len(str(cynoin)) >= 1000:
             cyno = trim_cyno(sanitize_markdown(cynoin))
-            # when cyno has ... at the end, it means it's trimmed, then add
-            # read more
         else:
             cyno = sanitize_markdown(cynoin)
 
-        if (
-            (cyno[-3:] == "...")
-            or ((len(str(cynoin)) >= 150) and (synl > 3))
-            or ((len(str(cynoin)) >= 1000) and (synl > 1))
-        ):
+        if (cyno[-3:] == "...") or ((len(str(cynoin)) >= 150) and (synl > 3)) or ((len(str(cynoin)) >= 1000) and (synl > 1)):
             cyno += cynmo
-
-    else:
-        cyno = "*None*"
 
     jJpg = j["images"]["jpg"]
     note = "Images from "
 
-    if al:
-        pass
-    else:
+    if not al:
         al = {"bannerImage": None, "coverImage": {"extraLarge": None}}
 
     alPost = al["coverImage"]["extraLarge"]
@@ -246,67 +227,38 @@ async def generateMal(
             smk = await sim.get_anime(smId[0]["ids"]["simkl"])
     except Exception:
         smk = simkl0rels
-    smkPost = smk.get("poster", None)
-    smkBg = smk.get("fanart", None)
-    smkPost = (
-        f"https://simkl.in/posters/{smkPost}_m.webp" if smkPost is not None else None
-    )
-    smkBg = f"https://simkl.in/fanart/{smkBg}_w.webp" if smkBg is not None else None
 
-    if (animeApi["kitsu"] is not None) and (
-        ((alPost is None) and (alBg is None)) or ((smkPost is None) and (smkBg is None))
-    ):
-        kts = await Kitsu().get_anime(animeApi["kitsu"])
+    smkPost = smk.get("poster")
+    smkBg = smk.get("fanart")
+    smkPost = f"https://simkl.in/posters/{smkPost}_m.webp" if smkPost else None
+    smkBg = f"https://simkl.in/fanart/{smkBg}_w.webp" if smkBg else None
+
+    if anime_api["kitsu"] and ((not alPost and not alBg) or (not smkPost and not smkBg)):
+        kts = await Kitsu().get_anime(anime_api["kitsu"])
     else:
         kts = {"data": {"attributes": {"posterImage": None, "coverImage": None}}}
 
-    ktsPost = kts["data"]["attributes"].get("posterImage", None)
-    ktsPost = ktsPost.get("original", None) if ktsPost is not None else None
-    ktsBg = kts["data"]["attributes"].get("coverImage", None)
-    ktsBg = ktsBg.get("original", None) if ktsBg is not None else None
+    ktsPost = kts["data"]["attributes"].get("posterImage")
+    ktsPost = ktsPost.get("original") if ktsPost else None
+    ktsBg = kts["data"]["attributes"].get("coverImage")
+    ktsBg = ktsBg.get("original") if ktsBg else None
 
-    malPost = (
-        jJpg["large_image_url"]
-        if jJpg["large_image_url"] is not None
-        else j["image_url"]
-    )
+    malPost = jJpg["large_image_url"] or j["image_url"]
     malBg = ""
 
-    poster = (
-        alPost
-        if alPost is not None
-        else smkPost
-        if smkPost is not None
-        else ktsPost
-        if ktsPost is not None
-        else malPost
-    )
+    poster = next((img for img in (alPost, smkPost, ktsPost, malPost) if img), None)
     postNote = (
-        "AniList"
-        if alPost is not None
-        else "SIMKL"
-        if smkPost is not None
-        else "Kitsu"
-        if ktsPost is not None
-        else "MyAnimeList"
+        "AniList" if alPost else
+        "SIMKL" if smkPost else
+        "Kitsu" if ktsPost else
+        "MyAnimeList"
     )
-    background = (
-        alBg
-        if alBg is not None
-        else smkBg
-        if smkBg is not None
-        else ktsBg
-        if ktsBg is not None
-        else malBg
-    )
+    background = next((img for img in (alBg, smkBg, ktsBg, malBg) if img), None)
     bgNote = (
-        "AniList"
-        if alBg is not None
-        else "SIMKL"
-        if smkBg is not None
-        else "Kitsu"
-        if ktsBg is not None
-        else "MyAnimeList"
+        "AniList" if alBg else
+        "SIMKL" if smkBg else
+        "Kitsu" if ktsBg else
+        "MyAnimeList"
     )
 
     if postNote == bgNote:
@@ -320,93 +272,53 @@ async def generateMal(
 
     # Build sendMessages
     tgs = []
-    for g in j["genres"]:
-        gn = g["name"]
-        tgs += [f"{gn}"]
-    for g in j["themes"]:
-        gn = g["name"]
-        tgs += [f"{gn}"]
-    for g in j["demographics"]:
-        gn = g["name"]
-        tgs += [f"{gn}"]
+    for category in ("genres", "themes", "demographics"):
+        tgs.extend(g["name"] for g in j.get(category, []))
 
-    if len(tgs) is None:
-        tgs = "*None*"
-    elif len(tgs) > 0:
-        tgs = sorted(set(tgs), key=str.casefold)
-        tgs = ", ".join(tgs)
-    else:
-        tgs = "*None*"
-    year = j["aired"]["prop"]["from"]["year"]
-    if (year == 0) or (year is None):
-        year = "year?"
-    astn = j["aired"]["from"]
-    aenn = j["aired"]["to"]
-    astr = j["aired"]["string"]
     ssonn = j["season"]
     daten = datetime(1970, 1, 1, tzinfo=timezone.utc)
+    tgs = sorted(set(tgs), key=str.casefold)
+    tgs = ", ".join(tgs) if tgs else "*None*"
+
+    year = j["aired"]["prop"]["from"]["year"] or "year?"
+    astn, aenn = j["aired"]["from"], j["aired"]["to"]
+    astr = j["aired"]["string"]
     bcast = j["broadcast"]
 
     # Grab studio names on j['studios'][n]['name']
-    stdio = []
-    for s in j["studios"]:
-        stdio += [s["name"]]
-    if len(stdio) > 0:
-        stdio = ", ".join(stdio)
-    else:
-        stdio = "*None*"
+    studio_names = [s["name"] for s in j["studios"]] if "studios" in j else []
+    stdio = ", ".join(studio_names) if studio_names else "*None*"
 
     # start date logic
-    if astn is not None:
-        # Check if title is airing/aired or TBA by checking astr in regex
-        if re.match(r"^([\d]{4})", astr) or re.match(r"^([a-zA-Z]{3} [\d]{4})", astr):
+    if astn:
+        if re.match(r"^([\d]{4})|^([a-zA-Z]{3} [\d]{4})", astr):
             ast = astr.split(" to ")[0]
             tsa = ""
         elif re.match(r"^([a-zA-Z]{3} [\d]{1,2}, [\d]{4})", astr):
-            if (
-                (bcast["string"] == "Unknown")
-                or (bcast["string"] is None)
-                or (bcast["time"] is None)
-            ):
+            if all(bcast.get(k) is None or bcast[k] == "Unknown" for k in ("string", "time")):
                 astn = astn.replace("+00:00", "+0000")
-                ast = (
-                    datetime.strptime(astn, "%Y-%m-%dT%H:%M:%S%z") - daten
-                ).total_seconds()
+                ast = (datetime.fromisoformat(astn) - daten).total_seconds()
             else:
                 # Split bcast.time into hours and minutes
                 bct = bcast["time"].split(":")
                 prop = j["aired"]["prop"]["from"]
                 # Convert bct to datetime
-                ast = (
-                    datetime(
-                        prop["year"],
-                        prop["month"],
-                        prop["day"],
-                        int(bct[0]),
-                        int(bct[1]),
-                        tzinfo=ZoneInfo(bcast["timezone"]),
-                    )
-                    - daten
-                ).total_seconds()
+                ast = (datetime(prop["year"], prop["month"], prop["day"], int(bct[0]), int(bct[1]), tzinfo=ZoneInfo(bcast["timezone"])) - daten).total_seconds()
             ast = str(ast).removesuffix(".0")
-            tsa = "(<t:" + ast + ":R>)"
-            ast = "<t:" + ast + ":D>"
+            tsa = f"(<t:{ast}:R>)"
+            ast = f"<t:{ast}:D>"
     else:
-        ast = "TBA"
-        tsa = ""
+        ast, tsa = "TBA", ""
 
     # end date logic
+    # Check airing dates
     if aenn is not None:
         if re.match(r"^([a-zA-Z]{3} [\d]{1,2}, [\d]{4})", astr):
-            if (
-                (bcast["string"] == "Unknown")
-                or (bcast["string"] is None)
-                or (bcast["time"] is None)
-            ):
+            if (bcast["string"] in ["Unknown", None]) or bcast["time"] is None:
+                # Set timezone offset
                 aenn = aenn.replace("+00:00", "+0000")
-                aen = (
-                    datetime.strptime(aenn, "%Y-%m-%dT%H:%M:%S%z") - daten
-                ).total_seconds()
+                # Calculate time delta
+                aen = (datetime.strptime(aenn, "%Y-%m-%dT%H:%M:%S%z") - daten).total_seconds()
             else:
                 # Split bcast.time into hours and minutes
                 bct = bcast["time"].split(":")
@@ -423,33 +335,32 @@ async def generateMal(
                     )
                     - daten
                 ).total_seconds()
-            aen = str(aen).removesuffix(".0")
-            aen = "<t:" + aen + ":D>"
+            aen = str(int(aen)).removesuffix(".0")
+            aen = f"<t:{aen}:D>"
         elif re.match(r"^([a-zA-Z]{3} [\d]{4})", astr):
             aen = astr.split(" to ")[1]
-    elif j["status"] == "Currently Airing":
-        aen = "Ongoing"
-    elif (j["status"] == "Not yet aired") or (astr == "Not available"):
-        aen = "TBA"
     else:
-        aen = ast
+        if j["status"] == "Currently Airing":
+            aen = "Ongoing"
+        elif j["status"] == "Not yet aired" or astr == "Not available":
+            aen = "TBA"
+        else:
+            aen = ast
 
     # Build date
-    if tsa is not None:
-        tsa = " " + tsa
-    else:
-        tsa = ""
-
-    if (ast == "TBA") and (aen == "TBA"):
+    tsa = f" {tsa}" if tsa is not None else ""
+    if ast == "TBA" and aen == "TBA":
         date = "TBA"
     else:
-        date = f"{ast} - {aen} {tsa}"
+        date = f"{ast} - {aen}{tsa}"
 
+    # Set season
     if ssonn is not None:
         sson = str(ssonn).capitalize()
     elif re.match("^[0-9]{4}$", ast):
         sson = "Unknown"
     elif j["aired"]["prop"]["from"]["month"] is not None:
+        # Set timezone offset
         astn = astn.replace("+00:00", "+0000")
         astn = datetime.strptime(astn, "%Y-%m-%dT%H:%M:%S%z")
         sson = astn.strftime("%m")
@@ -464,18 +375,22 @@ async def generateMal(
     else:
         sson = "Unknown"
 
+        # Get title information
     rot = j["title"]
-
-    nat = j["title_japanese"]
-    if (nat == "") or (nat is None):
-        nat = "*None*"
-
+    nat = j["title_japanese"] or "*None*"
     ent = j["title_english"]
-    # create a synonyms list
-    syns = []
-    for s in j["titles"]:
-        if s["type"] not in ["Default", "English"]:
-            syns += [s["title"]]
+
+    # Create a synonyms list
+    syns = [s["title"] for s in j["titles"] if s["type"] not in ["Default", "English"]]
+    if not ent:
+        # Set ent to a synonym in ASCII or the original title
+        for s in syns:
+            if re.match(r"([0-9a-zA-Z][:0-9a-zA-Z ]+)(?= )", s):
+                ent = s
+                break
+        else:
+            ent = rot
+
     if (ent is None) or (ent == ""):
         # for each s in syns, check if the s is in ASCII using regex
         # if it is, then set ent to s
@@ -485,7 +400,6 @@ async def generateMal(
                 # grab group 1
                 ent = s
                 break
-            ent = rot
         else:
             ent = rot
         enChkMark = "\\*"
@@ -494,49 +408,46 @@ async def generateMal(
         enChkMark = ""
         chkMsg = ""
 
-    note += chkMsg
-
+    # Format synonyms list
     ogt = [rot, nat, ent]
-    syns = [x for x in syns if x not in ogt]
-    # sort
-    syns = sorted(set(syns), key=str.casefold)
+    syns = sorted(set(syns) - set(ogt), key=str.casefold)
     synsl = len(syns)
-
     if synsl > 8:
-        syns = syns[:8]
-        syns = ", ".join(syns)
-        syns += f", *and {synsl - 8} more*"
+        syns = ", ".join(syns[:8]) + f", *and {synsl - 8} more*"
     elif synsl > 1:
         syns = ", ".join(syns)
     elif synsl == 1:
         syns = syns[0]
-    elif synsl == 0:
+    else:
         syns = "*None*"
 
-    # format people voted for to be more readable (1,000 instead of 1000)
-    pvd = j["scored_by"]
-    if pvd is None:
-        pvd = "0 person voted"
-    elif pvd > 1:
-        pvd = f"{pvd:,} people voted"
-    elif pvd == 1:
-        pvd = "1 person voted"
+    # Format number of votes
+    pvd = j.get("scored_by", 0)
+    pvd = f"{pvd:,} people voted" if pvd > 1 else "1 person voted" if pvd == 1 else "0 person voted"
 
-    eps = j["episodes"]
-    if (eps == 0) or (eps is None):
-        eps = "*??*"
+    # Format number of episodes
+    eps = j.get("episodes", "*??*")
+    eps = str(eps) if eps else "*Unknown*"
 
-    stat = j["status"]
-    if (stat == "") or (stat is None):
-        stat = "*Unknown*"
+    # Format status
+    stat = j.get("status", "*Unknown*")
+    stat = stat or "*Unknown*"
 
-    dur = j["duration"]
-    if (dur == "") or (dur is None):
-        dur = "*Unknown*"
+    # Format duration
+    dur = j.get("duration", "*Unknown*")
+    dur = dur or "*Unknown*"
 
-    scr = j["score"]
-    if (scr == "") or (scr is None):
-        scr = "0"
+    # Format score
+    scr = j.get("score", "0")
+    scr = str(scr) if scr else "0"
+
+    # Add check message to note
+    note += chkMsg
+
+    if str(eps) in ["1", "0", None]:
+        episodeField = EmbedField(name="Duration", value=f"{dur}", inline=True)
+    else:
+        episodeField = EmbedField(name="Eps/Duration", value=f"{eps} ({dur})", inline=True)
 
     embed = Embed(
         author=EmbedAuthor(
@@ -557,7 +468,7 @@ async def generateMal(
             EmbedField(name="Native Title", value=nat, inline=True),
             EmbedField(name="Synonyms", value=syns),
             EmbedField(name="Genres and Themes", value=tgs),
-            EmbedField(name="Eps/Duration", value=f"{eps} ({dur})", inline=True),
+            episodeField,
             EmbedField(name="Status", value=stat, inline=True),
             EmbedField(name="Studio", value=stdio, inline=True),
             EmbedField(name="Aired", value=date),
@@ -581,35 +492,37 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
     """
     channel = ctx.channel
     ul = read_user_language(ctx)
-    alData = {}
+
     if channel.type in (11, 12):
-        prId = channel.parent_id
-        nsfwBool = await get_parent_nsfw_status(prId)
+        nsfwBool = await get_parent_nsfw_status(channel.parent_id)
     else:
         nsfwBool = channel.nsfw
-    trailer = None
+
+    trailer = []
     try:
         async with AnimeApi() as aniapi:
             aniApi = await aniapi.get_relation(
                 media_id=ani_id, platform=aniapi.AnimeApiPlatforms.MYANIMELIST
             )
+
         if aniApi["anilist"] is not None:
             async with AniList() as al:
                 alData = await al.anime(media_id=aniApi["anilist"])
-            if (alData["trailer"] is not None) and (
-                alData["trailer"]["site"] == "youtube"
-            ):
-                trailer = generate_trailer(data=alData["trailer"], is_mal=False)
-                trailer = [trailer]
-            else:
-                trailer = []
-        dcEm = await generateMal(
-            ani_id, isNsfw=nsfwBool, code=ul, alDict=alData, animeApi=aniApi
+
+                if alData["trailer"] and alData["trailer"]["site"] == "youtube":
+                    trailer.append(generate_trailer(data=alData["trailer"], is_mal=False))
+        else:
+            alData = {}
+
+        dcEm = await generate_mal(
+            ani_id, code=ul, is_nsfw=nsfwBool, al_dict=alData, anime_api=aniApi
         )
         await ctx.send("", embeds=dcEm, components=trailer)
+
     except MediaIsNsfw as e:
         await ctx.send(f"**{e}**\n")
-    except Exception:
+
+    except Exception as e:
         #! TODO: Implement the embed
         raise NotImplementedError(
             "This error embed is not yet implemented.\n" + traceback.format_exc()

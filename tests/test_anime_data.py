@@ -10,7 +10,7 @@ try:
     from classes.kitsu import Kitsu
     from classes.myanimelist import MyAnimeList
     from modules.commons import generate_trailer
-    from modules.myanimelist import generateMal
+    from modules.myanimelist import generate_mal
 except ImportError:
     # add the path to the 'modules' directory to the system path
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -20,7 +20,7 @@ except ImportError:
     from classes.kitsu import Kitsu
     from classes.myanimelist import MyAnimeList
     from modules.commons import generate_trailer
-    from modules.myanimelist import generateMal
+    from modules.myanimelist import generate_mal
 
 async def do_anime(ani_id: int, nsfwBool: bool = False) -> Embed:
     alData = {}
@@ -39,8 +39,8 @@ async def do_anime(ani_id: int, nsfwBool: bool = False) -> Embed:
             trailer = [trailer]
         else:
             trailer = []
-    dcEm = await generateMal(
-        ani_id, code="en_US", isNsfw=nsfwBool, alDict=alData, animeApi=aniApi
+    dcEm = await generate_mal(
+        ani_id, code="en_US", is_nsfw=nsfwBool, al_dict=alData, anime_api=aniApi
     )
     return dcEm
 
