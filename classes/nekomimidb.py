@@ -31,8 +31,8 @@ class NekomimiDb:
         BOTH = "both"
 
     def __init__(
-            self,
-            gender: Gender | Literal['boy', 'girl', 'nb', 'both'] | None = None,
+        self,
+        gender: Gender | Literal["boy", "girl", "nb", "both"] | None = None,
     ):
         """Initialize a Nekomimi object
 
