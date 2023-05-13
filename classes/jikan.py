@@ -3,6 +3,7 @@ import json
 import os
 import time
 import traceback
+from typing import Any
 
 from aiohttp import ClientSession
 
@@ -18,7 +19,7 @@ class JikanException(Exception):
         return f"JikanException [{self.status_code}]: {self.message}"
 
 
-def defineJikanException(error_code: int, error_message: str | dict) -> JikanException:
+def defineJikanException(error_code: int, error_message: Any) -> JikanException:
     try:
         match error_code:
             case 403:
@@ -78,11 +79,12 @@ class JikanApi:
             list[dict]: List of clubs
         """
         try:
+            resp_data: dict = {}
             async with self.session.get(
                 f"{self.base_url}/users/{username}/clubs"
             ) as resp:
                 if resp.status in [200, 304]:
-                    resp_data: dict = await resp.json()
+                    resp_data = await resp.json()
                 else:
                     defineJikanException(resp.status, resp.reason)
             clubs: list = resp_data["data"]
@@ -94,13 +96,14 @@ class JikanApi:
                         f"{self.base_url}/users/{username}/clubs", params=params
                     ) as resp:
                         if resp.status in [200, 304]:
-                            clubs.extend(resp["data"])
+                            respd2: dict = await resp.json()
+                            clubs.extend(respd2["data"])
                             await asyncio.sleep(2)
                         else:
                             defineJikanException(resp.status, resp.reason)
             return clubs
         except Exception as e:
-            defineJikanException(e)
+            defineJikanException(601, e)
 
     async def get_user_data(self, username: str) -> dict:
         """Get user data

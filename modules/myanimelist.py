@@ -130,6 +130,8 @@ def malExceptionEmbed(
     l_ = lang_dict
     if isinstance(error_type, MalErrType):
         error_type = error_type.value
+    else:
+        error_type = str(error_type)
     emoji = re.sub(r"(<:.*:)(\d+)(>)", r"\2", error_type)
     dcEm = Embed(
         color=color,
@@ -154,8 +156,8 @@ async def generate_mal(
     entry_id: int,
     code: str,
     is_nsfw: bool = False,
-    al_dict: dict = None,
-    anime_api: dict = None,
+    al_dict: dict | None = None,
+    anime_api: dict | None = None,
 ) -> Embed:
     """Generate an embed for /anime with MAL via Jikan
 

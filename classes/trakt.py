@@ -10,7 +10,7 @@ from modules.const import traktHeader, USER_AGENT
 
 
 class Trakt:
-    def __init__(self, headers: dict = None):
+    def __init__(self, headers: dict | None = None):
         """Initialize the Trakt API Wrapper
 
         Args:

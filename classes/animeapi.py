@@ -3,6 +3,7 @@ import os
 import time
 from datetime import datetime as dt
 from enum import Enum
+from typing import Literal
 
 from aiohttp import ClientSession
 
@@ -73,13 +74,17 @@ class AnimeApi:
             return dt.now()
 
     async def get_relation(
-        self, media_id: str | int, platform: AnimeApiPlatforms | str
+        self, media_id: str | int, platform: AnimeApiPlatforms | Literal[
+            "anisearch", "anidb", "anilist", "animeplanet", "annict", "kaize",
+            "kitsu", "livechart", "myanimelist", "notify", "otakotaku",
+            "shikimori", "shoboi", "silveryasha", "trakt"
+        ]
     ) -> dict:
         """Get a relation between anime and other platform via Natsu's AniAPI
 
         Args:
             media_id (str | int): Anime ID
-            platform (AnimeApiPlatforms | str): Platform to get the relation
+            platform (AnimeApiPlatforms | Literal["anisearch", "anidb", "anilist", "animeplanet", "annict", "kaize", "kitsu", "livechart", "myanimelist", "notify", "otakotaku", "shikimori", "shoboi", "silveryasha", "trakt" ]): Platform to get the relation
 
         Returns:
             dict: Relation between anime and other platform

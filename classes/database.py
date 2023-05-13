@@ -120,16 +120,7 @@ class UserDatabase:
             )
 
         username = row.iloc[0]["malUsername"]
-        clubs = await check_club_membership(username)
-        verified = False
-        for club in clubs:
-            if str(club["mal_id"]) == str(CLUB_ID):
-                verified = True
-                break
-        else:
-            raise DatabaseException(
-                f"{EMOJI_UNEXPECTED_ERROR} User is not a member of the club"
-            )
+        verified = await check_club_membership(username)
         return verified
 
     async def export_user_data(self, user_id: int) -> str:

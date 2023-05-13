@@ -19,7 +19,7 @@ async def get_member_clubs(username: str) -> list[dict]:
         dict: List of clubs that the user is a member of
     """
     async with JikanApi() as jikan:
-        clubs = await jikan.get_member_clubs(username)
+        clubs = await jikan.get_user_clubs(username)
         return clubs
 
 

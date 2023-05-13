@@ -1,6 +1,7 @@
 from enum import Enum
 
 import pandas as pd
+from typing import Literal
 
 from modules.commons import get_random_seed
 
@@ -29,24 +30,30 @@ class NekomimiDb:
         UNKNOWN = NONBINARY = NB = "nb"
         BOTH = "both"
 
-    def __init__(self, gender: Gender | None = None):
+    def __init__(
+            self,
+            gender: Gender | Literal['boy', 'girl', 'nb', 'both'] | None = None,
+    ):
         """Initialize a Nekomimi object
 
         Args:
-            gender (Gender | None): gender of a character to get the image, defaults to None
+            gender (Gender | Literal['boy', 'girl', 'nb', 'both'] | None): gender of a character to get the image, defaults to None
         """
-        self.gender = gender
+        if isinstance(gender, self.Gender):
+            self.gender = gender.value
+        else:
+            self.gender = gender
         self.seed = get_random_seed()
         self.nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t").fillna("")
 
-    def get_random_nekomimi(self) -> pd.Series:
+    def get_random_nekomimi(self) -> pd.DataFrame | pd.Series | None:
         """Get a random nekomimi image from the database
 
         Returns:
             Series: a random row from the database
         """
         if self.gender is not None:
-            query = self.nmDb[self.nmDb["girlOrBoy"] == self.gender.value]
+            query = self.nmDb[self.nmDb["girlOrBoy"] == self.gender]
         else:
             query = self.nmDb
         # get a random row from the query

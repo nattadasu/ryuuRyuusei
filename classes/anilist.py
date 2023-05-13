@@ -3,6 +3,7 @@ import json
 import os
 import time
 from enum import Enum
+from typing import Literal, Any
 
 from aiohttp import ClientSession
 
@@ -32,7 +33,7 @@ class AniList:
 
     async def close(self) -> None:
         """Close aiohttp session"""
-        await self.session.close()
+        await self.session.close() # type: ignore
 
     class MediaType(Enum):
         """Media type enum for AniList"""
@@ -41,13 +42,13 @@ class AniList:
         MANGA = "MANGA"
 
     async def nsfwCheck(
-        self, media_id: int, media_type: str | MediaType = MediaType.ANIME
+        self, media_id: int, media_type: Literal['ANIME', 'MANGA'] | MediaType = MediaType.ANIME
     ) -> bool:
         """Check if the media is NSFW
 
         Args:
             media_id (int): The ID of the media
-            media_type (str | MediaType, optional): The type of the media. Defaults to MediaType.ANIME.
+            media_type (Literal['ANIME', 'MANGA'] | MediaType, optional): The type of the media. Defaults to MediaType.ANIME.
 
         Raises:
             ProviderHttpError: Raised when the HTTP request fails
@@ -56,16 +57,17 @@ class AniList:
             bool: True if the media is NSFW, False if not
         """
         self.cache_expiration_time = 604800
+        media = ""
         if isinstance(media_type, self.MediaType):
-            media_type = media_type.value
+            media = media_type.value
+        elif isinstance(media_type, Literal):
+            media = media_type
         cache_file_path = self.get_cache_file_path(
-            f"nsfw/{media_type.lower()}/{id}.json"
+            f"nsfw/{media.lower()}/{id}.json"
         )
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
-        if isinstance(media_type, str):
-            media_type = media_type.upper()
         query = f"""query {{
     Media(id: {media_id}, type: {media_type}) {{
         id
@@ -230,14 +232,14 @@ class AniList:
             raise ProviderHttpError(error_message, response.status)
 
     async def search_media(
-        self, query: str, limit: int = 10, media_type: str | MediaType = MediaType.MANGA
+        self, query: str, limit: int = 10, media_type: Literal['ANIME', 'MANGA'] | MediaType = MediaType.MANGA
     ) -> list[dict]:
         """Search anime by its title
 
         Args:
             query (str): The title of the anime
             limit (int, optional): The number of results to return. Defaults to 10.
-            media_type (str | MediaType, optional): The type of the media. Defaults to MediaType.MANGA.
+            media_type (Literal['ANIME', 'MANGA'] | MediaType, optional): The type of the media. Defaults to MediaType.MANGA.
 
         Raises:
             ProviderTypeError: Raised when the limit is not valid
@@ -294,7 +296,7 @@ class AniList:
         """
         return os.path.join(self.cache_directory, cache_file_name)
 
-    def read_cached_data(self, cache_file_path: str) -> dict | None:
+    def read_cached_data(self, cache_file_path: str) -> Any | None:
         """Read cached data
 
         Args:
