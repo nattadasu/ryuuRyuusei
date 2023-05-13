@@ -34,7 +34,12 @@ async def on_ready():
     """
     guilds = len(bot.guilds)
     print("[Sys] Bot is ready!")
-    print("      Logged in as: " + bot.user.display_name + "#" + str(bot.user.discriminator))
+    print(
+        "      Logged in as: "
+        + bot.user.display_name
+        + "#"
+        + str(bot.user.discriminator)
+    )
     print("      User ID     : " + str(bot.user.id))
     print("      Guilds      : " + str(guilds))
     print("      Shards      : " + str(bot.total_shards))

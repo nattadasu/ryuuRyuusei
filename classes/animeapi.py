@@ -74,11 +74,26 @@ class AnimeApi:
             return dt.now()
 
     async def get_relation(
-        self, media_id: str | int, platform: AnimeApiPlatforms | Literal[
-            "anisearch", "anidb", "anilist", "animeplanet", "annict", "kaize",
-            "kitsu", "livechart", "myanimelist", "notify", "otakotaku",
-            "shikimori", "shoboi", "silveryasha", "trakt"
-        ]
+        self,
+        media_id: str | int,
+        platform: AnimeApiPlatforms
+        | Literal[
+            "anisearch",
+            "anidb",
+            "anilist",
+            "animeplanet",
+            "annict",
+            "kaize",
+            "kitsu",
+            "livechart",
+            "myanimelist",
+            "notify",
+            "otakotaku",
+            "shikimori",
+            "shoboi",
+            "silveryasha",
+            "trakt",
+        ],
     ) -> dict:
         """Get a relation between anime and other platform via Natsu's AniAPI
 

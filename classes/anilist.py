@@ -33,7 +33,7 @@ class AniList:
 
     async def close(self) -> None:
         """Close aiohttp session"""
-        await self.session.close() # type: ignore
+        await self.session.close()  # type: ignore
 
     class MediaType(Enum):
         """Media type enum for AniList"""
@@ -42,7 +42,9 @@ class AniList:
         MANGA = "MANGA"
 
     async def nsfwCheck(
-        self, media_id: int, media_type: Literal['ANIME', 'MANGA'] | MediaType = MediaType.ANIME
+        self,
+        media_id: int,
+        media_type: Literal["ANIME", "MANGA"] | MediaType = MediaType.ANIME,
     ) -> bool:
         """Check if the media is NSFW
 
@@ -62,9 +64,7 @@ class AniList:
             media = media_type.value
         elif isinstance(media_type, Literal):
             media = media_type
-        cache_file_path = self.get_cache_file_path(
-            f"nsfw/{media.lower()}/{id}.json"
-        )
+        cache_file_path = self.get_cache_file_path(f"nsfw/{media.lower()}/{id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -232,7 +232,10 @@ class AniList:
             raise ProviderHttpError(error_message, response.status)
 
     async def search_media(
-        self, query: str, limit: int = 10, media_type: Literal['ANIME', 'MANGA'] | MediaType = MediaType.MANGA
+        self,
+        query: str,
+        limit: int = 10,
+        media_type: Literal["ANIME", "MANGA"] | MediaType = MediaType.MANGA,
     ) -> list[dict]:
         """Search anime by its title
 
