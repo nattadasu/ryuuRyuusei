@@ -146,6 +146,29 @@ class JikanApi:
                     backoff_time = 3**retries
                     await asyncio.sleep(backoff_time)
 
+    async def get_user_by_id(self, user_id: int) -> dict:
+        """Get user data from their MAL ID
+
+        Args:
+            user_id (int): MyAnimeList user ID
+
+        Actions:
+            If Jikan took too long to respond, it will try again in multiples of 3 seconds for exponential backoff
+
+        Returns:
+            dict: User data
+        """
+        async with self.session.get(
+            f"{self.base_url}/users/userbyid/{user_id}"
+        ) as resp:
+            if resp.status in [200, 304]:
+                res = await resp.json()
+                res: str = res["data"]["username"]
+            else:
+                raise Exception(await resp.json())
+        gud = await self.get_user_data(res)
+        return gud
+
     async def get_anime_data(self, anime_id: int) -> dict:
         """Get anime data
 
