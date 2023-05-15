@@ -4,10 +4,35 @@ import time
 from datetime import datetime as dt
 from enum import Enum
 from typing import Literal
+from dataclasses import dataclass, asdict
 
 from aiohttp import ClientSession
 
-from modules.const import invAa, USER_AGENT
+from modules.const import USER_AGENT
+
+@dataclass
+class AnimeApiAnime:
+    title: str | None = None
+    anidb: int | None = None
+    anilist: int | None = None
+    animeplanet: str | None = None
+    anisearch: int | None = None
+    annict: int | None = None
+    kaize: str | None = None
+    kitsu: int | None = None
+    livechart: int | None = None
+    myanimelist: int | None = None
+    notify: str | None = None
+    otakotaku: int | None = None
+    shikimori: int | None = None
+    shoboi: int | None = None
+    silveryasha: int | None = None
+    trakt: int | None = None
+    trakt_type: Literal["shows", "movies"] | None = None
+    trakt_season: int | None = None
+
+    def to_dict(self):
+        return asdict(self)
 
 
 class AnimeApi:
@@ -68,10 +93,10 @@ class AnimeApi:
                 text = text.replace("Updated on ", "")
                 text = text.replace(" UTC", "+00:00")
                 final = dt.strptime(text, "%m/%d/%Y %H:%M:%S%z").timestamp()
-                self.write_data_to_cache(cache_file_path, {"timestamp": final})
+                self.write_data_to_cache({"timestamp": final}, cache_file_path)
             return dt.fromtimestamp(final)
-        except BaseException:
-            return dt.now()
+        except BaseException as e:
+            raise Exception("Failed to get the last update time of AnimeAPI's database, reason: " + str(e))
 
     async def get_relation(
         self, media_id: str | int, platform: AnimeApiPlatforms | Literal[
@@ -79,7 +104,7 @@ class AnimeApi:
             "kitsu", "livechart", "myanimelist", "notify", "otakotaku",
             "shikimori", "shoboi", "silveryasha", "trakt"
         ]
-    ) -> dict:
+    ) -> AnimeApiAnime:
         """Get a relation between anime and other platform via Natsu's AniAPI
 
         Args:
@@ -94,7 +119,7 @@ class AnimeApi:
         cache_file_path = self.get_cache_file_path(f"{platform}/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
-            return cached_data
+            return AnimeApiAnime(**cached_data)
         try:
             async with self.session.get(
                 f"https://aniapi.nattadasu.my.id/{platform}/{media_id}"
@@ -102,10 +127,9 @@ class AnimeApi:
                 jsonText = await resp.text()
                 jsonText = json.loads(jsonText)
                 self.write_data_to_cache(jsonText, cache_file_path)
-            return jsonText
+            return AnimeApiAnime(**jsonText)
         except BaseException:
-            aaDict = invAa
-            return aaDict
+            return AnimeApiAnime()
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
         """Get cache file path
@@ -150,4 +174,4 @@ class AnimeApi:
             json.dump(cache_data, cache_file)
 
 
-__all__ = ["AnimeApi"]
+__all__ = ["AnimeApi", "AnimeApiAnime"]
