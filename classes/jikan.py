@@ -29,10 +29,12 @@ class JikanImageStruct:
     medium_image_url: str | None = None
     maximum_image_url: str | None = None
 
+
 @dataclass
 class JikanImages:
     jpg: JikanImageStruct | None = None
     webp: JikanImageStruct | None = None
+
 
 @dataclass
 class JikanTrailerStruct:
@@ -41,10 +43,12 @@ class JikanTrailerStruct:
     embed_url: str
     images: JikanImages | None
 
+
 @dataclass
 class JikanTitlesStruct:
     type: str
     title: str
+
 
 @dataclass
 class JikanPropStruct:
@@ -52,10 +56,12 @@ class JikanPropStruct:
     month: int
     year: int
 
+
 @dataclass
 class JikanPropParentStruct:
     from_: JikanPropStruct | None = None
     to: JikanPropStruct | None = None
+
 
 @dataclass
 class JikanDateStruct:
@@ -67,10 +73,19 @@ class JikanDateStruct:
 
 @dataclass
 class JikanBroadcastStruct:
-    day: Literal["Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays", "Sundays"] | None = None
+    day: Literal[
+        "Mondays",
+        "Tuesdays",
+        "Wednesdays",
+        "Thursdays",
+        "Fridays",
+        "Saturdays",
+        "Sundays",
+    ] | None = None
     time: str | None = None
     timezone: str | None = None
     string: str | None = None
+
 
 @dataclass
 class JikanOtherStruct:
@@ -79,20 +94,24 @@ class JikanOtherStruct:
     name: str
     url: str
 
+
 @dataclass
 class JikanRelationStruct:
     relation: str
     entry: list[JikanOtherStruct]
+
 
 @dataclass
 class JikanThemeSongStruct:
     openings: list[str] | None = None
     endings: list[str] | None = None
 
+
 @dataclass
 class JikanExternalStruct:
     name: str
     url: str
+
 
 @dataclass
 class JikanAnimeStruct:
@@ -157,10 +176,12 @@ class JikanStatisticsStruct:
     chapters_read: int | None = None
     volumes_read: int | None = None
 
+
 @dataclass
 class JikanStatistics:
     anime: JikanStatisticsStruct | None
     manga: JikanStatisticsStruct | None
+
 
 @dataclass
 class JikanUserTitleStruct:
@@ -171,6 +192,7 @@ class JikanUserTitleStruct:
     name: str | None = None  # for characters, people
     type: str | None = None
     start_year: int | None = None
+
 
 @dataclass
 class JikanUpdateEntry:
@@ -183,6 +205,7 @@ class JikanUpdateEntry:
     chapters_read: int | None = None
     chapters_total: int | None = None
 
+
 @dataclass
 class JikanUserFavorite:
     anime: list[JikanUserTitleStruct] | None = None
@@ -190,10 +213,12 @@ class JikanUserFavorite:
     characters: list[JikanUserTitleStruct] | None = None
     people: list[JikanUserTitleStruct] | None = None
 
+
 @dataclass
 class JikanUserStatus:
     anime: list[JikanUpdateEntry] | None = None
     manga: list[JikanUpdateEntry] | None = None
+
 
 @dataclass
 class JikanUserStruct:
@@ -263,7 +288,6 @@ class JikanApi:
         """Close the session"""
         await self.session.close()
 
-
     def anime_dict_to_dataclass(self, data: dict) -> JikanAnimeStruct:
         """Convert anime dict to dataclass
 
@@ -287,18 +311,25 @@ class JikanApi:
                 JikanTitlesStruct(
                     type=title["type"],
                     title=title["title"],
-                ) for title in data["titles"]
+                )
+                for title in data["titles"]
             ]
 
         if data.get("aired", None):
             data["aired"]["prop"]["from_"] = data["aired"]["prop"]["from"]
-            data["aired"]["prop"]["from_"] = JikanPropStruct(**data["aired"]["prop"]["from_"])
+            data["aired"]["prop"]["from_"] = JikanPropStruct(
+                **data["aired"]["prop"]["from_"]
+            )
             del data["aired"]["prop"]["from"]
             data["aired"]["prop"]["to"] = data["aired"]["prop"]["to"]
             data["aired"]["prop"]["to"] = JikanPropStruct(**data["aired"]["prop"]["to"])
             data["aired"]["prop"] = JikanPropParentStruct(**data["aired"]["prop"])
-            data["aired"]["from_"] = datetime.strptime(data["aired"]["from"], "%Y-%m-%dT%H:%M:%S%z")
-            data["aired"]["to"] = datetime.strptime(data["aired"]["to"], "%Y-%m-%dT%H:%M:%S%z")
+            data["aired"]["from_"] = datetime.strptime(
+                data["aired"]["from"], "%Y-%m-%dT%H:%M:%S%z"
+            )
+            data["aired"]["to"] = datetime.strptime(
+                data["aired"]["to"], "%Y-%m-%dT%H:%M:%S%z"
+            )
             del data["aired"]["from"]
             data["aired"] = JikanDateStruct(**data["aired"])
 
@@ -306,76 +337,105 @@ class JikanApi:
             data["broadcast"] = JikanBroadcastStruct(**data["broadcast"])
 
         if data.get("producers", None):
-            data["producers"] = [JikanOtherStruct(
-                mal_id=producer["mal_id"],
-                type=producer["type"],
-                name=producer["name"],
-                url=producer["url"],
-            ) for producer in data["producers"]]
+            data["producers"] = [
+                JikanOtherStruct(
+                    mal_id=producer["mal_id"],
+                    type=producer["type"],
+                    name=producer["name"],
+                    url=producer["url"],
+                )
+                for producer in data["producers"]
+            ]
         if data.get("licensors", None):
-            data["licensors"] = [JikanOtherStruct(
-                mal_id=licensor["mal_id"],
-                type=licensor["type"],
-                name=licensor["name"],
-                url=licensor["url"],
-            ) for licensor in data["licensors"]]
+            data["licensors"] = [
+                JikanOtherStruct(
+                    mal_id=licensor["mal_id"],
+                    type=licensor["type"],
+                    name=licensor["name"],
+                    url=licensor["url"],
+                )
+                for licensor in data["licensors"]
+            ]
         if data.get("studios", None):
-            data["studios"] = [JikanOtherStruct(
-                mal_id=studio["mal_id"],
-                type=studio["type"],
-                name=studio["name"],
-                url=studio["url"],
-            ) for studio in data["studios"]]
+            data["studios"] = [
+                JikanOtherStruct(
+                    mal_id=studio["mal_id"],
+                    type=studio["type"],
+                    name=studio["name"],
+                    url=studio["url"],
+                )
+                for studio in data["studios"]
+            ]
         if data.get("genres", None):
-            data["genres"] = [JikanOtherStruct(
-                mal_id=genre["mal_id"],
-                type=genre["type"],
-                name=genre["name"],
-                url=genre["url"],
-            ) for genre in data["genres"]]
+            data["genres"] = [
+                JikanOtherStruct(
+                    mal_id=genre["mal_id"],
+                    type=genre["type"],
+                    name=genre["name"],
+                    url=genre["url"],
+                )
+                for genre in data["genres"]
+            ]
         if data.get("explicit_genres", None):
-            data["explicit_genres"] = [JikanOtherStruct(
-                mal_id=genre["mal_id"],
-                type=genre["type"],
-                name=genre["name"],
-                url=genre["url"],
-            ) for genre in data["explicit_genres"]]
+            data["explicit_genres"] = [
+                JikanOtherStruct(
+                    mal_id=genre["mal_id"],
+                    type=genre["type"],
+                    name=genre["name"],
+                    url=genre["url"],
+                )
+                for genre in data["explicit_genres"]
+            ]
         if data.get("themes", None):
-            data["themes"] = [JikanOtherStruct(
-                mal_id=theme["mal_id"],
-                type=theme["type"],
-                name=theme["name"],
-                url=theme["url"],
-            ) for theme in data["themes"]]
+            data["themes"] = [
+                JikanOtherStruct(
+                    mal_id=theme["mal_id"],
+                    type=theme["type"],
+                    name=theme["name"],
+                    url=theme["url"],
+                )
+                for theme in data["themes"]
+            ]
         if data.get("demographics", None):
-            data["demographics"] = [JikanOtherStruct(
-                mal_id=demographic["mal_id"],
-                type=demographic["type"],
-                name=demographic["name"],
-                url=demographic["url"],
-            ) for demographic in data["demographics"]]
+            data["demographics"] = [
+                JikanOtherStruct(
+                    mal_id=demographic["mal_id"],
+                    type=demographic["type"],
+                    name=demographic["name"],
+                    url=demographic["url"],
+                )
+                for demographic in data["demographics"]
+            ]
 
         if data.get("relations", None):
-            data["relations"] = [JikanRelationStruct(
-                relation=rel["relation"],
-                entry=[
-                    JikanOtherStruct(
-                        mal_id=entry["mal_id"],
-                        type=entry["type"],
-                        name=entry["name"],
-                        url=entry["url"],
-                    ) for entry in rel["entry"]
-                ]
-            ) for rel in data["relations"]]
+            data["relations"] = [
+                JikanRelationStruct(
+                    relation=rel["relation"],
+                    entry=[
+                        JikanOtherStruct(
+                            mal_id=entry["mal_id"],
+                            type=entry["type"],
+                            name=entry["name"],
+                            url=entry["url"],
+                        )
+                        for entry in rel["entry"]
+                    ],
+                )
+                for rel in data["relations"]
+            ]
 
         if data.get("theme", None):
             data["theme"] = JikanThemeSongStruct(**data["theme"])
 
         if data.get("external", None):
-            data["external"] = [JikanExternalStruct(**external) for external in data["external"]]
+            data["external"] = [
+                JikanExternalStruct(**external) for external in data["external"]
+            ]
 
         if data.get("streaming", None):
-            data["streaming"] = [JikanExternalStruct(**stream) for stream in data["streaming"]]
+            data["streaming"] = [
+                JikanExternalStruct(**stream) for stream in data["streaming"]
+            ]
 
         return JikanAnimeStruct(**data)
 
@@ -388,71 +448,117 @@ class JikanApi:
         Returns:
             JikanUserStruct: User dataclass
         """
-        
+
         if data["images"]:
             data["images"]["jpg"] = JikanImageStruct(**data["images"]["jpg"])
             data["images"]["webp"] = JikanImageStruct(**data["images"]["webp"])
             data["images"] = JikanImages(**data["images"])
 
         if data["last_online"]:
-            data["last_online"] = datetime.strptime(data["last_online"], "%Y-%m-%dT%H:%M:%S%z")
+            data["last_online"] = datetime.strptime(
+                data["last_online"], "%Y-%m-%dT%H:%M:%S%z"
+            )
 
         if data["birthday"]:
-            data["birthday"] = datetime.strptime(data["birthday"], "%Y-%m-%dT%H:%M:%S%z")
+            data["birthday"] = datetime.strptime(
+                data["birthday"], "%Y-%m-%dT%H:%M:%S%z"
+            )
 
         if data["joined"]:
             data["joined"] = datetime.strptime(data["joined"], "%Y-%m-%dT%H:%M:%S%z")
 
         if data["statistics"]:
             if data["statistics"]["anime"]:
-                data["statistics"]["anime"] = JikanStatisticsStruct(**data["statistics"]["anime"])
+                data["statistics"]["anime"] = JikanStatisticsStruct(
+                    **data["statistics"]["anime"]
+                )
             if data["statistics"]["manga"]:
-                data["statistics"]["manga"] = JikanStatisticsStruct(**data["statistics"]["manga"])
+                data["statistics"]["manga"] = JikanStatisticsStruct(
+                    **data["statistics"]["manga"]
+                )
             data["statistics"] = JikanStatistics(**data["statistics"])
 
         if data["favorites"]:
             if data["favorites"]["anime"]:
                 for anime in data["favorites"]["anime"]:
                     anime["images"]["jpg"] = JikanImageStruct(**anime["images"]["jpg"])
-                    anime["images"]["webp"] = JikanImageStruct(**anime["images"]["webp"])
+                    anime["images"]["webp"] = JikanImageStruct(
+                        **anime["images"]["webp"]
+                    )
                     anime["images"] = JikanImages(**anime["images"])
-                data["favorites"]["anime"] = [JikanUserTitleStruct(**anime) for anime in data["favorites"]["anime"]]
+                data["favorites"]["anime"] = [
+                    JikanUserTitleStruct(**anime)
+                    for anime in data["favorites"]["anime"]
+                ]
             if data["favorites"]["manga"]:
                 for manga in data["favorites"]["manga"]:
                     manga["images"]["jpg"] = JikanImageStruct(**manga["images"]["jpg"])
-                    manga["images"]["webp"] = JikanImageStruct(**manga["images"]["webp"])
+                    manga["images"]["webp"] = JikanImageStruct(
+                        **manga["images"]["webp"]
+                    )
                     manga["images"] = JikanImages(**manga["images"])
-                data["favorites"]["manga"] = [JikanUserTitleStruct(**manga) for manga in data["favorites"]["manga"]]
+                data["favorites"]["manga"] = [
+                    JikanUserTitleStruct(**manga)
+                    for manga in data["favorites"]["manga"]
+                ]
             if data["favorites"]["characters"]:
                 for character in data["favorites"]["characters"]:
-                    character["images"]["jpg"] = JikanImageStruct(**character["images"]["jpg"])
-                    character["images"]["webp"] = JikanImageStruct(**character["images"]["webp"])
+                    character["images"]["jpg"] = JikanImageStruct(
+                        **character["images"]["jpg"]
+                    )
+                    character["images"]["webp"] = JikanImageStruct(
+                        **character["images"]["webp"]
+                    )
                     character["images"] = JikanImages(**character["images"])
-                data["favorites"]["characters"] = [JikanUserTitleStruct(**character) for character in data["favorites"]["characters"]]
+                data["favorites"]["characters"] = [
+                    JikanUserTitleStruct(**character)
+                    for character in data["favorites"]["characters"]
+                ]
             if data["favorites"]["people"]:
                 for person in data["favorites"]["people"]:
-                    person["images"]["jpg"] = JikanImageStruct(**person["images"]["jpg"])
+                    person["images"]["jpg"] = JikanImageStruct(
+                        **person["images"]["jpg"]
+                    )
                     person["images"] = JikanImages(**person["images"])
-                data["favorites"]["people"] = [JikanUserTitleStruct(**person) for person in data["favorites"]["people"]]
+                data["favorites"]["people"] = [
+                    JikanUserTitleStruct(**person)
+                    for person in data["favorites"]["people"]
+                ]
             data["favorites"] = JikanUserFavorite(**data["favorites"])
 
         if data["updates"]:
             if data["updates"]["anime"]:
                 for anime in data["updates"]["anime"]:
-                    anime["entry"]["images"]["jpg"] = JikanImageStruct(**anime["entry"]["images"]["jpg"])
-                    anime["entry"]["images"]["webp"] = JikanImageStruct(**anime["entry"]["images"]["webp"])
+                    anime["entry"]["images"]["jpg"] = JikanImageStruct(
+                        **anime["entry"]["images"]["jpg"]
+                    )
+                    anime["entry"]["images"]["webp"] = JikanImageStruct(
+                        **anime["entry"]["images"]["webp"]
+                    )
                     anime["entry"]["images"] = JikanImages(**anime["entry"]["images"])
                     anime["entry"] = JikanUserTitleStruct(**anime["entry"])
-                    anime["date"] = datetime.strptime(anime["date"], "%Y-%m-%dT%H:%M:%S%z")
-                data["updates"]["anime"] = [JikanUpdateEntry(**anime) for anime in data["updates"]["anime"]]
+                    anime["date"] = datetime.strptime(
+                        anime["date"], "%Y-%m-%dT%H:%M:%S%z"
+                    )
+                data["updates"]["anime"] = [
+                    JikanUpdateEntry(**anime) for anime in data["updates"]["anime"]
+                ]
             if data["updates"]["manga"]:
                 for manga in data["updates"]["manga"]:
-                    manga["entry"]["images"]["jpg"] = JikanImageStruct(**manga["entry"]["images"]["jpg"])
-                    manga["entry"]["images"]["webp"] = JikanImageStruct(**manga["entry"]["images"]["webp"])
+                    manga["entry"]["images"]["jpg"] = JikanImageStruct(
+                        **manga["entry"]["images"]["jpg"]
+                    )
+                    manga["entry"]["images"]["webp"] = JikanImageStruct(
+                        **manga["entry"]["images"]["webp"]
+                    )
                     manga["entry"]["images"] = JikanImages(**manga["entry"]["images"])
                     manga["entry"] = JikanUserTitleStruct(**manga["entry"])
-                    manga["date"] = datetime.strptime(manga["date"], "%Y-%m-%dT%H:%M:%S%z")
-                data["updates"]["manga"] = [JikanUpdateEntry(**manga) for manga in data["updates"]["manga"]]
+                    manga["date"] = datetime.strptime(
+                        manga["date"], "%Y-%m-%dT%H:%M:%S%z"
+                    )
+                data["updates"]["manga"] = [
+                    JikanUpdateEntry(**manga) for manga in data["updates"]["manga"]
+                ]
             data["updates"] = JikanUserStatus(**data["updates"])
 
         return JikanUserStruct(**data)
