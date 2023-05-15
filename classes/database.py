@@ -1,10 +1,27 @@
 import json
+from dataclasses import dataclass
+from interactions.models import Snowflake
+from datetime import datetime
+from typing import Optional, Literal, Any
 
 import pandas as pd
 
-from modules.const import CLUB_ID, EMOJI_UNEXPECTED_ERROR, database
+from modules.const import EMOJI_UNEXPECTED_ERROR, database
 from modules.jikan import check_club_membership
 
+
+@dataclass
+class UserDatabaseClass:
+    discord_id: Snowflake
+    mal_id: int
+    mal_joined: int
+    registered_at: datetime | int
+    registered_guild: Snowflake
+    registered_by: Snowflake
+    anilist_id: Optional[int] = None
+    anilist_username: Optional[str] = None
+    lastfm_id: Optional[int] = None
+    mal_username: Optional[str] = None
 
 class UserDatabase:
     def __init__(self, database_path: str = database):
@@ -26,11 +43,11 @@ class UserDatabase:
     async def close(self):
         """Close the database"""
 
-    async def check_if_registered(self, discord_id: int) -> bool:
+    async def check_if_registered(self, discord_id: Snowflake) -> bool:
         """Check if user is registered on Database
 
         Args:
-            discord_id (int): Discord ID of the user
+            discord_id (Snowflake): Discord ID of the user
 
         Returns:
             bool: True if user is registered, False if not
@@ -43,43 +60,36 @@ class UserDatabase:
 
     async def save_to_database(
         self,
-        discord_id: int,
-        discord_username: str,
-        discord_joined: int,
-        mal_username: str,
-        mal_id: int,
-        mal_joined: int,
-        registered_at: int,
-        registered_guild: int,
-        registered_by: int,
-        guild_name: str,
+        user_data: UserDatabaseClass
     ):
         """Save information regarding to user with their consent
 
         Args:
-            discord_id (int): Discord ID of the user
-            discord_username (str): Discord username of the user
-            discord_joined (int): Discord join date of the user in Epoch
-            mal_username (str): MAL username of the user
-            mal_id (int): MAL ID of the user
-            mal_joined (int): MAL join date of the user in Epoch
-            registered_at (int): Date when the user registered in Epoch
-            registered_guild (int): Guild ID where the user registered
-            registered_by (int): User ID who registered the user
-            guild_name (str): Guild name where the user registered
+            user_data (UserDatabaseClass): Dataclass contains information about an user
         """
         data = {
-            "discordId": str(discord_id),
-            "discordUsername": discord_username,
-            "discordJoined": str(discord_joined),
-            "malUsername": mal_username,
-            "malId": str(mal_id),
-            "malJoined": str(mal_joined),
-            "registeredAt": str(registered_at),
-            "registeredGuild": str(registered_guild),
-            "registeredBy": str(registered_by),
-            "guildName": guild_name,
+            "discordId": user_data.discord_id,
+            "discordUsername": None,
+            "discordJoined": user_data.discord_id.created_at.timestamp(),
+            "malUsername": user_data.mal_username,
+            "malId": user_data.mal_id,
+            "malJoined": user_data.mal_joined,
+            "registeredAt": user_data.registered_at,
+            "registeredGuild": user_data.registered_guild,
+            "registeredBy": user_data.registered_by,
+            "registeredGuildName": None,
+            "anilistId": user_data.anilist_id,
+            "lastfmId": user_data.lastfm_id
         }
+        for k, v in data.items():
+            if isinstance(v, int):
+                data[k] = str(v)
+            elif isinstance(v, datetime):
+                data[k] = str(int(v.timestamp()))
+            elif isinstance(v, float):
+                data[k] = str(int(v))
+            elif v is None:
+                data[k] = "\"\""
         df = pd.DataFrame(data, index=[0])
         df.to_csv(
             self.database_path,
@@ -89,7 +99,21 @@ class UserDatabase:
             mode="a",
         )
 
-    async def drop_user(self, discord_id: int) -> bool:
+    async def update_user(self, discord_id: Snowflake, row: Literal["malId", "anilistId", "lastfmId"], modified_input: Any) -> bool:
+        """Update information about an user that is not essential for the bot"""
+        df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        data = df[df["discordId"] == str(discord_id)].index
+        if modified_input is None:
+            modified_input = "\"\""
+        data[row] = modified_input
+        df.to_csv(
+            self.database_path,
+            sep="\t",
+            index=False
+        )
+        return True
+
+    async def drop_user(self, discord_id: Snowflake) -> bool:
         """Drop a user from the database
 
         Args:
@@ -101,9 +125,11 @@ class UserDatabase:
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
         df.drop(df[df["discordId"] == str(discord_id)].index, inplace=True)
         df.to_csv(self.database_path, sep="\t", index=False)
-        return True
+        # verify if its success
+        verify = await self.check_if_registered(discord_id)
+        return verify
 
-    async def verify_user(self, discord_id: int) -> bool:
+    async def verify_user(self, discord_id: Snowflake) -> bool:
         """Verify a user on the database
 
         Args:
@@ -123,9 +149,9 @@ class UserDatabase:
         verified = await check_club_membership(username)
         return verified
 
-    async def export_user_data(self, user_id: int) -> str:
+    async def export_user_data(self, discord_id: Snowflake) -> str:
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        row = df[df["discordId"] == str(user_id)]
+        row = df[df["discordId"] == str(discord_id)]
         if row.empty:
             raise DatabaseException(
                 f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error"
@@ -144,13 +170,14 @@ class UserDatabase:
                 data[key] = str(value)
         return json.dumps(data)
 
-    def _database_exists(self):
+    def _database_exists(self) -> bool:
+        """Check if database exists"""
         try:
             pd.read_csv(self.database_path, sep="\t", dtype=str, nrows=0)
         except pd.errors.EmptyDataError:
             return False
         else:
-            return
+            return True
 
     __all__ = [
         "check_if_registered",
