@@ -194,8 +194,8 @@ class Profile(ipy.Extension):
                 required=False,
                 min_value=0,
                 max_value=21,
-            )
-        ]
+            ),
+        ],
     )
     async def profile_lastfm(self, ctx: ipy.SlashContext, user: str, maximum: int = 9):
         # raise NotImplementedError()
@@ -205,7 +205,9 @@ class Profile(ipy.Extension):
         try:
             async with LastFM() as lfm:
                 profile: LastFMUserStruct = await lfm.get_user_info(user)
-                tracks: list[LastFMTrackStruct] = await lfm.get_user_recent_tracks(user, maximum)
+                tracks: list[LastFMTrackStruct] = await lfm.get_user_recent_tracks(
+                    user, maximum
+                )
         except ProviderHttpError as e:
             embed = generate_commons_except_embed(
                 description=e.message,
@@ -218,7 +220,9 @@ class Profile(ipy.Extension):
         fields = []
         if maximum >= 1:
             rpt = "Recently played tracks"
-            rptDesc = "Here are the recently played tracks of {USER} on Last.fm".format(USER=user)
+            rptDesc = "Here are the recently played tracks of {USER} on Last.fm".format(
+                USER=user
+            )
             fields.append(ipy.EmbedField(name=rpt, value=rptDesc, inline=False))
 
         for tr in tracks:
@@ -244,25 +248,31 @@ class Profile(ipy.Extension):
                 title = tr.name
                 dt = tr.date.epoch
                 dt = f"<t:{dt}:R>"
-            fields += [ipy.EmbedField(
-                name=title,
-                value=f"""{tr.artist.name}
+            fields += [
+                ipy.EmbedField(
+                    name=title,
+                    value=f"""{tr.artist.name}
 {tr.album.name}
 {dt}, [Link]({tr.url})""",
-                inline=True
-            )]
+                    inline=True,
+                )
+            ]
 
         img = profile.image[-1].url
         lfmpro = profile.subscriber
         badge = "🌟 " if lfmpro is True else ""
         icShine = f"{badge}Last.FM Pro User\n" if lfmpro is True else ""
-        realName = "Real name: " + profile.realname + "\n" if profile.realname not in [None, ""] else ""
+        realName = (
+            "Real name: " + profile.realname + "\n"
+            if profile.realname not in [None, ""]
+            else ""
+        )
 
         embed = ipy.Embed(
             author=ipy.EmbedAuthor(
                 name="Last.fm Profile",
                 url="https://last.fm",
-                icon_url="https://media.discordapp.net/attachments/923830321433149453/1079483003396432012/Tx1ceVTBn2Xwo2dF.png"
+                icon_url="https://media.discordapp.net/attachments/923830321433149453/1079483003396432012/Tx1ceVTBn2Xwo2dF.png",
             ),
             title=f"{badge}{profile.name}",
             url=profile.url,
