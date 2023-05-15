@@ -16,10 +16,13 @@ from interactions import (
     PartialEmoji,
 )
 
-from modules.const import BOT_TOKEN
+from modules.const import BOT_TOKEN, LANGUAGE_CODE
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
 from modules.i18n import fetch_language_data
 from classes.anilist import AniListTrailerStruct
+
+
+deflang = fetch_language_data(LANGUAGE_CODE, useRaw=True)
 
 
 def snowflake_to_datetime(snowflake: int) -> int:
@@ -211,7 +214,7 @@ def generate_utils_except_embed(
 def generate_commons_except_embed(
     description: str,
     error: str,
-    lang_dict: dict,
+    lang_dict: dict = deflang,
     color: hex = 0xFF0000,
 ) -> Embed:
     """
@@ -220,7 +223,7 @@ def generate_commons_except_embed(
     Args:
         description (str): A description of the error that occurred.
         error (str): The error message to include in the embed.
-        lang_dict (dict): A dictionary containing language codes and their associated values.
+        lang_dict (dict): A dictionary containing language codes and their associated values. Defaults to default language set on .env.
         color (hex, optional): The color of the embed. Defaults to 0xFF0000 (red).
 
     Returns:
