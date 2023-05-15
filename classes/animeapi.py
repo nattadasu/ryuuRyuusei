@@ -99,11 +99,26 @@ class AnimeApi:
             raise Exception("Failed to get the last update time of AnimeAPI's database, reason: " + str(e))
 
     async def get_relation(
-        self, media_id: str | int, platform: AnimeApiPlatforms | Literal[
-            "anisearch", "anidb", "anilist", "animeplanet", "annict", "kaize",
-            "kitsu", "livechart", "myanimelist", "notify", "otakotaku",
-            "shikimori", "shoboi", "silveryasha", "trakt"
-        ]
+        self,
+        media_id: str | int,
+        platform: AnimeApiPlatforms
+        | Literal[
+            "anisearch",
+            "anidb",
+            "anilist",
+            "animeplanet",
+            "annict",
+            "kaize",
+            "kitsu",
+            "livechart",
+            "myanimelist",
+            "notify",
+            "otakotaku",
+            "shikimori",
+            "shoboi",
+            "silveryasha",
+            "trakt",
+        ],
     ) -> AnimeApiAnime:
         """Get a relation between anime and other platform via Natsu's AniAPI
 
