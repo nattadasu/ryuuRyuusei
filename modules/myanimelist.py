@@ -284,18 +284,10 @@ async def generate_mal(
 
     # Build sendMessages
     tgs = []
-    tgs.extend(
-        g.name for g in j.genres
-    )
-    tgs.extend(
-        g.name for g in j.themes
-    )
-    tgs.extend(
-        g.name for g in j.demographics
-    )
-    tgs.extend(
-        f"||{g.name}||" for g in j.explicit_genres
-    )
+    tgs.extend(g.name for g in j.genres)
+    tgs.extend(g.name for g in j.themes)
+    tgs.extend(g.name for g in j.demographics)
+    tgs.extend(f"||{g.name}||" for g in j.explicit_genres)
 
     ssonn = j.season
     daten = datetime(1970, 1, 1, tzinfo=timezone.utc)
@@ -326,7 +318,11 @@ async def generate_mal(
                 prop = j.aired.from_
                 # Convert bct to datetime
                 ast = (
-                    prop.replace(hour=int(bct[0]), minute=int(bct[1]), tzinfo=ZoneInfo(bcast.timezone))
+                    prop.replace(
+                        hour=int(bct[0]),
+                        minute=int(bct[1]),
+                        tzinfo=ZoneInfo(bcast.timezone),
+                    )
                     - daten
                 ).total_seconds()
             ast = int(ast)
@@ -341,16 +337,18 @@ async def generate_mal(
         if re.match(r"^([a-zA-Z]{3} [\d]{1,2}, [\d]{4})", astr):
             if (bcast.string in ["Unknown", None]) or bcast.time is None:
                 # Calculate time delta
-                aen = (
-                    aenn - daten
-                ).total_seconds()
+                aen = (aenn - daten).total_seconds()
             else:
                 # Split bcast.time into hours and minutes
                 bct = bcast.time.split(":")
                 prop = j.aired.to
                 # Convert bct to datetime
                 aen = (
-                    prop.replace(hour=int(bct[0]), minute=int(bct[1]), tzinfo=ZoneInfo(bcast.timezone))
+                    prop.replace(
+                        hour=int(bct[0]),
+                        minute=int(bct[1]),
+                        tzinfo=ZoneInfo(bcast.timezone),
+                    )
                     - daten
                 ).total_seconds()
             aen = str(int(aen)).removesuffix(".0")
@@ -529,9 +527,7 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
                 alData = await al.anime(media_id=aniApi.anilist)
 
                 if alData.trailer and alData.trailer.site == "youtube":
-                    trailer.append(
-                        generate_trailer(data=alData)
-                    )
+                    trailer.append(generate_trailer(data=alData))
         else:
             alData = {}
 
