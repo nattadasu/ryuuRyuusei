@@ -15,6 +15,7 @@ class LastFMImageStruct:
     size: Literal["small", "medium", "large", "extralarge"] | str | None
     url: str
 
+
 @dataclass
 class LastFMReleaseStruct:
     """LastFM Release dataclass"""
@@ -22,12 +23,14 @@ class LastFMReleaseStruct:
     name: str
     mbid: str
 
+
 @dataclass
 class LastFMDateStruct:
     """LastFM Date dataclass"""
 
     epoch: int | None
     text: str | None
+
 
 @dataclass
 class LastFMTrackStruct:
@@ -42,6 +45,7 @@ class LastFMTrackStruct:
     url: str
     nowplaying: bool
     date: LastFMDateStruct | None
+
 
 @dataclass
 class LastFMUserStruct:
@@ -61,6 +65,7 @@ class LastFMUserStruct:
     gender: str | None
     url: str
     type: str
+
 
 class LastFM:
     """LastFM API wrapper"""
@@ -99,12 +104,16 @@ class LastFM:
                 data["image"][data["image"].index(image)] = LastFMImageStruct(
                     image["size"], image["#text"]
                 )
-        data["artist"] = LastFMReleaseStruct(
-            data["artist"]["#text"], data["artist"]["mbid"]
-        ) if data["artist"] else None
-        data["album"] = LastFMReleaseStruct(
-            data["album"]["#text"], data["album"]["mbid"]
-        ) if data["album"] else None
+        data["artist"] = (
+            LastFMReleaseStruct(data["artist"]["#text"], data["artist"]["mbid"])
+            if data["artist"]
+            else None
+        )
+        data["album"] = (
+            LastFMReleaseStruct(data["album"]["#text"], data["album"]["mbid"])
+            if data["album"]
+            else None
+        )
         try:
             data["date"] = LastFMDateStruct(
                 int(data["date"]["uts"]), data["date"]["#text"]
@@ -118,7 +127,6 @@ class LastFM:
             del data["@attr"]
         return LastFMTrackStruct(**data)
 
-
     def user_dict_to_dataclass(self, data: dict[str, Any]) -> LastFMUserStruct:
         """Convert user dict to dataclass"""
         if data["image"]:
@@ -131,7 +139,6 @@ class LastFM:
         )
         data["subscriber"] = data["subscriber"] == "1"
         return LastFMUserStruct(**data)
-
 
     async def get_user_info(self, username: str) -> LastFMUserStruct:
         """Get user info
