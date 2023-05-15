@@ -19,8 +19,8 @@ from interactions import (
     SlashContext,
 )
 
-from classes.anilist import AniList
-from classes.animeapi import AnimeApi
+from classes.anilist import AniList, AniListMediaStruct, AniListImageStruct
+from classes.animeapi import AnimeApi, AnimeApiAnime
 from classes.jikan import JikanApi
 from classes.kitsu import Kitsu
 from classes.myanimelist import MyAnimeList
@@ -156,8 +156,8 @@ async def generate_mal(
     entry_id: int,
     code: str,
     is_nsfw: bool = False,
-    al_dict: dict | None = None,
-    anime_api: dict | None = None,
+    al_dict: AniListMediaStruct | None = None,
+    anime_api: AnimeApiAnime | None = None,
 ) -> Embed:
     """Generate an embed for /anime with MAL via Jikan
 
@@ -165,7 +165,7 @@ async def generate_mal(
         entry_id (int): MAL ID
         code (str): Language code
         is_nsfw (bool, optional): NSFW status. Defaults to False.
-        al_dict (dict, optional): AniList data. Defaults to None.
+        al_dict (AniListMediaStruct, optional): AniList data. Defaults to None.
         anime_api (dict, optional): Anime API data. Defaults to None.
 
     Raises:
@@ -224,10 +224,12 @@ async def generate_mal(
     note = "Images from "
 
     if not al:
-        al = {"bannerImage": None, "coverImage": {"extraLarge": None}}
+        class al:
+            coverImage = AniListImageStruct(extraLarge=None, large=None, color=None)
+            bannerImage = None
 
-    alPost = al["coverImage"]["extraLarge"]
-    alBg = al["bannerImage"]
+    alPost = al.coverImage.extraLarge
+    alBg = al.bannerImage
 
     try:
         async with Simkl(SIMKL_CLIENT_ID) as sim:
@@ -241,10 +243,10 @@ async def generate_mal(
     smkPost = f"https://simkl.in/posters/{smkPost}_m.webp" if smkPost else None
     smkBg = f"https://simkl.in/fanart/{smkBg}_w.webp" if smkBg else None
 
-    if anime_api["kitsu"] and (
+    if anime_api.kitsu and (
         (not alPost and not alBg) or (not smkPost and not smkBg)
     ):
-        kts = await Kitsu().get_anime(anime_api["kitsu"])
+        kts = await Kitsu().get_anime(anime_api.kitsu)
     else:
         kts = {"data": {"attributes": {"posterImage": None, "coverImage": None}}}
 
@@ -538,9 +540,9 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
                 media_id=ani_id, platform=aniapi.AnimeApiPlatforms.MYANIMELIST
             )
 
-        if aniApi["anilist"] is not None:
+        if aniApi.anilist is not None:
             async with AniList() as al:
-                alData = await al.anime(media_id=aniApi["anilist"])
+                alData = await al.anime(media_id=aniApi.anilist)
 
                 if alData["trailer"] and alData["trailer"]["site"] == "youtube":
                     trailer.append(

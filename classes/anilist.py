@@ -4,12 +4,70 @@ import os
 import time
 from enum import Enum
 from typing import Literal, Any
+from dataclasses import dataclass
 
 from aiohttp import ClientSession
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
 
 from modules.const import USER_AGENT
+
+
+@dataclass
+class AniListTitleStruct:
+    romaji: str | None
+    english: str | None
+    native: str | None
+
+@dataclass
+class AniListDateStruct:
+    year: int | None
+    month: int | None
+    day: int | None
+
+@dataclass
+class AniListImageStruct:
+    large: str | None
+    extraLarge: str | None
+    color: str | None
+
+@dataclass
+class AniListTagsStruct:
+    id: int
+    name: str
+    isMediaSpoiler: bool | None
+    isAdult: bool | None
+
+@dataclass
+class AniListTrailerStruct:
+    id: str | None
+    site: str | None
+
+@dataclass
+class AniListMediaStruct:
+    id: int
+    idMal: int | None
+    title: AniListTitleStruct | None
+    isAdult: bool | None
+    format: Literal["TV", "TV_SHORT", "MOVIE", "SPECIAL", "OVA", "ONA", "MUSIC", "MANGA", "NOVEL", "ONE_SHOT"] | None
+    description: str | None
+    isAdult: bool | None
+    synonyms: list[str | None] | None
+    startDate: AniListDateStruct | None
+    endDate: AniListDateStruct | None
+    status: Literal["FINISHED", "RELEASING", "NOT_YET_RELEASED", "CANCELLED", "HIATUS"] | None
+    coverImage: AniListImageStruct | None
+    bannerImage: str | None
+    genres: list[str | None] | None
+    tags: list[AniListTagsStruct] | None
+    averageScore: int | None
+    meanScore: int | None
+    stats: dict[str,list[dict[str,Any] | None]] | None
+    trailer: AniListTrailerStruct | None
+    chapters: int | None = None
+    volumes: int | None = None
+    episodes: int | None = None
+    duration: int | None = None
 
 
 class AniList:
@@ -40,6 +98,18 @@ class AniList:
 
         ANIME = "ANIME"
         MANGA = "MANGA"
+
+    def dict_to_dataclass(self, data: dict):
+        """Format returned dictionary from AniList to its proper dataclass"""
+        data["title"] = AniListTitleStruct(**data["title"]) if data["title"] else None
+        data["startDate"] = AniListDateStruct(**data["startDate"]) if data["startDate"] else None
+        data["endDate"] = AniListDateStruct(**data["endDate"]) if data["endDate"] else None
+        data["coverImage"] = AniListImageStruct(**data["coverImage"]) if data["coverImage"] else None
+        data["trailer"] = AniListTrailerStruct(**data["trailer"]) if data["trailer"] else None
+        if data["tags"] is not None:
+            for tag in data["tags"]:
+                tag = AniListTagsStruct(**tag) if tag else None
+        return AniListMediaStruct(**data)
 
     async def nsfwCheck(
         self, media_id: int, media_type: Literal['ANIME', 'MANGA'] | MediaType = MediaType.ANIME
@@ -84,7 +154,7 @@ class AniList:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def anime(self, media_id: int) -> dict:
+    async def anime(self, media_id: int) -> AniListMediaStruct:
         """Get anime information by its ID
 
         Args:
@@ -99,7 +169,7 @@ class AniList:
         cache_file_path = self.get_cache_file_path(f"anime/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
-            return cached_data
+            return self.dict_to_dataclass(cached_data)
         gqlquery = f"""query {{
     Media(id: {media_id}, type: ANIME) {{
         id
@@ -124,19 +194,23 @@ class AniList:
             day
         }}
         status
-        chapters
-        volumes
+        episodes
+        duration
         coverImage {{
             large
             extraLarge
+            color
         }}
         bannerImage
         genres
         tags {{
+            id
             name
             isMediaSpoiler
+            isAdult
         }}
         averageScore
+        meanScore
         stats {{
             scoreDistribution {{
                 score
@@ -155,11 +229,11 @@ class AniList:
             if response.status == 200:
                 data = await response.json()
                 self.write_data_to_cache(data["data"]["Media"], cache_file_path)
-                return data["data"]["Media"]
+                return self.dict_to_dataclass(data["data"]["Media"])
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def manga(self, media_id: int) -> dict:
+    async def manga(self, media_id: int) -> AniListMediaStruct:
         """Get manga information by its ID
 
         Args:
@@ -171,7 +245,7 @@ class AniList:
         cache_file_path = self.get_cache_file_path(f"manga/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
-            return cached_data
+            return self.dict_to_dataclass(cached_data)
         gqlquery = f"""query {{
     Media(id: {media_id}, type: MANGA) {{
         id
@@ -201,14 +275,18 @@ class AniList:
         coverImage {{
             extraLarge
             large
+            color
         }}
         bannerImage
         genres
         tags {{
+            id
             name
             isMediaSpoiler
+            isAdult
         }}
         averageScore
+        meanScore
         stats {{
             scoreDistribution {{
                 score
@@ -227,7 +305,7 @@ class AniList:
             if response.status == 200:
                 data = await response.json()
                 self.write_data_to_cache(data["data"]["Media"], cache_file_path)
-                return data["data"]["Media"]
+                return self.dict_to_dataclass(data["data"]["Media"])
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 

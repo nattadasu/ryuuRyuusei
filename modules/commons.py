@@ -19,6 +19,7 @@ from interactions import (
 from modules.const import BOT_TOKEN
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
 from modules.i18n import fetch_language_data
+from classes.anilist import AniListTrailerStruct
 
 
 def snowflake_to_datetime(snowflake: int) -> int:
@@ -250,13 +251,13 @@ def generate_commons_except_embed(
 
 
 def generate_trailer(
-    data: dict, is_mal: bool = False, is_simkl: bool = False
+    data: dict | AniListTrailerStruct, is_mal: bool = False, is_simkl: bool = False
 ) -> Button:
     """
     Generate a button for playing the trailer of a given anime.
 
     Args:
-        data (dict): A dictionary containing information about the anime.
+        data (dict | AniListTrailerStruct): A dictionary/dataclass containing information about the anime.
         is_mal (bool, optional): Whether the anime is from MyAnimeList. Defaults to False.
         is_simkl (bool, optional): Whether the anime is from Simkl. Defaults to False.
 
@@ -273,7 +274,7 @@ def generate_trailer(
     elif is_simkl:
         ytid = data["youtube"]
     else:
-        ytid = data["id"]
+        ytid = data.id
     final = Button(
         label="PV/CM on YouTube",
         style=ButtonStyle.LINK,
