@@ -15,7 +15,7 @@ except ImportError:
     # add the path to the 'modules' directory to the system path
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     from classes.anilist import AniList
-    from classes.animeapi import AnimeApi
+    from classes.animeapi import AnimeApi, AnimeApiAnime
     from classes.jikan import JikanApi
     from classes.kitsu import Kitsu
     from classes.myanimelist import MyAnimeList
@@ -30,11 +30,11 @@ async def do_anime(ani_id: int, nsfwBool: bool = False) -> Embed:
         aniApi = await aniapi.get_relation(
             media_id=ani_id, platform=aniapi.AnimeApiPlatforms.MYANIMELIST
         )
-    if aniApi["anilist"] is not None:
+    if aniApi.anilist is not None:
         async with AniList() as al:
-            alData = await al.anime(media_id=aniApi["anilist"])
-        if (alData["trailer"] is not None) and (alData["trailer"]["site"] == "youtube"):
-            trailer = generate_trailer(data=alData["trailer"], is_mal=False)
+            alData = await al.anime(media_id=aniApi.anilist)
+        if (alData.trailer is not None) and (alData.trailer.site == "youtube"):
+            trailer = generate_trailer(data=alData.trailer, is_mal=False)
             trailer = [trailer]
         else:
             trailer = []
@@ -76,4 +76,4 @@ class AnimeShowcaseTest(unittest.IsolatedAsyncioTestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)
