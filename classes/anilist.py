@@ -19,17 +19,20 @@ class AniListTitleStruct:
     english: str | None
     native: str | None
 
+
 @dataclass
 class AniListDateStruct:
     year: int | None
     month: int | None
     day: int | None
 
+
 @dataclass
 class AniListImageStruct:
     large: str | None
     extraLarge: str | None
     color: str | None
+
 
 @dataclass
 class AniListTagsStruct:
@@ -38,10 +41,12 @@ class AniListTagsStruct:
     isMediaSpoiler: bool | None
     isAdult: bool | None
 
+
 @dataclass
 class AniListTrailerStruct:
     id: str | None
     site: str | None
+
 
 @dataclass
 class AniListMediaStruct:
@@ -49,20 +54,33 @@ class AniListMediaStruct:
     idMal: int | None
     title: AniListTitleStruct | None
     isAdult: bool | None
-    format: Literal["TV", "TV_SHORT", "MOVIE", "SPECIAL", "OVA", "ONA", "MUSIC", "MANGA", "NOVEL", "ONE_SHOT"] | None
+    format: Literal[
+        "TV",
+        "TV_SHORT",
+        "MOVIE",
+        "SPECIAL",
+        "OVA",
+        "ONA",
+        "MUSIC",
+        "MANGA",
+        "NOVEL",
+        "ONE_SHOT",
+    ] | None
     description: str | None
     isAdult: bool | None
     synonyms: list[str | None] | None
     startDate: AniListDateStruct | None
     endDate: AniListDateStruct | None
-    status: Literal["FINISHED", "RELEASING", "NOT_YET_RELEASED", "CANCELLED", "HIATUS"] | None
+    status: Literal[
+        "FINISHED", "RELEASING", "NOT_YET_RELEASED", "CANCELLED", "HIATUS"
+    ] | None
     coverImage: AniListImageStruct | None
     bannerImage: str | None
     genres: list[str | None] | None
     tags: list[AniListTagsStruct] | None
     averageScore: int | None
     meanScore: int | None
-    stats: dict[str,list[dict[str,Any] | None]] | None
+    stats: dict[str, list[dict[str, Any] | None]] | None
     trailer: AniListTrailerStruct | None
     chapters: int | None = None
     volumes: int | None = None
@@ -102,10 +120,18 @@ class AniList:
     def dict_to_dataclass(self, data: dict):
         """Format returned dictionary from AniList to its proper dataclass"""
         data["title"] = AniListTitleStruct(**data["title"]) if data["title"] else None
-        data["startDate"] = AniListDateStruct(**data["startDate"]) if data["startDate"] else None
-        data["endDate"] = AniListDateStruct(**data["endDate"]) if data["endDate"] else None
-        data["coverImage"] = AniListImageStruct(**data["coverImage"]) if data["coverImage"] else None
-        data["trailer"] = AniListTrailerStruct(**data["trailer"]) if data["trailer"] else None
+        data["startDate"] = (
+            AniListDateStruct(**data["startDate"]) if data["startDate"] else None
+        )
+        data["endDate"] = (
+            AniListDateStruct(**data["endDate"]) if data["endDate"] else None
+        )
+        data["coverImage"] = (
+            AniListImageStruct(**data["coverImage"]) if data["coverImage"] else None
+        )
+        data["trailer"] = (
+            AniListTrailerStruct(**data["trailer"]) if data["trailer"] else None
+        )
         if data["tags"] is not None:
             for tag in data["tags"]:
                 tag = AniListTagsStruct(**tag) if tag else None

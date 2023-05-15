@@ -15,7 +15,9 @@ except ImportError:
 class AnimeApiTest(unittest.IsolatedAsyncioTestCase):
     async def test_animeapi(self):
         async with AnimeApi() as aa:
-            resp = await aa.get_relation(media_id=1,platform=aa.AnimeApiPlatforms.MYANIMELIST)
+            resp = await aa.get_relation(
+                media_id=1, platform=aa.AnimeApiPlatforms.MYANIMELIST
+            )
         self.assertTrue(isinstance(resp, AnimeApiAnime))
 
     async def test_latest_update(self):
