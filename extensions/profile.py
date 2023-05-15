@@ -3,8 +3,11 @@ from datetime import datetime as dtime
 import interactions as ipy
 
 from classes.database import UserDatabase
+from classes.lastfm import LastFM, LastFMUserStruct, LastFMTrackStruct
+from classes.excepts import ProviderHttpError
 from modules.commons import generate_commons_except_embed, sanitize_markdown
 from modules.i18n import fetch_language_data, read_user_language
+from urllib.parse import quote_plus as urlquote
 
 
 class Profile(ipy.Extension):
@@ -173,6 +176,104 @@ class Profile(ipy.Extension):
         await ctx.send(
             "This command is currently disabled as it not have been implemented yet."
         )
+
+    @profile.subcommand(
+        sub_cmd_name="lastfm",
+        sub_cmd_description="Get your Last.fm profile information",
+        options=[
+            ipy.SlashCommandOption(
+                name="user",
+                description="Username on Last.fm to get profile information of",
+                type=ipy.OptionType.STRING,
+                required=True,
+            ),
+            ipy.SlashCommandOption(
+                name="maximum",
+                description="Maximum number of tracks to show",
+                type=ipy.OptionType.INTEGER,
+                required=False,
+                min_value=0,
+                max_value=21,
+            )
+        ]
+    )
+    async def profile_lastfm(self, ctx: ipy.SlashContext, user: str, maximum: int = 9):
+        # raise NotImplementedError()
+        await ctx.defer()
+        ul = read_user_language(ctx)
+        l_ = fetch_language_data(ul, useRaw=True)
+        try:
+            async with LastFM() as lfm:
+                profile: LastFMUserStruct = await lfm.get_user_info(user)
+                tracks: list[LastFMTrackStruct] = await lfm.get_user_recent_tracks(user, maximum)
+        except ProviderHttpError as e:
+            embed = generate_commons_except_embed(
+                description=e.message,
+                error=e,
+                lang_dict=l_,
+            )
+            await ctx.send(embed=embed)
+            return
+
+        fields = []
+        if maximum >= 1:
+            rpt = "Recently played tracks"
+            rptDesc = "Here are the recently played tracks of {USER} on Last.fm".format(USER=user)
+            fields.append(ipy.EmbedField(name=rpt, value=rptDesc, inline=False))
+
+        for tr in tracks:
+            tr.name = sanitize_markdown(tr.name)
+            tr.artist.name = sanitize_markdown(tr.artist.name)
+            tr.album.name = sanitize_markdown(tr.album.name)
+            scu = tr.url
+            scus = scu.split("/")
+            # assumes the url as such: https://www.last.fm/music/Artist/_/Track
+            # so, the artist is at index 4, and track is at index 6
+            # in index 4 and 6, encode the string to be url compatible with percent encoding
+            # then, join the list back to a string
+
+            scus[4] = urlquote(scus[4])
+            scus[6] = urlquote(scus[6])
+            scu = "/".join(scus)
+            scu = scu.replace("%25", "%")
+
+            if tr.nowplaying is True:
+                title = f"▶️ {tr.name}"
+                dt = "*Currently playing*"
+            else:
+                title = tr.name
+                dt = tr.date.epoch
+                dt = f"<t:{dt}:R>"
+            fields += [ipy.EmbedField(
+                name=title,
+                value=f"""{tr.artist.name}
+{tr.album.name}
+{dt}, [Link]({tr.url})""",
+                inline=True
+            )]
+
+        img = profile.image[-1].url
+        lfmpro = profile.subscriber
+        badge = "🌟 " if lfmpro is True else ""
+        icShine = f"{badge}Last.FM Pro User\n" if lfmpro is True else ""
+        realName = "Real name: " + profile.realname + "\n" if profile.realname not in [None, ""] else ""
+
+        embed = ipy.Embed(
+            author=ipy.EmbedAuthor(
+                name="Last.fm Profile",
+                url="https://last.fm",
+                icon_url="https://media.discordapp.net/attachments/923830321433149453/1079483003396432012/Tx1ceVTBn2Xwo2dF.png"
+            ),
+            title=f"{badge}{profile.name}",
+            url=profile.url,
+            color=0xF71414,
+            description=f"""{icShine}{realName}Account created:  <t:{profile.registered.epoch}:D> (<t:{profile.registered.epoch}:R>)
+Total scrobbles: {profile.playcount}
+🧑‍🎤 {profile.artist_count} 💿 {profile.album_count} 🎶 {profile.track_count}""",
+            thumbnail=ipy.EmbedAttachment(url=img),
+            fields=fields,
+        )
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
