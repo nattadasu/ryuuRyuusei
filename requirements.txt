@@ -1,6 +1,7 @@
 aiohttp
 autopep8
 beautifulsoup4
+dataclassy
 discord_py_interactions==5.2.0
 fuzzywuzzy
 html5lib

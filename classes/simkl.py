@@ -7,13 +7,44 @@ import os
 import time
 from copy import deepcopy
 from enum import Enum
-from typing import List
+from typing import List, Literal
 from urllib.parse import quote
+from dataclassy import dataclass
 
 import aiohttp
 
 from classes.excepts import ProviderHttpError, SimklTypeError
 from modules.const import SIMKL_CLIENT_ID, simkl0rels, USER_AGENT
+
+
+@dataclass(kwargs=True)
+class SimklRelations:
+    title: str | None = None
+    simkl: int | None = None
+    slug: str | None = None
+    poster: str | None = None
+    fanart: str | None = None
+    anitype: Literal["tv", "movie", "special", "ova", "ona"] | str | None = None
+    type: Literal["anime", "show", "movie"] | str | None = None
+    allcin: str | int | None = None
+    anfo: str | int | None = None
+    anidb: str | int | None = None
+    anilist: str | int | None = None
+    animeplanet: str | int | None = None
+    anisearch: str | int | None = None
+    ann: str | int | None = None
+    hulu: str | int | None = None
+    imdb: str | None = None
+    kitsu: str | int | None = None
+    livechart: str | int | None = None
+    mal: str | int | None = None
+    netflix: str | int | None = None
+    offjp: str | int | None = None
+    tmdb: str | int | None = None
+    tvdb: str | int | None = None
+    tvdbslug: str | None = None
+    wikien: str | int | None = None
+    wikijp: str | int | None = None
 
 
 class SimklMediaGenre(Enum):
@@ -440,23 +471,25 @@ class Simkl:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def get_title_ids(self, id: int, media_type: SimklMediaTypes | str) -> dict:
+    async def get_title_ids(self, id: int, media_type: SimklMediaTypes | Literal["anime", "movie", "tv"]) -> SimklRelations:
         """Get IDs of the title
 
         Args:
             id (int): ID of the title
-            media_type (SimklMediaTypes | str): Media type of the title, must be ANIME, MOVIE or TV
+            media_type (SimklMediaTypes | Literal["anime", "movie", "tv"]): Media type of the title, must be ANIME, MOVIE or TV
 
         Raises:
             ProviderHttpError: If response status is not 200
 
         Returns:
-            dict: Response from Simkl API
+            SimklRelations: Response from Simkl API
         """
+        if isinstance(media_type, SimklMediaTypes):
+            media_type = media_type.value
         cache_file_path = self.get_cache_file_path(f"ids/{media_type}/{id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
-            return cached_data
+            return SimklRelations(**cached_data)
         if media_type == "anime":
             async with Simkl(self.client_id) as simkl:
                 data = await simkl.get_anime(id)
@@ -466,6 +499,8 @@ class Simkl:
         elif media_type == "tv":
             async with Simkl(self.client_id) as simkl:
                 data = await simkl.get_show(id)
+        else:
+            raise SimklTypeError(f"You've might entered false media_type", SimklMediaTypes)
 
         mids = {**simkl0rels, **data.get("ids", {})}
         for k, v in mids.items():
@@ -491,7 +526,7 @@ class Simkl:
                 continue
             mids[k] = data.get(k, None)
         self.write_data_to_cache(mids, cache_file_path)
-        return mids
+        return SimklRelations(**mids)
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
         """Get cache file path
