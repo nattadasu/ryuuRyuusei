@@ -31,6 +31,7 @@ from modules.commons import (
     get_random_seed,
     sanitize_markdown,
     trim_cyno,
+    generate_commons_except_embed,
 )
 from modules.const import (
     EMOJI_FORBIDDEN,
@@ -183,18 +184,18 @@ async def generate_mal(
     msg_for_thread = warnThreadCW if is_nsfw is not None else ""
 
     if not is_nsfw:
-        for g in j["genres"]:
-            gn = g["name"]
+        for g in j.genres:
+            gn = g.name
             if "Hentai" in gn:
                 raise MediaIsNsfw(
                     f"{EMOJI_FORBIDDEN} **NSFW is not allowed!**\nOnly NSFW channels are allowed to search NSFW content.{msg_for_thread}"
                 )
 
-    m = j["mal_id"]
+    m = j.mal_id
     cyno = "*None*"
 
-    if j["synopsis"] is not None:
-        jdata = j["synopsis"].replace("\n\n[Written by MAL Rewrite]", "")
+    if j.synopsis is not None:
+        jdata = j.synopsis.replace("\n\n[Written by MAL Rewrite]", "")
         jdata = html.unescape(jdata)
         j_spl = jdata.split("\n")
         synl = len(j_spl)
@@ -220,7 +221,7 @@ async def generate_mal(
         ):
             cyno += cynmo
 
-    jJpg = j["images"]["jpg"]
+    jJpg = j.images.jpg
     note = "Images from "
 
     if not al:
@@ -254,7 +255,7 @@ async def generate_mal(
     ktsBg = kts["data"]["attributes"].get("coverImage")
     ktsBg = ktsBg.get("original") if ktsBg else None
 
-    malPost = jJpg["large_image_url"] or j["image_url"]
+    malPost = jJpg.large_image_url or jJpg.image_url
     malBg = ""
 
     poster = next((img for img in (alPost, smkPost, ktsPost, malPost) if img), None)
@@ -283,21 +284,32 @@ async def generate_mal(
 
     # Build sendMessages
     tgs = []
-    for category in ("genres", "themes", "demographics"):
-        tgs.extend(g["name"] for g in j.get(category, []))
+    tgs.extend(
+        g.name for g in j.genres
+    )
+    tgs.extend(
+        g.name for g in j.themes
+    )
+    tgs.extend(
+        g.name for g in j.demographics
+    )
+    tgs.extend(
+        f"||{g.name}||" for g in j.explicit_genres
+    )
 
-    ssonn = j["season"]
+    ssonn = j.season
     daten = datetime(1970, 1, 1, tzinfo=timezone.utc)
     tgs = sorted(set(tgs), key=str.casefold)
     tgs = ", ".join(tgs) if tgs else "*None*"
 
-    year = j["aired"]["prop"]["from"]["year"] or "year?"
-    astn, aenn = j["aired"]["from"], j["aired"]["to"]
-    astr = j["aired"]["string"]
-    bcast = j["broadcast"]
+    # year = j["aired"]["prop"]["from"]["year"] or "year?"
+    astn, aenn = j.aired.from_, j.aired.to
+    year = str(astn.year) if astn else "year?"
+    astr = j.aired.string
+    bcast = j.broadcast
 
     # Grab studio names on j['studios'][n]['name']
-    studio_names = [s["name"] for s in j["studios"]] if "studios" in j else []
+    studio_names = [s.name for s in j.studios] if j.studios else None
     stdio = ", ".join(studio_names) if studio_names else "*None*"
 
     # start date logic
@@ -306,29 +318,18 @@ async def generate_mal(
             ast = astr.split(" to ")[0]
             tsa = ""
         elif re.match(r"^([a-zA-Z]{3} [\d]{1,2}, [\d]{4})", astr):
-            if all(
-                bcast.get(k) is None or bcast[k] == "Unknown"
-                for k in ("string", "time")
-            ):
-                astn = astn.replace("+00:00", "+0000")
-                ast = (datetime.fromisoformat(astn) - daten).total_seconds()
+            if bcast.string in ["Unknown", None] or bcast.time is None:
+                ast = (astn - daten).total_seconds()
             else:
                 # Split bcast.time into hours and minutes
-                bct = bcast["time"].split(":")
-                prop = j["aired"]["prop"]["from"]
+                bct = bcast.time.split(":")
+                prop = j.aired.from_
                 # Convert bct to datetime
                 ast = (
-                    datetime(
-                        prop["year"],
-                        prop["month"],
-                        prop["day"],
-                        int(bct[0]),
-                        int(bct[1]),
-                        tzinfo=ZoneInfo(bcast["timezone"]),
-                    )
+                    prop.replace(hour=int(bct[0]), minute=int(bct[1]), tzinfo=ZoneInfo(bcast.timezone))
                     - daten
                 ).total_seconds()
-            ast = str(ast).removesuffix(".0")
+            ast = int(ast)
             tsa = f"(<t:{ast}:R>)"
             ast = f"<t:{ast}:D>"
     else:
@@ -338,27 +339,18 @@ async def generate_mal(
     # Check airing dates
     if aenn is not None:
         if re.match(r"^([a-zA-Z]{3} [\d]{1,2}, [\d]{4})", astr):
-            if (bcast["string"] in ["Unknown", None]) or bcast["time"] is None:
-                # Set timezone offset
-                aenn = aenn.replace("+00:00", "+0000")
+            if (bcast.string in ["Unknown", None]) or bcast.time is None:
                 # Calculate time delta
                 aen = (
-                    datetime.strptime(aenn, "%Y-%m-%dT%H:%M:%S%z") - daten
+                    aenn - daten
                 ).total_seconds()
             else:
                 # Split bcast.time into hours and minutes
-                bct = bcast["time"].split(":")
-                prop = j["aired"]["prop"]["to"]
+                bct = bcast.time.split(":")
+                prop = j.aired.to
                 # Convert bct to datetime
                 aen = (
-                    datetime(
-                        prop["year"],
-                        prop["month"],
-                        prop["day"],
-                        int(bct[0]),
-                        int(bct[1]),
-                        tzinfo=ZoneInfo(bcast["timezone"]),
-                    )
+                    prop.replace(hour=int(bct[0]), minute=int(bct[1]), tzinfo=ZoneInfo(bcast.timezone))
                     - daten
                 ).total_seconds()
             aen = str(int(aen)).removesuffix(".0")
@@ -366,9 +358,9 @@ async def generate_mal(
         elif re.match(r"^([a-zA-Z]{3} [\d]{4})", astr):
             aen = astr.split(" to ")[1]
     else:
-        if j["status"] == "Currently Airing":
+        if j.status == "Currently Airing":
             aen = "Ongoing"
-        elif j["status"] == "Not yet aired" or astr == "Not available":
+        elif j.status == "Not yet aired" or astr == "Not available":
             aen = "TBA"
         else:
             aen = ast
@@ -385,10 +377,7 @@ async def generate_mal(
         sson = str(ssonn).capitalize()
     elif re.match("^[0-9]{4}$", ast):
         sson = "Unknown"
-    elif j["aired"]["prop"]["from"]["month"] is not None:
-        # Set timezone offset
-        astn = astn.replace("+00:00", "+0000")
-        astn = datetime.strptime(astn, "%Y-%m-%dT%H:%M:%S%z")
+    elif j.aired.prop.from_.month is not None:
         sson = astn.strftime("%m")
         if sson in ["01", "02", "03"]:
             sson = "Winter"
@@ -402,12 +391,12 @@ async def generate_mal(
         sson = "Unknown"
 
         # Get title information
-    rot = j["title"]
-    nat = j["title_japanese"] or "*None*"
-    ent = j["title_english"]
+    rot = j.title
+    nat = j.title_japanese or "*None*"
+    ent = j.title_english
 
     # Create a synonyms list
-    syns = [s["title"] for s in j["titles"] if s["type"] not in ["Default", "English"]]
+    syns = [s.title for s in j.titles if s.type not in ["Default", "English"]]
     if not ent:
         # Set ent to a synonym in ASCII or the original title
         for s in syns:
@@ -448,7 +437,7 @@ async def generate_mal(
         syns = "*None*"
 
     # Format number of votes
-    pvd = j.get("scored_by", 0)
+    pvd = j.scored_by if j.scored_by else 0
     pvd = (
         f"{pvd:,} people voted"
         if pvd > 1
@@ -458,20 +447,16 @@ async def generate_mal(
     )
 
     # Format number of episodes
-    eps = j.get("episodes", "*??*")
-    eps = str(eps) if eps else "*Unknown*"
+    eps = j.episodes if j.episodes else "*Unknown*"
 
     # Format status
-    stat = j.get("status", "*Unknown*")
-    stat = stat or "*Unknown*"
+    stat = j.status if j.status else "*Unknown*"
 
     # Format duration
-    dur = j.get("duration", "*Unknown*")
-    dur = dur or "*Unknown*"
+    dur = j.duration if j.duration else "*Unknown*"
 
     # Format score
-    scr = j.get("score", "0")
-    scr = str(scr) if scr else "0"
+    scr = j.score if j.score else "0"
 
     # Add check message to note
     note += chkMsg
@@ -491,7 +476,7 @@ async def generate_mal(
         ),
         title=rot,
         url=f"https://myanimelist.net/anime/{m}",
-        description=f"""*`{m}`, {j['type']}, {sson} {year}, ⭐ {scr}/10 by {pvd}*
+        description=f"""*`{m}`, {j.type}, {sson} {year}, ⭐ {scr}/10 by {pvd}*
 
 > {cyno}
 """,
@@ -543,9 +528,9 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
             async with AniList() as al:
                 alData = await al.anime(media_id=aniApi.anilist)
 
-                if alData["trailer"] and alData["trailer"]["site"] == "youtube":
+                if alData.trailer and alData.trailer.site == "youtube":
                     trailer.append(
-                        generate_trailer(data=alData["trailer"], is_mal=False)
+                        generate_trailer(data=alData)
                     )
         else:
             alData = {}
@@ -559,7 +544,8 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
         await ctx.send(f"**{e}**\n")
 
     except Exception as e:
-        #! TODO: Implement the embed
-        raise NotImplementedError(
-            "This error embed is not yet implemented.\n" + traceback.format_exc()
+        embed = generate_commons_except_embed(
+            description="We are unable to get the anime information from MyAnimeList via Jikan",
+            error=e,
         )
+        await ctx.send("", embed=embed)
