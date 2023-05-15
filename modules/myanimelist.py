@@ -224,6 +224,7 @@ async def generate_mal(
     note = "Images from "
 
     if not al:
+
         class al:
             coverImage = AniListImageStruct(extraLarge=None, large=None, color=None)
             bannerImage = None
@@ -243,9 +244,7 @@ async def generate_mal(
     smkPost = f"https://simkl.in/posters/{smkPost}_m.webp" if smkPost else None
     smkBg = f"https://simkl.in/fanart/{smkBg}_w.webp" if smkBg else None
 
-    if anime_api.kitsu and (
-        (not alPost and not alBg) or (not smkPost and not smkBg)
-    ):
+    if anime_api.kitsu and ((not alPost and not alBg) or (not smkPost and not smkBg)):
         kts = await Kitsu().get_anime(anime_api.kitsu)
     else:
         kts = {"data": {"attributes": {"posterImage": None, "coverImage": None}}}

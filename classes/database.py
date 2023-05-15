@@ -23,6 +23,7 @@ class UserDatabaseClass:
     lastfm_id: Optional[int] = None
     mal_username: Optional[str] = None
 
+
 class UserDatabase:
     def __init__(self, database_path: str = database):
         """Initialize the database
@@ -58,10 +59,7 @@ class UserDatabase:
             val = True
         return val
 
-    async def save_to_database(
-        self,
-        user_data: UserDatabaseClass
-    ):
+    async def save_to_database(self, user_data: UserDatabaseClass):
         """Save information regarding to user with their consent
 
         Args:
@@ -79,7 +77,7 @@ class UserDatabase:
             "registeredBy": user_data.registered_by,
             "registeredGuildName": None,
             "anilistId": user_data.anilist_id,
-            "lastfmId": user_data.lastfm_id
+            "lastfmId": user_data.lastfm_id,
         }
         for k, v in data.items():
             if isinstance(v, int):
@@ -89,7 +87,7 @@ class UserDatabase:
             elif isinstance(v, float):
                 data[k] = str(int(v))
             elif v is None:
-                data[k] = "\"\""
+                data[k] = '""'
         df = pd.DataFrame(data, index=[0])
         df.to_csv(
             self.database_path,
@@ -99,18 +97,19 @@ class UserDatabase:
             mode="a",
         )
 
-    async def update_user(self, discord_id: Snowflake, row: Literal["malId", "anilistId", "lastfmId"], modified_input: Any) -> bool:
+    async def update_user(
+        self,
+        discord_id: Snowflake,
+        row: Literal["malId", "anilistId", "lastfmId"],
+        modified_input: Any,
+    ) -> bool:
         """Update information about an user that is not essential for the bot"""
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
         data = df[df["discordId"] == str(discord_id)].index
         if modified_input is None:
-            modified_input = "\"\""
+            modified_input = '""'
         data[row] = modified_input
-        df.to_csv(
-            self.database_path,
-            sep="\t",
-            index=False
-        )
+        df.to_csv(self.database_path, sep="\t", index=False)
         return True
 
     async def drop_user(self, discord_id: Snowflake) -> bool:

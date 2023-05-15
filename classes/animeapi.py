@@ -10,6 +10,7 @@ from aiohttp import ClientSession
 
 from modules.const import USER_AGENT
 
+
 @dataclass
 class AnimeApiAnime:
     title: str | None = None
@@ -96,7 +97,10 @@ class AnimeApi:
                 self.write_data_to_cache({"timestamp": final}, cache_file_path)
             return dt.fromtimestamp(final)
         except BaseException as e:
-            raise Exception("Failed to get the last update time of AnimeAPI's database, reason: " + str(e))
+            raise Exception(
+                "Failed to get the last update time of AnimeAPI's database, reason: "
+                + str(e)
+            )
 
     async def get_relation(
         self,

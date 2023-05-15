@@ -53,6 +53,7 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
         async def doit() -> bool:
             drop = await ud.drop_user(Snowflake(1234567890))
             return drop
+
         async with UserDatabase() as ud:
             resp = await doit()
         if resp is False:
