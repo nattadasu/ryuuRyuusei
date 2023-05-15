@@ -2,6 +2,7 @@ import json
 import os
 import time
 from enum import Enum
+from typing import Literal
 
 import aiohttp
 
@@ -44,13 +45,13 @@ class TheMovieDb:
         MOVIE = "movie"
 
     async def get_nsfw_status(
-        self, media_id: int, media_type: MediaType | str = MediaType.TV
+        self, media_id: int, media_type: MediaType | Literal["movie", "tv"] = MediaType.TV
     ) -> bool:
         """Get the NSFW status of a TV show or movie
 
         Args:
             media_id (int): The ID of the TV show or movie
-            media_type (MediaType | str): The media type, defaults to MediaType.TV
+            media_type (MediaType | Literal["movie","tv"]): The media type, defaults to MediaType.TV
 
         Returns:
             bool: True if the TV show or movie is NSFW, False otherwise"""
