@@ -127,7 +127,7 @@ class AnimeApi:
             platform (AnimeApiPlatforms | Literal["anisearch", "anidb", "anilist", "animeplanet", "annict", "kaize", "kitsu", "livechart", "myanimelist", "notify", "otakotaku", "shikimori", "shoboi", "silveryasha", "trakt" ]): Platform to get the relation
 
         Returns:
-            dict: Relation between anime and other platform
+            AnimeApiAnime: Relation between anime and other platform
         """
         if isinstance(platform, self.AnimeApiPlatforms):
             platform = platform.value
