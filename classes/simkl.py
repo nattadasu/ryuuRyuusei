@@ -471,7 +471,9 @@ class Simkl:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def get_title_ids(self, id: int, media_type: SimklMediaTypes | Literal["anime", "movie", "tv"]) -> SimklRelations:
+    async def get_title_ids(
+        self, id: int, media_type: SimklMediaTypes | Literal["anime", "movie", "tv"]
+    ) -> SimklRelations:
         """Get IDs of the title
 
         Args:
@@ -500,7 +502,9 @@ class Simkl:
             async with Simkl(self.client_id) as simkl:
                 data = await simkl.get_show(id)
         else:
-            raise SimklTypeError(f"You've might entered false media_type", SimklMediaTypes)
+            raise SimklTypeError(
+                f"You've might entered false media_type", SimklMediaTypes
+            )
 
         mids = {**simkl0rels, **data.get("ids", {})}
         for k, v in mids.items():

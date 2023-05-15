@@ -45,7 +45,9 @@ class TheMovieDb:
         MOVIE = "movie"
 
     async def get_nsfw_status(
-        self, media_id: int, media_type: MediaType | Literal["movie", "tv"] = MediaType.TV
+        self,
+        media_id: int,
+        media_type: MediaType | Literal["movie", "tv"] = MediaType.TV,
     ) -> bool:
         """Get the NSFW status of a TV show or movie
 
