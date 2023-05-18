@@ -153,7 +153,9 @@ class Utilities(ipy.Extension):
             ),
         ],
     )
-    async def utilities_color(self, ctx: ipy.SlashContext, color_format: str, color: str):
+    async def utilities_color(
+        self, ctx: ipy.SlashContext, color_format: str, color: str
+    ):
         await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["utilities"]
