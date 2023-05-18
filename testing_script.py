@@ -15,7 +15,7 @@ from main import bot
 
 ld()
 
-simkl_client_id = ge('SIMKL_CLIENT_ID')
+simkl_client_id = ge("SIMKL_CLIENT_ID")
 
 
 async def simklfunc():
@@ -52,7 +52,9 @@ async def db():
 
 async def test_member():
     start = time.time()
-    member = await bot.http.get_member(guild_id=589128995501637655, user_id=384089845527478272)
+    member = await bot.http.get_member(
+        guild_id=589128995501637655, user_id=384089845527478272
+    )
     member = Member.from_dict(member)
     print(member)
     end = time.time()
@@ -66,5 +68,6 @@ async def spotify():
         # print(search["tracks"]["items"][0])
         track = await spot.get_track("06pezDUwqVsUfpBNw6uJir")
         print(json.dumps(track, indent=4))
+
 
 asyncio.run(simklfunc())
