@@ -60,7 +60,9 @@ class Profile(ipy.Extension):
                 ),
                 ipy.EmbedField(
                     name=lp["commons"]["username"],
-                    value=sanitize_markdown(data.username + "#" + str(data.discriminator)),
+                    value=sanitize_markdown(
+                        data.username + "#" + str(data.discriminator)
+                    ),
                     inline=True,
                 ),
                 ipy.EmbedField(

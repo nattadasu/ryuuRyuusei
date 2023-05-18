@@ -7,12 +7,15 @@ from typing import Literal
 from modules.commons import get_random_seed
 from modules.platforms import Platform
 
+
 class NekomimiGender(Enum):
     """Supported NekomimiGender Enum"""
+
     BOY = "boy"
     GIRL = "girl"
     UNKNOWN = NONBINARY = NB = "nb"
     BOTH = "both"
+
 
 @dataclass
 class NekomimiDbStruct:

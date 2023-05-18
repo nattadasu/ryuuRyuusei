@@ -57,7 +57,21 @@ class JikanTrailerStruct:
 
 @dataclass
 class JikanTitlesStruct:
-    type: Literal["Default", "Synonym", "English", "Japanese", "Synonym", "German", "Spanish", "Italian", "French", "Korean", "Portuguese", "Chinese", "Korean"] | None
+    type: Literal[
+        "Default",
+        "Synonym",
+        "English",
+        "Japanese",
+        "Synonym",
+        "German",
+        "Spanish",
+        "Italian",
+        "French",
+        "Korean",
+        "Portuguese",
+        "Chinese",
+        "Korean",
+    ] | None
     """Type of the title"""
     title: str
     """Title"""
@@ -265,6 +279,7 @@ class JikanStatisticsStruct:
     total_entries: int | None
     """Total number of entries listed"""
 
+
 @dataclass
 class JikanAnimeStatisticStruct(JikanStatisticsStruct):
     days_watched: int | None
@@ -277,6 +292,7 @@ class JikanAnimeStatisticStruct(JikanStatisticsStruct):
     """Number of rewatched entries"""
     episodes_watched: int | None
     """Number of episodes watched"""
+
 
 @dataclass
 class JikanMangaStatisticStruct(JikanStatisticsStruct):
@@ -311,6 +327,7 @@ class JikanUserTitleStruct:
     images: JikanImages | None
     """Images of the entry"""
 
+
 @dataclass
 class JikanUserAniMangaStruct(JikanUserTitleStruct):
     title: str
@@ -319,6 +336,7 @@ class JikanUserAniMangaStruct(JikanUserTitleStruct):
     """Type of the entry"""
     start_year: int | None
     """Start year of the entry"""
+
 
 @dataclass
 class JikanUserCastStruct(JikanUserTitleStruct):
@@ -337,12 +355,14 @@ class JikanUpdateEntry:
     date: datetime | None = None
     """Date of the update"""
 
+
 @dataclass
 class JikanAnimeUpdateEntry(JikanUpdateEntry):
     episodes_seen: int | None = None
     """Number of episodes seen"""
     episodes_total: int | None = None
     """Total number of episodes"""
+
 
 @dataclass
 class JikanMangaUpdateEntry(JikanUpdateEntry):

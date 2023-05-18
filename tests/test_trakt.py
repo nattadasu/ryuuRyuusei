@@ -14,15 +14,18 @@ class TraktTest(unittest.IsolatedAsyncioTestCase):
     async def test_get_ids(self):
         async with Trakt() as trakt:
             res = await trakt.lookup(media_id="tt1104001", platform=trakt.Platform.IMDB)
-            if res.type == 'movie':
+            if res.type == "movie":
                 self.assertEqual(res.movie.ids.imdb, "tt1104001")
-            elif res.type == 'show':
+            elif res.type == "show":
                 self.assertEqual(res.show.ids.imdb, "tt1104001")
 
     async def test_get_title_data(self):
         async with Trakt() as trakt:
-            res: TraktExtendedMovieStruct = await trakt.get_title_data(media_id=12601, media_type=trakt.MediaType.MOVIE)
+            res: TraktExtendedMovieStruct = await trakt.get_title_data(
+                media_id=12601, media_type=trakt.MediaType.MOVIE
+            )
             self.assertIsInstance(res, TraktExtendedMovieStruct)
+
 
 if __name__ == "__main__":
     unittest.main()
