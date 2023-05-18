@@ -5,7 +5,7 @@ from urllib.parse import urlencode as urlenc
 import interactions as ipy
 from plusminus import BaseArithmeticParser as BAP
 
-from classes.thecolorapi import TheColorApi
+from classes.thecolorapi import TheColorApi, Color
 from modules.commons import snowflake_to_datetime, generate_utils_except_embed
 from modules.i18n import fetch_language_data, read_user_language
 
@@ -169,40 +169,59 @@ class Utilities(ipy.Extension):
             async with TheColorApi() as tca:
                 match format:
                     case "hex":
-                        res = await tca.color(hex=color)
+                        res: Color = await tca.color(hex=color)
                     case "rgb":
-                        res = await tca.color(rgb=color)
+                        res: Color = await tca.color(rgb=color)
                     case "hsl":
-                        res = await tca.color(hsl=color)
+                        res: Color = await tca.color(hsl=color)
                     case "cmyk":
-                        res = await tca.color(cmyk=color)
+                        res: Color = await tca.color(cmyk=color)
                 # await tca.close()
-            rgb: dict = res["rgb"]
-            col: int = (rgb["r"] << 16) + (rgb["g"] << 8) + rgb["b"]
+            rgb = res.rgb
+            col: int = (rgb.r << 16) + (rgb.g << 8) + rgb.b
             fields = [
                 ipy.EmbedField(
                     name=l_["color"]["name"],
-                    value=f"{res['name']['value']}",
+                    value=f"{res.name.value}",
                     inline=False,
                 ),
-            ]
-            for f in ["hex", "rgb", "hsl", "cmyk", "hsv"]:
-                fields.append(
-                    ipy.EmbedField(
-                        name=f"{f.upper()}",
-                        value=f"```css\n{res[f]['value']}\n```",
-                        inline=True,
-                    )
+                ipy.EmbedField(
+                    name="HEX",
+                    value=f"```css\n{res.hex.value}\n```",
+                    inline=True,
+                ),
+                ipy.EmbedField(
+                    name="RGB",
+                    value=f"```css\n{res.rgb.value}\n```",
+                    inline=True,
+                ),
+                ipy.EmbedField(
+                    name="HSL",
+                    value=f"```css\n{res.hsl.value}\n```",
+                    inline=True,
+                ),
+                ipy.EmbedField(
+                    name="HSV",
+                    value=f"```css\n{res.hsv.value}\n```",
+                    inline=True,
+                ),
+                ipy.EmbedField(
+                    name="CMYK",
+                    value=f"```css\n{res.cmyk.value}\n```",
+                    inline=True,
+                ),
+                ipy.EmbedField(
+                    name="DEC",
+                    value=f"```py\n{col}\n```",
+                    inline=True
                 )
-            fields.append(
-                ipy.EmbedField(name="DEC", value=f"```py\n{col}\n```", inline=True)
-            )
+            ]
             await ctx.send(
                 embed=ipy.Embed(
                     title=l_["commons"]["result"],
                     color=col,
                     fields=fields,
-                    thumbnail=ipy.EmbedAttachment(url=res["image"]["bare"]),
+                    thumbnail=ipy.EmbedAttachment(url=res.image.bare),
                     footer=ipy.EmbedFooter(text=l_["color"]["powered"]),
                 )
             )

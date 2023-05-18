@@ -1,12 +1,172 @@
 import json
 import os
 import time
+from dataclasses import dataclass
 
 import aiohttp
 
 from classes.excepts import ProviderHttpError
 from modules.const import USER_AGENT
 
+@dataclass
+class BaseValue:
+    """Base value dataclass"""
+    value: str
+    """Value string"""
+
+@dataclass
+class Fractions:
+    r: float | None = None
+    """Red fraction in RGB"""
+    g: float | None = None
+    """Green fraction in RGB"""
+    b: float | None = None
+    """Blue fraction in RGB"""
+    h: float | None = None
+    """Hue fraction in HSL"""
+    s: float | None = None
+    """Saturation fraction in HSL"""
+    v: float | None = None
+    """Value fraction in HSV"""
+    l: float | None = None
+    """Lightness fraction in HSL"""
+    c: float | None = None
+    """Cyan fraction in CMYK"""
+    m: float | None = None
+    """Magenta fraction in CMYK"""
+    y: float | None = None
+    """Yellow fraction in CMYK"""
+    k: float | None = None
+    """Key fraction in CMYK"""
+    X: float | None = None
+    """X fraction in XYZ"""
+    Y: float | None = None
+    """Y fraction in XYZ"""
+    Z: float | None = None
+    """Z fraction in XYZ"""
+
+@dataclass
+class HexValue(BaseValue):
+    """Hex value dataclass"""
+    clean: str
+    """Clean value string"""
+
+@dataclass
+class RGBValue(BaseValue):
+    """RGB value dataclass"""
+    fraction: Fractions
+    """Fractions"""
+    r: int
+    """Red value"""
+    g: int
+    """Green value"""
+    b: int
+    """Blue value"""
+
+@dataclass
+class HSLValue(BaseValue):
+    """HSL value dataclass"""
+    fraction: Fractions
+    """Fractions"""
+    h: int
+    """Hue value"""
+    s: int
+    """Saturation value"""
+    l: int
+    """Lightness value"""
+
+@dataclass
+class HSVValue(BaseValue):
+    """HSV value dataclass"""
+    fraction: Fractions
+    """Fractions"""
+    h: int
+    """Hue value"""
+    s: int
+    """Saturation value"""
+    v: int
+    """Value value"""
+
+@dataclass
+class CMYKValue(BaseValue):
+    """CMYK value dataclass"""
+    fraction: Fractions
+    """Fractions"""
+    c: int
+    """Cyan value"""
+    m: int
+    """Magenta value"""
+    y: int
+    """Yellow value"""
+    k: int
+    """Key value"""
+
+@dataclass
+class XYZValue(BaseValue):
+    """XYZ value dataclass"""
+    fraction: Fractions
+    """Fractions"""
+    X: int
+    """X value"""
+    Y: int
+    """Y value"""
+    Z: int
+    """Z value"""
+
+@dataclass
+class Metadata(BaseValue):
+    """Metadata dataclass"""
+    closest_named_hex: str
+    """Closest named hex value"""
+    exact_match_name: bool
+    """Exact match name"""
+    distance: int
+    """Distance"""
+
+@dataclass
+class Image:
+    """Image dataclass"""
+    bare: str
+    """Bare image URL"""
+    named: str
+    """Named image URL"""
+
+@dataclass
+class Contrast:
+    """Contrast dataclass"""
+    value: str
+    """Contrast value"""
+
+@dataclass
+class Links:
+    """Links dataclass"""
+    self: dict[str, str]
+    """Self link"""
+
+@dataclass
+class Color:
+    """Color dataclass"""
+    hex: HexValue
+    """Hex value"""
+    rgb: RGBValue
+    """RGB value"""
+    hsl: HSLValue
+    """HSL value"""
+    hsv: HSVValue
+    """HSV value"""
+    cmyk: CMYKValue
+    """CMYK value"""
+    XYZ: XYZValue
+    """XYZ value"""
+    name: Metadata
+    """Name value"""
+    image: Image
+    """Image value"""
+    contrast: Contrast
+    """Contrast value"""
+    _links: Links
+    """Links"""
+    _embedded: dict[str, dict[str, str]] | None = None
 
 class TheColorApi:
     """The Color API wrapper
@@ -34,7 +194,93 @@ class TheColorApi:
         """Close the session"""
         await self.session.close()
 
-    async def color(self, **color) -> dict:
+    @staticmethod
+    def dict_to_dataclass(data: dict) -> Color:
+        """Convert data dict to dataclass"""
+        return Color(
+            hex=HexValue(
+                value=data["hex"]["value"],
+                clean=data["hex"]["clean"],
+            ),
+            rgb=RGBValue(
+                fraction=Fractions(
+                    r=data["rgb"]["fraction"]["r"],
+                    g=data["rgb"]["fraction"]["g"],
+                    b=data["rgb"]["fraction"]["b"],
+                ),
+                r=data["rgb"]["r"],
+                g=data["rgb"]["g"],
+                b=data["rgb"]["b"],
+                value=data["rgb"]["value"],
+            ),
+            hsl=HSLValue(
+                fraction=Fractions(
+                    h=data["hsl"]["fraction"]["h"],
+                    s=data["hsl"]["fraction"]["s"],
+                    l=data["hsl"]["fraction"]["l"],
+                ),
+                h=data["hsl"]["h"],
+                s=data["hsl"]["s"],
+                l=data["hsl"]["l"],
+                value=data["hsl"]["value"],
+            ),
+            hsv=HSVValue(
+                fraction=Fractions(
+                    h=data["hsv"]["fraction"]["h"],
+                    s=data["hsv"]["fraction"]["s"],
+                    v=data["hsv"]["fraction"]["v"],
+                ),
+                h=data["hsv"]["h"],
+                s=data["hsv"]["s"],
+                v=data["hsv"]["v"],
+                value=data["hsv"]["value"],
+            ),
+            cmyk=CMYKValue(
+                fraction=Fractions(
+                    c=data["cmyk"]["fraction"]["c"],
+                    m=data["cmyk"]["fraction"]["m"],
+                    y=data["cmyk"]["fraction"]["y"],
+                    k=data["cmyk"]["fraction"]["k"],
+                ),
+                c=data["cmyk"]["c"],
+                m=data["cmyk"]["m"],
+                y=data["cmyk"]["y"],
+                k=data["cmyk"]["k"],
+                value=data["cmyk"]["value"],
+            ),
+            XYZ=XYZValue(
+                fraction=Fractions(
+                    X=data["XYZ"]["fraction"]["X"],
+                    Y=data["XYZ"]["fraction"]["Y"],
+                    Z=data["XYZ"]["fraction"]["Z"],
+                ),
+                X=data["XYZ"]["X"],
+                Y=data["XYZ"]["Y"],
+                Z=data["XYZ"]["Z"],
+                value=data["XYZ"]["value"],
+            ),
+            name=Metadata(
+                value=data["name"]["value"],
+                closest_named_hex=data["name"]["closest_named_hex"],
+                exact_match_name=data["name"]["exact_match_name"],
+                distance=data["name"]["distance"],
+            ),
+            image=Image(
+                bare=data["image"]["bare"],
+                named=data["image"]["named"],
+            ),
+            contrast=Contrast(
+                value=data["contrast"]["value"],
+            ),
+            _links=Links(
+                self={
+                    "href": data["_links"]["self"]["href"],
+                },
+            ),
+            _embedded=data["_embedded"] if "_embedded" in data else None,
+        )
+
+    async def color(self, **color: str) -> Color:
         """Get color information from hex, rgb, hsl, hsv, or cmyk values
 
         Args:
@@ -55,13 +301,13 @@ class TheColorApi:
         cache_file_path = self.get_cache_file_path(color)
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
-            return cached_data
+            return self.dict_to_dataclass(cached_data)
 
         async with self.session.get(f"{self.base_url}/id", params=color) as response:
             if response.status == 200:
                 data = await response.json()
                 self.write_data_to_cache(data, cache_file_path)
-                return data
+                return self.dict_to_dataclass(data)
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 

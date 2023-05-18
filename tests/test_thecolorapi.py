@@ -16,7 +16,7 @@ class TheColorApiTest(unittest.IsolatedAsyncioTestCase):
             value = "000000"
             color = await color.color(hex=value)
             # check if color is not None
-            self.assertTrue(color["hex"]["clean"] == value)
+            self.assertTrue(color.hex.clean == value)
 
 
 if __name__ == "__main__":
