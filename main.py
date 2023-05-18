@@ -10,6 +10,8 @@ import interactions as ipy
 
 from modules.const import BOT_TOKEN, SENTRY_DSN, USER_AGENT
 
+# import traceback
+
 now: dtime = dtime.now(tz=tz.utc)
 
 bot = ipy.AutoShardedClient(
@@ -56,7 +58,7 @@ async def main():
             bot.load_extension("interactions.ext.sentry", token=SENTRY_DSN)
         bot.load_extension("interactions.ext.jurigged")
     except Exception as e:
-        print("[Ext] Error while loading extension: " + ext)
+        print("[Ext] Error while loading system extension: " + ext)
         print("      " + str(e))
         print("[Ext] If this error shows up while restart the bot, ignore")
     bot.del_unused_app_cmd = True
@@ -79,16 +81,20 @@ async def main():
 
     # for each .py files in extensions folder, load it, except for commons.py
     try:
-        for ext in os.listdir("extensions"):
+        exts = os.listdir("extensions")
+        for i, ext in enumerate(exts):
+            i += 1
             if ext.endswith(".py"):
-                print("[Cog] Loading extension: " + ext)
+                print(f"[Cog] [{i}/{len(exts)}] Loading cog/extension: {ext}")
                 ext = ext[:-3]
                 if ext != "commons":
                     bot.load_extension("extensions." + ext)
                 else:
                     bot.load_extension("extensions." + ext, now=now)
+            else:
+                print(f"[Cog] [{i}/{len(exts)}] Skipping: {ext}, not a .py file")
     except Exception as e:
-        print("[Cog] Error while loading extension: " + ext)
+        print(f"[Cog] [{i}/{len(exts)}] Error while loading extension: {ext}")
         print("      " + str(e))
         print("[Cog] If this error shows up while restart the bot, ignore")
 
@@ -102,9 +108,6 @@ if __name__ == "__main__":
     while True:
         try:
             asy = asyncio.run(main())
-        except ipy.errors.WebSocketClosed:
-            print("[Sys] WebSocket closed. Reconnecting in 5 seconds...")
-            sleep(5)
         except KeyboardInterrupt:
             bot_stop = pc()
             print("[Sys] Bot stopped by user.")
@@ -118,3 +121,10 @@ if __name__ == "__main__":
                 + "m"
             )
             sys.exit(0)
+        # except BaseException as e:
+        #     print("[Sys] Bot stopped due to error.")
+        #     print("      " + str(e))
+        #     print("[Sys] Full traceback:")
+        #     print("      " + str(traceback.format_exc()))
+        #     print("[Sys] [NOTICE] To automatically restore bot, please use process manager like systemd or else")
+        #     sys.exit(1)
