@@ -205,7 +205,6 @@ class Profile(ipy.Extension):
         ],
     )
     async def profile_lastfm(self, ctx: ipy.SlashContext, user: str, maximum: int = 9):
-        # raise NotImplementedError()
         await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul, useRaw=True)

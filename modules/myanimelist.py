@@ -293,7 +293,6 @@ async def generate_mal(
     tgs = sorted(set(tgs), key=str.casefold)
     tgs = ", ".join(tgs) if tgs else "*None*"
 
-    # year = j["aired"]["prop"]["from"]["year"] or "year?"
     astn, aenn = j.aired.from_, j.aired.to
     year = str(astn.year) if astn else "year?"
     astr = j.aired.string
