@@ -41,7 +41,7 @@ class LanguageTest(unittest.IsolatedAsyncioTestCase):
                 self.assertTrue(True)
                 return
         # if no matches were found
-        print(f"No matching language found")
+        print("No matching language found")
         self.assertTrue(False)
 
     def test_user_language(self):

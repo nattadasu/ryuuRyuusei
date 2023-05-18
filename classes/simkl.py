@@ -529,7 +529,7 @@ class Simkl:
                 data = await simkl.get_show(id)
         else:
             raise SimklTypeError(
-                f"You've might entered false media_type", SimklMediaTypes
+                "You've might entered false media_type", SimklMediaTypes
             )
 
         mids = {**simkl0rels, **data.get("ids", {})}
