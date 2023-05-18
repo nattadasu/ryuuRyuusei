@@ -148,12 +148,14 @@ class TraktExtendedMovieStruct(TraktMediaStruct):
 
 
 class Trakt:
-    def __init__(self, headers: dict | None = traktHeader):
+    def __init__(self, headers: dict | None = None):
         """Initialize the Trakt API Wrapper
 
         Args:
             headers (dict): Trakt API headers, defaults to traktHeader on modules/const.py
         """
+        if headers is None:
+            headers = traktHeader
         self.base_url = "https://api.trakt.tv/"
         self.cache_directory = "cache/trakt"
         self.cache_time = 86400
