@@ -3,33 +3,36 @@
 import os
 from time import time
 
-import requests as r
+import aiohttp
 
 MAIN_SITE = "https://raw.githubusercontent.com/nattadasu/nekomimiDb/main/index.tsv"
 
 
-def nk_get_data() -> None:
+async def nk_get_data() -> None:
     """Fetches the data from the nekomimiDb main site and writes it to file.
 
     Raises:
-        requests.exceptions.RequestException: If there is an issue with the GET request.
+        aiohttp.ClientError: If there is an issue with the GET request.
 
     Returns:
         None
     """
     try:
-        response = r.get(MAIN_SITE)
-        response.raise_for_status()
-    except r.exceptions.RequestException as e:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(MAIN_SITE) as response:
+                if response.status != 200:
+                    print(f"Error fetching data: HTTP {response.status}: {response.reason}")
+                    return
+                data = await response.text()
+    except aiohttp.ClientError as e:
         print(f"Error fetching data: {e}")
         return
-    data = response.text
     # save data to file
     with open("database/nekomimiDb.tsv", "w") as f:
         f.write(data)
 
 
-def nk_run() -> None:
+async def nk_run() -> None:
     """
     Check if nekomimiDb.tsv file exists. If it does, check if it's >= 14 days old.
     If it is, get the latest version of the file and overwrite the old one.
@@ -39,10 +42,10 @@ def nk_run() -> None:
         None
     """
     if not os.path.exists("database/nekomimiDb.tsv"):
-        nk_get_data()
+        await nk_get_data()
     else:
         # check if the file is >= 14 days old
         if os.stat("database/nekomimiDb.tsv").st_mtime < (time() - 14 * 86400):
-            nk_get_data()
+            await nk_get_data()
         else:
             print("nekomimiDb.tsv is up to date")

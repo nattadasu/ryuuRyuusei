@@ -16,6 +16,5 @@ python-dotenv
 python-Levenshtein
 pyyaml
 regex
-requests
 sentry_sdk
 tzdata

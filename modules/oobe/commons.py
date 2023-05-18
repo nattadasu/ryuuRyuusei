@@ -90,7 +90,7 @@ def prepare_database():
     files = [
         {
             "path": "database/database.csv",
-            "header": "discordId\tdiscordUsername\tdiscordJoined\tmalUsername\tmalId\tmalJoined\tregisteredAt\tregisteredGuild\tregisteredBy",
+            "header": "discordId\tdiscordUsername\tdiscordJoined\tmalUsername\tmalId\tmalJoined\tregisteredAt\tregisteredGuild\tregisteredBy\tregisteredGuildName\tanilistUsername\tanilistId\tlastfmUsername",
         },
         {"path": "database/member.csv", "header": "discordId\tlanguage"},
         {"path": "database/server.csv", "header": "guildId\tlanguage"},

@@ -11,6 +11,7 @@ Example: python3 firstRun.py
 import os
 import shlex
 import subprocess
+import asyncio
 
 from modules.oobe.commons import check_termux, current_os, prepare_database, py_bin_path
 from modules.oobe.getNekomimi import nk_run
@@ -18,7 +19,7 @@ from modules.oobe.i18nBuild import convert_langs_to_json
 from modules.oobe.malIndexer import mal_run
 
 
-def first_run(py_bin: str = py_bin_path()):
+async def first_run(py_bin: str = py_bin_path()):
     """Runs the first run script.
 
     Args:
@@ -64,10 +65,10 @@ def first_run(py_bin: str = py_bin_path()):
     prepare_database()
     # Fetch data from GitHub
     print("Fetching the latest github:nattadasu/nekomimiDb data...")
-    nk_run()
+    await nk_run()
     # Index MyAnimeList data from AnimeAPI
     print("Indexing MyAnimeList data from AnimeAPI...")
-    mal_run()
+    await mal_run()
     # Check if .env exists, if not, copy .env.example
     if not os.path.exists(".env"):
         print("Copying .env.example to .env...")
@@ -84,4 +85,4 @@ def first_run(py_bin: str = py_bin_path()):
 
 
 if __name__ == "__main__":
-    first_run()
+    asyncio.run(first_run())

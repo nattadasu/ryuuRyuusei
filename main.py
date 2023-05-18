@@ -72,8 +72,7 @@ async def main():
     # get this python binary's path
     python_path = sys.executable
     python_path = python_path.replace("\\", "/")
-    print("[Sys] Python path: " + python_path)
-    first_run(py_bin=python_path)
+    await first_run(py_bin=python_path)
 
     # Load extensions
     print("[Cog] Loading extensions...")
