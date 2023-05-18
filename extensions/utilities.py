@@ -134,7 +134,7 @@ class Utilities(ipy.Extension):
         sub_cmd_description="Get information about a color",
         options=[
             ipy.SlashCommandOption(
-                name="format",
+                name="color_format",
                 description="The format to use",
                 type=ipy.OptionType.STRING,
                 required=True,
@@ -153,21 +153,21 @@ class Utilities(ipy.Extension):
             ),
         ],
     )
-    async def utilities_color(self, ctx: ipy.SlashContext, format: str, color: str):
+    async def utilities_color(self, ctx: ipy.SlashContext, color_format: str, color: str):
         await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["utilities"]
         res: dict = {}
         try:
             if (
-                format == "hex"
+                color_format == "hex"
                 and re.match(r"^#?(?:[0-9a-fA-F]{3}){1,2}$", color) is None
             ):
                 raise ValueError("Invalid hex color")
-            if format == "hex" and re.match(r"^#", color) is None:
+            if color_format == "hex" and re.match(r"^#", color) is None:
                 color = f"#{color}"
             async with TheColorApi() as tca:
-                match format:
+                match color_format:
                     case "hex":
                         res: Color = await tca.color(hex=color)
                     case "rgb":
