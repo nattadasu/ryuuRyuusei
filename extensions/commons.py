@@ -5,15 +5,8 @@ from time import perf_counter as pc
 
 import interactions as ipy
 
-from modules.const import (
-    AUTHOR_USERNAME,
-    BOT_CLIENT_ID,
-    BOT_SUPPORT_SERVER,
-    database,
-    gittyHash,
-    gtHsh,
-    ownerUserUrl,
-)
+from modules.const import (AUTHOR_USERNAME, BOT_CLIENT_ID, BOT_SUPPORT_SERVER,
+                           database, gittyHash, gtHsh, ownerUserUrl)
 from modules.i18n import fetch_language_data, read_user_language
 
 
@@ -22,7 +15,8 @@ class CommonCommands(ipy.Extension):
         self.bot = bot
         self.now = now
 
-    @ipy.slash_command(name="about", description="Get information about the bot")
+    @ipy.slash_command(name="about",
+                       description="Get information about the bot")
     async def about(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["about"]
@@ -71,12 +65,14 @@ class CommonCommands(ipy.Extension):
         duration = abs(duration)
         fields = [
             ipy.EmbedField(
-                name="🤝 " + l_["websocket"]["title"],
+                name="🤝 " +
+                l_["websocket"]["title"],
                 value=f"`{self.bot.latency * 1000:.2f}`ms\n> *{l_['websocket']['text']}*",
                 inline=True,
             ),
             ipy.EmbedField(
-                name="🤖 " + l_["bot"]["title"],
+                name="🤖 " +
+                l_["bot"]["title"],
                 value=f"`{duration:.2f}`ms\n> *{l_['bot']['text']}*",
                 inline=True,
             ),
@@ -105,8 +101,7 @@ class CommonCommands(ipy.Extension):
             ipy.EmbedField(
                 name="📅 " + l_["uptime"]["title"],
                 value=l_["uptime"]["text"].format(
-                    TIMESTAMP=f"<t:{int(self.now.timestamp())}:R>"
-                ),
+                    TIMESTAMP=f"<t:{int(self.now.timestamp())}:R>"),
                 inline=True,
             ),
         ]
@@ -158,9 +153,8 @@ class CommonCommands(ipy.Extension):
         )
         await ctx.send(embed=dcEm, components=[ipy.ActionRow(invButton, serverButton)])
 
-    @ipy.slash_command(
-        name="privacy", description="Get the bot's tl;dr version of privacy policy"
-    )
+    @ipy.slash_command(name="privacy",
+                       description="Get the bot's tl;dr version of privacy policy")
     async def privacy(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["privacy"]

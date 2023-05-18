@@ -64,7 +64,8 @@ def get_git_revision_short_hash() -> str:
     Returns:
         str: The current git revision short hash
     """
-    return chout(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
+    return chout(["git", "rev-parse", "--short", "HEAD"]
+                 ).decode("ascii").strip()
 
 
 def get_git_remote_url() -> str:

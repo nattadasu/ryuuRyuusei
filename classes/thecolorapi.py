@@ -8,11 +8,13 @@ import aiohttp
 from classes.excepts import ProviderHttpError
 from modules.const import USER_AGENT
 
+
 @dataclass
 class BaseValue:
     """Base value dataclass"""
     value: str
     """Value string"""
+
 
 @dataclass
 class Fractions:
@@ -45,11 +47,13 @@ class Fractions:
     Z: float | None = None
     """Z fraction in XYZ"""
 
+
 @dataclass
 class HexValue(BaseValue):
     """Hex value dataclass"""
     clean: str
     """Clean value string"""
+
 
 @dataclass
 class RGBValue(BaseValue):
@@ -63,6 +67,7 @@ class RGBValue(BaseValue):
     b: int
     """Blue value"""
 
+
 @dataclass
 class HSLValue(BaseValue):
     """HSL value dataclass"""
@@ -75,6 +80,7 @@ class HSLValue(BaseValue):
     l: int
     """Lightness value"""
 
+
 @dataclass
 class HSVValue(BaseValue):
     """HSV value dataclass"""
@@ -86,6 +92,7 @@ class HSVValue(BaseValue):
     """Saturation value"""
     v: int
     """Value value"""
+
 
 @dataclass
 class CMYKValue(BaseValue):
@@ -101,6 +108,7 @@ class CMYKValue(BaseValue):
     k: int
     """Key value"""
 
+
 @dataclass
 class XYZValue(BaseValue):
     """XYZ value dataclass"""
@@ -113,6 +121,7 @@ class XYZValue(BaseValue):
     Z: int
     """Z value"""
 
+
 @dataclass
 class Metadata(BaseValue):
     """Metadata dataclass"""
@@ -123,6 +132,7 @@ class Metadata(BaseValue):
     distance: int
     """Distance"""
 
+
 @dataclass
 class Image:
     """Image dataclass"""
@@ -131,17 +141,20 @@ class Image:
     named: str
     """Named image URL"""
 
+
 @dataclass
 class Contrast:
     """Contrast dataclass"""
     value: str
     """Contrast value"""
 
+
 @dataclass
 class Links:
     """Links dataclass"""
     self: dict[str, str]
     """Self link"""
+
 
 @dataclass
 class Color:
@@ -168,6 +181,7 @@ class Color:
     """Links"""
     _embedded: dict[str, dict[str, str]] | None = None
 
+
 class TheColorApi:
     """The Color API wrapper
 
@@ -183,7 +197,8 @@ class TheColorApi:
 
     async def __aenter__(self):
         """Create a session if class invoked with `with` statement"""
-        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
+        self.session = aiohttp.ClientSession(
+            headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -317,7 +332,8 @@ class TheColorApi:
         Args:
             color_params (dict): Color parameters
         """
-        filename = "-".join([f"{k}_{v}" for k, v in color_params.items()]) + ".json"
+        filename = "-".join([f"{k}_{v}" for k,
+                             v in color_params.items()]) + ".json"
         return os.path.join(self.cache_directory, filename)
 
     def read_cached_data(self, cache_file_path) -> dict | None:

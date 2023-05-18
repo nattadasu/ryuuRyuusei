@@ -1,14 +1,14 @@
 import json
 import os
 import time
-from enum import Enum
 from dataclasses import dataclass
-from typing import Literal, Any
+from enum import Enum
+from typing import Any, Literal
 
 import aiohttp
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
-from modules.const import traktHeader, USER_AGENT
+from modules.const import USER_AGENT, traktHeader
 
 
 @dataclass
@@ -125,9 +125,8 @@ class TraktExtendedMovieStruct(TraktMediaStruct):
     """Movie trailer"""
     homepage: str | None
     """Movie homepage"""
-    status: Literal[
-        "released", "in production", "post production", "planned", "rumored", "canceled"
-    ]
+    status: Literal["released", "in production",
+                    "post production", "planned", "rumored", "canceled"]
     """Movie status"""
     rating: float | None
     """Movie rating"""
@@ -293,7 +292,8 @@ class Trakt:
         Returns:
             TraktExtendedMovieStruct | TraktExtendedShowStruct: The data of the TV show or movie
         """
-        cache_file_path = self.get_cache_path(f"{media_type.value}/{media_id}.json")
+        cache_file_path = self.get_cache_path(
+            f"{media_type.value}/{media_id}.json")
         cached_data = self.read_cache(cache_file_path)
         if cached_data is not None:
             return self.extended_dict_to_dataclass(cached_data, media_type)

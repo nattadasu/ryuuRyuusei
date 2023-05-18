@@ -61,7 +61,8 @@ class Kitsu:
         """
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
-        cache_file_path = self.get_cache_path(f"{media_type.value}/{anime_id}.json")
+        cache_file_path = self.get_cache_path(
+            f"{media_type.value}/{anime_id}.json")
         cached_data = self.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -88,7 +89,8 @@ class Kitsu:
         """
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
-        cache_file_path = self.get_cache_path(f"{media_type.value}/slug/{slug}.json")
+        cache_file_path = self.get_cache_path(
+            f"{media_type.value}/slug/{slug}.json")
         cached_data = self.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data

@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
+import asyncio
 import json
 import os
-import sys
 import subprocess
-import asyncio
+import sys
 
 import isort
 
-
 # for each py files exclude from specific folders, sort import
-excluded_folders = ["venv", "__pycache__"]
+excluded_folders = ["venv", "__pycache__", ".mypycache", "build", "dist", "docs", "cache"]
 
 
 def print_file(path_name: str) -> None:

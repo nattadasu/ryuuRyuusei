@@ -5,22 +5,14 @@ This module contains the common functions used by the other modules."""
 from re import sub as rSub
 from uuid import uuid4 as id4
 
-from interactions import (
-    Button,
-    ButtonStyle,
-    Client,
-    Embed,
-    EmbedAttachment,
-    EmbedAuthor,
-    EmbedField,
-    PartialEmoji,
-)
+from interactions import (Button, ButtonStyle, Client, Embed, EmbedAttachment,
+                          EmbedAuthor, EmbedField, PartialEmoji)
 
-from modules.const import BOT_TOKEN, LANGUAGE_CODE
-from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
-from modules.i18n import fetch_language_data
 from classes.anilist import AniListTrailerStruct
-
+from modules.const import BOT_TOKEN
+from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
+from modules.const import LANGUAGE_CODE
+from modules.i18n import fetch_language_data
 
 deflang = fetch_language_data(LANGUAGE_CODE, useRaw=True)
 
@@ -152,13 +144,20 @@ def genrate_search_embed(
         case 2:
             count = l_["quantities"][f"{mediaType}"]["two"]
         case _:
-            count = l_["quantities"][f"{mediaType}"]["many"].format(count=len(results))
+            count = l_["quantities"][f"{mediaType}"]["many"].format(
+                count=len(results))
     dcEm = Embed(
-        author=EmbedAuthor(name=platform, url=homepage, icon_url=icon),
-        thumbnail=EmbedAttachment(url=icon),
+        author=EmbedAuthor(
+            name=platform,
+            url=homepage,
+            icon_url=icon),
+        thumbnail=EmbedAttachment(
+            url=icon),
         color=color,
         title=title,
-        description=l_["commons"]["search"]["result"].format(COUNT=count, QUERY=query),
+        description=l_["commons"]["search"]["result"].format(
+            COUNT=count,
+            QUERY=query),
         fields=results,
     )
 
@@ -198,14 +197,17 @@ def generate_utils_except_embed(
         title=l_["commons"]["error"],
         description=description,
         fields=[
-            EmbedField(name=field_name, value=field_value, inline=False),
             EmbedField(
-                name=l_["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
-            ),
+                name=field_name,
+                value=field_value,
+                inline=False),
+            EmbedField(
+                name=l_["commons"]["reason"],
+                value=f"```md\n{error}\n```",
+                inline=False),
         ],
         thumbnail=EmbedAttachment(
-            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
-        ),
+            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"),
     )
 
     return dcEm
@@ -242,20 +244,20 @@ def generate_commons_except_embed(
         description=description,
         fields=[
             EmbedField(
-                name=l_["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
-            )
-        ],
+                name=l_["commons"]["reason"],
+                value=f"```md\n{error}\n```",
+                inline=False)],
         thumbnail=EmbedAttachment(
-            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
-        ),
+            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"),
     )
 
     return dcEm
 
 
 def generate_trailer(
-    data: dict | AniListTrailerStruct, is_mal: bool = False, is_simkl: bool = False
-) -> Button:
+        data: dict | AniListTrailerStruct,
+        is_mal: bool = False,
+        is_simkl: bool = False) -> Button:
     """
     Generate a button for playing the trailer of a given anime.
 

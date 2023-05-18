@@ -54,8 +54,8 @@ class RawgAPI:
                 rawgRes = await resp.json()
                 return rawgRes["results"]
             raise ProviderHttpError(
-                f"RAWG API returned {resp.status}. Reason: {resp.text()}", resp.status
-            )
+                f"RAWG API returned {resp.status}. Reason: {resp.text()}",
+                resp.status)
 
     async def get_data(self, slug: str) -> dict:
         """Get information of a title in RAWG

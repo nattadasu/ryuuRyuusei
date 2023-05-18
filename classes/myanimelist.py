@@ -3,7 +3,7 @@
 import aiohttp
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
-from modules.const import USER_AGENT, MYANIMELIST_CLIENT_ID
+from modules.const import MYANIMELIST_CLIENT_ID, USER_AGENT
 
 
 class MyAnimeList:
@@ -24,7 +24,10 @@ class MyAnimeList:
         Search anime by its title
     """
 
-    def __init__(self, client_id: str = MYANIMELIST_CLIENT_ID, nsfw: bool = False):
+    def __init__(
+            self,
+            client_id: str = MYANIMELIST_CLIENT_ID,
+            nsfw: bool = False):
         """Initialize the MyAnimeList Asynchronous API Wrapper
 
         Args:
@@ -33,11 +36,12 @@ class MyAnimeList:
         """
         if client_id is None:
             raise ProviderHttpError(
-                "Unauthorized, please fill Client ID before using this module", 401
-            )
+                "Unauthorized, please fill Client ID before using this module", 401)
         self.client_id = client_id
         self.base_url = "https://api.myanimelist.net/v2"
-        self.headers = {"X-MAL-CLIENT-ID": self.client_id, "User-Agent": USER_AGENT}
+        self.headers = {
+            "X-MAL-CLIENT-ID": self.client_id,
+            "User-Agent": USER_AGENT}
         self.nsfw = nsfw
         self.session = None
 
@@ -97,7 +101,8 @@ class MyAnimeList:
             dict: Search results
         """
         if limit > 100:
-            raise ProviderTypeError("limit must be less than or equal to 100", "int")
+            raise ProviderTypeError(
+                "limit must be less than or equal to 100", "int")
         params = {"q": query, "limit": limit}
         if offset:
             params["offset"] = offset

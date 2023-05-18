@@ -1,10 +1,10 @@
 import json
 from dataclasses import dataclass
-from interactions.models import Snowflake
 from datetime import datetime
-from typing import Optional, Literal, Any
+from typing import Any, Literal, Optional
 
 import pandas as pd
+from interactions.models import Snowflake
 
 from modules.const import EMOJI_UNEXPECTED_ERROR, database
 from modules.jikan import check_club_membership

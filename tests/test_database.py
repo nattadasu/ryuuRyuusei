@@ -9,7 +9,12 @@ try:
     from classes.database import UserDatabase, UserDatabaseClass
 except ImportError:
     # add the path to the 'modules' directory to the system path
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    sys.path.insert(
+        0,
+        os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__),
+                "..")))
     from classes.database import UserDatabase, UserDatabaseClass
 
 
@@ -40,7 +45,7 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
             try:
                 await ud.verify_user(Snowflake(1234567890))
                 resp = True
-            except:
+            except BaseException:
                 resp = False
         self.assertTrue(resp is not None)
 

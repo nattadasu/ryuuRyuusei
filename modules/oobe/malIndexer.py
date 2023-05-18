@@ -5,8 +5,8 @@ import os
 import time
 from typing import Dict
 
-import pandas as pd
 import aiohttp
+import pandas as pd
 
 MAIN_SITE = "https://aniapi.nattadasu.my.id/myanimelist%28%29.json"
 
@@ -15,7 +15,8 @@ async def mal_get_data() -> None:
     """Fetches data from MAIN_SITE and saves it to a JSON file."""
     async with aiohttp.ClientSession() as session, session.get(MAIN_SITE) as response:
         if response.status != 200:
-            print(f"Error fetching data: HTTP {response.status}: {response.reason}")
+            print(
+                f"Error fetching data: HTTP {response.status}: {response.reason}")
             return
         data = await response.text()
     # save data to json file

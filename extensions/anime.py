@@ -34,8 +34,12 @@ class Anime(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(name="AniList (Default)", value="anilist"),
-                    ipy.SlashCommandChoice(name="MyAnimeList", value="mal"),
+                    ipy.SlashCommandChoice(
+                        name="AniList (Default)",
+                        value="anilist"),
+                    ipy.SlashCommandChoice(
+                        name="MyAnimeList",
+                        value="mal"),
                 ],
             ),
         ],
@@ -110,7 +114,8 @@ class Anime(ipy.Extension):
                     )
                 ]
             if len(f) >= 1:
-                title = l_["commons"]["search"]["result_title"].format(QUERY=query)
+                title = l_["commons"]["search"]["result_title"].format(
+                    QUERY=query)
                 if provider == "anilist":
                     title += " (AniList)"
                 result = genrate_search_embed(

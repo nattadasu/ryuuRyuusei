@@ -1,7 +1,7 @@
 import asyncio
+import os
 import subprocess
 import sys
-import os
 from datetime import datetime as dtime
 from datetime import timezone as tz
 from time import perf_counter as pc
@@ -92,7 +92,8 @@ async def main():
                 else:
                     bot.load_extension("extensions." + ext, now=now)
             else:
-                print(f"[Cog] [{i}/{len(exts)}] Skipping: {ext}, not a .py file")
+                print(
+                    f"[Cog] [{i}/{len(exts)}] Skipping: {ext}, not a .py file")
     except Exception as e:
         print(f"[Cog] [{i}/{len(exts)}] Error while loading extension: {ext}")
         print("      " + str(e))

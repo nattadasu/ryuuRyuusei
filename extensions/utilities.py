@@ -5,8 +5,8 @@ from urllib.parse import urlencode as urlenc
 import interactions as ipy
 from plusminus import BaseArithmeticParser as BAP
 
-from classes.thecolorapi import TheColorApi, Color
-from modules.commons import snowflake_to_datetime, generate_utils_except_embed
+from classes.thecolorapi import Color, TheColorApi
+from modules.commons import generate_utils_except_embed, snowflake_to_datetime
 from modules.i18n import fetch_language_data, read_user_language
 
 
@@ -252,10 +252,18 @@ class Utilities(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(name="Low (~7%, default)", value="L"),
-                    ipy.SlashCommandChoice(name="Medium (~15%)", value="M"),
-                    ipy.SlashCommandChoice(name="Quality (~25%)", value="Q"),
-                    ipy.SlashCommandChoice(name="High (~30%)", value="H"),
+                    ipy.SlashCommandChoice(
+                        name="Low (~7%, default)",
+                        value="L"),
+                    ipy.SlashCommandChoice(
+                        name="Medium (~15%)",
+                        value="M"),
+                    ipy.SlashCommandChoice(
+                        name="Quality (~25%)",
+                        value="Q"),
+                    ipy.SlashCommandChoice(
+                        name="High (~30%)",
+                        value="H"),
                 ],
             ),
         ],

@@ -9,38 +9,21 @@ from enum import Enum
 from zoneinfo import ZoneInfo
 
 import pandas as pd
-from interactions import (
-    Embed,
-    EmbedAttachment,
-    EmbedAuthor,
-    EmbedField,
-    EmbedFooter,
-    SlashContext,
-)
+from interactions import (Embed, EmbedAttachment, EmbedAuthor, EmbedField,
+                          EmbedFooter, SlashContext)
 
-from classes.anilist import AniList, AniListMediaStruct, AniListImageStruct
+from classes.anilist import AniList, AniListImageStruct, AniListMediaStruct
 from classes.animeapi import AnimeApi, AnimeApiAnime
 from classes.jikan import JikanApi
 from classes.kitsu import Kitsu
 from classes.myanimelist import MyAnimeList
 from classes.simkl import Simkl
-from modules.commons import (
-    generate_trailer,
-    get_parent_nsfw_status,
-    get_random_seed,
-    sanitize_markdown,
-    trim_cyno,
-    generate_commons_except_embed,
-)
-from modules.const import (
-    EMOJI_FORBIDDEN,
-    EMOJI_UNEXPECTED_ERROR,
-    EMOJI_USER_ERROR,
-    MYANIMELIST_CLIENT_ID,
-    SIMKL_CLIENT_ID,
-    simkl0rels,
-    warnThreadCW,
-)
+from modules.commons import (generate_commons_except_embed, generate_trailer,
+                             get_parent_nsfw_status, get_random_seed,
+                             sanitize_markdown, trim_cyno)
+from modules.const import (EMOJI_FORBIDDEN, EMOJI_UNEXPECTED_ERROR,
+                           EMOJI_USER_ERROR, MYANIMELIST_CLIENT_ID,
+                           SIMKL_CLIENT_ID, simkl0rels, warnThreadCW)
 from modules.i18n import read_user_language
 
 
@@ -137,10 +120,13 @@ def malExceptionEmbed(
         color=color,
         title=l_["commons"]["error"],
         description=description,
-        fields=[EmbedField(name=l_["commons"]["reason"], value=error, inline=False)],
+        fields=[
+            EmbedField(
+                name=l_["commons"]["reason"],
+                value=error,
+                inline=False)],
         thumbnail=EmbedAttachment(
-            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
-        ),
+            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"),
     )
 
     return dcEm
@@ -226,7 +212,8 @@ async def generate_mal(
     if not al:
 
         class al:
-            coverImage = AniListImageStruct(extraLarge=None, large=None, color=None)
+            coverImage = AniListImageStruct(
+                extraLarge=None, large=None, color=None)
             bannerImage = None
 
     alPost = al.coverImage.extraLarge
@@ -244,10 +231,16 @@ async def generate_mal(
     smkPost = f"https://simkl.in/posters/{smkPost}_m.webp" if smkPost else None
     smkBg = f"https://simkl.in/fanart/{smkBg}_w.webp" if smkBg else None
 
-    if anime_api.kitsu and ((not alPost and not alBg) or (not smkPost and not smkBg)):
+    if anime_api.kitsu and (
+            (not alPost and not alBg) or (
+            not smkPost and not smkBg)):
         kts = await Kitsu().get_anime(anime_api.kitsu)
     else:
-        kts = {"data": {"attributes": {"posterImage": None, "coverImage": None}}}
+        kts = {
+            "data": {
+                "attributes": {
+                    "posterImage": None,
+                    "coverImage": None}}}
 
     ktsPost = kts["data"]["attributes"].get("posterImage")
     ktsPost = ktsPost.get("original") if ktsPost else None
@@ -257,7 +250,13 @@ async def generate_mal(
     malPost = jJpg.large_image_url or jJpg.image_url
     malBg = ""
 
-    poster = next((img for img in (alPost, smkPost, ktsPost, malPost) if img), None)
+    poster = next(
+        (img for img in (
+            alPost,
+            smkPost,
+            ktsPost,
+            malPost) if img),
+        None)
     postNote = (
         "AniList"
         if alPost
@@ -267,7 +266,13 @@ async def generate_mal(
         if ktsPost
         else "MyAnimeList"
     )
-    background = next((img for img in (alBg, smkBg, ktsBg, malBg) if img), None)
+    background = next(
+        (img for img in (
+            alBg,
+            smkBg,
+            ktsBg,
+            malBg) if img),
+        None)
     bgNote = (
         "AniList" if alBg else "SIMKL" if smkBg else "Kitsu" if ktsBg else "MyAnimeList"
     )

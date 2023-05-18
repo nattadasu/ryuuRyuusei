@@ -1,8 +1,8 @@
-from enum import Enum
 from dataclasses import dataclass
+from enum import Enum
+from typing import Literal
 
 import pandas as pd
-from typing import Literal
 
 from modules.commons import get_random_seed
 from modules.platforms import Platform
@@ -55,10 +55,8 @@ class NekomimiDb:
     await ctx.send(embed=embed)
     ```"""
 
-    def __init__(
-        self,
-        gender: NekomimiGender | Literal["boy", "girl", "nb", "both"] | None = None,
-    ):
+    def __init__(self, gender: NekomimiGender |
+                 Literal["boy", "girl", "nb", "both"] | None = None, ):
         """Initialize a Nekomimi object
 
         Args:

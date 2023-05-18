@@ -1,10 +1,10 @@
 import json
 import os
 import time
+from dataclasses import asdict, dataclass
 from datetime import datetime as dt
 from enum import Enum
 from typing import Literal
-from dataclasses import dataclass, asdict
 
 from aiohttp import ClientSession
 
@@ -119,9 +119,8 @@ class AnimeApi:
             return dt.fromtimestamp(final)
         except BaseException as e:
             raise Exception(
-                "Failed to get the last update time of AnimeAPI's database, reason: "
-                + str(e)
-            )
+                "Failed to get the last update time of AnimeAPI's database, reason: " +
+                str(e))
 
     async def get_relation(
         self,
@@ -156,7 +155,8 @@ class AnimeApi:
         """
         if isinstance(platform, self.AnimeApiPlatforms):
             platform = platform.value
-        cache_file_path = self.get_cache_file_path(f"{platform}/{media_id}.json")
+        cache_file_path = self.get_cache_file_path(
+            f"{platform}/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return AnimeApiAnime(**cached_data)
