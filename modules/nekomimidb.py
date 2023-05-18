@@ -5,28 +5,28 @@ This module contains the functions used by the nekomimiDb module."""
 from interactions import Embed, EmbedAttachment, EmbedAuthor, EmbedField
 from interactions import SlashContext as sctx
 
-from classes.nekomimidb import NekomimiDb as neko
+from classes.nekomimidb import NekomimiDb as neko, NekomimiDbStruct, NekomimiGender
 from modules.platforms import get_platform_color
 
 
-def generate_nekomimi_embed(row: dict, lang: dict) -> Embed:
+def generate_nekomimi_embed(row: NekomimiDbStruct, lang: dict) -> Embed:
     """Generate nekomimi embed
 
     Args:
-        row (dict): A row from the database.
+        row (NekomimiDbStruct): A row from the database.
         lang (dict): The language dictionary.
 
     Returns:
         Embed: The generated nekomimi embed.
     """
-    img = row["imageUrl"].values[0]
-    mediaSource = row["mediaSource"].values[0]
-    if mediaSource == "":
+    img = row.imageUrl
+    mediaSource = row.mediaSource
+    if mediaSource in ["", None]:
         mediaSource = "Original Character"
-    artist = row["artist"].values[0]
-    artistUrl = row["artistUrl"].values[0]
-    imageSourceUrl = row["imageSourceUrl"].values[0]
-    col = get_platform_color(row["platform"].values[0])
+    artist = row.artist
+    artistUrl = row.artistUrl
+    imageSourceUrl = row.imageSourceUrl
+    col = get_platform_color(row.platform)
     # Send the image url to the user
     dcEm = Embed(
         title=f"{mediaSource}",
@@ -56,7 +56,7 @@ def generate_nekomimi_embed(row: dict, lang: dict) -> Embed:
     return dcEm
 
 
-async def submit_nekomimi(ctx: sctx, lang: dict, gender: neko.Gender = None):
+async def submit_nekomimi(ctx: sctx, lang: dict, gender: NekomimiGender = None):
     """Submit a nekomimi image to Discord
 
     Args:
