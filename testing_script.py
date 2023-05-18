@@ -19,6 +19,7 @@ simkl_client_id = ge("SIMKL_CLIENT_ID")
 
 
 async def simklfunc():
+    """Test SIMKL API"""
     start = time.time()
     async with Simkl(simkl_client_id) as simkl:
         data = await simkl.get_title_ids(37089, SimklMediaTypes.ANIME)
@@ -29,6 +30,7 @@ async def simklfunc():
 
 
 async def aniapi():
+    """Test Anime API"""
     start = time.time()
     async with AnimeApi() as api:
         data = await api.get_relation(1, api.AnimeApiPlatforms.MAL)
@@ -39,6 +41,7 @@ async def aniapi():
 
 
 async def db():
+    """Test database"""
     start = time.time()
     async with UserDatabase() as db:
         isExist = await db.check_if_registered(384089845527478272)
@@ -51,6 +54,7 @@ async def db():
 
 
 async def test_member():
+    """Test member"""
     start = time.time()
     member = await bot.http.get_member(
         guild_id=589128995501637655, user_id=384089845527478272
@@ -63,6 +67,7 @@ async def test_member():
 
 
 async def spotify():
+    """Test Spotify API"""
     async with SpotifyApi() as spot:
         # search = await spot.search("Lathi", spot.MediaType.TRACK)
         # print(search["tracks"]["items"][0])

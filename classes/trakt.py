@@ -13,6 +13,7 @@ from modules.const import USER_AGENT, traktHeader
 
 @dataclass
 class TraktIdsStruct:
+    """Trakt IDs dataclass"""
     trakt: int
     """Trakt ID"""
     slug: str
@@ -29,6 +30,7 @@ class TraktIdsStruct:
 
 @dataclass
 class TraktMediaStruct:
+    """Trakt Media dataclass"""
     title: str
     """Media title"""
     year: int
@@ -39,6 +41,7 @@ class TraktMediaStruct:
 
 @dataclass
 class TraktLookupStruct:
+    """Trakt Lookup dataclass"""
     type: Literal["movie", "show"]
     """Media type"""
     score: float | None
@@ -51,6 +54,7 @@ class TraktLookupStruct:
 
 @dataclass
 class TraktAirStruct:
+    """Trakt Air dataclass"""
     day: str | None
     """Day of the week"""
     time: str | None
@@ -61,6 +65,7 @@ class TraktAirStruct:
 
 @dataclass
 class TraktExtendedShowStruct(TraktMediaStruct):
+    """Trakt Extended Show dataclass"""
     overview: str | None
     """Show overview"""
     first_aired: str | None
@@ -109,6 +114,7 @@ class TraktExtendedShowStruct(TraktMediaStruct):
 
 @dataclass
 class TraktExtendedMovieStruct(TraktMediaStruct):
+    """Trakt Extended Movie dataclass"""
     tagline: str | None
     """Movie tagline"""
     overview: str | None
@@ -148,8 +154,10 @@ class TraktExtendedMovieStruct(TraktMediaStruct):
 
 
 class Trakt:
+    """Trakt API Wrapper"""
     def __init__(self, headers: dict | None = None):
-        """Initialize the Trakt API Wrapper
+        """
+        Initialize the Trakt API Wrapper
 
         Args:
             headers (dict): Trakt API headers, defaults to traktHeader on modules/const.py
@@ -195,14 +203,19 @@ class Trakt:
         data: list[
             dict[
                 str,
-                str
-                | float
-                | dict[str | int | None | dict[str, str | int | None]]
-                | None,
+                str | float | dict | None,
             ]
         ],
     ) -> list[TraktLookupStruct]:
-        """Convert a dict of IDs to a dataclass"""
+        """
+        Convert a dict of IDs to a dataclass
+
+        Args:
+            data (list[dict[str, str | float | dict | None]]): List of IDs
+
+        Returns:
+            list[TraktLookupStruct]: List of converted dataclass
+        """
         converted_data = []
         for x in data:
             if x.get("movie", None):
@@ -224,7 +237,16 @@ class Trakt:
     def extended_dict_to_dataclass(
         self, data: dict, media_type: MediaType
     ) -> TraktExtendedMovieStruct | TraktExtendedShowStruct:
-        """Convert a dict of extended information to a dataclass"""
+        """
+        Convert a dict of extended information to a dataclass
+
+        Args:
+            data (dict): Dict of extended information
+            media_type (MediaType): Media type
+
+        Returns:
+            TraktExtendedMovieStruct | TraktExtendedShowStruct: Converted dataclass
+        """
         data["ids"] = TraktIdsStruct(**data["ids"])
         if media_type == self.MediaType.SHOWS and data.get("airs", None):
             data["airs"] = TraktAirStruct(**data["airs"])
@@ -240,7 +262,8 @@ class Trakt:
         platform: Platform = Platform.IMDB,
         media_type: MediaType = MediaType.TV,
     ) -> TraktLookupStruct:
-        """Lookup a TV show or movie by ID on a supported platform
+        """
+        Lookup a TV show or movie by ID on a supported platform
 
         Args:
             id (int | str): The ID of the TV show or movie
@@ -281,7 +304,8 @@ class Trakt:
     async def get_title_data(
         self, media_id: int | str, media_type: MediaType
     ) -> TraktExtendedMovieStruct | TraktExtendedShowStruct:
-        """Get the data of a TV show or movie by ID
+        """
+        Get the data of a TV show or movie by ID
 
         Args:
             media_id (int | str): The ID of the TV show or movie
@@ -308,7 +332,8 @@ class Trakt:
         return self.extended_dict_to_dataclass(jsonFinal, media_type)
 
     def get_cache_path(self, cache_name: str):
-        """Get the cache path of a cache file
+        """
+        Get the cache path of a cache file
 
         Args:
             cache_name (str): The cache file name
@@ -316,7 +341,8 @@ class Trakt:
         return os.path.join(self.cache_directory, cache_name)
 
     def read_cache(self, cache_path: str):
-        """Read a cache file
+        """
+        Read a cache file
 
         Args:
             cache_path (str): The cache file path
@@ -334,7 +360,8 @@ class Trakt:
 
     @staticmethod
     def write_cache(cache_path: str, data):
-        """Write data to a cache file
+        """
+        Write data to a cache file
 
         Args:
             cache_path (str): The cache file path

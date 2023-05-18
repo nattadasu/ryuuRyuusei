@@ -2,7 +2,8 @@ from classes.anilist import AniList
 
 
 async def search_al_anime(title: str) -> dict:
-    """Search anime via AniList API, formatted in MAL style
+    """
+    Search anime via AniList API, formatted in MAL style
 
     Args:
         title (str): Title of the anime to search for

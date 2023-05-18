@@ -40,26 +40,26 @@ class NekomimiDbStruct:
 
 
 class NekomimiDb:
-    """# nattadasu/nekomimiDb Official Class for Ryuuzaki Ryuusei
+    """
+    # nattadasu/nekomimiDb Official Class for Ryuuzaki Ryuusei
 
     This class is used to get random nekomimi images from the database.
 
     ## Usage
 
-    ```py
-    from classes.nekomimidb import NekomimiDb
-
-    # get a random nekomimi image
-    nm = NekomimiDb()
-    embed = nm.get_random_nekomimi()
-    await ctx.send(embed=embed)
-    ```"""
+    >>> from classes.nekomimidb import NekomimiDb
+    >>> # get a random nekomimi image
+    >>> nm = NekomimiDb()
+    >>> embed = nm.get_random_nekomimi()
+    >>> await ctx.send(embed=embed)
+    """
 
     def __init__(
         self,
         gender: NekomimiGender | Literal["boy", "girl", "nb", "both"] | None = None,
     ):
-        """Initialize a Nekomimi object
+        """
+        Initialize a Nekomimi object
 
         Args:
             gender (NekomimiGender | Literal['boy', 'girl', 'nb', 'both'] | None): gender of a character to get the image, defaults to None
@@ -72,7 +72,8 @@ class NekomimiDb:
         self.nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t").fillna("")
 
     def get_random_nekomimi(self) -> NekomimiDbStruct:
-        """Get a random nekomimi image from the database
+        """
+        Get a random nekomimi image from the database
 
         Returns:
             Series: a random row from the database

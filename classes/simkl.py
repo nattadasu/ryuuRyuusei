@@ -19,6 +19,7 @@ from modules.const import SIMKL_CLIENT_ID, USER_AGENT, simkl0rels
 
 @dataclass(kwargs=True)
 class SimklRelations:
+    """Simkl Relations dataclass"""
     title: str | None = None
     """Title of the anime, show, or movie"""
     simkl: int | None = None
@@ -74,6 +75,7 @@ class SimklRelations:
 
 
 class SimklMediaGenre(Enum):
+    """Simkl Media Genre enum"""
     ACTION = "Action"
     ADVENTURE = "Adventure"
     ANIMATION = "Animation"
@@ -93,6 +95,7 @@ class SimklMediaGenre(Enum):
 
 
 class SimklMovieGenre(Enum):
+    """Simkl Movie Genre enum"""
     ACTION = SimklMediaGenre.ACTION.value
     ADVENTURE = SimklMediaGenre.ADVENTURE.value
     ANIMATION = SimklMediaGenre.ANIMATION.value
@@ -116,6 +119,7 @@ class SimklMovieGenre(Enum):
 
 
 class SimklTvGenre(Enum):
+    """Simkl TV Genre enum"""
     ACTION = SimklMediaGenre.ACTION.value
     ADVENTURE = SimklMediaGenre.ADVENTURE.value
     ANIMATION = SimklMediaGenre.ANIMATION.value
@@ -156,6 +160,7 @@ class SimklTvGenre(Enum):
 
 
 class SimklAnimeGenre(Enum):
+    """Simkl Anime Genre enum"""
     ACTION = SimklMediaGenre.ACTION.value
     ADVENTURE = SimklMediaGenre.ADVENTURE.value
     CARS = "Cars"
@@ -209,13 +214,15 @@ class SimklMediaTypes(Enum):
 
 
 class Simkl:
-    """Simkl API wrapper
+    """
+    Simkl API wrapper
 
     This module is a wrapper for Simkl API, which is used to search for anime, shows, and movies.
     """
 
     def __init__(self, client_id: str = SIMKL_CLIENT_ID):
-        """Initialize the Simkl API wrapper
+        """
+        Initialize the Simkl API wrapper
 
         Args:
             client_id (str): Client ID for SIMKL API, defaults to SIMKL_CLIENT_ID
@@ -273,7 +280,8 @@ class Simkl:
         id: int | str,
         media_type: TmdbMediaTypes | str | None = None,
     ) -> dict:
-        """Search by ID
+        """
+        Search by ID
 
         Args:
             provider (Provider | str): Provider to search
@@ -313,7 +321,8 @@ class Simkl:
         limit: int = 10,
         extended: bool = False,
     ) -> dict:
-        """Search by title
+        """
+        Search by title
 
         Args:
             title (str): Title to search
@@ -344,7 +353,8 @@ class Simkl:
             raise ProviderHttpError(error_message, response.status)
 
     async def get_show(self, id: int | str) -> dict:
-        """Get show by ID
+        """
+        Get show by ID
 
         Args:
             id (int): Show ID on SIMKL or IMDB
@@ -373,7 +383,8 @@ class Simkl:
             raise ProviderHttpError(error_message, response.status)
 
     async def get_movie(self, id: int | str) -> dict:
-        """Get movie by ID
+        """
+        Get movie by ID
 
         Args:
             id (int): Movie ID on SIMKL or IMDB
@@ -402,7 +413,8 @@ class Simkl:
             raise ProviderHttpError(error_message, response.status)
 
     async def get_anime(self, id: int | str) -> dict:
-        """Get anime by ID
+        """
+        Get anime by ID
 
         Args:
             id (int): Anime ID on SIMKL or IMDB
@@ -445,7 +457,8 @@ class Simkl:
         rating_from: int = 0,
         rating_to: int = 10,
     ) -> dict | List[dict] | None:
-        """Get random title, based on filters
+        """
+        Get random title, based on filters
 
         Args:
             media_type (SimklMediaTypes | str): Media type of the title, must be ANIME, MOVIE or TV
@@ -500,7 +513,8 @@ class Simkl:
     async def get_title_ids(
         self, id: int, media_type: SimklMediaTypes | Literal["anime", "movie", "tv"]
     ) -> SimklRelations:
-        """Get IDs of the title
+        """
+        Get IDs of the title
 
         Args:
             id (int): ID of the title
@@ -559,7 +573,8 @@ class Simkl:
         return SimklRelations(**mids)
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
-        """Get cache file path
+        """
+        Get cache file path
 
         Args:
             cache_file_name (str): Cache file name
@@ -570,7 +585,8 @@ class Simkl:
         return os.path.join(self.cache_directory, cache_file_name)
 
     def read_cached_data(self, cache_file_path: str) -> dict | None:
-        """Read cached data
+        """
+        Read cached data
 
         Args:
             cache_file_name (str): Cache file name
@@ -589,7 +605,8 @@ class Simkl:
 
     @staticmethod
     def write_data_to_cache(data, cache_file_path: str):
-        """Write data to cache
+        """
+        Write data to cache
 
         Args:
             data (any): Data to write to cache

@@ -11,7 +11,8 @@ from modules.platforms import get_platform_color
 
 
 def generate_nekomimi_embed(row: NekomimiDbStruct, lang: dict) -> Embed:
-    """Generate nekomimi embed
+    """
+    Generate nekomimi embed
 
     Args:
         row (NekomimiDbStruct): A row from the database.
@@ -58,7 +59,8 @@ def generate_nekomimi_embed(row: NekomimiDbStruct, lang: dict) -> Embed:
 
 
 async def submit_nekomimi(ctx: sctx, lang: dict, gender: NekomimiGender = None):
-    """Submit a nekomimi image to Discord
+    """
+    Submit a nekomimi image to Discord
 
     Args:
         ctx (interactions.SlashContext): Discord Slash Context

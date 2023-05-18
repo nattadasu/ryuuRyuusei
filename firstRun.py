@@ -20,7 +20,8 @@ from modules.oobe.malIndexer import mal_run
 
 
 async def first_run(py_bin: str = py_bin_path()):
-    """Runs the first run script.
+    """
+    Runs the first run script.
 
     Args:
         py_bin (str, optional): Path to the Python binary. Defaults to py_bin_path().

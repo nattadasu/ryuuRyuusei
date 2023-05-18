@@ -9,7 +9,8 @@ MAIN_SITE = "https://raw.githubusercontent.com/nattadasu/nekomimiDb/main/index.t
 
 
 async def nk_get_data() -> None:
-    """Fetches the data from the nekomimiDb main site and writes it to file.
+    """
+    Fetches the data from the nekomimiDb main site and writes it to file.
 
     Raises:
         aiohttp.ClientError: If there is an issue with the GET request.

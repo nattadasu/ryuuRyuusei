@@ -11,7 +11,9 @@ except ImportError:
 
 
 class TheColorApiTest(unittest.IsolatedAsyncioTestCase):
+    """TheColorApi API test class"""
     async def test_get_color(self):
+        """Test getting color"""
         async with TheColorApi() as color:
             value = "000000"
             color = await color.color(hex=value)
@@ -20,4 +22,4 @@ class TheColorApiTest(unittest.IsolatedAsyncioTestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

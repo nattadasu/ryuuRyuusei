@@ -11,6 +11,7 @@ from modules.i18n import fetch_language_data, read_user_language
 
 
 class Profile(ipy.Extension):
+    """Profile commands"""
     def __init__(self, bot: ipy.Client):
         self.bot = bot
 

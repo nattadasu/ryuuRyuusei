@@ -18,21 +18,42 @@ class BaseValue:
 
 
 @dataclass
-class Fractions:
+class RGBFractions:
+    """RGB Fractions dataclass"""
+
     r: float | None = None
     """Red fraction in RGB"""
     g: float | None = None
     """Green fraction in RGB"""
     b: float | None = None
     """Blue fraction in RGB"""
+
+@dataclass
+class HSVFractions:
+    """HSV Fractions dataclass"""
+
+    h: float | None = None
+    """Hue fraction in HSV"""
+    s: float | None = None
+    """Saturation fraction in HSV"""
+    v: float | None = None
+    """Value fraction in HSV"""
+
+@dataclass
+class HSLFractions:
+    """HSL Fractions dataclass"""
+
     h: float | None = None
     """Hue fraction in HSL"""
     s: float | None = None
     """Saturation fraction in HSL"""
-    v: float | None = None
-    """Value fraction in HSV"""
     l: float | None = None
     """Lightness fraction in HSL"""
+
+@dataclass
+class CMYKFractions:
+    """CMYK Fractions dataclass"""
+
     c: float | None = None
     """Cyan fraction in CMYK"""
     m: float | None = None
@@ -41,6 +62,11 @@ class Fractions:
     """Yellow fraction in CMYK"""
     k: float | None = None
     """Key fraction in CMYK"""
+
+@dataclass
+class XYZFractions:
+    """XYZ Fractions dataclass"""
+
     X: float | None = None
     """X fraction in XYZ"""
     Y: float | None = None
@@ -61,7 +87,7 @@ class HexValue(BaseValue):
 class RGBValue(BaseValue):
     """RGB value dataclass"""
 
-    fraction: Fractions
+    fraction: RGBFractions
     """Fractions"""
     r: int
     """Red value"""
@@ -75,7 +101,7 @@ class RGBValue(BaseValue):
 class HSLValue(BaseValue):
     """HSL value dataclass"""
 
-    fraction: Fractions
+    fraction: HSLFractions
     """Fractions"""
     h: int
     """Hue value"""
@@ -89,7 +115,7 @@ class HSLValue(BaseValue):
 class HSVValue(BaseValue):
     """HSV value dataclass"""
 
-    fraction: Fractions
+    fraction: HSVFractions
     """Fractions"""
     h: int
     """Hue value"""
@@ -103,7 +129,7 @@ class HSVValue(BaseValue):
 class CMYKValue(BaseValue):
     """CMYK value dataclass"""
 
-    fraction: Fractions
+    fraction: CMYKFractions
     """Fractions"""
     c: int
     """Cyan value"""
@@ -119,7 +145,7 @@ class CMYKValue(BaseValue):
 class XYZValue(BaseValue):
     """XYZ value dataclass"""
 
-    fraction: Fractions
+    fraction: XYZFractions
     """Fractions"""
     X: int
     """X value"""
@@ -195,7 +221,8 @@ class Color:
 
 
 class TheColorApi:
-    """The Color API wrapper
+    """
+    The Color API wrapper
 
     This module is a wrapper for The Color API, which is used to get color information from hex, rgb, hsl, hsv, and cmyk values.
     """
@@ -229,7 +256,7 @@ class TheColorApi:
                 clean=data["hex"]["clean"],
             ),
             rgb=RGBValue(
-                fraction=Fractions(
+                fraction=RGBFractions(
                     r=data["rgb"]["fraction"]["r"],
                     g=data["rgb"]["fraction"]["g"],
                     b=data["rgb"]["fraction"]["b"],
@@ -240,7 +267,7 @@ class TheColorApi:
                 value=data["rgb"]["value"],
             ),
             hsl=HSLValue(
-                fraction=Fractions(
+                fraction=HSLFractions(
                     h=data["hsl"]["fraction"]["h"],
                     s=data["hsl"]["fraction"]["s"],
                     l=data["hsl"]["fraction"]["l"],
@@ -251,7 +278,7 @@ class TheColorApi:
                 value=data["hsl"]["value"],
             ),
             hsv=HSVValue(
-                fraction=Fractions(
+                fraction=HSVFractions(
                     h=data["hsv"]["fraction"]["h"],
                     s=data["hsv"]["fraction"]["s"],
                     v=data["hsv"]["fraction"]["v"],
@@ -262,7 +289,7 @@ class TheColorApi:
                 value=data["hsv"]["value"],
             ),
             cmyk=CMYKValue(
-                fraction=Fractions(
+                fraction=CMYKFractions(
                     c=data["cmyk"]["fraction"]["c"],
                     m=data["cmyk"]["fraction"]["m"],
                     y=data["cmyk"]["fraction"]["y"],
@@ -275,7 +302,7 @@ class TheColorApi:
                 value=data["cmyk"]["value"],
             ),
             XYZ=XYZValue(
-                fraction=Fractions(
+                fraction=XYZFractions(
                     X=data["XYZ"]["fraction"]["X"],
                     Y=data["XYZ"]["fraction"]["Y"],
                     Z=data["XYZ"]["fraction"]["Z"],
@@ -307,7 +334,8 @@ class TheColorApi:
         )
 
     async def color(self, **color: str) -> Color:
-        """Get color information from hex, rgb, hsl, hsv, or cmyk values
+        """
+        Get color information from hex, rgb, hsl, hsv, or cmyk values
 
         Args:
             **color (kwargs[str]): Color values
@@ -338,7 +366,8 @@ class TheColorApi:
             raise ProviderHttpError(error_message, response.status)
 
     def get_cache_file_path(self, color_params):
-        """Get the cache file from path
+        """
+        Get the cache file from path
 
         Args:
             color_params (dict): Color parameters
@@ -347,7 +376,8 @@ class TheColorApi:
         return os.path.join(self.cache_directory, filename)
 
     def read_cached_data(self, cache_file_path) -> dict | None:
-        """Read cached data from file
+        """
+        Read cached data from file
 
         Args:
             cache_file_path (str): Cache file path
@@ -366,7 +396,8 @@ class TheColorApi:
 
     @staticmethod
     def write_data_to_cache(data, cache_file_path: str):
-        """Write data to cache
+        """
+        Write data to cache
 
         Args:
             data (any): Data to write to cache

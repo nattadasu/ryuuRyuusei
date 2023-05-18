@@ -18,7 +18,15 @@ from modules.i18n import fetch_language_data, read_user_language
 
 
 class CommonCommands(ipy.Extension):
+    """Common commands"""
     def __init__(self, bot: ipy.Client, now: dtime = dtime.now(tz=tz.utc)):
+        """
+        Initialize the extension
+
+        Args:
+            bot (ipy.Client): The bot client
+            now (dtime, optional): The current time. Defaults to dtime.now(tz=tz.utc).
+        """
         self.bot = bot
         self.now = now
 

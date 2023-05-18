@@ -11,6 +11,7 @@ from modules.myanimelist import malSubmit, searchMalAnime
 
 
 class Anime(ipy.Extension):
+    """Anime commands"""
     @ipy.slash_command(
         name="anime",
         description="Get anime information from MyAnimeList",
