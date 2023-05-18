@@ -10,7 +10,6 @@ import interactions as ipy
 
 from modules.const import BOT_TOKEN, SENTRY_DSN, USER_AGENT
 
-# import traceback
 
 now: dtime = dtime.now(tz=tz.utc)
 
@@ -121,10 +120,3 @@ if __name__ == "__main__":
                 + "m"
             )
             sys.exit(0)
-        # except BaseException as e:
-        #     print("[Sys] Bot stopped due to error.")
-        #     print("      " + str(e))
-        #     print("[Sys] Full traceback:")
-        #     print("      " + str(traceback.format_exc()))
-        #     print("[Sys] [NOTICE] To automatically restore bot, please use process manager like systemd or else")
-        #     sys.exit(1)
