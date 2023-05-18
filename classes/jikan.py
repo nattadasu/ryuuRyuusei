@@ -332,9 +332,9 @@ class JikanUserTitleStruct:
 class JikanUserAniMangaStruct(JikanUserTitleStruct):
     title: str
     """Title of the entry"""
-    type: str | None
+    type: str | None = None
     """Type of the entry"""
-    start_year: int | None
+    start_year: int | None = None
     """Start year of the entry"""
 
 
