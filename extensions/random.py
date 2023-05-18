@@ -1,12 +1,10 @@
 import interactions as ipy
 
-from classes.nekomimidb import NekomimiDb as neko
+from classes.nekomimidb import NekomimiGender
 from classes.randomorg import RandomOrg
 from modules.i18n import fetch_language_data, read_user_language
 from modules.myanimelist import lookupRandomAnime, malSubmit
 from modules.nekomimidb import submit_nekomimi
-
-gender = neko.Gender
 
 
 class Random(ipy.Extension):
@@ -56,7 +54,7 @@ class Random(ipy.Extension):
         await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["random"]["nekomimi"]
-        await submit_nekomimi(ctx=ctx, gender=gender.BOY, lang=l_)
+        await submit_nekomimi(ctx=ctx, gender=NekomimiGender.BOY, lang=l_)
 
     @random.subcommand(
         group_name="nekomimi",
@@ -68,7 +66,7 @@ class Random(ipy.Extension):
         await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["random"]["nekomimi"]
-        await submit_nekomimi(ctx=ctx, gender=gender.GIRL, lang=l_)
+        await submit_nekomimi(ctx=ctx, gender=NekomimiGender.GIRL, lang=l_)
 
     @random.subcommand(
         group_name="nekomimi",
