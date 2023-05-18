@@ -4,7 +4,7 @@ import sys
 import os
 from datetime import datetime as dtime
 from datetime import timezone as tz
-from time import perf_counter as pc, sleep
+from time import perf_counter as pc
 
 import interactions as ipy
 

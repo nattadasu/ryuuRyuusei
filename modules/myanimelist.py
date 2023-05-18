@@ -4,7 +4,6 @@ This module contains modules that are related to MyAnimeList or Jikan API."""
 
 import html
 import re
-import traceback
 from datetime import datetime, timezone
 from enum import Enum
 from zoneinfo import ZoneInfo
