@@ -146,14 +146,14 @@ class Utilities(ipy.Extension):
                 ],
             ),
             ipy.SlashCommandOption(
-                name="color",
+                name="color_value",
                 description="The color to get information about",
                 type=ipy.OptionType.STRING,
                 required=True,
             ),
         ],
     )
-    async def utilities_color(self, ctx: ipy.SlashContext, color_format: str, color: str):
+    async def utilities_color(self, ctx: ipy.SlashContext, color_format: str, color_value: str):
         await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["utilities"]
@@ -161,21 +161,21 @@ class Utilities(ipy.Extension):
         try:
             if (
                 color_format == "hex"
-                and re.match(r"^#?(?:[0-9a-fA-F]{3}){1,2}$", color) is None
+                and re.match(r"^#?(?:[0-9a-fA-F]{3}){1,2}$", color_value) is None
             ):
                 raise ValueError("Invalid hex color")
-            if color_format == "hex" and re.match(r"^#", color) is None:
-                color = f"#{color}"
+            if color_format == "hex" and re.match(r"^#", color_value) is None:
+                color_value = f"#{color_value}"
             async with TheColorApi() as tca:
                 match color_format:
                     case "hex":
-                        res: Color = await tca.color(hex=color)
+                        res: Color = await tca.color(hex=color_value)
                     case "rgb":
-                        res: Color = await tca.color(rgb=color)
+                        res: Color = await tca.color(rgb=color_value)
                     case "hsl":
-                        res: Color = await tca.color(hsl=color)
+                        res: Color = await tca.color(hsl=color_value)
                     case "cmyk":
-                        res: Color = await tca.color(cmyk=color)
+                        res: Color = await tca.color(cmyk=color_value)
                 # await tca.close()
             rgb = res.rgb
             col: int = (rgb.r << 16) + (rgb.g << 8) + rgb.b
@@ -227,7 +227,7 @@ class Utilities(ipy.Extension):
                     language=ul,
                     description=l_["color"]["exception"],
                     field_name=l_["color"]["color"],
-                    field_value=f"```{color}```",
+                    field_value=f"```{color_value}```",
                     error=e,
                 )
             )
