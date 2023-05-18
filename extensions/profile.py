@@ -54,8 +54,13 @@ class Profile(ipy.Extension):
                 color = 0x000000
             fields = [
                 ipy.EmbedField(
+                    name=lp["discord"]["displayName"],
+                    value=sanitize_markdown(data.display_name),
+                    inline=True,
+                ),
+                ipy.EmbedField(
                     name=lp["commons"]["username"],
-                    value=data.username + "#" + str(data.discriminator),
+                    value=sanitize_markdown(data.username + "#" + str(data.discriminator)),
                     inline=True,
                 ),
                 ipy.EmbedField(
