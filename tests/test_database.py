@@ -17,7 +17,7 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
     """Database test class"""
 
     async def test_save_data(self):
-        """Test saving data""" ""
+        """Test saving data"""
         tmp = int(time())
         async with UserDatabase() as ud:
             resp = await ud.save_to_database(

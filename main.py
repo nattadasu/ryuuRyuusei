@@ -25,7 +25,7 @@ bot = ipy.AutoShardedClient(
         type=ipy.ActivityType.WATCHING,
     ),
 )
-"""The bot client""" ""
+"""The bot client"""
 
 
 @ipy.listen()
