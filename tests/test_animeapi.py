@@ -1,7 +1,6 @@
 import os
 import sys
 import unittest
-from time import time
 from datetime import datetime
 
 try:
