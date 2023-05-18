@@ -24,51 +24,73 @@ class JikanException(Exception):
 @dataclass
 class JikanImageStruct:
     image_url: str
+    """Standard size image url"""
     small_image_url: str | None = None
+    """(very) small image url (usually used for thumbnails)"""
     large_image_url: str | None = None
+    """Large image url"""
     medium_image_url: str | None = None
+    """Medium image url"""
     maximum_image_url: str | None = None
+    """Maximum size image url (usually used for backgrounds)"""
 
 
 @dataclass
 class JikanImages:
     jpg: JikanImageStruct | None = None
+    """JPG image"""
     webp: JikanImageStruct | None = None
+    """WebP image"""
 
 
 @dataclass
 class JikanTrailerStruct:
     youtube_id: str
+    """Youtube ID of the trailer"""
     url: str
+    """Youtube URL of the trailer"""
     embed_url: str
+    """Youtube embed URL of the trailer"""
     images: JikanImages | None
+    """Images of the trailer"""
 
 
 @dataclass
 class JikanTitlesStruct:
-    type: str
+    type: Literal["Default", "Synonym", "English", "Japanese", "Synonym", "German", "Spanish", "Italian", "French", "Korean", "Portuguese", "Chinese", "Korean"] | None
+    """Type of the title"""
     title: str
+    """Title"""
 
 
 @dataclass
 class JikanPropStruct:
-    day: int
-    month: int
-    year: int
+    day: int | None = None
+    """Day of the month"""
+    month: int | None = None
+    """Month of the year"""
+    year: int | None = None
+    """Year"""
 
 
 @dataclass
 class JikanPropParentStruct:
     from_: JikanPropStruct | None = None
+    """Properties of the start date"""
     to: JikanPropStruct | None = None
+    """Properties of the end date"""
 
 
 @dataclass
 class JikanDateStruct:
     from_: datetime | None = None
+    """Start date"""
     to: datetime | None = None
+    """End date"""
     prop: JikanPropParentStruct | None = None
+    """Properties of the date"""
     string: str | None = None
+    """Date as a string"""
 
 
 @dataclass
@@ -82,160 +104,304 @@ class JikanBroadcastStruct:
         "Saturdays",
         "Sundays",
     ] | None = None
+    """Day of the week"""
     time: str | None = None
+    """Time of the day"""
     timezone: str | None = None
+    """Timezone"""
     string: str | None = None
+    """Broadcast as a string"""
 
 
 @dataclass
 class JikanOtherStruct:
     mal_id: int
+    """MyAnimeList ID"""
     type: str
+    """Type of the entry"""
     name: str
+    """Name of the entry"""
     url: str
+    """URL of the entry"""
 
 
 @dataclass
 class JikanRelationStruct:
     relation: str
+    """Relation between the entries"""
     entry: list[JikanOtherStruct]
+    """Entry"""
 
 
 @dataclass
 class JikanThemeSongStruct:
     openings: list[str] | None = None
+    """List of opening songs"""
     endings: list[str] | None = None
+    """List of ending songs"""
 
 
 @dataclass
 class JikanExternalStruct:
     name: str
+    """Name of the external site"""
     url: str
+    """URL of the external site"""
 
 
 @dataclass
 class JikanAnimeStruct:
     mal_id: int
+    """MyAnimeList ID"""
     url: str
+    """URL of the anime"""
     images: JikanImages | None
+    """Images of the anime"""
     trailer: JikanTrailerStruct | list[JikanTrailerStruct] | None
+    """Trailer of the anime"""
     approved: bool
+    """Whether the anime is approved"""
     titles: list[JikanTitlesStruct] | None
+    """Titles of the anime"""
     title: str
-    type: str | None
-    source: str | None
+    """Title of the anime"""
+    type: Literal["TV", "OVA", "Movie", "Special", "ONA", "Music", "Unknown"] | None
+    """Type of the anime"""
+    source: Literal[
+        "Original",
+        "Manga",
+        "Light novel",
+        "Visual novel",
+        "Video game",
+        "Other",
+        "Novel",
+        "Doujinshi",
+        "Anime",
+        "Web manga",
+        "Unknown",
+    ] | None
+    """Source of the anime"""
     episodes: int | None
-    status: str | None
+    """Number of episodes"""
+    status: Literal["Airing", "Finished Airing", "Not yet aired"] | None
+    """Status of the anime"""
     airing: bool | None
+    """Whether the anime is airing"""
     aired: JikanDateStruct | None
+    """Airing dates of the anime"""
     duration: str | None
-    rating: str | None
+    """Duration of the anime"""
+    rating: Literal[
+        "G - All Ages",
+        "PG - Children",
+        "PG-13 - Teens 13 or older",
+        "R - 17+ (violence & profanity)",
+        "R+ - Mild Nudity",
+        "Rx - Hentai",
+    ] | None
+    """Content/age rating of the anime"""
     score: float | None
+    """Score of the anime"""
     scored_by: int | None
+    """Number of people who scored the anime"""
     rank: int | None
+    """Rank of the anime"""
     popularity: int | None
+    """Popularity of the anime"""
     members: int | None
+    """Number of members"""
     favorites: int | None
+    """Number of favorites"""
     synopsis: str | None
+    """Synopsis of the anime"""
     background: str | None
+    """Background information of the anime"""
     season: Literal["winter", "spring", "summer", "fall"] | None
+    """Season of the anime"""
     year: int | None
+    """Release year of the anime"""
     broadcast: JikanBroadcastStruct | None
+    """Broadcast information"""
     producers: list[JikanOtherStruct] | None
+    """List of producers"""
     licensors: list[JikanOtherStruct] | None
+    """List of licensors"""
     studios: list[JikanOtherStruct] | None
+    """List of studios"""
     genres: list[JikanOtherStruct] | None
+    """List of genres"""
     explicit_genres: list[JikanOtherStruct] | None
+    """List of explicit genres"""
     themes: list[JikanOtherStruct] | None
+    """List of themes"""
     demographics: list[JikanOtherStruct] | None
+    """List of demographics"""
     title_english: str | None = None
+    """English title"""
     title_japanese: str | None = None
+    """Japanese title"""
     title_synonyms: list[str] | None = None
+    """List of synonyms"""
     relations: list[JikanRelationStruct] | None = None
+    """List of relations"""
     theme: list[JikanThemeSongStruct] | None = None
+    """List of theme songs"""
     external: list[JikanExternalStruct] | None = None
+    """List of external sites"""
     streaming: list[JikanExternalStruct] | None = None
+    """List of streaming sites"""
 
 
 @dataclass
 class JikanStatisticsStruct:
     mean_score: float | None
+    """Mean score"""
     completed: int | None
+    """Number of completed entries"""
     on_hold: int | None
+    """Number of entries on hold"""
     dropped: int | None
+    """Number of dropped entries"""
     total_entries: int | None
-    days_watched: int | None = None
-    days_read: int | None = None
-    watching: int | None = None
-    reading: int | None = None
-    plan_to_watch: int | None = None
-    plan_to_read: int | None = None
-    rewatched: int | None = None
-    reread: int | None = None
-    episodes_watched: int | None = None
-    chapters_read: int | None = None
-    volumes_read: int | None = None
+    """Total number of entries listed"""
+
+@dataclass
+class JikanAnimeStatisticStruct(JikanStatisticsStruct):
+    days_watched: int | None
+    """Number of days watched"""
+    watching: int | None
+    """Number of entries being watched"""
+    plan_to_watch: int | None
+    """Number of entries planned to watch"""
+    rewatched: int | None
+    """Number of rewatched entries"""
+    episodes_watched: int | None
+    """Number of episodes watched"""
+
+@dataclass
+class JikanMangaStatisticStruct(JikanStatisticsStruct):
+    days_read: int | None
+    """Number of (estimated) days read"""
+    reading: int | None
+    """Number of entries being read"""
+    plan_to_read: int | None
+    """Number of entries planned to read"""
+    reread: int | None
+    """Number of reread entries"""
+    chapters_read: int | None
+    """Number of chapters read"""
+    volumes_read: int | None
+    """Number of volumes read"""
 
 
 @dataclass
 class JikanStatistics:
-    anime: JikanStatisticsStruct | None
-    manga: JikanStatisticsStruct | None
+    anime: JikanAnimeStatisticStruct | None
+    """Anime statistics"""
+    manga: JikanMangaStatisticStruct | None
+    """Manga statistics"""
 
 
 @dataclass
 class JikanUserTitleStruct:
     mal_id: int
+    """MyAnimeList ID"""
     url: str
+    """URL of the entry"""
     images: JikanImages | None
-    title: str | None = None  # for anime and manga
-    name: str | None = None  # for characters, people
-    type: str | None = None
-    start_year: int | None = None
+    """Images of the entry"""
+
+@dataclass
+class JikanUserAniMangaStruct(JikanUserTitleStruct):
+    title: str
+    """Title of the entry"""
+    type: str | None
+    """Type of the entry"""
+    start_year: int | None
+    """Start year of the entry"""
+
+@dataclass
+class JikanUserCastStruct(JikanUserTitleStruct):
+    name: str | None
+    """Name of the person/character"""
 
 
 @dataclass
 class JikanUpdateEntry:
-    entry: JikanUserTitleStruct
+    entry: JikanUserAniMangaStruct
+    """Entry that was updated"""
     score: int | None = None
+    """Score given to the entry"""
     status: str | None = None
+    """Status of the entry"""
     date: datetime | None = None
+    """Date of the update"""
+
+@dataclass
+class JikanAnimeUpdateEntry(JikanUpdateEntry):
     episodes_seen: int | None = None
+    """Number of episodes seen"""
     episodes_total: int | None = None
+    """Total number of episodes"""
+
+@dataclass
+class JikanMangaUpdateEntry(JikanUpdateEntry):
     chapters_read: int | None = None
+    """Number of chapters read"""
     chapters_total: int | None = None
+    """Total number of chapters"""
 
 
 @dataclass
 class JikanUserFavorite:
-    anime: list[JikanUserTitleStruct] | None = None
-    manga: list[JikanUserTitleStruct] | None = None
-    characters: list[JikanUserTitleStruct] | None = None
-    people: list[JikanUserTitleStruct] | None = None
+    anime: list[JikanUserAniMangaStruct] | None = None
+    """List of favorite anime"""
+    manga: list[JikanUserAniMangaStruct] | None = None
+    """List of favorite manga"""
+    characters: list[JikanUserCastStruct] | None = None
+    """List of favorite characters"""
+    people: list[JikanUserCastStruct] | None = None
+    """List of favorite people"""
 
 
 @dataclass
 class JikanUserStatus:
-    anime: list[JikanUpdateEntry] | None = None
-    manga: list[JikanUpdateEntry] | None = None
+    anime: list[JikanAnimeUpdateEntry] | None = None
+    """List of anime updates"""
+    manga: list[JikanMangaUpdateEntry] | None = None
+    """List of manga updates"""
 
 
 @dataclass
 class JikanUserStruct:
     mal_id: int
+    """MyAnimeList ID"""
     username: str
+    """Username"""
     url: str
+    """URL of the user"""
     images: JikanImages | None
+    """Images of the user"""
     location: str | None
+    """Location of the user"""
     joined: datetime
+    """Date the user joined MyAnimeList"""
     gender: str | None = None
+    """Gender of the user"""
     last_online: datetime | None = None
+    """Date the user was last online"""
     birthday: datetime | None = None
+    """Date of birth of the user"""
     statistics: JikanStatistics | None = None
+    """Statistics of the user"""
     favorites: JikanUserFavorite | None = None
+    """Favorites of the user"""
     updates: JikanUserStatus | None = None
+    """Updates of the user"""
     about: str | None = None
+    """About of the user"""
     external: dict[str, Any] | list[dict[str, Any] | str] | None = None
+    """External links of the user"""
 
 
 def defineJikanException(error_code: int, error_message: Any) -> JikanException:
@@ -469,11 +635,11 @@ class JikanApi:
 
         if data["statistics"]:
             if data["statistics"]["anime"]:
-                data["statistics"]["anime"] = JikanStatisticsStruct(
+                data["statistics"]["anime"] = JikanAnimeStatisticStruct(
                     **data["statistics"]["anime"]
                 )
             if data["statistics"]["manga"]:
-                data["statistics"]["manga"] = JikanStatisticsStruct(
+                data["statistics"]["manga"] = JikanMangaStatisticStruct(
                     **data["statistics"]["manga"]
                 )
             data["statistics"] = JikanStatistics(**data["statistics"])
@@ -487,7 +653,7 @@ class JikanApi:
                     )
                     anime["images"] = JikanImages(**anime["images"])
                 data["favorites"]["anime"] = [
-                    JikanUserTitleStruct(**anime)
+                    JikanUserAniMangaStruct(**anime)
                     for anime in data["favorites"]["anime"]
                 ]
             if data["favorites"]["manga"]:
@@ -498,7 +664,7 @@ class JikanApi:
                     )
                     manga["images"] = JikanImages(**manga["images"])
                 data["favorites"]["manga"] = [
-                    JikanUserTitleStruct(**manga)
+                    JikanUserAniMangaStruct(**manga)
                     for manga in data["favorites"]["manga"]
                 ]
             if data["favorites"]["characters"]:
@@ -511,7 +677,7 @@ class JikanApi:
                     )
                     character["images"] = JikanImages(**character["images"])
                 data["favorites"]["characters"] = [
-                    JikanUserTitleStruct(**character)
+                    JikanUserCastStruct(**character)
                     for character in data["favorites"]["characters"]
                 ]
             if data["favorites"]["people"]:
@@ -521,7 +687,7 @@ class JikanApi:
                     )
                     person["images"] = JikanImages(**person["images"])
                 data["favorites"]["people"] = [
-                    JikanUserTitleStruct(**person)
+                    JikanUserCastStruct(**person)
                     for person in data["favorites"]["people"]
                 ]
             data["favorites"] = JikanUserFavorite(**data["favorites"])
@@ -536,12 +702,12 @@ class JikanApi:
                         **anime["entry"]["images"]["webp"]
                     )
                     anime["entry"]["images"] = JikanImages(**anime["entry"]["images"])
-                    anime["entry"] = JikanUserTitleStruct(**anime["entry"])
+                    anime["entry"] = JikanUserAniMangaStruct(**anime["entry"])
                     anime["date"] = datetime.strptime(
                         anime["date"], "%Y-%m-%dT%H:%M:%S%z"
                     )
                 data["updates"]["anime"] = [
-                    JikanUpdateEntry(**anime) for anime in data["updates"]["anime"]
+                    JikanAnimeUpdateEntry(**anime) for anime in data["updates"]["anime"]
                 ]
             if data["updates"]["manga"]:
                 for manga in data["updates"]["manga"]:
@@ -552,12 +718,12 @@ class JikanApi:
                         **manga["entry"]["images"]["webp"]
                     )
                     manga["entry"]["images"] = JikanImages(**manga["entry"]["images"])
-                    manga["entry"] = JikanUserTitleStruct(**manga["entry"])
+                    manga["entry"] = JikanUserAniMangaStruct(**manga["entry"])
                     manga["date"] = datetime.strptime(
                         manga["date"], "%Y-%m-%dT%H:%M:%S%z"
                     )
                 data["updates"]["manga"] = [
-                    JikanUpdateEntry(**manga) for manga in data["updates"]["manga"]
+                    JikanMangaUpdateEntry(**manga) for manga in data["updates"]["manga"]
                 ]
             data["updates"] = JikanUserStatus(**data["updates"])
 

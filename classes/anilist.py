@@ -16,44 +16,63 @@ from modules.const import USER_AGENT
 @dataclass
 class AniListTitleStruct:
     romaji: str | None
+    """Romaji title"""
     english: str | None
+    """English title"""
     native: str | None
+    """Native title"""
 
 
 @dataclass
 class AniListDateStruct:
     year: int | None
+    """Year"""
     month: int | None
+    """Month"""
     day: int | None
+    """Day"""
 
 
 @dataclass
 class AniListImageStruct:
     large: str | None
+    """Large image URL"""
     extraLarge: str | None
+    """Extra large image URL"""
     color: str | None
+    """Average HEX ("#RRGGBB") color of the image"""
 
 
 @dataclass
 class AniListTagsStruct:
     id: int
+    """Tag ID"""
     name: str
+    """Tag name"""
     isMediaSpoiler: bool | None
+    """Whether the tag is a spoiler for this media"""
     isAdult: bool | None
+    """Whether the tag is only for adult 18+ media"""
 
 
 @dataclass
 class AniListTrailerStruct:
     id: str | None
+    """Trailer ID"""
     site: str | None
+    """Trailer site, commonly "youtube" or "dailymotion"."""
 
 
 @dataclass
 class AniListMediaStruct:
     id: int
+    """Media ID"""
     idMal: int | None
+    """MyAnimeList ID"""
     title: AniListTitleStruct | None
+    """Media title object"""
     isAdult: bool | None
+    """Whether the media is 18+"""
     format: Literal[
         "TV",
         "TV_SHORT",
@@ -66,26 +85,45 @@ class AniListMediaStruct:
         "NOVEL",
         "ONE_SHOT",
     ] | None
+    """Media format"""
     description: str | None
+    """Media description"""
     isAdult: bool | None
+    """Whether the media is 18+"""
     synonyms: list[str | None] | None
+    """Media synonyms"""
     startDate: AniListDateStruct | None
+    """Media start date"""
     endDate: AniListDateStruct | None
+    """Media end date"""
     status: Literal[
         "FINISHED", "RELEASING", "NOT_YET_RELEASED", "CANCELLED", "HIATUS"
     ] | None
+    """Media release status"""
     coverImage: AniListImageStruct | None
+    """Media cover/poster/visual key image object"""
     bannerImage: str | None
+    """Media banner image URL"""
     genres: list[str | None] | None
+    """Media genres"""
     tags: list[AniListTagsStruct] | None
+    """Media tags/themes"""
     averageScore: int | None
+    """Media weighted average score"""
     meanScore: int | None
+    """Media mean score"""
     stats: dict[str, list[dict[str, Any] | None]] | None
+    """Media statistics, doesn't set as dataclass because it's a nested dictionary"""
     trailer: AniListTrailerStruct | None
+    """Media trailer object"""
     chapters: int | None = None
+    """Manga chapters"""
     volumes: int | None = None
+    """Manga volumes"""
     episodes: int | None = None
+    """Anime episodes"""
     duration: int | None = None
+    """Anime episode duration in minutes"""
 
 
 class AniList:

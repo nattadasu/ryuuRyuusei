@@ -12,16 +12,27 @@ from modules.jikan import check_club_membership
 
 @dataclass
 class UserDatabaseClass:
+    """User Database Class"""
     discord_id: Snowflake
+    """User's Discord Snowflake ID"""
     mal_id: int
-    mal_joined: int
-    registered_at: datetime | int
+    """User's MyAnimeList ID"""
+    mal_joined: datetime
+    """User's MyAnimeList join date"""
+    registered_at: datetime
+    """User's registration date"""
     registered_guild: Snowflake
+    """Guild's Snowflake ID where the user registered"""
     registered_by: Snowflake
+    """User's Snowflake ID who registered the user"""
     anilist_id: Optional[int] = None
+    """User's AniList ID"""
     anilist_username: Optional[str] = None
-    lastfm_id: Optional[int] = None
+    """User's AniList username, as a fallback if ID is unreachable"""
+    lastfm_username: Optional[int] = None
+    """User's Last.fm username"""
     mal_username: Optional[str] = None
+    """User's MyAnimeList username, as a fallback if ID is unreachable"""
 
 
 class UserDatabase:
@@ -71,13 +82,14 @@ class UserDatabase:
             "discordJoined": user_data.discord_id.created_at.timestamp(),
             "malUsername": user_data.mal_username,
             "malId": user_data.mal_id,
-            "malJoined": user_data.mal_joined,
-            "registeredAt": user_data.registered_at,
+            "malJoined": user_data.mal_joined.timestamp(),
+            "registeredAt": user_data.registered_at.timestamp(),
             "registeredGuild": user_data.registered_guild,
             "registeredBy": user_data.registered_by,
             "registeredGuildName": None,
+            "anilistUsername": user_data.anilist_username,
             "anilistId": user_data.anilist_id,
-            "lastfmId": user_data.lastfm_id,
+            "lastfmUsername": user_data.lastfm_username,
         }
         for k, v in data.items():
             if isinstance(v, int):

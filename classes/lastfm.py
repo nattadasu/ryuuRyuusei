@@ -12,8 +12,10 @@ from modules.const import LASTFM_API_KEY, USER_AGENT
 class LastFMImageStruct:
     """LastFM Image dataclass"""
 
-    size: Literal["small", "medium", "large", "extralarge"] | str | None
+    size: Literal["small", "medium", "large", "extralarge"] | None
+    """Image size"""
     url: str
+    """Image URL"""
 
 
 @dataclass
@@ -21,7 +23,9 @@ class LastFMReleaseStruct:
     """LastFM Release dataclass"""
 
     name: str
+    """Release name"""
     mbid: str
+    """Release MusicBrainz ID"""
 
 
 @dataclass
@@ -29,7 +33,9 @@ class LastFMDateStruct:
     """LastFM Date dataclass"""
 
     epoch: int | None
+    """Date in epoch format"""
     text: str | None
+    """Date in text format"""
 
 
 @dataclass
@@ -37,34 +43,59 @@ class LastFMTrackStruct:
     """LastFM Track dataclass"""
 
     artist: LastFMReleaseStruct | list[LastFMReleaseStruct] | None
+    """Track artist"""
     streamable: Literal["0", "1"] | None
+    """Is the track streamable"""
     image: LastFMImageStruct | list[LastFMImageStruct] | None
+    """Track image"""
     mbid: str
+    """Track MusicBrainz ID"""
     album: LastFMReleaseStruct | list[LastFMReleaseStruct] | None
+    """Track album"""
     name: str
+    """Track name"""
     url: str
+    """Track URL"""
     nowplaying: bool
+    """Is the track currently playing"""
     date: LastFMDateStruct | None
+    """Scrobble date"""
 
 
 @dataclass
 class LastFMUserStruct:
     name: str
+    """User name"""
     age: str
+    """User age"""
     subscriber: bool | None
+    """Is the user a subscriber"""
     realname: str | None
+    """User real name"""
     bootstrap: str
+    """User bootstrap"""
     playcount: str
+    """User playcount"""
     artist_count: str
+    """User artist count"""
     playlists: str
+    """User playlists"""
     track_count: str
+    """User track count"""
     album_count: str
+    """User album count"""
     image: list[LastFMImageStruct] | None
+    """User image"""
     registered: LastFMDateStruct | None
+    """User registration date"""
     country: str | None
+    """User country"""
     gender: str | None
+    """User gender"""
     url: str
+    """User URL"""
     type: str
+    """User type"""
 
 
 class LastFM:

@@ -20,31 +20,57 @@ from modules.const import SIMKL_CLIENT_ID, simkl0rels, USER_AGENT
 @dataclass(kwargs=True)
 class SimklRelations:
     title: str | None = None
+    """Title of the anime, show, or movie"""
     simkl: int | None = None
+    """Simkl ID"""
     slug: str | None = None
+    """Simkl slug"""
     poster: str | None = None
+    """Simkl poster path"""
     fanart: str | None = None
-    anitype: Literal["tv", "movie", "special", "ova", "ona"] | str | None = None
-    type: Literal["anime", "show", "movie"] | str | None = None
+    """Simkl fanart path"""
+    anitype: Literal["tv", "movie", "special", "ova", "ona"] | None = None
+    """Anime type"""
+    type: Literal["anime", "show", "movie"] | None = None
+    """Title type"""
     allcin: str | int | None = None
+    """Allcinema ID"""
     anfo: str | int | None = None
+    """Aninfo ID"""
     anidb: str | int | None = None
+    """AniDB ID"""
     anilist: str | int | None = None
+    """AniList ID"""
     animeplanet: str | int | None = None
+    """Anime-Planet ID"""
     anisearch: str | int | None = None
+    """AniSearch ID"""
     ann: str | int | None = None
+    """Anime News Network ID"""
     hulu: str | int | None = None
+    """Hulu ID"""
     imdb: str | None = None
+    """IMDb ID"""
     kitsu: str | int | None = None
+    """Kitsu ID"""
     livechart: str | int | None = None
+    """LiveChart ID"""
     mal: str | int | None = None
+    """MyAnimeList ID"""
     netflix: str | int | None = None
+    """Netflix ID"""
     offjp: str | int | None = None
+    """Offical Japanese website ID"""
     tmdb: str | int | None = None
+    """TheMovieDb ID"""
     tvdb: str | int | None = None
+    """TheTVDb ID"""
     tvdbslug: str | None = None
+    """TheTVDb slug"""
     wikien: str | int | None = None
+    """English Wikipedia ID"""
     wikijp: str | int | None = None
+    """Japanese Wikipedia ID"""
 
 
 class SimklMediaGenre(Enum):

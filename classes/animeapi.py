@@ -13,26 +13,46 @@ from modules.const import USER_AGENT
 
 @dataclass
 class AnimeApiAnime:
+    """AnimeAPI Anime Dataclass"""
     title: str | None = None
+    """Title of the anime"""
     anidb: int | None = None
+    """AniDB ID"""
     anilist: int | None = None
+    """AniList ID"""
     animeplanet: str | None = None
+    """Anime-Planet slug"""
     anisearch: int | None = None
+    """AniSearch ID"""
     annict: int | None = None
+    """Annict ID"""
     kaize: str | None = None
+    """Kaize slug"""
     kitsu: int | None = None
+    """Kitsu ID, user must resolve slug to ID if using this"""
     livechart: int | None = None
+    """LiveChart ID"""
     myanimelist: int | None = None
+    """MyAnimeList ID"""
     notify: str | None = None
+    """Notify.moe Base64 ID"""
     otakotaku: int | None = None
+    """Otak Otaku ID"""
     shikimori: int | None = None
+    """Shikimori ID, basically prefixless MyAnimeList ID"""
     shoboi: int | None = None
+    """Shoboi ID"""
     silveryasha: int | None = None
+    """SilverYasha Database Tontonan Indonesia ID"""
     trakt: int | None = None
+    """Trakt ID, user must resolve slug to ID if using this"""
     trakt_type: Literal["shows", "movies"] | None = None
+    """Trakt type, either shows or movies, or None if not available"""
     trakt_season: int | None = None
+    """Trakt season number, or None if not available"""
 
     def to_dict(self):
+        """Converts the AnimeAPI object to a dictionary, if needed"""
         return asdict(self)
 
 
