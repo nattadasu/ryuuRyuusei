@@ -6,12 +6,7 @@ try:
     from classes.thecolorapi import TheColorApi
 except ImportError:
     # add the path to the 'modules' directory to the system path
-    sys.path.insert(
-        0,
-        os.path.abspath(
-            os.path.join(
-                os.path.dirname(__file__),
-                "..")))
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     from classes.thecolorapi import TheColorApi
 
 

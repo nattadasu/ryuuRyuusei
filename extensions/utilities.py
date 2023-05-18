@@ -210,11 +210,7 @@ class Utilities(ipy.Extension):
                     value=f"```css\n{res.cmyk.value}\n```",
                     inline=True,
                 ),
-                ipy.EmbedField(
-                    name="DEC",
-                    value=f"```py\n{col}\n```",
-                    inline=True
-                )
+                ipy.EmbedField(name="DEC", value=f"```py\n{col}\n```", inline=True),
             ]
             await ctx.send(
                 embed=ipy.Embed(
@@ -252,18 +248,10 @@ class Utilities(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(
-                        name="Low (~7%, default)",
-                        value="L"),
-                    ipy.SlashCommandChoice(
-                        name="Medium (~15%)",
-                        value="M"),
-                    ipy.SlashCommandChoice(
-                        name="Quality (~25%)",
-                        value="Q"),
-                    ipy.SlashCommandChoice(
-                        name="High (~30%)",
-                        value="H"),
+                    ipy.SlashCommandChoice(name="Low (~7%, default)", value="L"),
+                    ipy.SlashCommandChoice(name="Medium (~15%)", value="M"),
+                    ipy.SlashCommandChoice(name="Quality (~25%)", value="Q"),
+                    ipy.SlashCommandChoice(name="High (~30%)", value="H"),
                 ],
             ),
         ],

@@ -157,20 +157,19 @@ class AniList:
     @staticmethod
     def dict_to_dataclass(data: dict):
         """Format returned dictionary from AniList to its proper dataclass"""
-        data["title"] = AniListTitleStruct(
-            **data["title"]) if data["title"] else None
+        data["title"] = AniListTitleStruct(**data["title"]) if data["title"] else None
         data["startDate"] = (
-            AniListDateStruct(
-                **data["startDate"]) if data["startDate"] else None)
+            AniListDateStruct(**data["startDate"]) if data["startDate"] else None
+        )
         data["endDate"] = (
             AniListDateStruct(**data["endDate"]) if data["endDate"] else None
         )
         data["coverImage"] = (
-            AniListImageStruct(
-                **data["coverImage"]) if data["coverImage"] else None)
+            AniListImageStruct(**data["coverImage"]) if data["coverImage"] else None
+        )
         data["trailer"] = (
-            AniListTrailerStruct(
-                **data["trailer"]) if data["trailer"] else None)
+            AniListTrailerStruct(**data["trailer"]) if data["trailer"] else None
+        )
         if data["tags"] is not None:
             for tag in data["tags"]:
                 tag = AniListTagsStruct(**tag) if tag else None
@@ -199,8 +198,7 @@ class AniList:
             media = media_type.value
         elif isinstance(media_type, Literal):
             media = media_type
-        cache_file_path = self.get_cache_file_path(
-            f"nsfw/{media.lower()}/{id}.json")
+        cache_file_path = self.get_cache_file_path(f"nsfw/{media.lower()}/{id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -294,8 +292,7 @@ class AniList:
         ) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(
-                    data["data"]["Media"], cache_file_path)
+                self.write_data_to_cache(data["data"]["Media"], cache_file_path)
                 return self.dict_to_dataclass(data["data"]["Media"])
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
@@ -371,8 +368,7 @@ class AniList:
         ) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(
-                    data["data"]["Media"], cache_file_path)
+                self.write_data_to_cache(data["data"]["Media"], cache_file_path)
                 return self.dict_to_dataclass(data["data"]["Media"])
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
@@ -398,8 +394,7 @@ class AniList:
             list[dict]: The search results
         """
         if limit > 10:
-            raise ProviderTypeError(
-                "limit must be less than or equal to 10", "int")
+            raise ProviderTypeError("limit must be less than or equal to 10", "int")
         if isinstance(media_type, self.MediaType):
             media_type = media_type.value
         gqlquery = """query ($search: String, $mediaType: MediaType, $limit: Int) {

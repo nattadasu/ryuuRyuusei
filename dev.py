@@ -9,7 +9,15 @@ import sys
 import isort
 
 # for each py files exclude from specific folders, sort import
-excluded_folders = ["venv", "__pycache__", ".mypycache", "build", "dist", "docs", "cache"]
+excluded_folders = [
+    "venv",
+    "__pycache__",
+    ".mypycache",
+    "build",
+    "dist",
+    "docs",
+    "cache",
+]
 
 
 def print_file(path_name: str) -> None:

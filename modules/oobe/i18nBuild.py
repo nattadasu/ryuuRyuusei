@@ -53,8 +53,7 @@ def index_json_lang() -> None:
                     drip = {
                         "code": code,
                         "name": lang.get(code).language_name(),
-                        "native": lang.get(code).language_name(
-                            lang.get(code).language),
+                        "native": lang.get(code).language_name(lang.get(code).language),
                         "dialect": lang.get(code).territory_name(),
                     }
             indexed.append(drip)

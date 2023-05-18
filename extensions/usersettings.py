@@ -2,8 +2,7 @@ import interactions as ipy
 from emoji import emojize
 
 from modules.const import EMOJI_FORBIDDEN, EMOJI_SUCCESS
-from modules.i18n import (paginate_language, search_language,
-                          set_default_language)
+from modules.i18n import paginate_language, search_language, set_default_language
 
 
 class UserSettings(ipy.Extension):

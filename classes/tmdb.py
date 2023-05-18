@@ -27,8 +27,7 @@ class TheMovieDb:
 
     async def __aenter__(self):
         """Enter the async context manager"""
-        self.session = aiohttp.ClientSession(
-            headers={"User-Agent": USER_AGENT})
+        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -60,8 +59,7 @@ class TheMovieDb:
             bool: True if the TV show or movie is NSFW, False otherwise"""
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
-        cache_file_path = self.get_cache_path(
-            f"{media_type.value}/{media_id}.json")
+        cache_file_path = self.get_cache_path(f"{media_type.value}/{media_id}.json")
         cached_data = self.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data
