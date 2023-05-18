@@ -11,13 +11,17 @@ except ImportError:
 
 
 class SpotifyTest(unittest.IsolatedAsyncioTestCase):
+    """Spotify API test class"""
+
     async def test_authenticate(self):
+        """Test authenticating client"""
         async with SpotifyApi() as spotify:
             await spotify.authorize_client()
             # check if token is not None
             self.assertIsNotNone(spotify.token)
 
     async def test_get_album(self):
+        """Test getting album data"""
         async with SpotifyApi() as spotify:
             await spotify.authorize_client()
             album = await spotify.get_album("0sNOF9WDwhWunNAHPD3Baj")
@@ -25,6 +29,7 @@ class SpotifyTest(unittest.IsolatedAsyncioTestCase):
             self.assertIsNotNone(album)
 
     async def test_get_artist(self):
+        """Test getting artist data"""
         async with SpotifyApi() as spotify:
             await spotify.authorize_client()
             artist = await spotify.get_artist("0OdUWJ0sBjDrqHygGUXeCF")
@@ -32,6 +37,7 @@ class SpotifyTest(unittest.IsolatedAsyncioTestCase):
             self.assertIsNotNone(artist)
 
     async def test_get_track(self):
+        """Test getting track data"""
         async with SpotifyApi() as spotify:
             await spotify.authorize_client()
             track = await spotify.get_track("3n3Ppam7vgaVa1iaRUc9Lp")
@@ -39,6 +45,7 @@ class SpotifyTest(unittest.IsolatedAsyncioTestCase):
             self.assertIsNotNone(track)
 
     async def test_search(self):
+        """Test searching for a track"""
         async with SpotifyApi() as spotify:
             await spotify.authorize_client()
             search = await spotify.search(
@@ -49,4 +56,4 @@ class SpotifyTest(unittest.IsolatedAsyncioTestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

@@ -14,6 +14,8 @@ from modules.const import USER_AGENT
 
 @dataclass
 class AniListTitleStruct:
+    """AniList title dataclass"""
+
     romaji: str | None
     """Romaji title"""
     english: str | None
@@ -24,6 +26,8 @@ class AniListTitleStruct:
 
 @dataclass
 class AniListDateStruct:
+    """AniList date dataclass"""
+
     year: int | None
     """Year"""
     month: int | None
@@ -34,6 +38,8 @@ class AniListDateStruct:
 
 @dataclass
 class AniListImageStruct:
+    """AniList image dataclass"""
+
     large: str | None
     """Large image URL"""
     extraLarge: str | None
@@ -44,6 +50,8 @@ class AniListImageStruct:
 
 @dataclass
 class AniListTagsStruct:
+    """AniList tags dataclass"""
+
     id: int
     """Tag ID"""
     name: str
@@ -56,6 +64,8 @@ class AniListTagsStruct:
 
 @dataclass
 class AniListTrailerStruct:
+    """AniList trailer dataclass"""
+
     id: str | None
     """Trailer ID"""
     site: str | None
@@ -64,6 +74,8 @@ class AniListTrailerStruct:
 
 @dataclass
 class AniListMediaStruct:
+    """AniList media dataclass"""
+
     id: int
     """Media ID"""
     idMal: int | None
@@ -180,7 +192,8 @@ class AniList:
         media_id: int,
         media_type: Literal["ANIME", "MANGA"] | MediaType = MediaType.ANIME,
     ) -> bool:
-        """Check if the media is NSFW
+        """
+        Check if the media is NSFW
 
         Args:
             media_id (int): The ID of the media
@@ -219,7 +232,8 @@ class AniList:
             raise ProviderHttpError(error_message, response.status)
 
     async def anime(self, media_id: int) -> AniListMediaStruct:
-        """Get anime information by its ID
+        """
+        Get anime information by its ID
 
         Args:
             media_id (int): The ID of the anime
@@ -298,7 +312,8 @@ class AniList:
             raise ProviderHttpError(error_message, response.status)
 
     async def manga(self, media_id: int) -> AniListMediaStruct:
-        """Get manga information by its ID
+        """
+        Get manga information by its ID
 
         Args:
             media_id (int): The ID of the manga
@@ -379,12 +394,13 @@ class AniList:
         limit: int = 10,
         media_type: Literal["ANIME", "MANGA"] | MediaType = MediaType.MANGA,
     ) -> list[dict]:
-        """Search anime by its title
+        """
+        Search anime by its title
 
         Args:
             query (str): The title of the anime
-            limit (int, optional): The number of results to return. Defaults to 10.
-            media_type (Literal['ANIME', 'MANGA'] | MediaType, optional): The type of the media. Defaults to MediaType.MANGA.
+            limit (int, optional): The number of results to return. Defaults to 10
+            media_type (Literal['ANIME', 'MANGA'] | MediaType, optional): The type of the media. Defaults to MediaType.MANGA
 
         Raises:
             ProviderTypeError: Raised when the limit is not valid
@@ -431,7 +447,8 @@ class AniList:
             raise ProviderHttpError(error_message, response.status)
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
-        """Get cache file path
+        """
+        Get cache file path
 
         Args:
             cache_file_name (str): Cache file name
@@ -442,7 +459,8 @@ class AniList:
         return os.path.join(self.cache_directory, cache_file_name)
 
     def read_cached_data(self, cache_file_path: str) -> Any | None:
-        """Read cached data
+        """
+        Read cached data
 
         Args:
             cache_file_name (str): Cache file name
@@ -461,7 +479,8 @@ class AniList:
 
     @staticmethod
     def write_data_to_cache(data, cache_file_path: str) -> None:
-        """Write data to cache
+        """
+        Write data to cache
 
         Args:
             data (any): Data to cache

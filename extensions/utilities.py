@@ -11,6 +11,11 @@ from modules.i18n import fetch_language_data, read_user_language
 
 
 class Utilities(ipy.Extension):
+    """Utilities commands"""
+
+    def __init__(self, bot: ipy.Client):
+        self.bot = bot
+
     @ipy.slash_command(
         name="utilities",
         description="Get some utilities you might need",

@@ -14,7 +14,6 @@ def index_json_lang() -> None:
 
     Returns:
         None.
-
     """
     i18n_dir = pathlib.Path("i18n")
     if not i18n_dir.exists():

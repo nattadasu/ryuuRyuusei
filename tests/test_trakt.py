@@ -11,7 +11,10 @@ except ImportError:
 
 
 class TraktTest(unittest.IsolatedAsyncioTestCase):
+    """Trakt API test class"""
+
     async def test_get_ids(self):
+        """Test getting ids"""
         async with Trakt() as trakt:
             res = await trakt.lookup(media_id="tt1104001", platform=trakt.Platform.IMDB)
             if res.type == "movie":
@@ -20,6 +23,7 @@ class TraktTest(unittest.IsolatedAsyncioTestCase):
                 self.assertEqual(res.show.ids.imdb, "tt1104001")
 
     async def test_get_title_data(self):
+        """Test getting title data"""
         async with Trakt() as trakt:
             res: TraktExtendedMovieStruct = await trakt.get_title_data(
                 media_id=12601, media_type=trakt.MediaType.MOVIE
@@ -28,4 +32,4 @@ class TraktTest(unittest.IsolatedAsyncioTestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

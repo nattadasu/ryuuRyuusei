@@ -18,10 +18,12 @@ excluded_folders = [
     "docs",
     "cache",
 ]
+"""List of folders to exclude from formatting"""
 
 
 def print_file(path_name: str) -> None:
-    """Prints the file name.
+    """
+    Prints the file name.
 
     Args:
         path_name (str): The path name of the file.
@@ -34,7 +36,8 @@ def print_file(path_name: str) -> None:
 
 
 def format_scripts():
-    """Formats all python scripts in project file
+    """
+    Formats all python scripts in project file
 
     Returns:
         None
@@ -74,7 +77,8 @@ def format_scripts():
 
 
 async def loop_test():
-    """Do a test for each API calls
+    """
+    Do a test for each API calls
 
     Returns:
         None
@@ -90,7 +94,8 @@ async def loop_test():
 
 
 async def main():
-    """Main function of the script
+    """
+    Main function of the script
 
     Return:
         None

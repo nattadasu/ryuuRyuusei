@@ -8,6 +8,11 @@ from modules.nekomimidb import submit_nekomimi
 
 
 class Random(ipy.Extension):
+    """Random commands"""
+
+    def __init__(self, bot: ipy.Client):
+        self.bot = bot
+
     @ipy.slash_command(
         name="random",
         description="Get a random stuff",

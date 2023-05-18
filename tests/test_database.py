@@ -14,7 +14,10 @@ except ImportError:
 
 
 class DatabaseTest(unittest.IsolatedAsyncioTestCase):
+    """Database test class"""
+
     async def test_save_data(self):
+        """Test saving data"""
         tmp = int(time())
         async with UserDatabase() as ud:
             resp = await ud.save_to_database(
@@ -31,11 +34,13 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(resp is None)
 
     async def test_checking(self):
+        """Test checking if registered"""
         async with UserDatabase() as ud:
             resp = await ud.check_if_registered(Snowflake(1234567890))
         self.assertTrue(resp is not None)
 
     async def test_verifying(self):
+        """Test verifying user"""
         async with UserDatabase() as ud:
             try:
                 await ud.verify_user(Snowflake(1234567890))
@@ -45,11 +50,14 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(resp is not None)
 
     async def test_export_data(self):
+        """Test exporting user data"""
         async with UserDatabase() as ud:
             resp = await ud.export_user_data(Snowflake(1234567890))
         self.assertTrue(resp is not None)
 
     async def test_remove_data(self):
+        """Test removing user data"""
+
         async def doit() -> bool:
             drop = await ud.drop_user(Snowflake(1234567890))
             return drop

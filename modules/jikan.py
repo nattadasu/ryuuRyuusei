@@ -10,7 +10,8 @@ from modules.const import CLUB_ID
 
 
 async def get_member_clubs(username: str) -> list[dict]:
-    """Get a list of clubs that a user is a member of
+    """
+    Get a list of clubs that a user is a member of
 
     Args:
         username (str): MAL username of the user
@@ -24,7 +25,8 @@ async def get_member_clubs(username: str) -> list[dict]:
 
 
 async def check_if_club_in_list(clubs: list[dict]) -> bool:
-    """Check if the club is in the list of clubs
+    """
+    Check if the club is in the list of clubs
 
     Args:
         clubs (list[dict]): List of clubs
@@ -36,7 +38,8 @@ async def check_if_club_in_list(clubs: list[dict]) -> bool:
 
 
 async def check_club_membership(username: str) -> bool:
-    """Check if a user is a member of the club
+    """
+    Check if a user is a member of the club
 
     Args:
         username (str): MAL username of the user

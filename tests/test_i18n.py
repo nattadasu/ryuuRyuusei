@@ -24,10 +24,14 @@ except ImportError:
 
 
 class LanguageTest(unittest.IsolatedAsyncioTestCase):
+    """Language test class"""
+
     def test_check_english(self):
+        """Test checking if English exists"""
         self.assertTrue(check_lang_exist("en_US"))
 
     def test_search_english(self):
+        """Test searching for English"""
         base = [
             {
                 "code": "en_US",
@@ -45,6 +49,8 @@ class LanguageTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(False)
 
     def test_user_language(self):
+        """Test reading user language"""
+
         class ctx:
             class author:
                 id = None
@@ -57,11 +63,14 @@ class LanguageTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(read_user_language(ctx) in ["en_US", "id_ID"])
 
     def test_language_json(self):
+        """Test reading language JSON"""
         with open("i18n/en_US.json", "r") as f:
             base = json.load(f)
         self.assertEqual(fetch_language_data("en_US", useRaw=True), base)
 
     async def test_set_default_language(self):
+        """Test setting default language"""
+
         class ctx:
             class author:
                 id: int = None

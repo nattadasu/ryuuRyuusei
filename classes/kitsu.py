@@ -50,7 +50,8 @@ class Kitsu:
     async def get_anime(
         self, anime_id: int, media_type: MediaType | str = MediaType.ANIME
     ) -> dict:
-        """Get anime data
+        """
+        Get anime data
 
         Args:
             anime_id (int): The anime ID
@@ -77,7 +78,8 @@ class Kitsu:
     async def resolve_slug(
         self, slug: str, media_type: MediaType | str = MediaType.ANIME
     ) -> dict:
-        """Resolve slug to anime ID
+        """
+        Resolve slug to anime ID
 
         Args:
             slug (str): The anime slug

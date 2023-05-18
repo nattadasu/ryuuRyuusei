@@ -25,11 +25,13 @@ bot = ipy.AutoShardedClient(
         type=ipy.ActivityType.WATCHING,
     ),
 )
+"""The bot client"""
 
 
 @ipy.listen()
 async def on_ready():
-    """When the bot is ready
+    """
+    When the bot is ready
 
     This function will be called when the bot is ready.
     """
@@ -48,13 +50,16 @@ async def on_ready():
 
 
 async def main():
-    """Main function
+    """
+    Main function
 
     This function will be run before the bot starts.
     """
     try:
         if SENTRY_DSN:
+            ext = "interactions.ext.sentry"
             bot.load_extension("interactions.ext.sentry", token=SENTRY_DSN)
+        ext = "interactions.ext.jurigged"
         bot.load_extension("interactions.ext.jurigged")
     except Exception as e:
         print("[Ext] Error while loading system extension: " + ext)

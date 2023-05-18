@@ -12,7 +12,10 @@ except ImportError:
 
 
 class AnimeApiTest(unittest.IsolatedAsyncioTestCase):
+    """Anime API test class"""
+
     async def test_animeapi(self):
+        """Test Anime API"""
         async with AnimeApi() as aa:
             resp = await aa.get_relation(
                 media_id=1, platform=aa.AnimeApiPlatforms.MYANIMELIST
@@ -20,10 +23,11 @@ class AnimeApiTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(isinstance(resp, AnimeApiAnime))
 
     async def test_latest_update(self):
+        """Test checking latest update"""
         async with AnimeApi() as aa:
             resp = await aa.get_update_time()
         self.assertTrue(isinstance(resp, datetime))
 
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

@@ -11,7 +11,8 @@ from modules.const import RAWG_API_KEY, USER_AGENT
 
 class RawgAPI:
     def __init__(self, key: str = RAWG_API_KEY):
-        """Initialize the RAWG API Wrapper
+        """
+        Initialize the RAWG API Wrapper
 
         Args:
             key (str): RAWG API key, defaults to RAWG_API_KEY
@@ -34,7 +35,8 @@ class RawgAPI:
         await self.close()
 
     async def search(self, query: str) -> list[dict]:
-        """Search game on RAWG
+        """
+        Search game on RAWG
 
         Args:
             query (str): The query
@@ -58,7 +60,8 @@ class RawgAPI:
             )
 
     async def get_data(self, slug: str) -> dict:
-        """Get information of a title in RAWG
+        """
+        Get information of a title in RAWG
 
         Args:
             slug (str): The slug
@@ -90,7 +93,8 @@ class RawgAPI:
         return rawgRes
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
-        """Get cache file path
+        """
+        Get cache file path
 
         Args:
             cache_file_name (str): Cache file name
@@ -101,7 +105,8 @@ class RawgAPI:
         return os.path.join(self.cache_directory, cache_file_name)
 
     def read_cached_data(self, cache_file_path: str) -> dict | None:
-        """Read cached data
+        """
+        Read cached data
 
         Args:
             cache_file_name (str): Cache file name
@@ -120,7 +125,8 @@ class RawgAPI:
 
     @staticmethod
     def write_data_to_cache(data, cache_file_path: str):
-        """Write data to cache
+        """
+        Write data to cache
 
         Args:
             data (any): Data to write

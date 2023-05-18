@@ -37,6 +37,8 @@ class UserDatabaseClass:
 
 
 class UserDatabase:
+    """User Database Wrapper"""
+
     def __init__(self, database_path: str = database):
         """Initialize the database
 
@@ -57,7 +59,8 @@ class UserDatabase:
         """Close the database"""
 
     async def check_if_registered(self, discord_id: Snowflake) -> bool:
-        """Check if user is registered on Database
+        """
+        Check if user is registered on Database
 
         Args:
             discord_id (Snowflake): Discord ID of the user
@@ -72,7 +75,8 @@ class UserDatabase:
         return val
 
     async def save_to_database(self, user_data: UserDatabaseClass):
-        """Save information regarding to user with their consent
+        """
+        Save information regarding to user with their consent
 
         Args:
             user_data (UserDatabaseClass): Dataclass contains information about an user
@@ -116,7 +120,17 @@ class UserDatabase:
         row: Literal["malId", "anilistId", "lastfmId"],
         modified_input: Any,
     ) -> bool:
-        """Update information about an user that is not essential for the bot"""
+        """
+        Update information about an user that is not essential for the bot
+
+        Args:
+            discord_id (Snowflake): Discord ID of the user
+            row (Literal["malId", "anilistId", "lastfmId"]): Row to be updated
+            modified_input (Any): New value of the row
+
+        Returns:
+            bool: True if user is updated, False if not
+        """
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
         data = df[df["discordId"] == str(discord_id)].index
         if modified_input is None:
@@ -126,7 +140,8 @@ class UserDatabase:
         return True
 
     async def drop_user(self, discord_id: Snowflake) -> bool:
-        """Drop a user from the database
+        """
+        Drop a user from the database
 
         Args:
             discord_id (int): Discord ID of the user
@@ -142,7 +157,8 @@ class UserDatabase:
         return verify
 
     async def verify_user(self, discord_id: Snowflake) -> bool:
-        """Verify a user on the database
+        """
+        Verify a user on the database
 
         Args:
             discord_id (int): Discord ID of the user
@@ -162,6 +178,15 @@ class UserDatabase:
         return verified
 
     async def export_user_data(self, discord_id: Snowflake) -> str:
+        """
+        Export user data as JSON
+
+        Args:
+            discord_id (Snowflake): Discord ID of the user
+
+        Returns:
+            str: JSON string of the user data
+        """
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
         row = df[df["discordId"] == str(discord_id)]
         if row.empty:

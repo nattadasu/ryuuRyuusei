@@ -6,6 +6,11 @@ from modules.i18n import search_language, set_default_language
 
 
 class ServerSettings(ipy.Extension):
+    """Server Settings commands"""
+
+    def __init__(self, bot: ipy.Client):
+        self.bot = bot
+
     @ipy.slash_command(
         name="serversettings",
         description="Change the bot settings",

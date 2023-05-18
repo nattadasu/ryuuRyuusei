@@ -16,7 +16,8 @@ from modules.const import LANGUAGE_CODE
 
 
 def fetch_language_data(code: str, useRaw: bool = False) -> dict:
-    """Get the language strings for a given language code
+    """
+    Get the language strings for a given language code
 
     Args:
         code (str): The language code to get the strings for
@@ -36,7 +37,8 @@ def fetch_language_data(code: str, useRaw: bool = False) -> dict:
 
 
 def read_user_language(ctx: BaseContext | InteractionContext) -> str:
-    """Read the user's language preference from the database
+    """
+    Read the user's language preference from the database
 
     Args:
         ctx (BaseContext | InteractionContext): The context to read the user's language preference from
@@ -70,7 +72,8 @@ def read_user_language(ctx: BaseContext | InteractionContext) -> str:
 
 
 async def paginate_language(bot: Client, ctx: InteractionContext) -> None:
-    """Paginate the language list
+    """
+    Paginate the language list
 
     Args:
         bot (Client): The bot client
@@ -106,7 +109,8 @@ async def paginate_language(bot: Client, ctx: InteractionContext) -> None:
 
 
 def search_language(query: str) -> list[dict]:
-    """Search for a language for auto-complete
+    """
+    Search for a language for auto-complete
 
     Args:
         query (str): The query to search for
@@ -128,7 +132,8 @@ def search_language(query: str) -> list[dict]:
 
 
 def check_lang_exist(code: str) -> bool:
-    """Check if a language exists
+    """
+    Check if a language exists
 
     Args:
         code (str): The language code to check
@@ -147,7 +152,8 @@ def check_lang_exist(code: str) -> bool:
 async def set_default_language(
     code: str, ctx: InteractionContext, isGuild: bool = False
 ) -> None:
-    """Set the user's/guild's language preference
+    """
+    Set the user's/guild's language preference
 
     Args:
         code (str): The language code to set the user's/guild's language preference to

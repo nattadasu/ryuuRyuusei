@@ -45,7 +45,8 @@ from modules.i18n import read_user_language
 
 
 def lookupRandomAnime() -> int:
-    """Lookup random anime from MAL
+    """
+    Lookup random anime from MAL
 
     Args:
         None
@@ -64,7 +65,8 @@ def lookupRandomAnime() -> int:
 
 
 async def searchMalAnime(title: str) -> dict | list:
-    """Search anime via MyAnimeList API
+    """
+    Search anime via MyAnimeList API
 
     Args:
         title (str): Anime title
@@ -115,7 +117,8 @@ def malExceptionEmbed(
     error_type: MalErrType | str = MalErrType.SYSTEM,
     color: hex = 0xFF0000,
 ) -> Embed:
-    """Generate an embed for MyAnimeList exceptions
+    """
+    Generate an embed for MyAnimeList exceptions
 
     Args:
         description (str): Description of the error
@@ -159,7 +162,8 @@ async def generate_mal(
     al_dict: AniListMediaStruct | None = None,
     anime_api: AnimeApiAnime | None = None,
 ) -> Embed:
-    """Generate an embed for /anime with MAL via Jikan
+    """
+    Generate an embed for /anime with MAL via Jikan
 
     Args:
         entry_id (int): MAL ID
@@ -496,7 +500,8 @@ async def generate_mal(
 
 
 async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
-    """Send anime information from MAL to the channel
+    """
+    Send anime information from MAL to the channel
 
     Args:
         ctx (SlashContext): The context of the command
