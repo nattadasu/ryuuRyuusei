@@ -92,8 +92,7 @@ async def main():
                 else:
                     bot.load_extension("extensions." + ext, now=now)
             else:
-                print(
-                    f"[Cog] [{i}/{len(exts)}] Skipping: {ext}, not a .py file")
+                print(f"[Cog] [{i}/{len(exts)}] Skipping: {ext}, not a .py file")
     except Exception as e:
         print(f"[Cog] [{i}/{len(exts)}] Error while loading extension: {ext}")
         print("      " + str(e))

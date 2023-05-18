@@ -92,8 +92,7 @@ class Profile(ipy.Extension):
                 else:
                     nick = sanitize_markdown(data.username)
                     nick += " " + lp["commons"]["default"]
-                joined = dtime.strptime(
-                    servData["joined_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
+                joined = dtime.strptime(servData["joined_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
                 joined = int(joined.timestamp())
                 joined = f"<t:{joined}:R>"
                 if servData["premium_since"]:
@@ -229,12 +228,9 @@ class Profile(ipy.Extension):
         if maximum >= 1:
             rpt = "Recently played tracks"
             rptDesc = "Here are the recently played tracks of {USER} on Last.fm".format(
-                USER=user)
-            fields.append(
-                ipy.EmbedField(
-                    name=rpt,
-                    value=rptDesc,
-                    inline=False))
+                USER=user
+            )
+            fields.append(ipy.EmbedField(name=rpt, value=rptDesc, inline=False))
 
         for tr in tracks:
             tr.name = sanitize_markdown(tr.name)
@@ -291,8 +287,7 @@ class Profile(ipy.Extension):
             description=f"""{icShine}{realName}Account created:  <t:{profile.registered.epoch}:D> (<t:{profile.registered.epoch}:R>)
 Total scrobbles: {profile.playcount}
 🧑‍🎤 {profile.artist_count} 💿 {profile.album_count} 🎶 {profile.track_count}""",
-            thumbnail=ipy.EmbedAttachment(
-                url=img),
+            thumbnail=ipy.EmbedAttachment(url=img),
             fields=fields,
         )
         await ctx.send(embed=embed)

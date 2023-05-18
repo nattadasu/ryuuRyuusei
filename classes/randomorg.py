@@ -52,8 +52,7 @@ class RandomOrg:
 
     async def __aenter__(self):
         """Enter the async context manager"""
-        self.session = aiohttp.ClientSession(
-            headers={"User-Agent": USER_AGENT})
+        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -87,11 +86,9 @@ class RandomOrg:
         if base not in [2, 8, 10, 16]:
             raise ProviderTypeError("Base must be 2, 8, 10, or 16", "base")
         if num > 10000 or num < 1:
-            raise ProviderTypeError(
-                "Number must be between 1 and 10000", "num")
+            raise ProviderTypeError("Number must be between 1 and 10000", "num")
         if min_val > max_val:
-            raise ProviderTypeError(
-                "Min must be less than or equal to max", "minmax")
+            raise ProviderTypeError("Min must be less than or equal to max", "minmax")
         params = self.params.copy()
         params["num"] = num
         params["min"] = min_val
@@ -120,8 +117,7 @@ class RandomOrg:
             list[int]: List of random sequences
         """
         if min_val > max_val:
-            raise ProviderTypeError(
-                "Min must be less than or equal to max", "minmax")
+            raise ProviderTypeError("Min must be less than or equal to max", "minmax")
         params = self.params.copy()
         params["min"] = min_val
         params["max"] = max_val
@@ -163,11 +159,9 @@ class RandomOrg:
             list[str]: List of random strings
         """
         if length > 20:
-            raise ProviderTypeError(
-                "Length must be less than or equal to 20", "length")
+            raise ProviderTypeError("Length must be less than or equal to 20", "length")
         if num > 10000 or num < 1:
-            raise ProviderTypeError(
-                "Number must be between 1 and 10000", "num")
+            raise ProviderTypeError("Number must be between 1 and 10000", "num")
         if isinstance(digits, self.OnOff):
             digits = digits.value
         if isinstance(upperalpha, self.OnOff):
@@ -185,11 +179,9 @@ class RandomOrg:
             if digits not in ["on", "off"]:
                 raise ProviderTypeError("Digits must be on or off", "digits")
             if upperalpha not in ["on", "off"]:
-                raise ProviderTypeError(
-                    "Upperalpha must be on or off", "upperalpha")
+                raise ProviderTypeError("Upperalpha must be on or off", "upperalpha")
             if loweralpha not in ["on", "off"]:
-                raise ProviderTypeError(
-                    "Loweralpha must be on or off", "loweralpha")
+                raise ProviderTypeError("Loweralpha must be on or off", "loweralpha")
             if unique not in ["on", "off"]:
                 raise ProviderTypeError("Unique must be on or off", "unique")
         params = self.params.copy()

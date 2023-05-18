@@ -12,6 +12,7 @@ from modules.const import USER_AGENT
 @dataclass
 class BaseValue:
     """Base value dataclass"""
+
     value: str
     """Value string"""
 
@@ -51,6 +52,7 @@ class Fractions:
 @dataclass
 class HexValue(BaseValue):
     """Hex value dataclass"""
+
     clean: str
     """Clean value string"""
 
@@ -58,6 +60,7 @@ class HexValue(BaseValue):
 @dataclass
 class RGBValue(BaseValue):
     """RGB value dataclass"""
+
     fraction: Fractions
     """Fractions"""
     r: int
@@ -71,6 +74,7 @@ class RGBValue(BaseValue):
 @dataclass
 class HSLValue(BaseValue):
     """HSL value dataclass"""
+
     fraction: Fractions
     """Fractions"""
     h: int
@@ -84,6 +88,7 @@ class HSLValue(BaseValue):
 @dataclass
 class HSVValue(BaseValue):
     """HSV value dataclass"""
+
     fraction: Fractions
     """Fractions"""
     h: int
@@ -97,6 +102,7 @@ class HSVValue(BaseValue):
 @dataclass
 class CMYKValue(BaseValue):
     """CMYK value dataclass"""
+
     fraction: Fractions
     """Fractions"""
     c: int
@@ -112,6 +118,7 @@ class CMYKValue(BaseValue):
 @dataclass
 class XYZValue(BaseValue):
     """XYZ value dataclass"""
+
     fraction: Fractions
     """Fractions"""
     X: int
@@ -125,6 +132,7 @@ class XYZValue(BaseValue):
 @dataclass
 class Metadata(BaseValue):
     """Metadata dataclass"""
+
     closest_named_hex: str
     """Closest named hex value"""
     exact_match_name: bool
@@ -136,6 +144,7 @@ class Metadata(BaseValue):
 @dataclass
 class Image:
     """Image dataclass"""
+
     bare: str
     """Bare image URL"""
     named: str
@@ -145,6 +154,7 @@ class Image:
 @dataclass
 class Contrast:
     """Contrast dataclass"""
+
     value: str
     """Contrast value"""
 
@@ -152,6 +162,7 @@ class Contrast:
 @dataclass
 class Links:
     """Links dataclass"""
+
     self: dict[str, str]
     """Self link"""
 
@@ -159,6 +170,7 @@ class Links:
 @dataclass
 class Color:
     """Color dataclass"""
+
     hex: HexValue
     """Hex value"""
     rgb: RGBValue
@@ -197,8 +209,7 @@ class TheColorApi:
 
     async def __aenter__(self):
         """Create a session if class invoked with `with` statement"""
-        self.session = aiohttp.ClientSession(
-            headers={"User-Agent": USER_AGENT})
+        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -332,8 +343,7 @@ class TheColorApi:
         Args:
             color_params (dict): Color parameters
         """
-        filename = "-".join([f"{k}_{v}" for k,
-                             v in color_params.items()]) + ".json"
+        filename = "-".join([f"{k}_{v}" for k, v in color_params.items()]) + ".json"
         return os.path.join(self.cache_directory, filename)
 
     def read_cached_data(self, cache_file_path) -> dict | None:

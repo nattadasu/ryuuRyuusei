@@ -223,7 +223,8 @@ class Simkl:
         self.client_id = client_id
         if client_id is None:
             raise ProviderHttpError(
-                "Unauthorized, please fill Client ID before using this module", 401)
+                "Unauthorized, please fill Client ID before using this module", 401
+            )
         self.base_url = "https://api.simkl.com"
         self.params = {"client_id": self.client_id}
         self.session = None
@@ -232,8 +233,7 @@ class Simkl:
 
     async def __aenter__(self):
         """Enter the async context manager"""
-        self.session = aiohttp.ClientSession(
-            headers={"User-Agent": USER_AGENT})
+        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -514,8 +514,7 @@ class Simkl:
         """
         if isinstance(media_type, SimklMediaTypes):
             media_type = media_type.value
-        cache_file_path = self.get_cache_file_path(
-            f"ids/{media_type}/{id}.json")
+        cache_file_path = self.get_cache_file_path(f"ids/{media_type}/{id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return SimklRelations(**cached_data)

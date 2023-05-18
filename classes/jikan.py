@@ -179,8 +179,7 @@ class JikanAnimeStruct:
     """Titles of the anime"""
     title: str
     """Title of the anime"""
-    type: Literal["TV", "OVA", "Movie", "Special",
-                  "ONA", "Music", "Unknown"] | None
+    type: Literal["TV", "OVA", "Movie", "Special", "ONA", "Music", "Unknown"] | None
     """Type of the anime"""
     source: Literal[
         "Original",
@@ -425,9 +424,7 @@ class JikanUserStruct:
     """External links of the user"""
 
 
-def defineJikanException(
-        error_code: int,
-        error_message: Any) -> JikanException:
+def defineJikanException(error_code: int, error_message: Any) -> JikanException:
     try:
         match error_code:
             case 403:
@@ -440,8 +437,7 @@ def defineJikanException(
                 em = "**I have been rate-limited by Jikan**\nAny queries related to MyAnimeList may not available "
             case 500:
                 em = "**Uh, it seems Jikan had a bad day, and this specific endpoint might broken**\nYou could help dev team to resolve this issue"
-                if isinstance(error_message,
-                              dict) and "report_url" in error_message:
+                if isinstance(error_message, dict) and "report_url" in error_message:
                     em += f" by clicking [this link to directly submit a GitHub Issue]({error_message['report_url']})"
                 else:
                     em += f"\nFull message:```\n{error_message}\n```"
@@ -493,8 +489,7 @@ class JikanApi:
             data["images"] = JikanImages(**data["images"])
 
         if data.get("trailer", None):
-            data["trailer"]["images"] = JikanImageStruct(
-                **data["trailer"]["images"])
+            data["trailer"]["images"] = JikanImageStruct(**data["trailer"]["images"])
             data["trailer"] = JikanTrailerStruct(**data["trailer"])
 
         if data.get("titles", None):
@@ -513,10 +508,8 @@ class JikanApi:
             )
             del data["aired"]["prop"]["from"]
             data["aired"]["prop"]["to"] = data["aired"]["prop"]["to"]
-            data["aired"]["prop"]["to"] = JikanPropStruct(
-                **data["aired"]["prop"]["to"])
-            data["aired"]["prop"] = JikanPropParentStruct(
-                **data["aired"]["prop"])
+            data["aired"]["prop"]["to"] = JikanPropStruct(**data["aired"]["prop"]["to"])
+            data["aired"]["prop"] = JikanPropParentStruct(**data["aired"]["prop"])
             data["aired"]["from_"] = datetime.strptime(
                 data["aired"]["from"], "%Y-%m-%dT%H:%M:%S%z"
             )
@@ -622,8 +615,8 @@ class JikanApi:
 
         if data.get("external", None):
             data["external"] = [
-                JikanExternalStruct(
-                    **external) for external in data["external"]]
+                JikanExternalStruct(**external) for external in data["external"]
+            ]
 
         if data.get("streaming", None):
             data["streaming"] = [
@@ -658,8 +651,7 @@ class JikanApi:
             )
 
         if data["joined"]:
-            data["joined"] = datetime.strptime(
-                data["joined"], "%Y-%m-%dT%H:%M:%S%z")
+            data["joined"] = datetime.strptime(data["joined"], "%Y-%m-%dT%H:%M:%S%z")
 
         if data["statistics"]:
             if data["statistics"]["anime"]:
@@ -675,8 +667,7 @@ class JikanApi:
         if data["favorites"]:
             if data["favorites"]["anime"]:
                 for anime in data["favorites"]["anime"]:
-                    anime["images"]["jpg"] = JikanImageStruct(
-                        **anime["images"]["jpg"])
+                    anime["images"]["jpg"] = JikanImageStruct(**anime["images"]["jpg"])
                     anime["images"]["webp"] = JikanImageStruct(
                         **anime["images"]["webp"]
                     )
@@ -687,8 +678,7 @@ class JikanApi:
                 ]
             if data["favorites"]["manga"]:
                 for manga in data["favorites"]["manga"]:
-                    manga["images"]["jpg"] = JikanImageStruct(
-                        **manga["images"]["jpg"])
+                    manga["images"]["jpg"] = JikanImageStruct(**manga["images"]["jpg"])
                     manga["images"]["webp"] = JikanImageStruct(
                         **manga["images"]["webp"]
                     )
@@ -731,14 +721,14 @@ class JikanApi:
                     anime["entry"]["images"]["webp"] = JikanImageStruct(
                         **anime["entry"]["images"]["webp"]
                     )
-                    anime["entry"]["images"] = JikanImages(
-                        **anime["entry"]["images"])
+                    anime["entry"]["images"] = JikanImages(**anime["entry"]["images"])
                     anime["entry"] = JikanUserAniMangaStruct(**anime["entry"])
                     anime["date"] = datetime.strptime(
                         anime["date"], "%Y-%m-%dT%H:%M:%S%z"
                     )
-                data["updates"]["anime"] = [JikanAnimeUpdateEntry(
-                    **anime) for anime in data["updates"]["anime"]]
+                data["updates"]["anime"] = [
+                    JikanAnimeUpdateEntry(**anime) for anime in data["updates"]["anime"]
+                ]
             if data["updates"]["manga"]:
                 for manga in data["updates"]["manga"]:
                     manga["entry"]["images"]["jpg"] = JikanImageStruct(
@@ -747,14 +737,14 @@ class JikanApi:
                     manga["entry"]["images"]["webp"] = JikanImageStruct(
                         **manga["entry"]["images"]["webp"]
                     )
-                    manga["entry"]["images"] = JikanImages(
-                        **manga["entry"]["images"])
+                    manga["entry"]["images"] = JikanImages(**manga["entry"]["images"])
                     manga["entry"] = JikanUserAniMangaStruct(**manga["entry"])
                     manga["date"] = datetime.strptime(
                         manga["date"], "%Y-%m-%dT%H:%M:%S%z"
                     )
-                data["updates"]["manga"] = [JikanMangaUpdateEntry(
-                    **manga) for manga in data["updates"]["manga"]]
+                data["updates"]["manga"] = [
+                    JikanMangaUpdateEntry(**manga) for manga in data["updates"]["manga"]
+                ]
             data["updates"] = JikanUserStatus(**data["updates"])
 
         return JikanUserStruct(**data)
@@ -829,10 +819,8 @@ class JikanApi:
             except Exception as e:
                 retries += 1
                 if retries == 3:
-                    errcode: int = e.status_code if hasattr(
-                        e, "status_code") else 500
-                    errmsg: str | dict = e.message if hasattr(
-                        e, "message") else e
+                    errcode: int = e.status_code if hasattr(e, "status_code") else 500
+                    errmsg: str | dict = e.message if hasattr(e, "message") else e
                     defineJikanException(errcode, errmsg)
                 else:
                     backoff_time = 3**retries
