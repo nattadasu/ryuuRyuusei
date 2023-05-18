@@ -155,7 +155,8 @@ class AniList:
         ANIME = "ANIME"
         MANGA = "MANGA"
 
-    def dict_to_dataclass(self, data: dict):
+    @staticmethod
+    def dict_to_dataclass(data: dict):
         """Format returned dictionary from AniList to its proper dataclass"""
         data["title"] = AniListTitleStruct(**data["title"]) if data["title"] else None
         data["startDate"] = (
