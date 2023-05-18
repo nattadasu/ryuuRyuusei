@@ -25,6 +25,7 @@ except ImportError:
 
 class LanguageTest(unittest.IsolatedAsyncioTestCase):
     """Language test class"""
+
     def test_check_english(self):
         """Test checking if English exists"""
         self.assertTrue(check_lang_exist("en_US"))
@@ -49,6 +50,7 @@ class LanguageTest(unittest.IsolatedAsyncioTestCase):
 
     def test_user_language(self):
         """Test reading user language"""
+
         class ctx:
             class author:
                 id = None
@@ -68,6 +70,7 @@ class LanguageTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_set_default_language(self):
         """Test setting default language"""
+
         class ctx:
             class author:
                 id: int = None

@@ -54,6 +54,7 @@ async def do_anime(ani_id: int, nsfwBool: bool = False) -> Embed:
 
 class AnimeShowcaseTest(unittest.IsolatedAsyncioTestCase):
     """Anime showcase test class"""
+
     async def test_anime_info(self):
         """Test anime info"""
         ani_id = 1

@@ -12,6 +12,7 @@ except ImportError:
 
 class TheColorApiTest(unittest.IsolatedAsyncioTestCase):
     """TheColorApi API test class"""
+
     async def test_get_color(self):
         """Test getting color"""
         async with TheColorApi() as color:

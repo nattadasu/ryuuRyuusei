@@ -15,6 +15,7 @@ from modules.const import USER_AGENT
 @dataclass
 class AniListTitleStruct:
     """AniList title dataclass"""
+
     romaji: str | None
     """Romaji title"""
     english: str | None
@@ -26,6 +27,7 @@ class AniListTitleStruct:
 @dataclass
 class AniListDateStruct:
     """AniList date dataclass"""
+
     year: int | None
     """Year"""
     month: int | None
@@ -37,6 +39,7 @@ class AniListDateStruct:
 @dataclass
 class AniListImageStruct:
     """AniList image dataclass"""
+
     large: str | None
     """Large image URL"""
     extraLarge: str | None
@@ -48,6 +51,7 @@ class AniListImageStruct:
 @dataclass
 class AniListTagsStruct:
     """AniList tags dataclass"""
+
     id: int
     """Tag ID"""
     name: str
@@ -61,6 +65,7 @@ class AniListTagsStruct:
 @dataclass
 class AniListTrailerStruct:
     """AniList trailer dataclass"""
+
     id: str | None
     """Trailer ID"""
     site: str | None
@@ -70,6 +75,7 @@ class AniListTrailerStruct:
 @dataclass
 class AniListMediaStruct:
     """AniList media dataclass"""
+
     id: int
     """Media ID"""
     idMal: int | None

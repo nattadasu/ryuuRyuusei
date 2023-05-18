@@ -28,6 +28,7 @@ class RGBFractions:
     b: float | None = None
     """Blue fraction in RGB"""
 
+
 @dataclass
 class HSVFractions:
     """HSV Fractions dataclass"""
@@ -39,6 +40,7 @@ class HSVFractions:
     v: float | None = None
     """Value fraction in HSV"""
 
+
 @dataclass
 class HSLFractions:
     """HSL Fractions dataclass"""
@@ -49,6 +51,7 @@ class HSLFractions:
     """Saturation fraction in HSL"""
     l: float | None = None
     """Lightness fraction in HSL"""
+
 
 @dataclass
 class CMYKFractions:
@@ -62,6 +65,7 @@ class CMYKFractions:
     """Yellow fraction in CMYK"""
     k: float | None = None
     """Key fraction in CMYK"""
+
 
 @dataclass
 class XYZFractions:

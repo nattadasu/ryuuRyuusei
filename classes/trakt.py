@@ -14,6 +14,7 @@ from modules.const import USER_AGENT, traktHeader
 @dataclass
 class TraktIdsStruct:
     """Trakt IDs dataclass"""
+
     trakt: int
     """Trakt ID"""
     slug: str
@@ -31,6 +32,7 @@ class TraktIdsStruct:
 @dataclass
 class TraktMediaStruct:
     """Trakt Media dataclass"""
+
     title: str
     """Media title"""
     year: int
@@ -42,6 +44,7 @@ class TraktMediaStruct:
 @dataclass
 class TraktLookupStruct:
     """Trakt Lookup dataclass"""
+
     type: Literal["movie", "show"]
     """Media type"""
     score: float | None
@@ -55,6 +58,7 @@ class TraktLookupStruct:
 @dataclass
 class TraktAirStruct:
     """Trakt Air dataclass"""
+
     day: str | None
     """Day of the week"""
     time: str | None
@@ -66,6 +70,7 @@ class TraktAirStruct:
 @dataclass
 class TraktExtendedShowStruct(TraktMediaStruct):
     """Trakt Extended Show dataclass"""
+
     overview: str | None
     """Show overview"""
     first_aired: str | None
@@ -115,6 +120,7 @@ class TraktExtendedShowStruct(TraktMediaStruct):
 @dataclass
 class TraktExtendedMovieStruct(TraktMediaStruct):
     """Trakt Extended Movie dataclass"""
+
     tagline: str | None
     """Movie tagline"""
     overview: str | None
@@ -155,6 +161,7 @@ class TraktExtendedMovieStruct(TraktMediaStruct):
 
 class Trakt:
     """Trakt API Wrapper"""
+
     def __init__(self, headers: dict | None = None):
         """
         Initialize the Trakt API Wrapper

@@ -123,7 +123,7 @@ def get_current_git_branch() -> str:
 
 
 git_remote = get_git_remote_url()
-"""The git remote URL"""""
+"""The git remote URL""" ""
 git_branch = get_current_git_branch()
 """The git branch"""
 gittyHash = get_git_revision_hash()

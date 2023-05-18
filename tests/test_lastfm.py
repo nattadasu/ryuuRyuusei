@@ -12,6 +12,7 @@ except ImportError:
 
 class LastFmTest(unittest.IsolatedAsyncioTestCase):
     """LastFM API test class"""
+
     async def test_get_user_info(self):
         """Test getting user info"""
         async with LastFM() as lastfm:

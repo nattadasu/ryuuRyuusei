@@ -15,8 +15,9 @@ except ImportError:
 
 class DatabaseTest(unittest.IsolatedAsyncioTestCase):
     """Database test class"""
+
     async def test_save_data(self):
-        """Test saving data"""""
+        """Test saving data""" ""
         tmp = int(time())
         async with UserDatabase() as ud:
             resp = await ud.save_to_database(
@@ -56,6 +57,7 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_remove_data(self):
         """Test removing user data"""
+
         async def doit() -> bool:
             drop = await ud.drop_user(Snowflake(1234567890))
             return drop

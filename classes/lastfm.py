@@ -65,6 +65,7 @@ class LastFMTrackStruct:
 @dataclass
 class LastFMUserStruct:
     """LastFM User dataclass"""
+
     name: str
     """User name"""
     age: str

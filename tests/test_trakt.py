@@ -12,6 +12,7 @@ except ImportError:
 
 class TraktTest(unittest.IsolatedAsyncioTestCase):
     """Trakt API test class"""
+
     async def test_get_ids(self):
         """Test getting ids"""
         async with Trakt() as trakt:

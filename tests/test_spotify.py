@@ -12,6 +12,7 @@ except ImportError:
 
 class SpotifyTest(unittest.IsolatedAsyncioTestCase):
     """Spotify API test class"""
+
     async def test_authenticate(self):
         """Test authenticating client"""
         async with SpotifyApi() as spotify:

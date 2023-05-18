@@ -11,6 +11,7 @@ except ImportError:
 
 class JikanTest(unittest.IsolatedAsyncioTestCase):
     """Jikan API test class"""
+
     async def test_get_anime_data(self):
         """Test getting anime data"""
         async with JikanApi() as jikan:

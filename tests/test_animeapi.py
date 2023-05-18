@@ -13,6 +13,7 @@ except ImportError:
 
 class AnimeApiTest(unittest.IsolatedAsyncioTestCase):
     """Anime API test class"""
+
     async def test_animeapi(self):
         """Test Anime API"""
         async with AnimeApi() as aa:

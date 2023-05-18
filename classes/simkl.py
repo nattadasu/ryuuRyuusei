@@ -20,6 +20,7 @@ from modules.const import SIMKL_CLIENT_ID, USER_AGENT, simkl0rels
 @dataclass(kwargs=True)
 class SimklRelations:
     """Simkl Relations dataclass"""
+
     title: str | None = None
     """Title of the anime, show, or movie"""
     simkl: int | None = None
@@ -76,6 +77,7 @@ class SimklRelations:
 
 class SimklMediaGenre(Enum):
     """Simkl Media Genre enum"""
+
     ACTION = "Action"
     ADVENTURE = "Adventure"
     ANIMATION = "Animation"
@@ -96,6 +98,7 @@ class SimklMediaGenre(Enum):
 
 class SimklMovieGenre(Enum):
     """Simkl Movie Genre enum"""
+
     ACTION = SimklMediaGenre.ACTION.value
     ADVENTURE = SimklMediaGenre.ADVENTURE.value
     ANIMATION = SimklMediaGenre.ANIMATION.value
@@ -120,6 +123,7 @@ class SimklMovieGenre(Enum):
 
 class SimklTvGenre(Enum):
     """Simkl TV Genre enum"""
+
     ACTION = SimklMediaGenre.ACTION.value
     ADVENTURE = SimklMediaGenre.ADVENTURE.value
     ANIMATION = SimklMediaGenre.ANIMATION.value
@@ -161,6 +165,7 @@ class SimklTvGenre(Enum):
 
 class SimklAnimeGenre(Enum):
     """Simkl Anime Genre enum"""
+
     ACTION = SimklMediaGenre.ACTION.value
     ADVENTURE = SimklMediaGenre.ADVENTURE.value
     CARS = "Cars"

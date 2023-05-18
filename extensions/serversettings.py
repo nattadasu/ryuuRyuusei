@@ -11,7 +11,6 @@ class ServerSettings(ipy.Extension):
     def __init__(self, bot: ipy.Client):
         self.bot = bot
 
-
     @ipy.slash_command(
         name="serversettings",
         description="Change the bot settings",

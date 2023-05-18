@@ -1,5 +1,6 @@
 class ProviderHttpError(Exception):
     """Exception for HTTP errors from providers"""
+
     def __init__(self, message, status_code):
         """Params"""
         self.message = message
@@ -12,6 +13,7 @@ class ProviderHttpError(Exception):
 
 class ProviderTypeError(Exception):
     """Exception for type errors from providers"""
+
     def __init__(self, message, expected_type):
         """Params"""
         self.message = message
@@ -24,6 +26,7 @@ class ProviderTypeError(Exception):
 
 class SimklTypeError(Exception):
     """Exception for type errors from providers"""
+
     def __init__(self, message, expected_type):
         """Params"""
         self.message = message
