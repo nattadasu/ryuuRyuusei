@@ -230,8 +230,7 @@ class Trakt:
             data["airs"] = None
         if media_type == self.MediaType.SHOWS:
             return TraktExtendedShowStruct(**data)
-        else:
-            return TraktExtendedMovieStruct(**data)
+        return TraktExtendedMovieStruct(**data)
 
     async def lookup(
         self,
