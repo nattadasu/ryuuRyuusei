@@ -93,10 +93,7 @@ async def main():
 
     # ask if user want to format all files
     answer = input("Do you want to format all files? (y/N): ")
-    if answer.lower() == "y":
-        answer = True
-    else:
-        answer = False
+    answer = answer.lower() == "y"
 
     # walk through the current directory
     if answer:
