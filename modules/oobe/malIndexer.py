@@ -13,12 +13,11 @@ MAIN_SITE = "https://aniapi.nattadasu.my.id/myanimelist%28%29.json"
 
 async def mal_get_data() -> None:
     """Fetches data from MAIN_SITE and saves it to a JSON file."""
-    async with aiohttp.ClientSession() as session:
-        async with session.get(MAIN_SITE) as response:
-            if response.status != 200:
-                print(f"Error fetching data: HTTP {response.status}: {response.reason}")
-                return
-            data = await response.text()
+    async with aiohttp.ClientSession() as session, session.get(MAIN_SITE) as response:
+        if response.status != 200:
+            print(f"Error fetching data: HTTP {response.status}: {response.reason}")
+            return
+        data = await response.text()
     # save data to json file
     data = json.loads(data)
     with open("cache/mal.json", "w", encoding="utf8") as f:
