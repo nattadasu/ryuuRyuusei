@@ -128,7 +128,8 @@ class LastFM:
         """Close the aiohttp session"""
         await self.session.close()
 
-    def track_dict_to_dataclass(self, data: dict[str, Any]) -> LastFMTrackStruct:
+    @staticmethod
+    def track_dict_to_dataclass(data: dict[str, Any]) -> LastFMTrackStruct:
         """Convert track dict to dataclass"""
         if data["image"]:
             for image in data["image"]:
@@ -158,7 +159,8 @@ class LastFM:
             del data["@attr"]
         return LastFMTrackStruct(**data)
 
-    def user_dict_to_dataclass(self, data: dict[str, Any]) -> LastFMUserStruct:
+    @staticmethod
+    def user_dict_to_dataclass(data: dict[str, Any]) -> LastFMUserStruct:
         """Convert user dict to dataclass"""
         if data["image"]:
             for image in data["image"]:

@@ -190,8 +190,8 @@ class Trakt:
         TV = SHOW = SHOWS = ONA = "shows"
         MOVIE = MOVIES = "movies"
 
+    @staticmethod
     def ids_dict_to_dataclass(
-        self,
         data: list[
             dict[
                 str,
