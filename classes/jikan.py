@@ -634,7 +634,6 @@ class JikanApi:
         Returns:
             JikanUserStruct: User dataclass
         """
-
         if data["images"]:
             data["images"]["jpg"] = JikanImageStruct(**data["images"]["jpg"])
             data["images"]["webp"] = JikanImageStruct(**data["images"]["webp"])
