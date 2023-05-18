@@ -26,7 +26,7 @@ def fetch_language_data(code: str, useRaw: bool = False) -> dict:
         dict: The language strings for the given language code
     """
     try:
-        with open(f"i18n/{code}.json", "r", encoding="utf-8") as f:
+        with open(f"i18n/{code}.json", "r", encoding="utf-8") as f:  # skipcq: PTC-W6004
             data = jlo(f.read())
             if useRaw:
                 return data
