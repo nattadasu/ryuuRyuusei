@@ -21,7 +21,9 @@ async def nk_get_data() -> None:
         async with aiohttp.ClientSession() as session:
             async with session.get(MAIN_SITE) as response:
                 if response.status != 200:
-                    print(f"Error fetching data: HTTP {response.status}: {response.reason}")
+                    print(
+                        f"Error fetching data: HTTP {response.status}: {response.reason}"
+                    )
                     return
                 data = await response.text()
     except aiohttp.ClientError as e:

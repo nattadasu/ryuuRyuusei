@@ -10,6 +10,7 @@ import aiohttp
 from classes.excepts import ProviderHttpError, ProviderTypeError
 from modules.const import traktHeader, USER_AGENT
 
+
 @dataclass
 class TraktIdsStruct:
     trakt: int
@@ -35,6 +36,7 @@ class TraktMediaStruct:
     ids: TraktIdsStruct
     """Media IDs"""
 
+
 @dataclass
 class TraktLookupStruct:
     type: Literal["movie", "show"]
@@ -46,6 +48,7 @@ class TraktLookupStruct:
     show: TraktMediaStruct | None = None
     """Show data"""
 
+
 @dataclass
 class TraktAirStruct:
     day: str | None
@@ -54,6 +57,7 @@ class TraktAirStruct:
     """Time of the day"""
     timezone: str | None
     """Timezone"""
+
 
 @dataclass
 class TraktExtendedShowStruct(TraktMediaStruct):
@@ -77,7 +81,15 @@ class TraktExtendedShowStruct(TraktMediaStruct):
     """Show last updated date"""
     homepage: str | None
     """Show homepage"""
-    status: Literal["returning series", "continuing", "in production", "planned", "canceled", "ended", "pilot"]
+    status: Literal[
+        "returning series",
+        "continuing",
+        "in production",
+        "planned",
+        "canceled",
+        "ended",
+        "pilot",
+    ]
     """Show status"""
     rating: float | None
     """Show rating"""
@@ -113,7 +125,9 @@ class TraktExtendedMovieStruct(TraktMediaStruct):
     """Movie trailer"""
     homepage: str | None
     """Movie homepage"""
-    status: Literal["released", "in production", "post production", "planned", "rumored", "canceled"]
+    status: Literal[
+        "released", "in production", "post production", "planned", "rumored", "canceled"
+    ]
     """Movie status"""
     rating: float | None
     """Movie rating"""
@@ -170,11 +184,22 @@ class Trakt:
 
     class MediaType(Enum):
         """Media type enum"""
+
         TV = SHOW = SHOWS = ONA = "shows"
         MOVIE = MOVIES = "movies"
 
-
-    def ids_dict_to_dataclass(self, data: list[dict[str, str | float | dict[str | int | None | dict[str, str | int | None]] | None]]) -> list[TraktLookupStruct]:
+    def ids_dict_to_dataclass(
+        self,
+        data: list[
+            dict[
+                str,
+                str
+                | float
+                | dict[str | int | None | dict[str, str | int | None]]
+                | None,
+            ]
+        ],
+    ) -> list[TraktLookupStruct]:
         """Convert a dict of IDs to a dataclass"""
         converted_data = []
         for x in data:
@@ -184,16 +209,19 @@ class Trakt:
             if x.get("show", None):
                 x["show"]["ids"] = TraktIdsStruct(**x["show"]["ids"])
                 x["show"] = TraktMediaStruct(**x["show"])
-            converted_data.append(TraktLookupStruct(
-                type=x["type"],
-                score=x["score"],
-                movie=x.get("movie", None),
-                show=x.get("show", None),
-            ))
+            converted_data.append(
+                TraktLookupStruct(
+                    type=x["type"],
+                    score=x["score"],
+                    movie=x.get("movie", None),
+                    show=x.get("show", None),
+                )
+            )
         return converted_data
 
-
-    def extended_dict_to_dataclass(self, data: dict, media_type: MediaType) -> TraktExtendedMovieStruct | TraktExtendedShowStruct:
+    def extended_dict_to_dataclass(
+        self, data: dict, media_type: MediaType
+    ) -> TraktExtendedMovieStruct | TraktExtendedShowStruct:
         """Convert a dict of extended information to a dataclass"""
         data["ids"] = TraktIdsStruct(**data["ids"])
         if media_type == self.MediaType.SHOWS and data.get("airs", None):
@@ -204,7 +232,6 @@ class Trakt:
             return TraktExtendedShowStruct(**data)
         else:
             return TraktExtendedMovieStruct(**data)
-
 
     async def lookup(
         self,
@@ -315,6 +342,7 @@ class Trakt:
         os.makedirs(os.path.dirname(cache_path), exist_ok=True)
         with open(cache_path, "w") as f:
             json.dump({"timestamp": time.time(), "data": data}, f)
+
 
 __all__ = [
     "Trakt",

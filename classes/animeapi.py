@@ -14,6 +14,7 @@ from modules.const import USER_AGENT
 @dataclass
 class AnimeApiAnime:
     """AnimeAPI Anime Dataclass"""
+
     title: str | None = None
     """Title of the anime"""
     anidb: int | None = None

@@ -13,6 +13,7 @@ from modules.jikan import check_club_membership
 @dataclass
 class UserDatabaseClass:
     """User Database Class"""
+
     discord_id: Snowflake
     """User's Discord Snowflake ID"""
     mal_id: int
