@@ -489,7 +489,8 @@ def defineJikanException(error_code: int, error_message: Any) -> JikanException:
         error_message (Any): Error message
 
     Returns:
-        JikanException: Jikan Exception"""
+        JikanException: Jikan Exception
+    """
     try:
         match error_code:
             case 403:
