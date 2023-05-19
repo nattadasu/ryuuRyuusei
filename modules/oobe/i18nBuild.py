@@ -66,9 +66,8 @@ def index_json_lang() -> None:
     indexed.sort(key=lambda x: x["code"].lower())
     with (i18n_dir / "_index.json").open("w", encoding="utf-8", newline="\n") as f:
         j.dump(indexed, f, indent=2, ensure_ascii=False)
-        
-        
-  
+
+
 def convert_langs_to_json() -> None:
     """
     Convert all YAML files in the i18n folder to JSON format and create an index of languages.
