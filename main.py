@@ -63,7 +63,7 @@ async def main():
         i += 1
         pg = f"[Ext] [{i}/{len(exts)}]"
         lpg = len(pg)
-        sp  = " " * lpg
+        sp = " " * lpg
         print(f"{pg} Loading core/bot extension: {ext}")
         try:
             if ext == "interactions.ext.sentry" and SENTRY_DSN:

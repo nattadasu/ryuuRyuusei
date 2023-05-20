@@ -11,6 +11,7 @@ from fake_useragent import FakeUserAgent as UserAgent
 @dataclass
 class WebsiteStatus:
     """A dataclass to represent the status of a website."""
+
     website_name: str
     """The name of the website."""
     url_checked: str
@@ -32,9 +33,7 @@ class WebsiteChecker:
 
     async def __aenter__(self):
         """Enter the async context manager."""
-        self.headers: dict = {
-            "User-Agent": self._get_random_user_agent()
-        }
+        self.headers: dict = {"User-Agent": self._get_random_user_agent()}
         self.session = aiohttp.ClientSession(headers=self.headers)
         return self
 
@@ -78,21 +77,20 @@ class WebsiteChecker:
         if url.startswith("www."):
             url = re.sub(r"^www.", "", url)
 
-        params = {
-            "domain": url
-        }
+        params = {"domain": url}
         async with self.session.get(
-            "https://www.isitdownrightnow.com/check.php",
-            params=params
+            "https://www.isitdownrightnow.com/check.php", params=params
         ) as resp:
             if resp.status != 200:
                 raise aiohttp.ClientConnectorError()
 
             html_response = await resp.text()
 
-            soup = BeautifulSoup(html_response, 'html5lib')
+            soup = BeautifulSoup(html_response, "html5lib")
 
-            div_elements = soup.find_all('div', class_=lambda x: x in ['tabletr', 'tabletrsimple'])
+            div_elements = soup.find_all(
+                "div", class_=lambda x: x in ["tabletr", "tabletrsimple"]
+            )
 
             website_name = div_elements[0].span.text.strip()
             url_checked = div_elements[1].span.text.strip()
@@ -105,7 +103,7 @@ class WebsiteChecker:
                 url_checked=url_checked,
                 response_time=response_time,
                 last_down=last_down_str,
-                status_message=status_message
+                status_message=status_message,
             )
 
         return status
