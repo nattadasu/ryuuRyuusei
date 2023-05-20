@@ -45,7 +45,8 @@ class WebsiteChecker:
         """Close the aiohttp session."""
         await self.session.close()
 
-    def _get_random_user_agent(self) -> str:
+    @staticmethod
+    def _get_random_user_agent() -> str:
         """
         Get a random user agent.
 
