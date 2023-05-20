@@ -378,8 +378,6 @@ class Utilities(ipy.Extension):
             async with WebsiteChecker() as check:
                 status: WebsiteStatus = await check.check_website(url)
                 domain = status.url_checked
-        except aiohttp.ClientConnectorError:
-            err_msg = "Failed to reach isitdownrightnow.com at the moment"
         except validators.ValidationFailure:
             err_msg = "Invalid URL"
         except BaseException as e:

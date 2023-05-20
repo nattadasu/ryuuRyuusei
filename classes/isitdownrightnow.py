@@ -64,7 +64,7 @@ class WebsiteChecker:
             url (str): The URL of the website to check.
 
         Raises:
-            aiohttp.ClientConnectorError: If the connection to the website fails.
+            Exception: If the HTTP status code is not 200.
             validators.ValidationFailure: If the URL is not valid.
 
         Returns:
@@ -83,7 +83,7 @@ class WebsiteChecker:
             "https://www.isitdownrightnow.com/check.php", params=params
         ) as resp:
             if resp.status != 200:
-                raise aiohttp.ClientConnectorError()
+                raise Exception(f"HTTP error {resp.status}: {resp.reason}")
 
             html_response = await resp.text()
 
