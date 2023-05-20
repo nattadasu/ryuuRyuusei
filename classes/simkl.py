@@ -11,10 +11,10 @@ from typing import List, Literal
 from urllib.parse import quote
 
 import aiohttp
-from dataclassy import dataclass
+from dataclassy import dataclass, as_dict
 
 from classes.excepts import ProviderHttpError, SimklTypeError
-from modules.const import SIMKL_CLIENT_ID, USER_AGENT, simkl0rels
+from modules.const import SIMKL_CLIENT_ID, USER_AGENT
 
 
 @dataclass(kwargs=True)
@@ -551,7 +551,9 @@ class Simkl:
                 "You've might entered false media_type", SimklMediaTypes
             )
 
-        mids = {**simkl0rels, **data.get("ids", {})}
+        nullrels = as_dict(SimklRelations())
+
+        mids = {**nullrels, **data.get("ids", {})}
         for k, v in mids.items():
             if k in [
                 "title",

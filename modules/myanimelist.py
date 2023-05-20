@@ -38,7 +38,6 @@ from modules.const import (
     EMOJI_USER_ERROR,
     MYANIMELIST_CLIENT_ID,
     SIMKL_CLIENT_ID,
-    simkl0rels,
     warnThreadCW,
 )
 from modules.i18n import read_user_language
@@ -241,7 +240,7 @@ async def generate_mal(
             smId = await sim.search_by_id(sim.Provider.MYANIMELIST, m)
             smk = await sim.get_anime(smId[0]["ids"]["simkl"])
     except Exception:
-        smk = simkl0rels
+        smk = {"poster": None, "fanart": None}
 
     smkPost = smk.get("poster")
     smkBg = smk.get("fanart")
