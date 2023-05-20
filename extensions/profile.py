@@ -152,7 +152,7 @@ class Profile(ipy.Extension):
             await ctx.send(embed=embed)
         except Exception as e:
             embed = generate_commons_except_embed(
-                description=l_["strings"]["profile"]["commons"]["exception"]["general"],
+                description=l_["strings"]["profile"]["exception"]["general"],
                 error=e,
                 lang_dict=l_,
             )

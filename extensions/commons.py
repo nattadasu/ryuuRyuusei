@@ -111,15 +111,15 @@ class CommonCommands(ipy.Extension):
                 inline=True,
             ),
         ]
-        embed: ipy.Embed = ipy.Embed(
+        embed = ipy.Embed(
             title=l_["pong"]["title"],
             description=l_["pong"]["text"],
             color=0x996422,
             fields=fields,
             footer=ipy.EmbedFooter(text=l_["pong"]["footer"]),
-        ),
-        embed.set_thumbnail(
-            url="https://cdn.discordapp.com/attachments/1078005713349115964/1095771964783734874/main.png"
+            thumbnail=ipy.EmbedAttachment(
+                url="https://cdn.discordapp.com/attachments/1078005713349115964/1095771964783734874/main.png"
+            ),
         )
         await send.edit(
             embed=embed,

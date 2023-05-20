@@ -139,7 +139,7 @@ class Anime(ipy.Extension):
         except Exception:
             l_ = l_["strings"]["anime"]["search"]["exception"]
             emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_UNEXPECTED_ERROR)
-            embed: ipy.Embed = ipy.Embed(
+            embed = ipy.Embed(
                 title=l_["title"],
                 description=l_["text"].format(
                     QUERY=query,

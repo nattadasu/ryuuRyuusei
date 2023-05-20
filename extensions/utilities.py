@@ -220,7 +220,7 @@ class Utilities(ipy.Extension):
                 ),
                 ipy.EmbedField(name="DEC", value=f"```py\n{col}\n```", inline=True),
             ]
-            embed: ipy.Embed = ipy.Embed(
+            embed = ipy.Embed(
                 title=l_["commons"]["result"],
                 color=col,
                 fields=fields,
@@ -279,7 +279,7 @@ class Utilities(ipy.Extension):
             }
             # convert params object to string
             params = urlenc(params)
-            embed: ipy.Embed = ipy.Embed(
+            embed = ipy.Embed(
                 title=l_["commons"]["result"],
                 color=0x000000,
                 fields=[
