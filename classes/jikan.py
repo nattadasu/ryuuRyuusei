@@ -499,6 +499,12 @@ def defineJikanException(error_code: int, error_message: Any) -> JikanException:
                 em = "**I couldn't find the query on MAL**\nCheck the spelling or well, maybe they don't exist? 🤔"
             case 408:
                 em = "**Jikan had a timeout while fetching the data**\nPlease try again in 3 seconds."
+            case 418:
+                em = f"""**It seems that I can't parse the response from Jikan due to missing data, ouch**
+Please contact Ryuusei's dev team to resolve this issue
+Full message:```
+{error_message}
+```"""
             case 429:
                 em = "**I have been rate-limited by Jikan**\nAny queries related to MyAnimeList may not available "
             case 500:
@@ -578,13 +584,15 @@ class JikanApi:
             data["aired"]["prop"]["to"] = data["aired"]["prop"]["to"]
             data["aired"]["prop"]["to"] = JikanPropStruct(**data["aired"]["prop"]["to"])
             data["aired"]["prop"] = JikanPropParentStruct(**data["aired"]["prop"])
-            data["aired"]["from_"] = datetime.strptime(
-                data["aired"]["from"], "%Y-%m-%dT%H:%M:%S%z"
-            )
-            data["aired"]["to"] = datetime.strptime(
-                data["aired"]["to"], "%Y-%m-%dT%H:%M:%S%z"
-            )
+            if data["aired"].get("from", None):
+                data["aired"]["from_"] = datetime.strptime(
+                    data["aired"]["from"], "%Y-%m-%dT%H:%M:%S%z"
+                )
             del data["aired"]["from"]
+            if data["aired"].get("to", None):
+                data["aired"]["to"] = datetime.strptime(
+                    data["aired"]["to"], "%Y-%m-%dT%H:%M:%S%z"
+                )
             data["aired"] = JikanDateStruct(**data["aired"])
 
         if data.get("broadcast", None):
@@ -889,7 +897,7 @@ class JikanApi:
             except Exception as e:
                 retries += 1
                 if retries == 3:
-                    errcode: int = e.status_code if hasattr(e, "status_code") else 500
+                    errcode: int = e.status_code if hasattr(e, "status_code") else 418
                     errmsg: str | dict = e.message if hasattr(e, "message") else e
                     defineJikanException(errcode, errmsg)
                 else:
@@ -946,7 +954,7 @@ class JikanApi:
             self.write_data_to_cache(res, cache_file_path)
             return self.anime_dict_to_dataclass(res)
         except Exception as e:
-            errcode: int = e.status_code if hasattr(e, "status_code") else 500
+            errcode: int = e.status_code if hasattr(e, "status_code") else 418
             errmsg: str | dict = e.message if hasattr(e, "message") else e
             defineJikanException(errcode, errmsg)
 
