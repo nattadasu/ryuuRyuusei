@@ -7,7 +7,6 @@ fake-useragent
 fuzzywuzzy
 html5lib
 isort
-jikanpy-v4
 jurigged
 langcodes
 language_data
