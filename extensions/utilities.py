@@ -409,8 +409,12 @@ class Utilities(ipy.Extension):
                 timestamp=datetime.utcnow(),
             )
 
-            embed.set_thumbnail(url=f"https://www.isitdownrightnow.com/screenshot/m/{domain}.jpg")
-            embed.set_image(url=f"https://www.isitdownrightnow.com/screenshot/{domain}.jpg")
+            embed.set_thumbnail(
+                url=f"https://www.isitdownrightnow.com/screenshot/m/{domain}.jpg"
+            )
+            embed.set_image(
+                url=f"https://www.isitdownrightnow.com/screenshot/{domain}.jpg"
+            )
 
             await ctx.send(embed=embed)
 
