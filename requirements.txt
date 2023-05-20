@@ -2,7 +2,8 @@ aiohttp
 autopep8
 beautifulsoup4
 dataclassy
-discord_py_interactions==5.2.0
+discord_py_interactions==5.4.0
+fake-useragent
 fuzzywuzzy
 html5lib
 isort
@@ -18,3 +19,4 @@ pyyaml
 regex
 sentry_sdk
 tzdata
+validators
