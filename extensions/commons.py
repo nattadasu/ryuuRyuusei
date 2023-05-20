@@ -50,19 +50,11 @@ class CommonCommands(ipy.Extension):
         await ctx.send(embed=embed)
 
     @ipy.slash_command(name="ping", description="Ping the bot")
-    @ipy.slash_option(
-        name="defer",
-        description="Defer the command",
-        opt_type=ipy.OptionType.BOOLEAN,
-        required=False,
-    )
-    async def ping(self, ctx: ipy.SlashContext, defer: bool = False):
+    async def ping(self, ctx: ipy.SlashContext):
         start = pc()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["ping"]
         langEnd = pc()
-        if defer:
-            await ctx.defer()  # to make sure if benchmark reflects other commands with .defer()
         send = await ctx.send(
             "",
             embed=ipy.Embed(
