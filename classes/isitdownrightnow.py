@@ -90,7 +90,7 @@ class WebsiteChecker:
 
             html_response = await resp.text()
 
-            soup = BeautifulSoup(html_response, 'html.parser')
+            soup = BeautifulSoup(html_response, 'html5lib')
 
             div_elements = soup.find_all('div', class_=lambda x: x in ['tabletr', 'tabletrsimple'])
 
