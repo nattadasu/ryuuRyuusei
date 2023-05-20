@@ -1,10 +1,14 @@
+import aiohttp
 import re
 from base64 import b64decode, b64encode
 from urllib.parse import urlencode as urlenc
+from datetime import datetime
 
 import interactions as ipy
+import validators
 from plusminus import BaseArithmeticParser as BAP
 
+from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
 from classes.thecolorapi import Color, TheColorApi
 from modules.commons import generate_utils_except_embed, snowflake_to_datetime
 from modules.i18n import fetch_language_data, read_user_language
@@ -350,6 +354,88 @@ class Utilities(ipy.Extension):
                 ],
             )
         )
+
+    @utilities.subcommand(
+        group_name="site",
+        group_description="Related to websites",
+        sub_cmd_name="status",
+        sub_cmd_description="Check the status of a website",
+        options=[
+            ipy.SlashCommandOption(
+                name="url",
+                description="The URL to check",
+                required=True,
+                type=ipy.OptionType.STRING,
+            )
+        ]
+    )
+    async def utilities_site_status(self, ctx: ipy.SlashContext, url: str):
+        """Check the status of a website"""
+        await ctx.defer()
+        ul = read_user_language(ctx)
+        err_msg: str = ""
+        try:
+            async with WebsiteChecker() as check:
+                status: WebsiteStatus = await check.check_website(url)
+                domain = status.url_checked
+        except aiohttp.ClientConnectorError:
+            err_msg = "Failed to reach isitdownrightnow.com at the moment"
+        except validators.ValidationFailure:
+            err_msg = "Invalid URL"
+        except BaseException as e:
+            err_msg = str(e)
+
+        if err_msg:
+            await ctx.send(
+                embed=generate_utils_except_embed(
+                    language=ul,
+                    description="Failed to check the status of the website",
+                    field_name="URL",
+                    field_value=f"```{url}```",
+                    error=err_msg,
+                )
+            )
+        else:
+            embed = ipy.Embed(
+                author=ipy.EmbedAuthor(
+                    name="IsItDownRightNow",
+                    url="https://isitdownrightnow.com/",
+                ),
+                url=f"https://{domain}",
+                title=status.website_name,
+                thumbnail=ipy.EmbedAttachment(
+                    url=f"https://www.isitdownrightnow.com/screenshot/m/{domain}.jpg"
+                ),
+                fields=[
+                    ipy.EmbedField(
+                        name="Status",
+                        value=status.status_message.title(),
+                        inline=True
+                    ),
+                    ipy.EmbedField(
+                        name="Response Time",
+                        value=status.response_time,
+                        inline=True
+                    ),
+                    ipy.EmbedField(
+                        name="Last Down",
+                        value=status.last_down,
+                        inline=True
+                    ),
+                ],
+                color=0x566A82,
+                images=[
+                    ipy.EmbedAttachment(
+                        url=f"https://www.isitdownrightnow.com/data/{domain}.png"
+                    )
+                ],
+                footer=ipy.EmbedFooter(
+                    text="Powered by IsItDownRightNow"
+                ),
+                timestamp=datetime.utcnow(),
+            )
+
+            await ctx.send(embed=embed)
 
 
 def setup(bot):
