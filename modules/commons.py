@@ -155,12 +155,12 @@ def genrate_search_embed(
             count = l_["quantities"][f"{mediaType}"]["many"].format(count=len(results))
     dcEm = Embed(
         author=EmbedAuthor(name=platform, url=homepage, icon_url=icon),
-        thumbnail=EmbedAttachment(url=icon),
         color=color,
         title=title,
         description=l_["commons"]["search"]["result"].format(COUNT=count, QUERY=query),
         fields=results,
     )
+    dcEm.set_thumbnail(url=icon)
 
     return dcEm
 
@@ -203,10 +203,8 @@ def generate_utils_except_embed(
                 name=l_["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
             ),
         ],
-        thumbnail=EmbedAttachment(
-            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
-        ),
     )
+    dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return dcEm
 
@@ -245,10 +243,8 @@ def generate_commons_except_embed(
                 name=l_["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
             )
         ],
-        thumbnail=EmbedAttachment(
-            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
-        ),
     )
+    dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return dcEm
 

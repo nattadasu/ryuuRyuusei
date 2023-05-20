@@ -140,10 +140,8 @@ def malExceptionEmbed(
         title=l_["commons"]["error"],
         description=description,
         fields=[EmbedField(name=l_["commons"]["reason"], value=error, inline=False)],
-        thumbnail=EmbedAttachment(
-            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
-        ),
     )
+    dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return dcEm
 
@@ -480,7 +478,6 @@ async def generate_mal(
 > {cyno}
 """,
         color=0x2E51A2,
-        thumbnail=EmbedAttachment(url=poster),
         fields=[
             EmbedField(name=f"English Title{enChkMark}", value=ent, inline=True),
             EmbedField(name="Native Title", value=nat, inline=True),
@@ -491,9 +488,10 @@ async def generate_mal(
             EmbedField(name="Studio", value=stdio, inline=True),
             EmbedField(name="Aired", value=date),
         ],
-        images=[EmbedAttachment(url=background)],
         footer=EmbedFooter(text=note),
     )
+    embed.set_thumbnail(url=poster)
+    embed.set_image(url=background)
 
     return embed
 

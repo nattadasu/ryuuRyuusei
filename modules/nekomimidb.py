@@ -32,11 +32,6 @@ def generate_nekomimi_embed(row: NekomimiDbStruct, lang: dict) -> Embed:
     # Send the image url to the user
     dcEm = Embed(
         title=f"{mediaSource}",
-        images=[
-            EmbedAttachment(
-                url=str(img),
-            ),
-        ],
         color=col,
         author=EmbedAuthor(
             name=lang["author"],
@@ -54,6 +49,7 @@ def generate_nekomimi_embed(row: NekomimiDbStruct, lang: dict) -> Embed:
             ),
         ],
     )
+    dcEm.set_image(url=img)
 
     return dcEm
 

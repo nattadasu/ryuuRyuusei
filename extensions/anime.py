@@ -140,19 +140,17 @@ class Anime(ipy.Extension):
         except Exception:
             l_ = l_["strings"]["anime"]["search"]["exception"]
             emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_UNEXPECTED_ERROR)
-            await send.edit(
-                content="",
-                embed=ipy.Embed(
-                    title=l_["title"],
-                    description=l_["text"].format(
-                        QUERY=query,
-                    ),
-                    color=0xFF0000,
-                    footer=ipy.EmbedFooter(text=l_["footer"]),
-                    thumbnail=ipy.EmbedAttachment(
-                        url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
-                    ),
+            embed: ipy.Embed = ipy.Embed(
+                title=l_["title"],
+                description=l_["text"].format(
+                    QUERY=query,
                 ),
+                color=0xFF0000,
+                footer=ipy.EmbedFooter(text=l_["footer"]),
+            )
+            embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
+            await send.edit(
+                embed=embed
             )
 
     @ipy.component_callback("mal_search")

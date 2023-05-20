@@ -143,11 +143,12 @@ class Profile(ipy.Extension):
                 )
                 + botStatus
                 + regStatus,
-                thumbnail=ipy.EmbedAttachment(url=avatar),
                 color=color,
                 fields=fields,
-                images=[ipy.EmbedAttachment(url=banner)],
             )
+
+            embed.set_thumbnail(url=avatar)
+            embed.set_image(url=banner)
 
             await ctx.send(embed=embed)
         except Exception as e:
@@ -288,9 +289,9 @@ class Profile(ipy.Extension):
             description=f"""{icShine}{realName}Account created:  <t:{profile.registered.epoch}:D> (<t:{profile.registered.epoch}:R>)
 Total scrobbles: {profile.playcount}
 🧑‍🎤 {profile.artist_count} 💿 {profile.album_count} 🎶 {profile.track_count}""",
-            thumbnail=ipy.EmbedAttachment(url=img),
             fields=fields,
         )
+        embed.set_thumbnail(url=img)
         await ctx.send(embed=embed)
 
 

@@ -223,14 +223,15 @@ class Utilities(ipy.Extension):
                 ),
                 ipy.EmbedField(name="DEC", value=f"```py\n{col}\n```", inline=True),
             ]
+            embed: ipy.Embed = ipy.Embed(
+                title=l_["commons"]["result"],
+                color=col,
+                fields=fields,
+                footer=ipy.EmbedFooter(text=l_["color"]["powered"]),
+            )
+            embed.set_thumbnail(url=res.image.bare)
             await ctx.send(
-                embed=ipy.Embed(
-                    title=l_["commons"]["result"],
-                    color=col,
-                    fields=fields,
-                    thumbnail=ipy.EmbedAttachment(url=res.image.bare),
-                    footer=ipy.EmbedFooter(text=l_["color"]["powered"]),
-                )
+                embed=embed,
             )
         except Exception as e:
             await ctx.send(
@@ -282,24 +283,21 @@ class Utilities(ipy.Extension):
             }
             # convert params object to string
             params = urlenc(params)
+            embed: ipy.Embed = ipy.Embed(
+                title=l_["commons"]["result"],
+                color=0x000000,
+                fields=[
+                    ipy.EmbedField(
+                        name=l_["commons"]["string"],
+                        value=f"```{string}```",
+                        inline=False,
+                    ),
+                ],
+                footer=ipy.EmbedFooter(text=l_["qrcode"]["powered"]),
+            )
+            embed.set_image(url=f"https://api.qrserver.com/v1/create-qr-code/?{params}")
             await ctx.send(
-                embed=ipy.Embed(
-                    title=l_["commons"]["result"],
-                    color=0x000000,
-                    fields=[
-                        ipy.EmbedField(
-                            name=l_["commons"]["string"],
-                            value=f"```{string}```",
-                            inline=False,
-                        ),
-                    ],
-                    images=[
-                        ipy.EmbedAttachment(
-                            url=f"https://api.qrserver.com/v1/create-qr-code/?{params}"
-                        )
-                    ],
-                    footer=ipy.EmbedFooter(text=l_["qrcode"]["powered"]),
-                )
+                embed=embed,
             )
         except Exception as e:
             await ctx.send(
@@ -401,9 +399,6 @@ class Utilities(ipy.Extension):
                 ),
                 url=f"https://{domain}",
                 title=status.website_name,
-                thumbnail=ipy.EmbedAttachment(
-                    url=f"https://www.isitdownrightnow.com/screenshot/m/{domain}.jpg"
-                ),
                 fields=[
                     ipy.EmbedField(
                         name="Status", value=status.status_message.title(), inline=True
@@ -416,14 +411,12 @@ class Utilities(ipy.Extension):
                     ),
                 ],
                 color=0x566A82,
-                images=[
-                    ipy.EmbedAttachment(
-                        url=f"https://www.isitdownrightnow.com/data/{domain}.png"
-                    )
-                ],
                 footer=ipy.EmbedFooter(text="Powered by IsItDownRightNow"),
                 timestamp=datetime.utcnow(),
             )
+
+            embed.set_thumbnail(url=f"https://www.isitdownrightnow.com/screenshot/m/{domain}.jpg")
+            embed.set_image(url=f"https://www.isitdownrightnow.com/screenshot/{domain}.jpg")
 
             await ctx.send(embed=embed)
 
