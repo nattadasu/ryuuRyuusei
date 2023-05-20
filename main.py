@@ -35,17 +35,15 @@ async def on_ready():
     This function will be called when the bot is ready.
     """
     guilds = len(bot.guilds)
+    bg = "[Sys]"
+    lbg = len(bg)
+    sp = " " * lbg
     print("[Sys] Bot is ready!")
-    print(
-        "      Logged in as: "
-        + bot.user.display_name
-        + "#"
-        + str(bot.user.discriminator)
-    )
-    print("      User ID     : " + str(bot.user.id))
-    print("      Guilds      : " + str(guilds))
-    print("      Shards      : " + str(bot.total_shards))
-    print("      User Agent  : " + USER_AGENT)
+    print(f"{sp} Logged in as: {bot.user.display_name}")
+    print(f"{sp} User ID     : {bot.user.id}")
+    print(f"{sp} Guilds      : {guilds}")
+    print(f"{sp} Shards      : {bot.total_shards}")
+    print(f"{sp} User Agent  : {USER_AGENT}")
 
 
 async def main():
@@ -57,7 +55,6 @@ async def main():
     print("[Ext] Loading core/bot extensions...")
     exts: list[str] = [
         "interactions.ext.sentry",
-        "interactions.ext.jurigged",
     ]
     for i, ext in enumerate(exts):
         i += 1
@@ -68,7 +65,8 @@ async def main():
         try:
             if ext == "interactions.ext.sentry" and SENTRY_DSN:
                 bot.load_extension(ext, token=SENTRY_DSN)
-            bot.load_extension(ext)
+            else:
+                bot.load_extension(ext)
         except Exception as e:
             print(f"{pg} Error while loading system extension: " + ext)
             print(sp + str(e))
