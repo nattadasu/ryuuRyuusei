@@ -367,7 +367,7 @@ class Utilities(ipy.Extension):
                 required=True,
                 type=ipy.OptionType.STRING,
             )
-        ]
+        ],
     )
     async def utilities_site_status(self, ctx: ipy.SlashContext, url: str):
         """Check the status of a website"""
@@ -408,19 +408,13 @@ class Utilities(ipy.Extension):
                 ),
                 fields=[
                     ipy.EmbedField(
-                        name="Status",
-                        value=status.status_message.title(),
-                        inline=True
+                        name="Status", value=status.status_message.title(), inline=True
                     ),
                     ipy.EmbedField(
-                        name="Response Time",
-                        value=status.response_time,
-                        inline=True
+                        name="Response Time", value=status.response_time, inline=True
                     ),
                     ipy.EmbedField(
-                        name="Last Down",
-                        value=status.last_down,
-                        inline=True
+                        name="Last Down", value=status.last_down, inline=True
                     ),
                 ],
                 color=0x566A82,
@@ -429,9 +423,7 @@ class Utilities(ipy.Extension):
                         url=f"https://www.isitdownrightnow.com/data/{domain}.png"
                     )
                 ],
-                footer=ipy.EmbedFooter(
-                    text="Powered by IsItDownRightNow"
-                ),
+                footer=ipy.EmbedFooter(text="Powered by IsItDownRightNow"),
                 timestamp=datetime.utcnow(),
             )
 
