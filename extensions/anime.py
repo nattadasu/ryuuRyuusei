@@ -147,10 +147,10 @@ class Anime(ipy.Extension):
                 color=0xFF0000,
                 footer=ipy.EmbedFooter(text=l_["footer"]),
             )
-            embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
-            await send.edit(
-                embed=embed
+            embed.set_thumbnail(
+                url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
             )
+            await send.edit(embed=embed)
 
     @ipy.component_callback("mal_search")
     async def anime_search_data(self, ctx: ipy.ComponentContext) -> None:
