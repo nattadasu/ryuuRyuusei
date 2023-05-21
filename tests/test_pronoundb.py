@@ -8,6 +8,7 @@ except ImportError:
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     from classes.pronoundb import PronounDB, PronounData
 
+
 class PronounDbTest(unittest.IsolatedAsyncioTestCase):
     """Test the PronounDB class"""
 
@@ -18,7 +19,9 @@ class PronounDbTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_pronouns_bulk(self):
         async with PronounDB() as pdb:
-            pronouns = await pdb.get_pronouns_bulk(pdb.Platform.DISCORD, ["384089845527478272"])
+            pronouns = await pdb.get_pronouns_bulk(
+                pdb.Platform.DISCORD, ["384089845527478272"]
+            )
         self.assertIsInstance(pronouns, dict)
 
 

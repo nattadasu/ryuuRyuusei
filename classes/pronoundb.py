@@ -51,10 +51,12 @@ class Pronouns(Enum):
     UNSPECIFIED = "unspecified"
     """Unspecified pronouns"""
 
+
 @dataclass
 class PronounData:
     pronouns: Pronouns
     """The pronoun of the user."""
+
 
 pronounBulk = dict[str, Pronouns]
 
@@ -97,7 +99,6 @@ class PronounDB:
         TWITTER = "twitter"
         """Twitter"""
 
-
     async def get_pronouns(self, platform: Platform, id: str) -> PronounData:
         """
         Get the pronouns of a user
@@ -110,12 +111,16 @@ class PronounDB:
             Pronoun: The pronouns of the user
         """
         params = {"platform": platform.value, "id": id}
-        async with self.session.get(f"https://pronoundb.org/api/v1/lookup", params=params) as r:
+        async with self.session.get(
+            f"https://pronoundb.org/api/v1/lookup", params=params
+        ) as r:
             data = await r.json()
             data["pronouns"] = Pronouns(data["pronouns"])
             return PronounData(**data)
 
-    async def get_pronouns_bulk(self, platform: Platform, ids: list[str]) -> pronounBulk:
+    async def get_pronouns_bulk(
+        self, platform: Platform, ids: list[str]
+    ) -> pronounBulk:
         """
         Get the pronouns of multiple users
 
@@ -127,7 +132,9 @@ class PronounDB:
             PronounBulk: The pronouns of the users
         """
         params = {"platform": platform.value, "ids": ",".join(ids)}
-        async with self.session.get(f"https://pronoundb.org/api/v1/lookup-bulk", params=params) as r:
+        async with self.session.get(
+            f"https://pronoundb.org/api/v1/lookup-bulk", params=params
+        ) as r:
             data = await r.json()
             for key, value in data.items():
                 data[key] = Pronouns(value)
