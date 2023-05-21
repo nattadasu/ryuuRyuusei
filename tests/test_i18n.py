@@ -25,13 +25,17 @@ except ImportError:
 
 class ctx:
     """Mock context class"""
+
     class author:
         """Mock author class"""
+
         id = None
 
     class guild:
         """Mock guild class"""
+
         id = None
+
 
 class LanguageTest(unittest.IsolatedAsyncioTestCase):
     """Language test class"""

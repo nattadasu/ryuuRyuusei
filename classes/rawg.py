@@ -11,6 +11,7 @@ from modules.const import RAWG_API_KEY, USER_AGENT
 
 class RawgApi:
     """RAWG API Wrapper"""
+
     def __init__(self, key: str = RAWG_API_KEY):
         """
         Initialize the RAWG API Wrapper
