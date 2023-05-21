@@ -59,6 +59,7 @@ class AnimeApiAnime:
 
 class AnimeApi:
     """AnimeAPI API Wrapper"""
+
     def __init__(self):
         """Initialize the AniAPI API Wrapper"""
         self.base_url = "https://aniapi.nattadasu.my.id"

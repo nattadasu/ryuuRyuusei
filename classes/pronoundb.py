@@ -55,6 +55,7 @@ class Pronouns(Enum):
 @dataclass
 class PronounData:
     """PronounDB Pronoun Dataclass, for single user"""
+
     pronouns: Pronouns
     """The pronoun of the user."""
 
