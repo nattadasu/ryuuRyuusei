@@ -8,9 +8,8 @@ from uuid import uuid4 as id4
 from interactions import (
     Button,
     ButtonStyle,
-    Client,
+    AutoShardedClient,
     Embed,
-    EmbedAttachment,
     EmbedAuthor,
     EmbedField,
     PartialEmoji,
@@ -299,7 +298,7 @@ async def get_parent_nsfw_status(snowflake: int) -> bool:
         >>> print(result)
         True
     """
-    bot_http = Client(token=BOT_TOKEN).http
+    bot_http = AutoShardedClient(token=BOT_TOKEN).http
     guild = await bot_http.get_channel(channel_id=snowflake)
     # close the connection
     return guild.get("nsfw", False)

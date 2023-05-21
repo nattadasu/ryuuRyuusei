@@ -9,7 +9,7 @@ from json import loads as jlo
 
 import pandas as pd
 from fuzzywuzzy import fuzz
-from interactions import BaseContext, Client, Embed, EmbedField, InteractionContext
+from interactions import BaseContext, AutoShardedClient, Embed, EmbedField, InteractionContext
 from interactions.ext.paginators import Paginator
 
 from modules.const import LANGUAGE_CODE
@@ -71,12 +71,12 @@ def read_user_language(ctx: BaseContext | InteractionContext) -> str:
     return language
 
 
-async def paginate_language(bot: Client, ctx: InteractionContext) -> None:
+async def paginate_language(bot: AutoShardedClient, ctx: InteractionContext) -> None:
     """
     Paginate the language list
 
     Args:
-        bot (Client): The bot client
+        bot (AutoShardedClient): The bot client
         ctx (InteractionContext): The context to send the language list to
     """
     with open("i18n/_index.json", "r") as f:

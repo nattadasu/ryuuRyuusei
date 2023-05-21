@@ -15,14 +15,13 @@ now: dtime = dtime.now(tz=tz.utc)
 bot = ipy.AutoShardedClient(
     token=BOT_TOKEN,
     status=ipy.Status.ONLINE,
-    auto_defer=ipy.AutoDefer(
-        enabled=True,
-        time_until_defer=1.5,
-    ),
     activity=ipy.Activity(
         name="random cat videos",
         type=ipy.ActivityType.WATCHING,
     ),
+    delete_unused_application_cmds=True,
+    sync_interactions=True,
+    send_command_tracebacks=False,
 )
 """The bot client"""
 
@@ -69,11 +68,8 @@ async def main():
                 bot.load_extension(ext)
         except Exception as e:
             print(f"{pg} Error while loading system extension: " + ext)
-            print(sp + str(e))
+            print(f"{sp} {e}")
             print(f"[Ext] If this error shows up while restart the bot, ignore")
-    bot.del_unused_app_cmd = True
-    bot.sync_interactions = True
-    bot.send_command_tracebacks = False
 
     # Load extensions
     print("[Cog] Loading cog/extensions...")
@@ -97,7 +93,7 @@ async def main():
                 print(f"{pg} Skipping: {ext}, not a .py file")
         except Exception as e:
             print(f"{pg} Error while loading extension: {ext}")
-            print({sp} + str(e))
+            print(f"{sp} {e}")
             print("[Cog] If this error shows up while restart the bot, ignore")
 
     await bot.astart()
@@ -105,21 +101,22 @@ async def main():
 
 if __name__ == "__main__":
     print("[Sys] Starting bot...")
-    print("[Bcm] Date: " + now.strftime("%d/%m/%Y %H:%M:%S"))
-    bot_run = pc()
+    bot_run = now
+    print("[Bcm] Date: " + bot_run.strftime("%d/%m/%Y %H:%M:%S"))
     while True:
         try:
             asy = asyncio.run(main())
         except KeyboardInterrupt:
-            bot_stop = pc()
             print("[Sys] Bot stopped by user.")
-            now: dtime = dtime.now(tz=tz.utc)
-            print("[Bcm] Date: " + now.strftime("%d/%m/%Y %H:%M:%S"))
+            bot_stop: dtime = dtime.now(tz=tz.utc)
+            print("[Bcm] Date: " + bot_stop.strftime("%d/%m/%Y %H:%M:%S"))
+            total_time = bot_stop - bot_run
+            total_time = dtime.strptime(
+                str(total_time),
+                "%H:%M:%S.%f",
+            )
+            total_time = total_time.strftime("%H hours, %M minutes, %S seconds")
             print(
-                "      Uptime: "
-                + str(int(bot_stop - bot_run))
-                + "s, or around "
-                + str(int((bot_stop - bot_run) / 60))
-                + "m"
+                f"      Uptime: {total_time}"
             )
             sys.exit(0)

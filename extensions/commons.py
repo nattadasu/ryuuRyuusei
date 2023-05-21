@@ -20,12 +20,12 @@ from modules.i18n import fetch_language_data, read_user_language
 class CommonCommands(ipy.Extension):
     """Common commands"""
 
-    def __init__(self, bot: ipy.Client, now: dtime = dtime.now(tz=tz.utc)):
+    def __init__(self, bot: ipy.AutoShardedClient, now: dtime = dtime.now(tz=tz.utc)):
         """
         Initialize the extension
 
         Args:
-            bot (ipy.Client): The bot client
+            bot (ipy.AutoShardedClient): The bot client
             now (dtime, optional): The current time. Defaults to dtime.now(tz=tz.utc).
         """
         self.bot = bot
@@ -51,6 +51,7 @@ class CommonCommands(ipy.Extension):
 
     @ipy.slash_command(name="ping", description="Ping the bot")
     async def ping(self, ctx: ipy.SlashContext):
+        await ctx.defer()
         start = pc()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["ping"]

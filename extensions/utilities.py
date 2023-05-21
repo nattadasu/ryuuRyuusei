@@ -17,7 +17,7 @@ from modules.i18n import fetch_language_data, read_user_language
 class Utilities(ipy.Extension):
     """Utilities commands"""
 
-    def __init__(self, bot: ipy.Client):
+    def __init__(self, bot: ipy.AutoShardedClient):
         self.bot = bot
 
     @ipy.slash_command(
@@ -96,6 +96,7 @@ class Utilities(ipy.Extension):
         ],
     )
     async def utilities_base64(self, ctx: ipy.SlashContext, mode: str, string: str):
+        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["utilities"]
         try:
@@ -163,6 +164,7 @@ class Utilities(ipy.Extension):
     async def utilities_color(
         self, ctx: ipy.SlashContext, color_format: str, color_value: str
     ):
+        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["utilities"]
         res: dict = {}
@@ -184,7 +186,6 @@ class Utilities(ipy.Extension):
                         res: Color = await tca.color(hsl=color_value)
                     case "cmyk":
                         res: Color = await tca.color(cmyk=color_value)
-                # await tca.close()
             rgb = res.rgb
             col: int = (rgb.r << 16) + (rgb.g << 8) + rgb.b
             fields = [
@@ -268,6 +269,7 @@ class Utilities(ipy.Extension):
     async def utilities_qrcode(
         self, ctx: ipy.SlashContext, string: str, error_correction: str = "L"
     ):
+        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["utilities"]
         try:
@@ -364,6 +366,7 @@ class Utilities(ipy.Extension):
     )
     async def utilities_site_status(self, ctx: ipy.SlashContext, url: str):
         """Check the status of a website"""
+        await ctx.defer()
         ul = read_user_language(ctx)
         err_msg: str = ""
         try:
@@ -413,7 +416,7 @@ class Utilities(ipy.Extension):
                 url=f"https://www.isitdownrightnow.com/screenshot/m/{domain}.jpg"
             )
             embed.set_image(
-                url=f"https://www.isitdownrightnow.com/screenshot/{domain}.jpg"
+                url=f"https://www.isitdownrightnow.com/data/{domain}.png"
             )
 
             await ctx.send(embed=embed)

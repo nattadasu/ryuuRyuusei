@@ -2,7 +2,7 @@ aiohttp
 autopep8
 beautifulsoup4
 dataclassy
-discord_py_interactions==5.4.0
+discord_py_interactions @ git+https://github.com/AstreaTSS/interactions-py-library@weird-embed-workaround
 fake-useragent
 fuzzywuzzy
 html5lib
