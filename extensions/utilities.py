@@ -1,4 +1,3 @@
-import aiohttp
 import re
 from base64 import b64decode, b64encode
 from urllib.parse import urlencode as urlenc

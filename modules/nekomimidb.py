@@ -2,7 +2,7 @@
 
 This module contains the functions used by the nekomimiDb module."""
 
-from interactions import Embed, EmbedAttachment, EmbedAuthor, EmbedField
+from interactions import Embed, EmbedAuthor, EmbedField
 from interactions import SlashContext as sctx
 
 from classes.nekomimidb import NekomimiDb as neko
