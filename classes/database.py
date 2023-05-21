@@ -227,7 +227,7 @@ class UserDatabase:
 
 
 class DatabaseException(Exception):
-    pass
+    """Exception raised for errors in the database."""
 
 
 __all__ = ["UserDatabase", "DatabaseException"]

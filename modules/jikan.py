@@ -1,4 +1,5 @@
-"""# Jikan API module
+"""
+# Jikan API module
 
 This module contains only functions to interact with the Jikan API.
 

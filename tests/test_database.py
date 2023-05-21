@@ -59,6 +59,7 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
         """Test removing user data"""
 
         async def doit() -> bool:
+            """Do the thing, very helpful"""
             drop = await ud.drop_user(Snowflake(1234567890))
             return drop
 

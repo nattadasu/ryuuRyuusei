@@ -1,11 +1,13 @@
-"""# Constants and Variables Module
+"""
+# Constants and Variables Module
 
 This module contains all constants used in the bot.
 
 All constants are stored in a .env file. The .env file is not included in the repository for security reasons.
 However, you can use the .env.example file as a template to create your own .env file.
 
-This module also contains some mutable variables/constant that are used oftenly in the bot."""
+This module also contains some mutable variables/constant that are used oftenly in the bot.
+"""
 
 from os import getenv as ge
 from subprocess import check_output as chout

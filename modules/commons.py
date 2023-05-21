@@ -1,6 +1,8 @@
-"""# Commons Module
+"""
+# Commons Module
 
-This module contains the common functions used by the other modules."""
+This module contains the common functions used by the other modules.
+"""
 
 from re import sub as rSub
 from uuid import uuid4 as id4

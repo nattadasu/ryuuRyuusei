@@ -23,6 +23,16 @@ except ImportError:
     )
 
 
+class ctx:
+    """Mock context class"""
+    class author:
+        """Mock author class"""
+        id = None
+
+    class guild:
+        """Mock guild class"""
+        id = None
+
 class LanguageTest(unittest.IsolatedAsyncioTestCase):
     """Language test class"""
 
@@ -51,13 +61,6 @@ class LanguageTest(unittest.IsolatedAsyncioTestCase):
     def test_user_language(self):
         """Test reading user language"""
 
-        class ctx:
-            class author:
-                id = None
-
-            class guild:
-                id = None
-
         ctx.author.id = 384089845527478272
         ctx.guild.id = 589128995501637655
         self.assertTrue(read_user_language(ctx) in ["en_US", "id_ID"])
@@ -70,10 +73,6 @@ class LanguageTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_set_default_language(self):
         """Test setting default language"""
-
-        class ctx:
-            class author:
-                id: int = None
 
         ctx.author.id = 384089845527478272
         self.assertTrue(await set_default_language("en_US", ctx) is None)

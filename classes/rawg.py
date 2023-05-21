@@ -9,7 +9,8 @@ from classes.excepts import ProviderHttpError, ProviderTypeError
 from modules.const import RAWG_API_KEY, USER_AGENT
 
 
-class RawgAPI:
+class RawgApi:
+    """RAWG API Wrapper"""
     def __init__(self, key: str = RAWG_API_KEY):
         """
         Initialize the RAWG API Wrapper
@@ -138,4 +139,5 @@ class RawgAPI:
             json.dump(cache_data, cache_file)
 
     async def close(self):
+        """Close the aiohttp session"""
         await self.session.close()

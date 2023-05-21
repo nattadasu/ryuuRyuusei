@@ -1,6 +1,8 @@
-"""# MyAnimeList Module
+"""
+# MyAnimeList Module
 
-This module contains modules that are related to MyAnimeList or Jikan API."""
+This module contains modules that are related to MyAnimeList or Jikan API.
+"""
 
 import html
 import re

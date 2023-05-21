@@ -1,6 +1,8 @@
-"""# Internationalization Bot Module
+"""
+# Internationalization Bot Module
 
-All language files are stored in the i18n folder. Strings to change and view languages must be in English."""
+All language files are stored in the i18n folder. Strings to change and view languages must be in English.
+"""
 
 
 import csv

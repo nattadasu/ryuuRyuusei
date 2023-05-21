@@ -1,6 +1,8 @@
-"""Simkl API wrapper
+"""
+Simkl API wrapper
 
-This module is a wrapper for Simkl API, which is used to search for anime, shows, and movies."""
+This module is a wrapper for Simkl API, which is used to search for anime, shows, and movies.
+s"""
 
 import json
 import os

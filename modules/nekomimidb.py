@@ -1,6 +1,8 @@
-"""# nattadasu/nekomimiDb Module
+"""
+# nattadasu/nekomimiDb Module
 
-This module contains the functions used by the nekomimiDb module."""
+This module contains the functions used by the nekomimiDb module.
+"""
 
 from interactions import Embed, EmbedAuthor, EmbedField
 from interactions import SlashContext as sctx

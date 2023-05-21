@@ -54,11 +54,13 @@ class Pronouns(Enum):
 
 @dataclass
 class PronounData:
+    """PronounDB Pronoun Dataclass, for single user"""
     pronouns: Pronouns
     """The pronoun of the user."""
 
 
 pronounBulk = dict[str, Pronouns]
+"""PronounDB Pronoun Bulk Dataclass, for multiple users"""
 
 
 class PronounDB:
@@ -75,10 +77,12 @@ class PronounDB:
         self.headers = {"User-Agent": USER_AGENT}
 
     async def __aenter__(self):
+        """Enter the async context manager"""
         self.session = aiohttp.ClientSession(headers=self.headers)
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
+        """Exit the async context manager"""
         await self.close()
 
     async def close(self):
