@@ -415,9 +415,7 @@ class Utilities(ipy.Extension):
             embed.set_thumbnail(
                 url=f"https://www.isitdownrightnow.com/screenshot/m/{domain}.jpg"
             )
-            embed.set_image(
-                url=f"https://www.isitdownrightnow.com/data/{domain}.png"
-            )
+            embed.set_image(url=f"https://www.isitdownrightnow.com/data/{domain}.png")
 
             await ctx.send(embed=embed)
 

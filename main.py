@@ -116,7 +116,5 @@ if __name__ == "__main__":
                 "%H:%M:%S.%f",
             )
             total_time = total_time.strftime("%H hours, %M minutes, %S seconds")
-            print(
-                f"      Uptime: {total_time}"
-            )
+            print(f"      Uptime: {total_time}")
             sys.exit(0)
