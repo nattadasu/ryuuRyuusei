@@ -45,7 +45,6 @@ class Anime(ipy.Extension):
     async def anime_search(
         self, ctx: ipy.SlashContext, query: str, provider: str = "anilist"
     ):
-        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul, useRaw=True)
         send = await ctx.send(
@@ -155,7 +154,6 @@ class Anime(ipy.Extension):
 
     @ipy.component_callback("mal_search")
     async def anime_search_data(self, ctx: ipy.ComponentContext) -> None:
-        await ctx.defer()
         ani_id: int = int(ctx.values[0])
         await malSubmit(ctx, ani_id)
 
@@ -172,7 +170,6 @@ class Anime(ipy.Extension):
         ],
     )
     async def anime_info(self, ctx: ipy.SlashContext, mal_id: int):
-        await ctx.defer()
         await malSubmit(ctx, mal_id)
 
 

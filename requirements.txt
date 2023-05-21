@@ -5,7 +5,7 @@ dataclassy
 fake-useragent
 fuzzywuzzy
 html5lib
-interactions-py @ git+https://github.com/AstreaTSS/interactions-py-library@weird-embed-workaround
+interactions-py==5.5.0
 isort
 jurigged
 langcodes

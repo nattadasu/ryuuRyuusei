@@ -25,7 +25,6 @@ class Random(ipy.Extension):
         sub_cmd_description="Get a random anime",
     )
     async def random_anime(self, ctx: ipy.SlashContext):
-        await ctx.defer()
         send = await ctx.send(
             embed=ipy.Embed(
                 title="Random Anime",
@@ -56,7 +55,6 @@ class Random(ipy.Extension):
         sub_cmd_description="Get an image of boy character in cat ears",
     )
     async def random_nekomimi_boy(self, ctx: ipy.SlashContext):
-        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["random"]["nekomimi"]
         await submit_nekomimi(ctx=ctx, gender=NekomimiGender.BOY, lang=l_)
@@ -68,7 +66,6 @@ class Random(ipy.Extension):
         sub_cmd_description="Get an image of girl character in cat ears",
     )
     async def random_nekomimi_girl(self, ctx: ipy.SlashContext):
-        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["random"]["nekomimi"]
         await submit_nekomimi(ctx=ctx, gender=NekomimiGender.GIRL, lang=l_)
@@ -80,7 +77,6 @@ class Random(ipy.Extension):
         sub_cmd_description="Get an image of random character of any gender in cat ears",
     )
     async def random_nekomimi_randomize(self, ctx: ipy.SlashContext):
-        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["random"]["nekomimi"]
         await submit_nekomimi(ctx=ctx, lang=l_)
@@ -142,7 +138,6 @@ class Random(ipy.Extension):
         max_value: int = 10,
         base: int = 10,
     ):
-        await ctx.defer()
         async with RandomOrg() as rand:
             numbers = await rand.integers(
                 num=numbers, min_val=min_value, max_val=max_value, base=base
@@ -203,7 +198,6 @@ class Random(ipy.Extension):
         use_lowercase: bool = True,
         use_digits: bool = True,
     ):
-        await ctx.defer()
         upper = "off" if not use_uppercase else "on"
         lower = "off" if not use_lowercase else "on"
         digits = "off" if not use_digits else "on"

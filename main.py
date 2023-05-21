@@ -5,11 +5,14 @@ from datetime import datetime as dtime
 from datetime import timezone as tz
 
 import interactions as ipy
+from interactions.client import const as ipy_const
 
 from modules.const import BOT_TOKEN, SENTRY_DSN, USER_AGENT
 
 
 now: dtime = dtime.now(tz=tz.utc)
+
+ipy_const.CLIENT_FEATURE_FLAGS["FOLLOWUP_INTERACTIONS_FOR_IMAGES"] = True
 
 bot = ipy.AutoShardedClient(
     token=BOT_TOKEN,
@@ -17,6 +20,10 @@ bot = ipy.AutoShardedClient(
     activity=ipy.Activity(
         name="random cat videos",
         type=ipy.ActivityType.WATCHING,
+    ),
+    auto_defer=ipy.AutoDefer(
+        enabled=True,
+        time_until_defer=0,
     ),
     delete_unused_application_cmds=True,
     sync_interactions=True,

@@ -51,7 +51,6 @@ class CommonCommands(ipy.Extension):
 
     @ipy.slash_command(name="ping", description="Ping the bot")
     async def ping(self, ctx: ipy.SlashContext):
-        await ctx.defer()
         start = pc()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["ping"]

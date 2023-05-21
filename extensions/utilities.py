@@ -95,7 +95,6 @@ class Utilities(ipy.Extension):
         ],
     )
     async def utilities_base64(self, ctx: ipy.SlashContext, mode: str, string: str):
-        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["utilities"]
         try:
@@ -163,7 +162,6 @@ class Utilities(ipy.Extension):
     async def utilities_color(
         self, ctx: ipy.SlashContext, color_format: str, color_value: str
     ):
-        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["utilities"]
         res: dict = {}
@@ -268,7 +266,6 @@ class Utilities(ipy.Extension):
     async def utilities_qrcode(
         self, ctx: ipy.SlashContext, string: str, error_correction: str = "L"
     ):
-        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul)["utilities"]
         try:
@@ -365,7 +362,6 @@ class Utilities(ipy.Extension):
     )
     async def utilities_site_status(self, ctx: ipy.SlashContext, url: str):
         """Check the status of a website"""
-        await ctx.defer()
         ul = read_user_language(ctx)
         err_msg: str = ""
         try:
