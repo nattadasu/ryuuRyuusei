@@ -68,7 +68,7 @@ async def main():
         except Exception as e:
             print(f"{pg} Error while loading system extension: " + ext)
             print(f"{sp} {e}")
-            print(f"[Ext] If this error shows up while restart the bot, ignore")
+            print("[Ext] If this error shows up while restart the bot, ignore")
 
     # Load extensions
     print("[Cog] Loading cog/extensions...")
