@@ -31,6 +31,10 @@ and advanced media title lookup (anime, manga, games, tv, movie) statically
 while it keeping simple and easy to use, also respecting users under GDPR,
 CCPA/CPRA, and other privacy laws.
 
+The underlying bot frameworks are kinda heavily-typed, so it's might be a bit
+resilient to breaking changes, even with 3rd party API wrappers that were
+written in-house.
+
 By inviting this bot to your server or using it, you agree to the
 [Privacy Policy](PRIVACY.md) and [Terms of Service](TERMS_OF_SERVICE.md).
 
@@ -48,9 +52,6 @@ To use the bot, invite it to your server using this link:
 
 Next, go to the channel you want to use the bot in and type `/` to see the list
 of available commands.
-
-Currently the bot was self-hosted, so it's might not available 24/7, but it get
-the job done. Although, I'll try to keep it online as much as possible.
 
 All data invoked from `/register` will be stored in
 [database.csv](database/database.csv), user is able to delete their data by
@@ -80,7 +81,7 @@ If you have any questions, feel free to join the
         and more).
   - [x] A lot of information about the media compared to competitors: synopsis,
         genres and themes, rating with total votes, and more!
-  - [x] Know ID of the title you want to search? Use `/command info` command
+  - [x] Know ID of the title you want to search? Use `/relations` command group
         instantly!
 - [x] Shows your birthday; including remaining days to your upcoming birthday
       (based on MyAnimeList user profile).
@@ -90,7 +91,6 @@ If you have any questions, feel free to join the
       `/random_nekomimi` commands![^1]
 - [x] Self-hosting on your phone? No problem! Bot has been tested on Termux on
       Android 11.
-- [x] ~~**100% Approved by Kagamine Len**[^2]~~
 - [ ] Does not support dynamic airing reminder. LiveChart + RSS bot is a good
       alternative.
 - [ ] Does not support updating your list to MyAnimeList. You can use
@@ -99,7 +99,6 @@ If you have any questions, feel free to join the
       complicated if you're using multiple platforms.
 
 [^1]: The random seed was generated using UUID4 and truncated to 32 bits (`pandas` couldn't able to get a sample using a seed above 32 bits unfortunately), and this seed generation happened ***everytime*** user invoked command. I can not guarantee the randomness as it is not the true random as in cryptographically secure random, but it's good enough that you should have hard time to get the same result twice in a row.
-[^2]: This project is not affiliated with Crypton Future Media, Inc. or any of its subsidiaries.
 
 ## 📣 Available Commands <a name = "commands"></a>
 
@@ -113,7 +112,7 @@ If you have any questions, feel free to join the
 
 > Utilize MyAnimeList via Jikan
 
-- ⌚ `/anime info` - Get information about an anime using direct MyAnimeList ID
+- `/anime info` - Get information about an anime using direct MyAnimeList ID
 - `/anime search` - Search for an anime, using AniList's search API
 
 ### Manga Commands
@@ -167,7 +166,7 @@ If you have any questions, feel free to join the
 
 - ⌚ `/profile anilist` - Get your AniList profile
 - `/profile discord` - Get your Discord profile
-- ⌚ `/profile lastfm` - Get your Last.fm profile
+- `/profile lastfm` - Get your Last.fm profile
 - ⌚ `/profile myanimelist` - Get your MyAnimeList profile
 - ⌚ `/whoami` - Show stored information and settings about you on the bot
   graphically and interactively.
@@ -330,13 +329,14 @@ close the terminal or PowerShell session.
 | [emoji](https://pypi.org/project/emoji/)                            | MIT        | Language, Utility                  | Module            | Used for converting emoji to Unicode                                                        |
 | [goQr](https://goqr.me/api)                                         | -          | Utility                            | API               | Used for generating QR code                                                                 |
 | [Interactions.py](https://pypi.org/project/discord-py-interactions) | MIT        | Base                               | Wrapper           | The backend of this bot!                                                                    |
+| [Is It Down Right Now?](https://isitdownrightnow.com/)              | -          | Utility                            | API               | Used for checking if a website is down                                                      |
 | [Jikan](https://jikan.moe/)                                         | MIT        | Anime, Profile, Verify             | 3rd Party MAL API | Used for showing anime information, verify user, and show user's profile                    |
-| [JikanPy](https://pypi.org/project/jikanpy/)                        | MIT        | Anime, Profile, Verify             | Wrapper           | Wrapper for Jikan API                                                                       |
 | [Kitsu](https://kitsu.io/)                                          | Apache-2.0 | Anime                              | Database          | Used for adding additional information to anime information, mainly background and poster   |
 | [langcodes](https://pypi.org/project/langcodes/)                    | MIT        | Language                           | Wrapper           | Used for getting language name from language code                                           |
 | [Last.fm](https://www.last.fm/)                                     | -          | Profile                            | Database          | Used for getting user's last.fm profile and scrobble summary                                |
 | [MyAnimeList](https://myanimelist.net/)                             | -          | Anime                              | Database          | Search and show anime information                                                           |
 | [nattadasu/nekomimiDb](https://github.com/nattadasu/nekomimiDb)     | MIT        | Random                             | Database          | Used for getting random nekomimi image                                                      |
+| [PronounDB](https://pronoundb.org/)                                 | -          | Profile                            | Database          | Used for getting user's pronouns                                                            |
 | [Random.org](https://www.random.org/)                               | -          | Random                             | Generator         | Used for generating (true) random number and string                                         |
 | [Rawg](https://rawg.io/)                                            | -          | Game                               | Database          | Used for searching and showing game information                                             |
 | [SIMKL](https://simkl.com/)                                         | -          | Anime, Movie, Show, Relation       | Database          | Used for searching and showing movie and show information, anime for additional information |
