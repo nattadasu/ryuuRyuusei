@@ -30,6 +30,8 @@ class WebsiteChecker:
     def __init__(self):
         """Initialize the WebsiteChecker class."""
         self.err_msg: str = ""
+        self.headers: dict = {}
+        self.session: Optional[aiohttp.ClientSession] = None
 
     async def __aenter__(self):
         """Enter the async context manager."""
