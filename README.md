@@ -240,109 +240,133 @@ If you have any questions, feel free to join the
 
 ### Prerequisites
 
-Before you begin, ensure you have met the following requirements:
+Before proceeding, ensure that you have installed dependencies installed on your
+system:
 
-- You have installed the latest version of `python`, `pip`, and `git`.
-- Has a Discord bot token.
+- Git
+- Python (version 3.10 or higher)
 
-### Installing
+You can verify your Python version by running `python --version` or
+`python3 --version` in your terminal/command prompt.
 
-> Depends on your OS, you may need to use `python3` for the command instead of
-> `python`. You may also need to install packages/modules as superuser/root
-> before continuing to ./firstRun.py
+Also, you might need Discord account and Discord Bot Token.
 
-Before we start, you need to set up virtual environment. This is optional, but
-highly recommended, especially if you're using POSIX system (Linux, macOS, etc).
+### Cloning the Repository
 
-```bash
-python -m venv venv
-source venv/bin/activate
-```
+1. Clone the `ryuuRyuusei` repository by executing the following command:
 
-If you're using Windows, you can use `venv\Scripts\activate.bat` instead, or
-on PowerShell, `venv\Scripts\Activate.ps1`.
+   ```bash
+   git clone https://github.com/nattadasu/ryuuRyuusei
+   ```
 
-For Linux and macOS, you can also use `venv/bin/activate.fish` if you're using
-fish shell, or `venv/bin/activate.csh` if you're using csh shell.
+2. Change your current working directory to the cloned repository:
 
-Next, to install Ryuuzaki Ryuusei, follow these steps:
+   ```bash
+   cd ryuuRyuusei
+   ```
 
-```bash
-git clone https://github.com/nattadasu/ryuuRyuusei.git
-cd ryuuRyuusei
-# you may sudo this command if you're on Linux or macOS to avoid permission error
-python -m pip install -r requirements.txt
-```
+### Setting up a Virtual Environment
 
-Next, you need to do an initial setup for the bot. Run `firstRun.py` and let the
-automation intelligently pick the latest version of installed Python and
-installs `jikanpy` from GitHub repository (we need APIv4 and AioJikan
-support), install required modules for the bot, and finally prepare databases
-(bot, `nattadasu/nekomimiDb`, and AnimeAPI).
+1. Create a virtual environment to isolate the bot's dependencies:
 
-```bash
-python ./firstRun.py
-```
+   ```bash
+   python -m venv venv
+   ```
 
-> **Note**
->
-> In some cases, you may need to add variable `PYTHON_BINARY` to skip the
-> automatic Python version detection. For example in PowerShell (Windows/Core),
-> if you have multiple versions of Python installed, you can use
->
-> ```pwsh
-> $Env:PYTHON_BINARY = "${Env:LOCALAPPDATA}/Programs/Python/Python39/python.exe"
-> ```
->
-> to force the script to use Python 3.9.
+2. Activate the virtual environment based on your operating system and shell:
 
-Then, when `pip` finished installing all of required modules, copy
-`.env.example` to `.env` and fill the required fields.
+   - **Windows (PowerShell)**:
 
-```bash
-cp .env.example .env
-```
+     ```powershell
+     & .\venv\Scripts\Activate.ps1
+     ```
 
-> **Note**
->
-> `firstRun.py` already did this for you, but you can do it manually if you
-> want, or if the script unable to do it for you.
+   - **Windows (Command Prompt)**:
 
-Finally, run the bot using `python` command:
+     ```batch
+     venv\Scripts\activate.bat
+     ```
+
+   - **Unix-like Systems (bash)**:
+
+     ```bash
+     source venv/bin/activate
+     ```
+
+   If you encounter any issues activating the virtual environment, make sure you
+   have the appropriate permissions (root access might be required on Unix-like
+   systems).
+
+### Installing Dependencies
+
+Before running the bot, you need to install its dependencies. Execute the
+following command:
 
 ```bash
-python ./main.py
+pip install aiohttp langcodes pyyaml pandas
 ```
 
-Keep in mind that you might need to reactivate the virtual environment if you
-close the terminal or PowerShell session.
+- If you are using Termux on Android, add `MATHLIB="m"` before the `pip`
+  command, as there's known issue installing `pandas` dependencies:
 
-~~don't know how to reactivate? read again!!!~~
+  ```bash
+  MATHLIB="m" pip install aiohttp langcodes pyyaml pandas
+  ```
+
+### Running the Bot
+
+1. Run the initial setup script by executing the following command:
+
+   ```bash
+   python firstRun.py
+   ```
+
+   The following script will try to install the required dependencies, updating
+   them, initialize database, download additional featured data, converting
+   i18n files from YAML to JSON, and copy `.env.example` file as `.env`.
+
+2. If the `.env` file does not exist, follow this step, otherwise skip:
+
+   - Copy the `.env.example` file to create a new `.env` file:
+
+     ```bash
+     cp .env.example .env
+     ```
+
+3. Fill in the required credentials in the `.env` file.
+
+4. Finally, execute the following command to run the bot:
+
+   ```bash
+   python main.py
+   ```
+
+Congratulations! You have successfully set up and launched the Discord bot.
 
 ## ⛏️ Built Using <a name = "built_using"></a>
 
 <!-- markdownlint-disable MD013 -->
-| Service/Package/Module Name                                         | FOSS?      | Scope                              | Type              | Description                                                                                 |
-| ------------------------------------------------------------------- | ---------- | ---------------------------------- | ----------------- | ------------------------------------------------------------------------------------------- |
-| [AniList](https://anilist.co/)                                      | -          | Anime, Censorship, Manga, Relation | Database          | Mainly used for Manga commands, anime for searching                                         |
-| [AnimeAPI](https://nttds.my.id/discord)                             | -          | Anime, Random, Relation            | Relation          | Linking ID from a database to another database                                              |
-| [emoji](https://pypi.org/project/emoji/)                            | MIT        | Language, Utility                  | Module            | Used for converting emoji to Unicode                                                        |
-| [goQr](https://goqr.me/api)                                         | -          | Utility                            | API               | Used for generating QR code                                                                 |
-| [Interactions.py](https://pypi.org/project/discord-py-interactions) | MIT        | Base                               | Wrapper           | The backend of this bot!                                                                    |
-| [Is It Down Right Now?](https://isitdownrightnow.com/)              | -          | Utility                            | API               | Used for checking if a website is down                                                      |
-| [Jikan](https://jikan.moe/)                                         | MIT        | Anime, Profile, Verify             | 3rd Party MAL API | Used for showing anime information, verify user, and show user's profile                    |
-| [Kitsu](https://kitsu.io/)                                          | Apache-2.0 | Anime                              | Database          | Used for adding additional information to anime information, mainly background and poster   |
-| [langcodes](https://pypi.org/project/langcodes/)                    | MIT        | Language                           | Wrapper           | Used for getting language name from language code                                           |
-| [Last.fm](https://www.last.fm/)                                     | -          | Profile                            | Database          | Used for getting user's last.fm profile and scrobble summary                                |
-| [MyAnimeList](https://myanimelist.net/)                             | -          | Anime                              | Database          | Search and show anime information                                                           |
-| [nattadasu/nekomimiDb](https://github.com/nattadasu/nekomimiDb)     | MIT        | Random                             | Database          | Used for getting random nekomimi image                                                      |
-| [PronounDB](https://pronoundb.org/)                                 | -          | Profile                            | Database          | Used for getting user's pronouns                                                            |
-| [Random.org](https://www.random.org/)                               | -          | Random                             | Generator         | Used for generating (true) random number and string                                         |
-| [Rawg](https://rawg.io/)                                            | -          | Game                               | Database          | Used for searching and showing game information                                             |
-| [SIMKL](https://simkl.com/)                                         | -          | Anime, Movie, Show, Relation       | Database          | Used for searching and showing movie and show information, anime for additional information |
-| [The Color API](https://github.com/andjosh/thecolorapi)             | ?          | Utility                            | API               | Used for getting color information                                                          |
-| [The Movie Database](https://www.themoviedb.org/)                   | -          | Censorship                         | Database          | Used for getting movie and show censorship information                                      |
-| [Trakt](https://trakt.tv/)                                          | -          | Relation                           | Database          | Used for linking anime, movie, and show IMDb ID (provided by SIMKL and AniAPI) to Trakt ID  |
+| Service/Package/Module Name                                         | FOSS?        | Scope                              | Type              | Description                                                                                 |
+| ------------------------------------------------------------------- | ------------ | ---------------------------------- | ----------------- | ------------------------------------------------------------------------------------------- |
+| [AniList](https://anilist.co/)                                      | -            | Anime, Censorship, Manga, Relation | Database          | Mainly used for Manga commands, anime for searching                                         |
+| [AnimeAPI](https://github.com/nattadasu/animeApi)                   | AGPL-3.0     | Anime, Random, Relation            | Relation          | Linking ID from a database to another database                                              |
+| [emoji](https://pypi.org/project/emoji/)                            | MIT          | Language, Utility                  | Module            | Used for converting emoji to Unicode                                                        |
+| [goQr](https://goqr.me/api)                                         | -            | Utility                            | API               | Used for generating QR code                                                                 |
+| [Interactions.py](https://pypi.org/project/discord-py-interactions) | MIT          | Base                               | Wrapper           | The backend of this bot!                                                                    |
+| [Is It Down Right Now?](https://isitdownrightnow.com/)              | -            | Utility                            | API               | Used for checking if a website is down                                                      |
+| [Jikan](https://jikan.moe/)                                         | MIT          | Anime, Profile, Verify             | 3rd Party MAL API | Used for showing anime information, verify user, and show user's profile                    |
+| [Kitsu](https://kitsu.io/)                                          | Apache-2.0   | Anime                              | Database          | Used for adding additional information to anime information, mainly background and poster   |
+| [langcodes](https://pypi.org/project/langcodes/)                    | MIT          | Language                           | Wrapper           | Used for getting language name from language code                                           |
+| [Last.fm](https://www.last.fm/)                                     | -            | Profile                            | Database          | Used for getting user's last.fm profile and scrobble summary                                |
+| [MyAnimeList](https://myanimelist.net/)                             | -            | Anime                              | Database          | Search and show anime information                                                           |
+| [nattadasu/nekomimiDb](https://github.com/nattadasu/nekomimiDb)     | MIT          | Random                             | Database          | Used for getting random nekomimi image                                                      |
+| [PronounDB](https://pronoundb.org/)                                 | BSD-3-Clause | Profile                            | Database          | Used for getting user's pronouns                                                            |
+| [Random.org](https://www.random.org/)                               | -            | Random                             | Generator         | Used for generating (true) random number and string                                         |
+| [Rawg](https://rawg.io/)                                            | -            | Game                               | Database          | Used for searching and showing game information                                             |
+| [SIMKL](https://simkl.com/)                                         | -            | Anime, Movie, Show, Relation       | Database          | Used for searching and showing movie and show information, anime for additional information |
+| [The Color API](https://github.com/andjosh/thecolorapi)             | ?            | Utility                            | API               | Used for getting color information                                                          |
+| [The Movie Database](https://www.themoviedb.org/)                   | -            | Censorship                         | Database          | Used for getting movie and show censorship information                                      |
+| [Trakt](https://trakt.tv/)                                          | -            | Relation                           | Database          | Used for linking anime, movie, and show IMDb ID (provided by SIMKL and AniAPI) to Trakt ID  |
 <!-- markdownlint-enable MD013 -->
 
 ## ✍️ Authors <a name = "authors"></a>
