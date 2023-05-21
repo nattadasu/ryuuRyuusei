@@ -11,7 +11,6 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 from interactions import (
     Embed,
-    EmbedAttachment,
     EmbedAuthor,
     EmbedField,
     EmbedFooter,
