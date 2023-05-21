@@ -372,6 +372,9 @@ class Utilities(ipy.Extension):
             async with WebsiteChecker() as check:
                 status: WebsiteStatus = await check.check_website(url)
                 domain = status.url_checked
+                domain = re.sub(r"https?://", "", domain)
+                domain = re.sub(r"^www.", "", domain)
+                lt = domain[0]
         except validators.ValidationFailure:
             err_msg = "Invalid URL"
         except BaseException as e:
@@ -391,7 +394,7 @@ class Utilities(ipy.Extension):
             embed = ipy.Embed(
                 author=ipy.EmbedAuthor(
                     name="IsItDownRightNow",
-                    url="https://isitdownrightnow.com/",
+                    url="https://www.isitdownrightnow.com/",
                 ),
                 url=f"https://{domain}",
                 title=status.website_name,
@@ -412,7 +415,7 @@ class Utilities(ipy.Extension):
             )
 
             embed.set_thumbnail(
-                url=f"https://www.isitdownrightnow.com/screenshot/m/{domain}.jpg"
+                url=f"https://www.isitdownrightnow.com/screenshot/{lt}/{domain}.jpg"
             )
             embed.set_image(url=f"https://www.isitdownrightnow.com/data/{domain}.png")
 
