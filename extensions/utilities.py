@@ -1,4 +1,3 @@
-import aiohttp
 import re
 from base64 import b64decode, b64encode
 from urllib.parse import urlencode as urlenc
@@ -415,9 +414,7 @@ class Utilities(ipy.Extension):
             embed.set_thumbnail(
                 url=f"https://www.isitdownrightnow.com/screenshot/m/{domain}.jpg"
             )
-            embed.set_image(
-                url=f"https://www.isitdownrightnow.com/data/{domain}.png"
-            )
+            embed.set_image(url=f"https://www.isitdownrightnow.com/data/{domain}.png")
 
             await ctx.send(embed=embed)
 

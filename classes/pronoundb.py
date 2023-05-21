@@ -112,7 +112,7 @@ class PronounDB:
         """
         params = {"platform": platform.value, "id": user_id}
         async with self.session.get(
-            f"https://pronoundb.org/api/v1/lookup", params=params
+            "https://pronoundb.org/api/v1/lookup", params=params
         ) as r:
             data = await r.json()
             data["pronouns"] = Pronouns(data["pronouns"])
@@ -133,14 +133,15 @@ class PronounDB:
         """
         params = {"platform": platform.value, "ids": ",".join(user_ids)}
         async with self.session.get(
-            f"https://pronoundb.org/api/v1/lookup-bulk", params=params
+            "https://pronoundb.org/api/v1/lookup-bulk", params=params
         ) as r:
             data = await r.json()
             for key, value in data.items():
                 data[key] = Pronouns(value)
             return data
 
-    def translate_shorthand(self, pronouns: Pronouns) -> str:
+    @staticmethod
+    def translate_shorthand(pronouns: Pronouns) -> str:
         """
         Translate the pronouns into shorthand
 
