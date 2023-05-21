@@ -99,18 +99,18 @@ class PronounDB:
         TWITTER = "twitter"
         """Twitter"""
 
-    async def get_pronouns(self, platform: Platform, id: str) -> PronounData:
+    async def get_pronouns(self, platform: Platform, user_id: str) -> PronounData:
         """
         Get the pronouns of a user
 
         Args:
             platform (Platform): The platform of the user
-            id (str): The ID of the user
+            user_id (str): The ID of the user
 
         Returns:
             Pronoun: The pronouns of the user
         """
-        params = {"platform": platform.value, "id": id}
+        params = {"platform": platform.value, "id": user_id}
         async with self.session.get(
             f"https://pronoundb.org/api/v1/lookup", params=params
         ) as r:
@@ -119,19 +119,19 @@ class PronounDB:
             return PronounData(**data)
 
     async def get_pronouns_bulk(
-        self, platform: Platform, ids: list[str]
+        self, platform: Platform, user_ids: list[str]
     ) -> pronounBulk:
         """
         Get the pronouns of multiple users
 
         Args:
             platform (Platform): The platform of the user
-            ids (list[str]): The IDs of the users
+            user_ids (list[str]): The IDs of the users
 
         Returns:
             PronounBulk: The pronouns of the users
         """
-        params = {"platform": platform.value, "ids": ",".join(ids)}
+        params = {"platform": platform.value, "ids": ",".join(user_ids)}
         async with self.session.get(
             f"https://pronoundb.org/api/v1/lookup-bulk", params=params
         ) as r:

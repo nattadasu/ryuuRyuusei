@@ -7,7 +7,6 @@ from interactions import Embed
 try:
     from classes.anilist import AniList
     from classes.animeapi import AnimeApi
-    from classes.jikan import JikanApi
     from classes.kitsu import Kitsu
     from classes.myanimelist import MyAnimeList
     from modules.commons import generate_trailer
@@ -16,8 +15,7 @@ except ImportError:
     # add the path to the 'modules' directory to the system path
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
     from classes.anilist import AniList
-    from classes.animeapi import AnimeApi, AnimeApiAnime
-    from classes.jikan import JikanApi
+    from classes.animeapi import AnimeApi
     from classes.kitsu import Kitsu
     from classes.myanimelist import MyAnimeList
     from modules.commons import generate_trailer
