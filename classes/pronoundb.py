@@ -140,7 +140,8 @@ class PronounDB:
                 data[key] = Pronouns(value)
             return data
 
-    def translate_shorthand(self, pronouns: Pronouns) -> str:
+    @staticmethod
+    def translate_shorthand(pronouns: Pronouns) -> str:
         """
         Translate the pronouns into shorthand
 
