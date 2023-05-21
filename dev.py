@@ -84,7 +84,7 @@ async def loop_test():
         None
     """
     # for each py files in tests folder, test the file using unittest
-    for root, dirs, files in os.walk("tests"):
+    for root, dirs, files in os.walk("tests"):  # skipcq: PYL-W0612
         for file in files:
             if file.endswith(".py"):
                 print("Testing " + file)
