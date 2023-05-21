@@ -54,8 +54,10 @@ class LanguageTest(unittest.IsolatedAsyncioTestCase):
                 "dialect": "United States",
             },
         ]
-        self.assertTrue(any(lang in base for lang in search_language("English")), "No matching language found")
-
+        self.assertTrue(
+            any(lang in base for lang in search_language("English")),
+            "No matching language found",
+        )
 
     def test_user_language(self):
         """Test reading user language"""
