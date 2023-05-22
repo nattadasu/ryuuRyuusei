@@ -1,7 +1,6 @@
 import os
 import sys
 import unittest
-import json
 
 try:
     from classes.anibrain import AniBrainAI
