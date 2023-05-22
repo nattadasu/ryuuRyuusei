@@ -61,7 +61,6 @@ class LanguageTest(unittest.IsolatedAsyncioTestCase):
 
     def test_user_language(self):
         """Test reading user language"""
-
         ctx.author.id = 384089845527478272
         ctx.guild.id = 589128995501637655
         self.assertTrue(read_user_language(ctx) in ["en_US", "id_ID"])
@@ -74,7 +73,6 @@ class LanguageTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_set_default_language(self):
         """Test setting default language"""
-
         ctx.author.id = 384089845527478272
         self.assertTrue(await set_default_language("en_US", ctx) is None)
 

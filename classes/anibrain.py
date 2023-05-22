@@ -161,7 +161,6 @@ class AniBrainAI:
         Returns:
             dict: JSON response
         """
-
         self.params = {
             "filterCountry": filter_country,
             "filterFormat": filter_format,
@@ -213,7 +212,6 @@ class AniBrainAI:
         Returns:
             list[AniBrainAiMedia]: List of AniBrainAiMedia dataclass
         """
-
         if isinstance(filter_country, list):
             country = str([i.value for i in filter_country])
             country = country.replace("'", '"')
@@ -303,7 +301,6 @@ class AniBrainAI:
         Returns:
             list[AniBrainAiMedia]: List of AniBrainAiMedia dataclass
         """
-
         if isinstance(filter_country, list):
             country = str([i.value for i in filter_country])
             country = country.replace("'", '"')
@@ -385,7 +382,6 @@ class AniBrainAI:
         Returns:
             list[AniBrainAiMedia]: List of AniBrainAiMedia dataclass
         """
-
         if isinstance(filter_country, list):
             country = str([i.value for i in filter_country])
             country = country.replace("'", '"')
@@ -467,7 +463,6 @@ class AniBrainAI:
         Returns:
             list[AniBrainAiMedia]: List of AniBrainAiMedia dataclass
         """
-
         if isinstance(filter_country, list):
             country = str([i.value for i in filter_country])
             country = country.replace("'", '"')
