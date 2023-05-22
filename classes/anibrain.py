@@ -1,6 +1,8 @@
-"""AniBrain.ai Unofficial Python API Wrapper
+"""
+# AniBrain.ai Unofficial Python API Wrapper
 
-Get a random anime/manga using AniList ID"""
+Get a random anime/manga using AniList ID
+"""
 
 from copy import deepcopy as dcp
 from enum import Enum
@@ -120,6 +122,8 @@ class AniBrainAI:
         """Exclude"""
 
     class CountryOfOrigin(Enum):
+        """Enum of supported country of origin for the media"""
+
         CHINA = CN = "China"
         """Mainland China"""
         JAPAN = JP = "Japan"
