@@ -1,6 +1,8 @@
-"""AniBrain.ai Unofficial Python API Wrapper
+"""
+# AniBrain.ai Unofficial Python API Wrapper
 
-Get a random anime/manga using AniList ID"""
+Get a random anime/manga using AniList ID
+"""
 
 from copy import deepcopy as dcp
 from enum import Enum
@@ -78,6 +80,7 @@ class AniBrainAI:
         self.session = None
         self.base_url = "https://anibrain.ai/api/-/randomizer/recs"
         self.params = {}
+        self.headers = {}
 
     async def __aenter__(self):
         """Create the session"""
@@ -120,6 +123,8 @@ class AniBrainAI:
         """Exclude"""
 
     class CountryOfOrigin(Enum):
+        """Enum of supported country of origin for the media"""
+
         CHINA = CN = "China"
         """Mainland China"""
         JAPAN = JP = "Japan"
@@ -161,7 +166,6 @@ class AniBrainAI:
         Returns:
             dict: JSON response
         """
-
         self.params = {
             "filterCountry": filter_country,
             "filterFormat": filter_format,
@@ -213,7 +217,6 @@ class AniBrainAI:
         Returns:
             list[AniBrainAiMedia]: List of AniBrainAiMedia dataclass
         """
-
         if isinstance(filter_country, list):
             country = str([i.value for i in filter_country])
             country = country.replace("'", '"')
@@ -303,7 +306,6 @@ class AniBrainAI:
         Returns:
             list[AniBrainAiMedia]: List of AniBrainAiMedia dataclass
         """
-
         if isinstance(filter_country, list):
             country = str([i.value for i in filter_country])
             country = country.replace("'", '"')
@@ -385,7 +387,6 @@ class AniBrainAI:
         Returns:
             list[AniBrainAiMedia]: List of AniBrainAiMedia dataclass
         """
-
         if isinstance(filter_country, list):
             country = str([i.value for i in filter_country])
             country = country.replace("'", '"')
@@ -467,7 +468,6 @@ class AniBrainAI:
         Returns:
             list[AniBrainAiMedia]: List of AniBrainAiMedia dataclass
         """
-
         if isinstance(filter_country, list):
             country = str([i.value for i in filter_country])
             country = country.replace("'", '"')

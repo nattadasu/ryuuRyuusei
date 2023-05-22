@@ -10,6 +10,8 @@ from modules.const import TMDB_API_KEY, USER_AGENT
 
 
 class TheMovieDb:
+    """The Movie DB Wrapper"""
+
     def __init__(self, api_key: str = TMDB_API_KEY):
         """
         Initialize the TheMovieDb API Wrapper
