@@ -275,7 +275,7 @@ class AniBrainAI:
     async def get_manga(
         self,
         filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
-        filter_format: Literal["[MANGA]"] = '["MANGA"]',
+        filter_format: Literal['["MANGA"]'] = '["MANGA"]',
         filter_score: int = 0,
         filter_genres: Dict[str, IncExc] | None = None,
         filter_release_from: int = 1930,
