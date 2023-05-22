@@ -80,6 +80,7 @@ class AniBrainAI:
         self.session = None
         self.base_url = "https://anibrain.ai/api/-/randomizer/recs"
         self.params = {}
+        self.headers = {}
 
     async def __aenter__(self):
         """Create the session"""
