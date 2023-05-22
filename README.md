@@ -6,13 +6,17 @@
 </p>
 
 <!-- omit in toc -->
-<h2 align="center">Ryuuzaki Ryuusei</h2><br>
+<h1 align="center">Ryuuzaki Ryuusei</h1><br>
 
-<p align="center"><img src="https://img.shields.io/badge/Interactions.py-5.0.0-blue?logo=python">
-<img src="https://img.shields.io/badge/Python-3.10_and_above-blue?logo=python"><br>
-<a href="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei/?ref=repository-badge}" target="_blank"><img alt="DeepSource" title="DeepSource" src="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei.svg/?label=active+issues&show_trend=true&token=e6p1rkAiFj4re6lheVEBPfd5"/></a>
-<a href="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei/?ref=repository-badge}" target="_blank"><img alt="DeepSource" title="DeepSource" src="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei.svg/?label=resolved+issues&show_trend=true&token=e6p1rkAiFj4re6lheVEBPfd5"/></a>
-<a href="https://app.codacy.com/gh/nattadasu/ryuuRyuusei/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade"><img src="https://app.codacy.com/project/badge/Grade/8109d97c7cca49ef9dbc96a82796ad66"/></a>
+<p align="center"><img title="GitHub License" alt="GitHub" src="https://img.shields.io/github/license/nattadasu/ryuuRyuusei?logo=github&style=for-the-badge">
+<img title="Python Version" src="https://img.shields.io/badge/Python-3.10_and_above-blue?logo=python&logoColor=white&style=for-the-badge">
+<a title="interactions.py Version" href="https://pypi.org/project/discord-py-interactions"><img src="https://img.shields.io/badge/interactions--py-5.5.0-blue?logo=python&logoColor=white&style=for-the-badge"></a>
+<a title="Discord Server" href="https://discord.gg/UKvMEZvaXc"><img alt="Discord" src="https://img.shields.io/discord/589128995501637655?color=%235865F2&logo=discord&logoColor=white&style=for-the-badge"></a>
+<a href="https://discord.com/api/oauth2/authorize?client_id=811887256368840744&permissions=274878221376&scope=bot%20applications.commands"><img src="https://img.shields.io/badge/Invite%20to%20your%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Shield"></a><br><br>
+<a title="Codacy Code Quality" href="https://app.codacy.com/gh/nattadasu/ryuuRyuusei/dashboard"><img alt="Codacy grade" src="https://img.shields.io/codacy/grade/8109d97c7cca49ef9dbc96a82796ad66?logo=codacy&style=for-the-badge"></a>
+<img alt="Snyk Vulnerabilities for GitHub Repo" src="https://img.shields.io/snyk/vulnerabilities/github/nattadasu/ryuuRyuusei?logo=snyk&style=for-the-badge"><br>
+<a href="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei/" target="_blank"><img alt="DeepSource" title="DeepSource" src="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei.svg/?label=active+issues&show_trend=true&token=e6p1rkAiFj4re6lheVEBPfd5"/></a>
+<a href="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei/" target="_blank"><img alt="DeepSource" title="DeepSource" src="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei.svg/?label=resolved+issues&show_trend=true&token=e6p1rkAiFj4re6lheVEBPfd5"/></a>
 <a title="Crowdin" target="_blank" href="https://crowdin.com/project/ryuuRyuusei"><img src="https://badges.crowdin.net/ryuuRyuusei/localized.svg"></a></p>
 
 ---
@@ -46,9 +50,11 @@ By inviting this bot to your server or using it, you agree to the
 
 ## 🎈 Usage <a name = "usage"></a>
 
-To use the bot, invite it to your server using this link:
+To use the bot, invite it to your server by pressing this button:
 
-[![Shield](https://img.shields.io/badge/Invite%20to%20your%20server-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.com/api/oauth2/authorize?client_id=811887256368840744&permissions=274878221376&scope=bot%20applications.commands)
+<!-- markdownlint-disable MD013 -->
+<p align=center><a href="https://discord.com/api/oauth2/authorize?client_id=811887256368840744&permissions=274878221376&scope=bot%20applications.commands"><img src="https://img.shields.io/badge/Invite%20to%20your%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Shield" height="45"></a></p>
+<!-- markdownlint-enable MD013 -->
 
 Next, go to the channel you want to use the bot in and type `/` to see the list
 of available commands.
@@ -88,7 +94,7 @@ If you have any questions, feel free to join the
 - [x] Customizable Last.fm scrobble summary.
 - [x] Export your data in JSON or Python dictionary format.
 - [x] Experience the *"true"* randomness result on `/anime random` and
-      `/random_nekomimi` commands![^1]
+      `/random nekomimi` commands![^1]
 - [x] Self-hosting on your phone? No problem! Bot has been tested on Termux on
       Android 11.
 - [ ] Does not support dynamic airing reminder. LiveChart + RSS bot is a good
@@ -206,6 +212,8 @@ If you have any questions, feel free to join the
 
 - `/random anime` - Get a random anime from MyAnimeList, powered by
   [AnimeApi](https://nttds.my.id/discord)
+- ⌚ `/random manga` - Get a random manga from AniList, powered by
+  [AniBrain](https://anibrain.ai)
 - ⌚ `/random movie` - Get a random movie from SIMKL
 - `/random nekomimi` - Get a random nekomimi image from nattadasu's nekomimiDb
   - `/random nekomimi boy` - Show an image of a boy in nekomimi
@@ -225,6 +233,7 @@ If you have any questions, feel free to join the
 - `/utilities color` - Get a color's information
 - `/utilities math` - Evaluate a mathematical expression
 - `/utilities qrcode` - Generate a QR code from a string
+- `/utilities site status` - Check if the site is up or down.
 - `/utilities snowflake` - Get a snowflake's information
 
 ### Commons Bot Commands
@@ -346,27 +355,36 @@ Congratulations! You have successfully set up and launched the Discord bot.
 ## ⛏️ Built Using <a name = "built_using"></a>
 
 <!-- markdownlint-disable MD013 -->
-| Service/Package/Module Name                                         | FOSS?        | Scope                              | Type              | Description                                                                                 |
-| ------------------------------------------------------------------- | ------------ | ---------------------------------- | ----------------- | ------------------------------------------------------------------------------------------- |
-| [AniList](https://anilist.co/)                                      | -            | Anime, Censorship, Manga, Relation | Database          | Mainly used for Manga commands, anime for searching                                         |
-| [AnimeAPI](https://github.com/nattadasu/animeApi)                   | AGPL-3.0     | Anime, Random, Relation            | Relation          | Linking ID from a database to another database                                              |
-| [emoji](https://pypi.org/project/emoji/)                            | MIT          | Language, Utility                  | Module            | Used for converting emoji to Unicode                                                        |
-| [goQr](https://goqr.me/api)                                         | -            | Utility                            | API               | Used for generating QR code                                                                 |
-| [Interactions.py](https://pypi.org/project/discord-py-interactions) | MIT          | Base                               | Wrapper           | The backend of this bot!                                                                    |
-| [Is It Down Right Now?](https://isitdownrightnow.com/)              | -            | Utility                            | API               | Used for checking if a website is down                                                      |
-| [Jikan](https://jikan.moe/)                                         | MIT          | Anime, Profile, Verify             | 3rd Party MAL API | Used for showing anime information, verify user, and show user's profile                    |
-| [Kitsu](https://kitsu.io/)                                          | Apache-2.0   | Anime                              | Database          | Used for adding additional information to anime information, mainly background and poster   |
-| [langcodes](https://pypi.org/project/langcodes/)                    | MIT          | Language                           | Wrapper           | Used for getting language name from language code                                           |
-| [Last.fm](https://www.last.fm/)                                     | -            | Profile                            | Database          | Used for getting user's last.fm profile and scrobble summary                                |
-| [MyAnimeList](https://myanimelist.net/)                             | -            | Anime                              | Database          | Search and show anime information                                                           |
-| [nattadasu/nekomimiDb](https://github.com/nattadasu/nekomimiDb)     | MIT          | Random                             | Database          | Used for getting random nekomimi image                                                      |
-| [PronounDB](https://pronoundb.org/)                                 | BSD-3-Clause | Profile                            | Database          | Used for getting user's pronouns                                                            |
-| [Random.org](https://www.random.org/)                               | -            | Random                             | Generator         | Used for generating (true) random number and string                                         |
-| [Rawg](https://rawg.io/)                                            | -            | Game                               | Database          | Used for searching and showing game information                                             |
-| [SIMKL](https://simkl.com/)                                         | -            | Anime, Movie, Show, Relation       | Database          | Used for searching and showing movie and show information, anime for additional information |
-| [The Color API](https://github.com/andjosh/thecolorapi)             | ?            | Utility                            | API               | Used for getting color information                                                          |
-| [The Movie Database](https://www.themoviedb.org/)                   | -            | Censorship                         | Database          | Used for getting movie and show censorship information                                      |
-| [Trakt](https://trakt.tv/)                                          | -            | Relation                           | Database          | Used for linking anime, movie, and show IMDb ID (provided by SIMKL and AniAPI) to Trakt ID  |
+| Service/Package/Module Name                                         | FOSS?           | Scope                                | Type              | Description                                                                                 |
+| ------------------------------------------------------------------- | --------------- | ------------------------------------ | ----------------- | ------------------------------------------------------------------------------------------- |
+| [AniBrain](https://anibrain.ai)                                     | -               | Random                               | Database          | Get randomized result for manga, one-shot, and light novel, and show result from AniList    |
+| [AniList](https://anilist.co/)                                      | -               | Anime, Censorship, Manga, Relation   | Database          | Mainly used for Manga commands, anime for searching                                         |
+| [autopep8](https://pypi.org/project/autopep8/)                      | MIT             | Utility                              | Module            | Used for auto formatting                                                                    |
+| [Codacy](https://codacy.com)                                        | -               | Code Quality                         | Code Quality Tool | Used for checking code quality and linter                                                   |
+| [Crowdin](https://crowdin.com)                                      | -               | Language                             | Translation Tool  | Used for translating the bot to other languages                                             |
+| [Deepsource](https://deepsource.io)                                 | -               | Code Quality                         | Code Quality Tool | Used for checking code quality, auto formatter, and linter                                  |
+| [emoji](https://pypi.org/project/emoji/)                            | MIT             | Language, Utility                    | Module            | Used for converting emoji to Unicode                                                        |
+| [fake-useragent](https://pypi.org/project/fake-useragent/)          | MIT             | Utility                              | Module            | Used for generating random user agent                                                       |
+| [goQr](https://goqr.me/api)                                         | -               | Utility                              | API               | Used for generating QR code                                                                 |
+| [interactions.py](https://pypi.org/project/discord-py-interactions) | MIT             | Base                                 | Wrapper           | The backend of this bot!                                                                    |
+| [Is It Down Right Now?](https://www.isitdownrightnow.com/)          | -               | Utility                              | API               | Used for checking if a website is down                                                      |
+| [Jikan](https://jikan.moe/)                                         | MIT             | Anime, Profile, Verify               | 3rd Party MAL API | Used for showing anime information, verify user, and show user's profile                    |
+| [Kitsu](https://kitsu.io/)                                          | Apache-2.0      | Anime                                | Database          | Used for adding additional information to anime information, mainly background and poster   |
+| [langcodes](https://pypi.org/project/langcodes/)                    | MIT             | Language                             | Wrapper           | Used for getting language name from language code                                           |
+| [Last.fm](https://www.last.fm/)                                     | -               | Profile                              | Database          | Used for getting user's last.fm profile and scrobble summary                                |
+| [MyAnimeList](https://myanimelist.net/)                             | -               | Anime                                | Database          | Search and show anime information                                                           |
+| [nattadasu/animeApi](https://github.com/nattadasu/animeApi)         | AGPL-3.0        | Random, Relation                     | Relation          | Linking ID from a database to another database                                              |
+| [nattadasu/nekomimiDb](https://github.com/nattadasu/nekomimiDb)     | MIT             | Random                               | Database          | Used for getting random nekomimi image                                                      |
+| [plusminus](https://pypi.org/project/plusminus/)                    | MIT             | Utility                              | Module            | Safely evaluate math expression                                                             |
+| [PronounDB](https://pronoundb.org/)                                 | BSD-3-Clause    | Profile                              | Database          | Used for getting user's pronouns                                                            |
+| [Random.org](https://www.random.org/)                               | -               | Random                               | Generator         | Used for generating (true) random number and string                                         |
+| [Rawg](https://rawg.io/)                                            | -               | Game                                 | Database          | Used for searching and showing game information                                             |
+| [Sentry](https://sentry.io/)                                        | -               | Bug Report                           | Service           | Used for error tracking                                                                     |
+| [SIMKL](https://simkl.com/)                                         | -               | Anime, Movie, Show, Relation, Random | Database          | Used for searching and showing movie and show information, anime for additional information |
+| [The Color API](https://github.com/andjosh/thecolorapi)             | Unknown License | Utility                              | API               | Used for getting color information                                                          |
+| [The Movie Database](https://www.themoviedb.org/)                   | -               | Censorship                           | Database          | Used for getting movie and show censorship information                                      |
+| [Trakt](https://trakt.tv/)                                          | -               | Relation                             | Database          | Used for linking anime, movie, and show IMDb ID (provided by SIMKL and AniAPI) to Trakt ID  |
+| [validators](https://pypi.org/project/validators/)                  | MIT             | Utility                              | Module            | Used for validating strings                                                                 |
 <!-- markdownlint-enable MD013 -->
 
 ## ✍️ Authors <a name = "authors"></a>
