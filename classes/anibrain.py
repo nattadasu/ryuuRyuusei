@@ -15,6 +15,7 @@ from modules.const import USER_AGENT
 
 today = datetime.now().year
 
+
 @dataclass
 class AniBrainAiMedia:
     """AniBrainAI Anime dataclass"""
@@ -63,6 +64,7 @@ class AniBrainAiMedia:
     """Kitsu ID"""
     studios: List[str] | None = None
     """Studios"""
+
 
 class AniBrainAI:
     """AniBrainAI Unofficial Python API Wrapper"""
@@ -130,8 +132,8 @@ class AniBrainAI:
     async def _initialize_query(
         self,
         endpoint: Literal["anime", "manga"] = "anime",
-        filter_country: str = '[]',
-        filter_format: str = '[]',
+        filter_country: str = "[]",
+        filter_format: str = "[]",
         filter_score: int = 0,
         filter_genres: str | None = None,
         filter_release_from: int = 1917,
@@ -161,18 +163,20 @@ class AniBrainAI:
         """
 
         self.params = {
-            'filterCountry': filter_country,
-            'filterFormat': filter_format,
-            'filterScore': filter_score,
-            'filterGenre': filter_genres,
-            'filterRelease': f"[{filter_release_from},{filter_release_to}]",
-            'filterFranchiseCount': filter_franchise_count,
-            'mediaType': media_type,
-            'theme': theme,
-            'adult': str(adult).lower(),
+            "filterCountry": filter_country,
+            "filterFormat": filter_format,
+            "filterScore": filter_score,
+            "filterGenre": filter_genres,
+            "filterRelease": f"[{filter_release_from},{filter_release_to}]",
+            "filterFranchiseCount": filter_franchise_count,
+            "mediaType": media_type,
+            "theme": theme,
+            "adult": str(adult).lower(),
         }
 
-        async with self.session.get(f"{self.base_url}/count/{endpoint}", params=self.params) as resp:
+        async with self.session.get(
+            f"{self.base_url}/count/{endpoint}", params=self.params
+        ) as resp:
             if resp.status != 200:
                 raise ProviderHttpError(resp.reason, resp.status)
             count = await resp.json()
@@ -180,8 +184,8 @@ class AniBrainAI:
 
     async def get_anime(
         self,
-        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal['[]'] = '[]',
-        filter_format: List[AnimeMediaType] | AnimeMediaType | Literal['[]'] = '[]',
+        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
+        filter_format: List[AnimeMediaType] | AnimeMediaType | Literal["[]"] = "[]",
         filter_score: int = 0,
         filter_genres: Dict[str, IncExc] | None = None,
         filter_release_from: int = 1917,
@@ -215,7 +219,7 @@ class AniBrainAI:
             country = country.replace("'", '"')
             country = country.replace(", ", ",")
         elif isinstance(filter_country, self.CountryOfOrigin):
-            country = f"[\"{filter_country.value}\"]"
+            country = f'["{filter_country.value}"]'
         else:
             country = "[]"
 
@@ -224,7 +228,7 @@ class AniBrainAI:
             media_format = media_format.replace("'", '"')
             media_format = media_format.replace(", ", ",")
         elif isinstance(filter_format, self.AnimeMediaType):
-            media_format = f"[\"{filter_format.value}\"]"
+            media_format = f'["{filter_format.value}"]'
         else:
             media_format = "[]"
 
@@ -254,22 +258,24 @@ class AniBrainAI:
         )
 
         # get random page
-        self.params['page'] = 1
-        self.params['seed'] = int(time() * 10) * 100
-        self.params['totalPossible'] = query['data']['totalCount']
-        del self.params['filterFranchiseCount']
+        self.params["page"] = 1
+        self.params["seed"] = int(time() * 10) * 100
+        self.params["totalPossible"] = query["data"]["totalCount"]
+        del self.params["filterFranchiseCount"]
 
-        async with self.session.get(f"{self.base_url}/anime", params=self.params) as resp:
+        async with self.session.get(
+            f"{self.base_url}/anime", params=self.params
+        ) as resp:
             if resp.status != 200:
                 raise ProviderHttpError(resp.reason, resp.status)
             anime = await resp.json()
-            dataFinal = [AniBrainAiMedia(**i) for i in anime['data']]
+            dataFinal = [AniBrainAiMedia(**i) for i in anime["data"]]
             return dataFinal
 
     async def get_manga(
         self,
-        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal['[]'] = '[]',
-        filter_format: Literal['[MANGA]'] = '["MANGA"]',
+        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
+        filter_format: Literal["[MANGA]"] = '["MANGA"]',
         filter_score: int = 0,
         filter_genres: Dict[str, IncExc] | None = None,
         filter_release_from: int = 1930,
@@ -303,7 +309,7 @@ class AniBrainAI:
             country = country.replace("'", '"')
             country = country.replace(", ", ",")
         elif isinstance(filter_country, self.CountryOfOrigin):
-            country = f"[\"{filter_country.value}\"]"
+            country = f'["{filter_country.value}"]'
         else:
             country = "[]"
 
@@ -334,21 +340,23 @@ class AniBrainAI:
         )
 
         # get random page
-        self.params['page'] = 1
-        self.params['seed'] = int(time() * 10) * 100
-        self.params['totalPossible'] = query['data']['totalCount']
-        del self.params['filterFranchiseCount']
+        self.params["page"] = 1
+        self.params["seed"] = int(time() * 10) * 100
+        self.params["totalPossible"] = query["data"]["totalCount"]
+        del self.params["filterFranchiseCount"]
 
-        async with self.session.get(f"{self.base_url}/manga", params=self.params) as resp:
+        async with self.session.get(
+            f"{self.base_url}/manga", params=self.params
+        ) as resp:
             if resp.status != 200:
                 raise ProviderHttpError(resp.reason, resp.status)
             anime = await resp.json()
-            dataFinal = [AniBrainAiMedia(**i) for i in anime['data']]
+            dataFinal = [AniBrainAiMedia(**i) for i in anime["data"]]
             return dataFinal
 
     async def get_light_novel(
         self,
-        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal['[]'] = '[]',
+        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
         filter_format: Literal['["NOVEL"]'] = '["NOVEL"]',
         filter_score: int = 0,
         filter_genres: Dict[str, IncExc] | None = None,
@@ -383,7 +391,7 @@ class AniBrainAI:
             country = country.replace("'", '"')
             country = country.replace(", ", ",")
         elif isinstance(filter_country, self.CountryOfOrigin):
-            country = f"[\"{filter_country.value}\"]"
+            country = f'["{filter_country.value}"]'
         else:
             country = "[]"
 
@@ -414,21 +422,23 @@ class AniBrainAI:
         )
 
         # get random page
-        self.params['page'] = 1
-        self.params['seed'] = int(time() * 10) * 100
-        self.params['totalPossible'] = query['data']['totalCount']
-        del self.params['filterFranchiseCount']
+        self.params["page"] = 1
+        self.params["seed"] = int(time() * 10) * 100
+        self.params["totalPossible"] = query["data"]["totalCount"]
+        del self.params["filterFranchiseCount"]
 
-        async with self.session.get(f"{self.base_url}/manga", params=self.params) as resp:
+        async with self.session.get(
+            f"{self.base_url}/manga", params=self.params
+        ) as resp:
             if resp.status != 200:
                 raise ProviderHttpError(resp.reason, resp.status)
             anime = await resp.json()
-            dataFinal = [AniBrainAiMedia(**i) for i in anime['data']]
+            dataFinal = [AniBrainAiMedia(**i) for i in anime["data"]]
             return dataFinal
 
     async def get_one_shot(
         self,
-        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal['[]'] = '[]',
+        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
         filter_format: Literal['["ONE_SHOT"]'] = '["ONE_SHOT"]',
         filter_score: int = 0,
         filter_genres: Dict[str, IncExc] | None = None,
@@ -463,7 +473,7 @@ class AniBrainAI:
             country = country.replace("'", '"')
             country = country.replace(", ", ",")
         elif isinstance(filter_country, self.CountryOfOrigin):
-            country = f"[\"{filter_country.value}\"]"
+            country = f'["{filter_country.value}"]'
         else:
             country = "[]"
 
@@ -494,14 +504,16 @@ class AniBrainAI:
         )
 
         # get random page
-        self.params['page'] = 1
-        self.params['seed'] = int(time() * 10) * 100
-        self.params['totalPossible'] = query['data']['totalCount']
-        del self.params['filterFranchiseCount']
+        self.params["page"] = 1
+        self.params["seed"] = int(time() * 10) * 100
+        self.params["totalPossible"] = query["data"]["totalCount"]
+        del self.params["filterFranchiseCount"]
 
-        async with self.session.get(f"{self.base_url}/manga", params=self.params) as resp:
+        async with self.session.get(
+            f"{self.base_url}/manga", params=self.params
+        ) as resp:
             if resp.status != 200:
                 raise ProviderHttpError(resp.reason, resp.status)
             anime = await resp.json()
-            dataFinal = [AniBrainAiMedia(**i) for i in anime['data']]
+            dataFinal = [AniBrainAiMedia(**i) for i in anime["data"]]
             return dataFinal
