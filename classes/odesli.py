@@ -51,6 +51,7 @@ apiProviders = Literal[
 ]
 """API providers supported on Odesli/Songlink"""
 
+
 @dataclass
 class PlatformLink:
     """
@@ -83,6 +84,7 @@ class PlatformLink:
     entity directly in the native app
     """
 
+
 @dataclass
 class EntityUnique:
     """Data for a single entity"""
@@ -114,6 +116,7 @@ class EntityUnique:
     `["appleMusic", "itunes"]` since both those platforms/links are derived
     from this single entity
     """
+
 
 @dataclass
 class OdesliResponse:
@@ -215,12 +218,12 @@ class Odesli:
             del params["url"]
 
         async with self.session.get(
-            "https://api.song.link/v1-alpha.1/links", params=params, headers=self.headers
+            "https://api.song.link/v1-alpha.1/links",
+            params=params,
+            headers=self.headers,
         ) as resp:
             if resp.status != 200:
-                raise ProviderHttpError(
-                    resp.text(), resp.status
-                )
+                raise ProviderHttpError(resp.text(), resp.status)
 
             data = await resp.json()
 
