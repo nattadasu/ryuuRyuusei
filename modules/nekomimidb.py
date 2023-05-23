@@ -1,59 +1,74 @@
-from modules.commons import *
-from modules.platforms import getPlatformColor
+"""
+# nattadasu/nekomimiDb Module
+
+This module contains the functions used by the nekomimiDb module.
+"""
+
+from interactions import Embed, EmbedAuthor, EmbedField
+from interactions import SlashContext as sctx
+
+from classes.nekomimidb import NekomimiDb as neko
+from classes.nekomimidb import NekomimiDbStruct, NekomimiGender
+from modules.platforms import get_platform_color
 
 
-async def getNekomimi(gender: str = None) -> dict:
-    """Get a random nekomimi image from the database"""
-    seed = getRandom()
-    nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t")
-    nmDb = nmDb.fillna('')
-    if gender is not None:
-        query = nmDb[nmDb['girlOrBoy'] == f'{gender}']
-    else:
-        query = nmDb
-    # get a random row from the query
-    row = query.sample(n=1, random_state=seed)
-    return row
+def generate_nekomimi_embed(row: NekomimiDbStruct, lang: dict) -> Embed:
+    """
+    Generate nekomimi embed
 
+    Args:
+        row (NekomimiDbStruct): A row from the database.
+        lang (dict): The language dictionary.
 
-def generateNekomimi(row: dict) -> interactions.Embed:
-    img = row['imageUrl'].values[0]
-    mediaSource = row['mediaSource'].values[0]
-    if mediaSource == '':
-        mediaSource = 'Original Character'
-    artist = row['artist'].values[0]
-    artistUrl = row['artistUrl'].values[0]
-    imageSourceUrl = row['imageSourceUrl'].values[0]
-    col = getPlatformColor(row['platform'].values[0])
+    Returns:
+        Embed: The generated nekomimi embed.
+    """
+    img = row.imageUrl
+    mediaSource = row.mediaSource
+    if mediaSource in ["", None]:
+        mediaSource = "Original Character"
+    artist = row.artist
+    artistUrl = row.artistUrl
+    imageSourceUrl = row.imageSourceUrl
+    col = get_platform_color(row.platform)
     # Send the image url to the user
-    dcEm = interactions.Embed(
+    dcEm = Embed(
         title=f"{mediaSource}",
-        image=interactions.EmbedImageStruct(
-            url=str(img)
-        ),
         color=col,
-        author=interactions.EmbedAuthor(
-            name="Powered by Natsu's nekomimiDb",
-            url="https://github.com/nattadasu/nekomimiDb"
+        author=EmbedAuthor(
+            name=lang["author"],
+            url="https://github.com/nattadasu/nekomimiDb",
+            icon_url="https://cdn.discordapp.com/avatars/1080049635621609513/6f79d106de439f917179b7ef052a6ca8.png",
         ),
         fields=[
-            interactions.EmbedField(
-                name="Image source",
-                value=f"[Click here]({imageSourceUrl})",
-                inline=True
+            EmbedField(
+                name=lang["source"]["title"],
+                value=f"[{lang['source']['value']}]({imageSourceUrl})",
+                inline=True,
             ),
-            interactions.EmbedField(
-                name="Artist",
-                value=f"[{artist}]({artistUrl})",
-                inline=True
-            )
-        ]
+            EmbedField(
+                name=lang["artist"], value=f"[{artist}]({artistUrl})", inline=True
+            ),
+        ],
     )
+    dcEm.set_image(url=img)
 
     return dcEm
 
 
-async def nekomimiSubmit(ctx: interactions.CommandContext, gender: str = None):
-    data = await getNekomimi(gender)
-    dcEm = generateNekomimi(row=data)
+async def submit_nekomimi(ctx: sctx, lang: dict, gender: NekomimiGender = None):
+    """
+    Submit a nekomimi image to Discord
+
+    Args:
+        ctx (interactions.SlashContext): Discord Slash Context
+        lang (dict): The language dictionary
+        gender (neko.Gender, optional): Gender of a character. Defaults to None.
+
+    Returns:
+        None
+    """
+    await ctx.defer()
+    data = neko(gender).get_random_nekomimi()
+    dcEm = generate_nekomimi_embed(row=data, lang=lang)
     await ctx.send("", embeds=dcEm)

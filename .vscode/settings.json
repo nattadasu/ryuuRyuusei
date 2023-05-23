@@ -1,8 +1,26 @@
 {
-    "[markdown]": {
-        "editor.rulers": [
-            80,
-            120
-        ]
-    }
+  "[markdown]": {
+    "editor.rulers": [
+      80,
+      120
+    ]
+  },
+  "[yaml]": {
+    "editor.rulers": [
+      80,
+      120
+    ]
+  },
+  "files.associations": {
+    ".coveragerc": "ini"
+  },
+  "python.testing.unittestArgs": [
+    "-v",
+    "-s",
+    "./tests",
+    "-p",
+    "test_*.py"
+  ],
+  "python.testing.pytestEnabled": false,
+  "python.testing.unittestEnabled": true
 }
