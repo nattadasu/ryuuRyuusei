@@ -17,3 +17,7 @@ name = "autopep8"
 
 [[transformers]]
 name = "isort"
+
+[[analyzers]]
+name = "test-coverage"
+enabled = true

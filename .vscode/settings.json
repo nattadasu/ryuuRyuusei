@@ -10,5 +10,8 @@
       80,
       120
     ]
+  },
+  "files.associations": {
+    ".coveragerc": "ini"
   }
 }

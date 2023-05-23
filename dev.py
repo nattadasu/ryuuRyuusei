@@ -83,15 +83,27 @@ async def loop_test():
     Returns:
         None
     """
-    # for each py files in tests folder, test the file using unittest
-    for root, dirs, files in os.walk("tests"):  # skipcq: PYL-W0612
-        for file in files:
-            if file.endswith(".py"):
-                print("Testing " + file)
-                file_path = os.path.join(root, file)
-                sub = subprocess.Popen([sys.executable, file_path])
-                sub.wait()
-
+    sub = subprocess.Popen([
+        sys.executable,
+        "-m",
+        "coverage",
+        "run",
+    ])
+    sub.wait()
+    sub = subprocess.Popen([
+        sys.executable,
+        "-m",
+        "coverage",
+        "report",
+    ])
+    sub.wait()
+    sub = subprocess.Popen([
+        sys.executable,
+        "-m",
+        "coverage",
+        "xml",
+    ])
+    sub.wait()
 
 async def main():
     """
