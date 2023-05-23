@@ -7,7 +7,8 @@ import os
 import time
 from fake_useragent import FakeUserAgent
 
-USER_AGENT = FakeUserAgent(browsers=['chrome', 'edge', 'opera']).random
+USER_AGENT = FakeUserAgent(browsers=["chrome", "edge", "opera"]).random
+
 
 @dataclass
 class UserBackgroundStruct:
@@ -62,7 +63,9 @@ class UserBackground:
             data = json.loads(resp)
             return data
 
-    async def _find_user(self, user_id: Snowflake, data: dict) -> UserBackgroundStruct | None:
+    async def _find_user(
+        self, user_id: Snowflake, data: dict
+    ) -> UserBackgroundStruct | None:
         """
         Find user on the dict, then return datastruct
 
@@ -148,4 +151,3 @@ class UserBackground:
         os.makedirs(os.path.dirname(cache_path), exist_ok=True)
         with open(cache_path, "w") as f:
             json.dump({"timestamp": time.time(), "data": data}, f)
-
