@@ -33,6 +33,8 @@ class Help(ipy.Extension):
         for i in range(0, len(commands), 10):
             listed = []
             for command in commands[i : i + 10]:
+                if type(command) is not ipy.SlashCommand:
+                    continue
                 cmd_name = f"/{command.name}"
                 group_name = f" {command.group_name}" if command.group_name else ""
                 sub_cmd_name = (
@@ -44,7 +46,7 @@ class Help(ipy.Extension):
                     if command.sub_cmd_name
                     else command.description
                 )
-                listed.append(ipy.EmbedField(name=name, value=description))
+                listed.append(ipy.EmbedField(name=f"{name}", value=f"{description}"))
 
             help_list.append(
                 ipy.Embed(
