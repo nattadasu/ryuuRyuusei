@@ -27,6 +27,7 @@ class ShikimoriImageSizes:
     x16: str
     """16x16"""
 
+
 @dataclass
 class ShikimoriStatsStruct:
     """Shikimori stats struct"""
@@ -42,6 +43,7 @@ class ShikimoriStatsStruct:
     type: Literal["Anime", "Manga"]
     """Media Type"""
 
+
 @dataclass
 class ShikimoriGroupStruct:
     """Shikimori group struct, for scores, media format, and age rating"""
@@ -51,12 +53,14 @@ class ShikimoriGroupStruct:
     value: int
     """Value"""
 
+
 @dataclass
 class ShikimoriActivityStruct(ShikimoriGroupStruct):
     """Shikimori activity struct"""
 
     name: list[datetime]
     """Time, from and to"""
+
 
 @dataclass
 class Statuses:
@@ -67,6 +71,7 @@ class Statuses:
     manga: list[ShikimoriStatsStruct]
     """Manga statuses"""
 
+
 @dataclass
 class Stats:
     """Stats"""
@@ -75,6 +80,7 @@ class Stats:
     """Anime stats"""
     manga: list[ShikimoriGroupStruct] | None = None
     """Manga stats, does not exist in age rating"""
+
 
 @dataclass
 class ShikimoriStatistics:
@@ -93,9 +99,11 @@ class ShikimoriStatistics:
 
 class ShikimoriUserGender(Enum):
     """Enum of user gender"""
+
     MALE = "male"
     FEMALE = "female"
     UNKNOWN = ""
+
 
 @dataclass
 class ShikimoriUserStruct:
@@ -158,12 +166,8 @@ class Shikimori:
     async def __aenter__(self):
         """Async enter"""
         self.session = aiohttp.ClientSession()
-        self.headers = {
-            "User-Agent": USER_AGENT
-        }
-        self.params = {
-            "client_id": SHIKIMORI_CLIENT_ID
-        }
+        self.headers = {"User-Agent": USER_AGENT}
+        self.params = {"client_id": SHIKIMORI_CLIENT_ID}
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -172,12 +176,16 @@ class Shikimori:
 
     async def _request(self, method: str, url: str, **kwargs):
         """Make request"""
-        async with self.session.request(method, url, headers=self.headers, **kwargs) as response:
+        async with self.session.request(
+            method, url, headers=self.headers, **kwargs
+        ) as response:
             if response.status != 200:
                 raise ProviderHttpError(response.reason, response.status)
             return await response.json()
 
-    async def get_user(self, user_id: int | str, is_nickname: bool = True) -> ShikimoriUserStruct:
+    async def get_user(
+        self, user_id: int | str, is_nickname: bool = True
+    ) -> ShikimoriUserStruct:
         """
         Get user information
 
@@ -190,8 +198,10 @@ class Shikimori:
         """
         params = self.params.copy()
         if is_nickname:
-            params['is_nickname'] = '1'
-        data: dict = await self._request("GET", f"{self.base_url}users/{user_id}", params=params)
+            params["is_nickname"] = "1"
+        data: dict = await self._request(
+            "GET", f"{self.base_url}users/{user_id}", params=params
+        )
         user = ShikimoriUserStruct(
             id=data["id"],
             nickname=data["nickname"],
@@ -205,7 +215,9 @@ class Shikimori:
                 x32=data["image"]["x32"],
                 x16=data["image"]["x16"],
             ),
-            last_online_at=datetime.strptime(data["last_online_at"], "%Y-%m-%dT%H:%M:%S.%f%z"),
+            last_online_at=datetime.strptime(
+                data["last_online_at"], "%Y-%m-%dT%H:%M:%S.%f%z"
+            ),
             url=data["url"],
             name=data["name"],
             sex=data["sex"],
@@ -228,8 +240,9 @@ class Shikimori:
                             grouped_id=a["grouped_id"],
                             name=a["name"],
                             size=a["size"],
-                            type=a["type"]
-                        ) for a in data["stats"]["statuses"]["anime"]
+                            type=a["type"],
+                        )
+                        for a in data["stats"]["statuses"]["anime"]
                     ],
                     manga=[
                         ShikimoriStatsStruct(
@@ -237,9 +250,10 @@ class Shikimori:
                             grouped_id=a["grouped_id"],
                             name=a["name"],
                             size=a["size"],
-                            type=a["type"]
-                        ) for a in data["stats"]["statuses"]["manga"]
-                    ]
+                            type=a["type"],
+                        )
+                        for a in data["stats"]["statuses"]["manga"]
+                    ],
                 ),
                 full_statuses=Statuses(
                     anime=[
@@ -248,8 +262,9 @@ class Shikimori:
                             grouped_id=a["grouped_id"],
                             name=a["name"],
                             size=a["size"],
-                            type=a["type"]
-                        ) for a in data["stats"]["full_statuses"]["anime"]
+                            type=a["type"],
+                        )
+                        for a in data["stats"]["full_statuses"]["anime"]
                     ],
                     manga=[
                         ShikimoriStatsStruct(
@@ -257,46 +272,52 @@ class Shikimori:
                             grouped_id=a["grouped_id"],
                             name=a["name"],
                             size=a["size"],
-                            type=a["type"]
-                        ) for a in data["stats"]["full_statuses"]["manga"]
-                    ]
+                            type=a["type"],
+                        )
+                        for a in data["stats"]["full_statuses"]["manga"]
+                    ],
                 ),
                 scores=Stats(
                     anime=[
                         ShikimoriGroupStruct(
                             name=a["name"],
                             value=a["value"],
-                        ) for a in data["stats"]["scores"]["anime"]
+                        )
+                        for a in data["stats"]["scores"]["anime"]
                     ],
                     manga=[
                         ShikimoriGroupStruct(
                             name=a["name"],
                             value=a["value"],
-                        ) for a in data["stats"]["scores"]["manga"]
-                    ]
+                        )
+                        for a in data["stats"]["scores"]["manga"]
+                    ],
                 ),
                 types=Stats(
                     anime=[
                         ShikimoriGroupStruct(
                             name=a["name"],
                             value=a["value"],
-                        ) for a in data["stats"]["types"]["anime"]
+                        )
+                        for a in data["stats"]["types"]["anime"]
                     ],
                     manga=[
                         ShikimoriGroupStruct(
                             name=a["name"],
                             value=a["value"],
-                        ) for a in data["stats"]["types"]["manga"]
-                    ]
+                        )
+                        for a in data["stats"]["types"]["manga"]
+                    ],
                 ),
                 ratings=Stats(
                     anime=[
                         ShikimoriGroupStruct(
                             name=a["name"],
                             value=a["value"],
-                        ) for a in data["stats"]["ratings"]["anime"]
+                        )
+                        for a in data["stats"]["ratings"]["anime"]
                     ],
-                    manga=None
+                    manga=None,
                 ),
                 studios=data["stats"]["studios"],
                 genres=data["stats"]["genres"],
@@ -308,13 +329,14 @@ class Shikimori:
                         name=[
                             # convert epoch to datetime
                             datetime.fromtimestamp(a["name"][0]),
-                            datetime.fromtimestamp(a["name"][1])
+                            datetime.fromtimestamp(a["name"][1]),
                         ],
-                        value=a["value"]
-                    ) for a in data["stats"]["activity"]
+                        value=a["value"],
+                    )
+                    for a in data["stats"]["activity"]
                 ],
             ),
-            style_id=data["style_id"]
+            style_id=data["style_id"],
         )
 
         return user
