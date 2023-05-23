@@ -41,6 +41,12 @@ RAWG_API_KEY: Final[str] = ge("RAWG_API_KEY")
 """RAWG API key"""
 SENTRY_DSN: Final[str] = ge("SENTRY_DSN")
 """Sentry DSN"""
+SHIKIMORI_CLIENT_ID: Final[str] = ge("SHIKIMORI_CLIENT_ID")
+"""Shikimori client ID"""
+SHIKIMORI_CLIENT_SECRET: Final[str] = ge("SHIKIMORI_CLIENT_SECRET")
+"""Shikimori client secret"""
+SHIKIMORI_APPLICATION_NAME: Final[str] = ge("SHIKIMORI_APPLICATION_NAME")
+"""Shikimori application name"""
 SIMKL_CLIENT_ID: Final[str] = ge("SIMKL_CLIENT_ID")
 """SIMKL client ID"""
 SPOTIFY_CLIENT_ID: Final[str] = ge("SPOTIFY_CLIENT_ID")
