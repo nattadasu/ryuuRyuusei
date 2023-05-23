@@ -70,7 +70,7 @@ class SpotifyApi:
                 self.token = data["access_token"]
                 self.write_data_to_cache(data, auth)
             else:
-                raise ProviderHttpError(response.status, response.reason)
+                raise ProviderHttpError(response.reason, response.status)
 
     class MediaType(Enum):
         """Media Type"""
@@ -115,7 +115,7 @@ class SpotifyApi:
         ) as response:
             if response.status == 200:
                 return await response.json()
-            raise ProviderHttpError(response.status, response.reason)
+            raise ProviderHttpError(response.reason, response.status)
 
     async def get_track(self, track_id: str) -> dict:
         """
@@ -140,7 +140,7 @@ class SpotifyApi:
                 data = await response.json()
                 self.write_data_to_cache(data, cache)
                 return data
-            raise ProviderHttpError(response.status, response.reason)
+            raise ProviderHttpError(response.reason, response.status)
 
     async def get_album(self, album_id: str) -> dict:
         """
@@ -165,7 +165,7 @@ class SpotifyApi:
                 data = await response.json()
                 self.write_data_to_cache(data, cache)
                 return data
-            raise ProviderHttpError(response.status, response.reason)
+            raise ProviderHttpError(response.reason, response.status)
 
     async def get_artist(self, artist_id: str) -> dict:
         """
@@ -190,7 +190,7 @@ class SpotifyApi:
                 data = await response.json()
                 self.write_data_to_cache(data, cache)
                 return data
-            raise ProviderHttpError(response.status, response.reason)
+            raise ProviderHttpError(response.reason, response.status)
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
         """
