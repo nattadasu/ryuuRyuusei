@@ -84,17 +84,30 @@ class Stats:
 
 @dataclass
 class ShikimoriStatistics:
+    """Shikimori statistics"""
+
     statuses: Statuses
+    """Statuses, combine reconsume and current"""
     full_statuses: Statuses
+    """Full statuses"""
     scores: Stats
+    """Scores"""
     types: Stats
+    """Types"""
     ratings: Stats
+    """Ratings"""
     activity: list[ShikimoriActivityStruct]
+    """Activity"""
     has_anime: bool
+    """Has anime?"""
     has_manga: bool
+    """Has manga?"""
     genres: list | None
+    """Genres"""
     studios: list | None
+    """Studios"""
     publishers: list | None
+    """Publishers"""
 
 
 class ShikimoriUserGender(Enum):
