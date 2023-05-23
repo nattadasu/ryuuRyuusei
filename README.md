@@ -232,8 +232,8 @@ If you have any questions, feel free to join the
 
 > Collection of commands that are (might be) useful for everyday use.
 
-- ⌚ `/utilities avatar` - Get user avatar, global or server
-- ⌚ `/utilities banner` - Get user banner, global or UserBG
+- `/utilities avatar` - Get user avatar, global or server
+- `/utilities banner` - Get user banner, global or UserBG
 - `/utilities base64` - Encode or decode a string to or from Base64
 - `/utilities color` - Get color information
 - `/utilities math` - Evaluate a mathematical expression

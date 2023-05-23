@@ -4,11 +4,13 @@ from urllib.parse import urlencode as urlenc
 from datetime import datetime
 
 import interactions as ipy
+from typing import Literal
 import validators
 from plusminus import BaseArithmeticParser as BAP
 
 from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
 from classes.thecolorapi import Color, TheColorApi
+from classes.usrbg import UserBackground
 from modules.commons import generate_utils_except_embed, snowflake_to_datetime
 from modules.i18n import fetch_language_data, read_user_language
 
@@ -419,6 +421,114 @@ class Utilities(ipy.Extension):
             embed.set_image(url=f"https://www.isitdownrightnow.com/data/{domain}.png")
 
             await ctx.send(embed=embed)
+
+
+    @utilities.subcommand(
+        sub_cmd_name="banner",
+        sub_cmd_description="Fetch user's banner",
+        options=[
+            ipy.SlashCommandOption(
+                name="user",
+                description="The user to fetch the banner from",
+                required=False,
+                type=ipy.OptionType.USER,
+            ),
+            ipy.SlashCommandOption(
+                name="scope",
+                description="Whether to fetch the banner from the user or usrbg",
+                required=False,
+                type=ipy.OptionType.STRING,
+                choices=[
+                    ipy.SlashCommandChoice(name="Discord Profile", value="user"),
+                    ipy.SlashCommandChoice(name="Usrbg", value="usrbg"),
+                ],
+            ),
+        ],
+    )
+    async def utilities_banner(self, ctx: ipy.SlashContext, user: ipy.Member | ipy.User = None, scope: Literal['user', 'usrbg'] = 'user'):
+        await ctx.defer()
+
+        if not user:
+            user = ctx.author
+
+        user_data = await self.bot.http.get_user(user.id)
+        user_data = ipy.User.from_dict(user_data, self.bot)
+
+        if scope == 'user':
+            try:
+                banner = user_data.banner.url
+            except AttributeError:
+                banner = None
+            title = "Discord Profile"
+        else:
+            async with UserBackground() as usrbg:
+                try:
+                    banner = await usrbg.get_background(user.id)
+                    banner = banner.img
+                except AttributeError:
+                    banner = None
+            title = "Usrbg"
+
+        if banner:
+            embed = ipy.Embed(
+                title=f"{user.display_name}'s {title} banner",
+                color=0x566A82,
+                timestamp=datetime.utcnow(),
+            )
+            embed.set_thumbnail(url=user.display_avatar.url)
+            embed.set_image(url=banner)
+            await ctx.send(embed=embed)
+        else:
+            embed = generate_utils_except_embed(
+                language="en_US",
+                description="Failed to fetch the banner",
+                field_name="User",
+                field_value=f"```{user}```",
+                error="User has no banner",
+            )
+            await ctx.send(embed=embed)
+
+
+    @utilities.subcommand(
+        sub_cmd_name="avatar",
+        sub_cmd_description="Fetch user's avatar",
+        options=[
+            ipy.SlashCommandOption(
+                name="user",
+                description="The user to fetch the avatar from",
+                required=False,
+                type=ipy.OptionType.USER,
+            ),
+            ipy.SlashCommandOption(
+                name="scope",
+                description="Whether to fetch the avatar from the global profile or server profile",
+                required=False,
+                type=ipy.OptionType.STRING,
+                choices=[
+                    ipy.SlashCommandChoice(name="Discord Profile", value="user"),
+                    ipy.SlashCommandChoice(name="Server Profile", value="server"),
+                ],
+            ),
+        ],
+    )
+    async def utilities_avatar(self, ctx: ipy.SlashContext, user: ipy.Member | ipy.User = None, scope: Literal['user', 'server'] = 'user'):
+        await ctx.defer()
+
+        if not user:
+            user = ctx.author
+
+        if scope == 'user':
+            avatar = user.avatar.url
+        else:
+            avatar = user.display_avatar.url
+
+        embed = ipy.Embed(
+            title=f"{user.display_name}'s avatar",
+            color=0x566A82,
+            timestamp=datetime.utcnow(),
+        )
+        embed.set_image(url=avatar)
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
