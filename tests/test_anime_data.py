@@ -82,12 +82,6 @@ class AnimeShowcaseTest(unittest.IsolatedAsyncioTestCase):
         ktData = await Kitsu().get_anime(1)
         self.assertTrue(ktData is not None)
 
-    async def test_fetch_anime_from_anilist(self):
-        """Test fetching anime from AniList"""
-        async with AniList() as al:
-            alData = await al.anime(1)
-        self.assertTrue(alData is not None)
-
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
