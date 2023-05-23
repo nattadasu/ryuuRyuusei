@@ -2,9 +2,6 @@ from dataclasses import dataclass
 from typing import Literal
 import aiohttp
 from modules.const import USER_AGENT
-import os
-import time
-import json
 from classes.excepts import ProviderHttpError, ProviderTypeError
 
 platforms = Literal[
