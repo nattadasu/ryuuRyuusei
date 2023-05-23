@@ -226,9 +226,7 @@ class Profile(ipy.Extension):
         fields = []
         if maximum >= 1:
             rpt = "Recently played tracks"
-            rptDesc = "Here are the recently played tracks of {USER} on Last.fm".format(
-                USER=user
-            )
+            rptDesc = f"Here are the recently played tracks of {user} on Last.fm"
             fields.append(ipy.EmbedField(name=rpt, value=rptDesc, inline=False))
 
         for tr in tracks:
