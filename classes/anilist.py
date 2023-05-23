@@ -209,7 +209,9 @@ class AniList:
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
         media: str = media_type.value
-        cache_file_path = self.get_cache_file_path(f"nsfw/{media.lower()}/{media_id}.json")
+        cache_file_path = self.get_cache_file_path(
+            f"nsfw/{media.lower()}/{media_id}.json"
+        )
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
