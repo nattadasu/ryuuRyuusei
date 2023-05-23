@@ -1,7 +1,9 @@
 import os
 import sys
 import unittest
-from time import time
+from datetime import datetime
+from asyncio import sleep
+from typing import Any, Coroutine
 
 from interactions import Snowflake
 
@@ -18,7 +20,7 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_save_data(self):
         """Test saving data"""
-        tmp = int(time())
+        tmp = datetime.utcnow()
         async with UserDatabase() as ud:
             resp = await ud.save_to_database(
                 UserDatabaseClass(
@@ -66,8 +68,14 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
         async with UserDatabase() as ud:
             resp = await doit()
         if resp is False:
+            await sleep(5)
             resp = await doit()
         self.assertTrue(resp is True)
+
+    async def asyncTearDown(self) -> Coroutine[Any, Any, None]:
+        """Tear down the test"""
+        await sleep(2)
+        return await super().asyncTearDown()
 
 
 if __name__ == "__main__":

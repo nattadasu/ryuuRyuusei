@@ -18,7 +18,6 @@ class OdesliTest(unittest.IsolatedAsyncioTestCase):
             links = await odesli.get_links(
                 url="https://open.spotify.com/track/4uLU6hMCjMI75M1A2tKUQC"
             )
-            print(links)
             self.assertIsInstance(links, OdesliResponse)
 
     async def test_get_album_links(self):
@@ -27,7 +26,6 @@ class OdesliTest(unittest.IsolatedAsyncioTestCase):
             links = await odesli.get_links(
                 url="https://open.spotify.com/album/6QPkyl04rXwTGlGlcYaRoW"
             )
-            print(links)
             self.assertIsInstance(links, OdesliResponse)
 
 

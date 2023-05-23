@@ -16,7 +16,6 @@ class IsItDownRightNowTest(unittest.IsolatedAsyncioTestCase):
         """Test checking a website"""
         async with WebsiteChecker() as checker:
             status = await checker.check_website("https://myanimelist.net")
-            print(status)
             self.assertIsInstance(status, WebsiteStatus)
 
 
