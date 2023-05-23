@@ -1,0 +1,69 @@
+name: Coverage Test
+on:
+  push:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  pull_request:
+jobs:
+  test:
+    name: Test and Report Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ipy/v5.0.0
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v4.6.0
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Update PIP
+        run: python -m pip install -U pip
+
+      - name: Import env from GitHub Repository Secrets
+        uses: oNaiPs/secrets-to-env-action@v1
+        with:
+          secrets: ${{ toJSON(secrets) }}
+
+      - name: Setup Venv
+        run: python -m venv venv
+
+      - name: Enter Venv
+        run: source venv/bin/activate
+
+      - name: Install Dependencies
+        run: pip install -U -r requirements.txt
+
+      - name: Install Dev Dependencies
+        run: pip install -U -r requirements-dev.txt
+
+      - name: Run OOBE
+        run: python firstRun.py
+
+      - name: Run Tests
+        run: coverage run
+        continue-on-error: true
+
+      - name: Report Coverage as XML
+        run: coverage xml
+
+      - name: Upload Coverage to Deepsource
+        run: |
+          curl -sSL https://deepsource.io/cli | sh
+          ./bin/deepsource report --analyzer test-coverage --key python --value-file coverage.xml
+
+      - name: Upload Coverage to Codacy
+        uses: codacy/codacy-coverage-reporter-action@v1.3.0
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage.xml
+          language: python
+
+      - name: Deactivate Venv
+        run: deactivate
+        continue-on-error: true
