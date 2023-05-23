@@ -199,11 +199,10 @@ class Odesli:
             OdesliResponse: The response from Odesli/Songlink
         """
 
-        if not url:
-            if not platform or not stream_type or not stream_id:
-                raise ProviderTypeError(
-                    "If url is not supplied, platform, stream_type and stream_id are required"
-                )
+        if not url and not platform or not stream_type or not stream_id:
+            raise ProviderTypeError(
+                "If url is not supplied, platform, stream_type and stream_id are required"
+            )
 
         params = {
             "url": url,
