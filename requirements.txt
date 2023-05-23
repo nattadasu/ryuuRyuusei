@@ -4,7 +4,7 @@ dataclassy
 fake-useragent
 fuzzywuzzy
 html5lib
-interactions-py==5.5.0
+interactions-py==5.5.1
 langcodes
 language_data
 pandas
