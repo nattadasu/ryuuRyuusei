@@ -7,6 +7,7 @@ version: 2
 updates:
   - package-ecosystem: "pip"
     directory: "/"
+    target-branch: "ipy/v5.0.0"
     schedule:
       interval: "weekly"
     commit-message:
@@ -14,4 +15,15 @@ updates:
     labels:
       - "dependencies"
       - "pip"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: daily
+    commit-message:
+      prefix: "[github-actions]"
+    labels:
+      - "dependencies"
+      - "github-actions"
     open-pull-requests-limit: 10
