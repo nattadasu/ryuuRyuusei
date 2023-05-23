@@ -244,6 +244,7 @@ If you have any questions, feel free to join the
 ### Commons Bot Commands
 
 - `/about` - Get information about the bot
+- `/help` - Get a list of all curretly available commands
 - `/invite` - Get the bot's invite link
 - `/ping` - Check the bot latency
 - `/privacy` - Get information about the bot's privacy policy
