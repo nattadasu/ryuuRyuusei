@@ -3,9 +3,16 @@ on:
   push:
     branches:
       - ipy/v5.0.0
+    paths:
+      - 'tests/**'
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
+  pull_request:
+    branches:
+      - ipy/v5.0.0
+    paths:
+      - 'tests/**'
 jobs:
   test:
     name: Test and Report Coverage
@@ -21,6 +28,7 @@ jobs:
         with:
           python-version: '3.11'
           cache: pip
+        run: python -m pip install -U pip
 
       - name: Import env from GitHub Repository Secrets
         uses: oNaiPs/secrets-to-env-action@v1
@@ -55,6 +63,7 @@ jobs:
           key: python
           coverage-file: coverage.xml
           dsn: ${{ secrets.DEEPSOURCE_DSN }}
+          fail-ci-on-error: false
 
       - name: Upload Coverage to Codacy
         uses: codacy/codacy-coverage-reporter-action@v1.3.0
@@ -65,3 +74,4 @@ jobs:
 
       - name: Deactivate Venv
         run: deactivate
+        continue-on-error: true
