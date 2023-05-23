@@ -83,27 +83,34 @@ async def loop_test():
     Returns:
         None
     """
-    sub = subprocess.Popen([
-        sys.executable,
-        "-m",
-        "coverage",
-        "run",
-    ])
+    sub = subprocess.Popen(
+        [
+            sys.executable,
+            "-m",
+            "coverage",
+            "run",
+        ]
+    )
     sub.wait()
-    sub = subprocess.Popen([
-        sys.executable,
-        "-m",
-        "coverage",
-        "report",
-    ])
+    sub = subprocess.Popen(
+        [
+            sys.executable,
+            "-m",
+            "coverage",
+            "report",
+        ]
+    )
     sub.wait()
-    sub = subprocess.Popen([
-        sys.executable,
-        "-m",
-        "coverage",
-        "xml",
-    ])
+    sub = subprocess.Popen(
+        [
+            sys.executable,
+            "-m",
+            "coverage",
+            "xml",
+        ]
+    )
     sub.wait()
+
 
 async def main():
     """
