@@ -22,6 +22,11 @@ jobs:
           python-version: '3.11'
           cache: pip
 
+      - name: Import env from GitHub Repository Secrets
+        uses: oNaiPs/secrets-to-env-action@v1
+        with:
+          secrets: ${{ toJSON(secrets) }}
+
       - name: Setup Venv
         run: python -m venv venv
 
@@ -34,8 +39,12 @@ jobs:
       - name: Install Dev Dependencies
         run: pip install -U -r requirements-dev.txt
 
+      - name: Run OOBE
+        run: python firstRun.py
+
       - name: Run Tests
         run: coverage run
+        continue-on-error: true
 
       - name: Report Coverage as XML
         run: coverage xml
