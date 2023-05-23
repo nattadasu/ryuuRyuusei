@@ -4,8 +4,8 @@
 
 |                  |                |
 | ---------------- | -------------- |
-| **Effective**    | April 1, 2023  |
-| **Last Updated** | April 1, 2023  |
+| **Effective**    | April 13, 2023  |
+| **Last Updated** | April 30, 2023  |
 
 Greetings, and welcome to Ryuuzaki Ryuusei's Privacy Policy. Through this
 document, we aim to provide you with an explanation of how your personal
@@ -165,6 +165,13 @@ This data is used to provide the following functionality:
 * `/profile` command
 * `/register` command
 * `/whois` command
+
+### Personal Information
+
+Ryuuzaki Ryuusei may collect and store limited personal information that you
+provide when you configure your experience using the bot, such as:
+
+* Languages that you prefer to use the bot
 
 ## User Data Sharing
 

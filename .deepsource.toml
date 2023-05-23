@@ -1,6 +1,9 @@
 version = 1
 
 [[analyzers]]
+name = "shell"
+
+[[analyzers]]
 name = "python"
 
   [analyzers.meta]
@@ -8,3 +11,13 @@ name = "python"
 
 [[analyzers]]
 name = "secrets"
+
+[[transformers]]
+name = "autopep8"
+
+[[transformers]]
+name = "isort"
+
+[[analyzers]]
+name = "test-coverage"
+enabled = true

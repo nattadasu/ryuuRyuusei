@@ -8,3 +8,14 @@ trim_trailing_whitespace = true
 
 [**.md]
 indent_size = 2
+
+[**.csv]
+indent_size = 8
+indent_style = tab
+tab_width = 8
+
+[**.json]
+indent_size = 2
+
+[**.{yml,yaml}]
+indent_size = 2

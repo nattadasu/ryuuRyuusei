@@ -3,8 +3,12 @@ jikan4snek_cache
 database/**
 cache/**
 !database/.gitkeep
+!database/README.md
 !cache/.gitkeep
 jikanpy/
+i18n/**.json
+i18n/_index.yaml
+**.old.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
