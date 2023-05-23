@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Literal, Optional
 
 import pandas as pd
@@ -89,7 +89,7 @@ class UserDatabase:
             "malId": user_data.mal_id,
             "malJoined": user_data.mal_joined.timestamp(),
             "registeredAt": user_data.registered_at.timestamp(),
-            "registeredGuild": user_data.registered_guild,
+            "registeredGuildId": user_data.registered_guild,
             "registeredBy": user_data.registered_by,
             "registeredGuildName": None,
             "anilistUsername": user_data.anilist_username,
@@ -176,6 +176,36 @@ class UserDatabase:
         username = row.iloc[0]["malUsername"]
         verified = await check_club_membership(username)
         return verified
+
+    async def get_user_data(self, discord_id: Snowflake) -> UserDatabaseClass:
+        """
+        Get user data from the database. Similar to `export_user_data`, but with dataclass
+
+        Args:
+            discord_id (Snowflake): Discord ID of the user
+
+        Returns:
+            UserDatabaseClass: Dataclass contains information about an user
+        """
+        df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        row = df[df["discordId"] == str(discord_id)]
+        if row.empty:
+            raise DatabaseException(
+                f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error"
+            )
+        data = row.to_dict(orient="records")[0]
+        return UserDatabaseClass(
+            discord_id=Snowflake(data["discordId"]),
+            mal_id=int(data["malId"]),
+            mal_username=data["malUsername"],
+            mal_joined=datetime.fromtimestamp(int(data["malJoined"]), tz=timezone.utc),
+            anilist_id=float(data["anilistId"]) if data["anilistId"] else None,
+            anilist_username=data["anilistUsername"] if data["anilistUsername"] else None,
+            lastfm_username=data["lastfmUsername"] if data["lastfmUsername"] else None,
+            registered_at=datetime.fromtimestamp(int(data["registeredAt"]), tz=timezone.utc),
+            registered_guild=Snowflake(data["registeredGuildId"]),
+            registered_by=Snowflake(data["registeredBy"]),
+        )
 
     async def export_user_data(self, discord_id: Snowflake) -> str:
         """
