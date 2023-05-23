@@ -24,38 +24,38 @@ class Help(ipy.Extension):
         """Initialize the extension."""
         self.bot = bot
 
-    @ipy.slash_command(
-        name="help",
-        description="Get a list of all available commands"
-    )
+    @ipy.slash_command(name="help", description="Get a list of all available commands")
     async def help(self, ctx: ipy.SlashContext) -> None:
         """Get a list of all available commands."""
         help_list = []
-        commands = sorted(self.bot.application_commands,
-                          key=lambda x: str(x.name))
+        commands = sorted(self.bot.application_commands, key=lambda x: str(x.name))
 
         for i in range(0, len(commands), 10):
             listed = []
-            for command in commands[i:i + 10]:
+            for command in commands[i : i + 10]:
                 cmd_name = f"/{command.name}"
                 group_name = f" {command.group_name}" if command.group_name else ""
-                sub_cmd_name = f" {command.sub_cmd_name}" if command.sub_cmd_name else ""
+                sub_cmd_name = (
+                    f" {command.sub_cmd_name}" if command.sub_cmd_name else ""
+                )
                 name = f"{cmd_name}{group_name}{sub_cmd_name}"
-                description = command.sub_cmd_description if command.sub_cmd_name else command.description
+                description = (
+                    command.sub_cmd_description
+                    if command.sub_cmd_name
+                    else command.description
+                )
                 listed.append(ipy.EmbedField(name=name, value=description))
 
             help_list.append(
                 ipy.Embed(
                     title="List of available commands.",
                     color=0x7CB7D3,
-                    thumbnail=ipy.EmbedAttachment(
-                        url=self.bot.user.avatar.url),
-                    fields=listed
+                    thumbnail=ipy.EmbedAttachment(url=self.bot.user.avatar.url),
+                    fields=listed,
                 )
             )
 
-        paginator = Paginator.create_from_embeds(
-            self.bot, *help_list, timeout=30)
+        paginator = Paginator.create_from_embeds(self.bot, *help_list, timeout=30)
         await paginator.send(ctx)
 
 
