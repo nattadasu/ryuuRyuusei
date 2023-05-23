@@ -68,6 +68,7 @@ async def submit_nekomimi(ctx: sctx, lang: dict, gender: NekomimiGender = None):
     Returns:
         None
     """
+    await ctx.defer()
     data = neko(gender).get_random_nekomimi()
     dcEm = generate_nekomimi_embed(row=data, lang=lang)
     await ctx.send("", embeds=dcEm)

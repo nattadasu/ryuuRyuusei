@@ -21,10 +21,6 @@ bot = ipy.AutoShardedClient(
         name="random cat videos",
         type=ipy.ActivityType.WATCHING,
     ),
-    auto_defer=ipy.AutoDefer(
-        enabled=True,
-        time_until_defer=0,
-    ),
     delete_unused_application_cmds=True,
     sync_interactions=True,
     send_command_tracebacks=False,

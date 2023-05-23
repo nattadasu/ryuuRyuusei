@@ -508,6 +508,7 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
     Raises:
         *None*
     """
+    await ctx.defer()
     channel = ctx.channel
     ul = read_user_language(ctx)
 

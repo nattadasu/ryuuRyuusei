@@ -36,6 +36,7 @@ class Profile(ipy.Extension):
         ],
     )
     async def profile_discord(self, ctx: ipy.SlashContext, user: ipy.User = None):
+        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul, useRaw=True)
         lp = l_["strings"]["profile"]
@@ -206,6 +207,7 @@ class Profile(ipy.Extension):
         ],
     )
     async def profile_lastfm(self, ctx: ipy.SlashContext, user: str, maximum: int = 9):
+        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul, useRaw=True)
         try:

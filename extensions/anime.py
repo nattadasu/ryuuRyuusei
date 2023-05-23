@@ -45,6 +45,7 @@ class Anime(ipy.Extension):
     async def anime_search(
         self, ctx: ipy.SlashContext, query: str, provider: str = "anilist"
     ):
+        await ctx.defer()
         ul = read_user_language(ctx)
         l_ = fetch_language_data(ul, useRaw=True)
         send = await ctx.send(
