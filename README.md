@@ -174,6 +174,7 @@ If you have any questions, feel free to join the
 - `/profile discord` - Get your Discord profile
 - `/profile lastfm` - Get your Last.fm profile
 - ⌚ `/profile myanimelist` - Get your MyAnimeList profile
+- ⌚ `/profile shikimori` - Get your Shikimori profile
 - ⌚ `/whoami` - Show stored information and settings about you on the bot
   graphically and interactively.
 
@@ -228,9 +229,10 @@ If you have any questions, feel free to join the
 
 > Collection of commands that are (might be) useful for everyday use.
 
-- ⌚ `/utilities avatar` - Get a user's avatar
+- ⌚ `/utilities avatar` - Get user avatar, global or server
+- ⌚ `/utilities banner` - Get user banner, global or UserBG
 - `/utilities base64` - Encode or decode a string to or from Base64
-- `/utilities color` - Get a color's information
+- `/utilities color` - Get color information
 - `/utilities math` - Evaluate a mathematical expression
 - `/utilities qrcode` - Generate a QR code from a string
 - `/utilities site status` - Check if the site is up or down.
@@ -284,22 +286,35 @@ Also, you might need Discord account and Discord Bot Token.
 
 2. Activate the virtual environment based on your operating system and shell:
 
-   - **Windows (PowerShell)**:
+   - **PowerShell**
+     - Windows
 
-     ```powershell
-     & .\venv\Scripts\Activate.ps1
-     ```
+      ```powershell
+      & .\venv\Scripts\Activate.ps1
+      ```
 
-   - **Windows (Command Prompt)**:
+     - \*nix
+
+      ```powershell
+      & ./venv/bin/activate.ps1
+      ```
+
+   - **Command Prompt/Batch**:
 
      ```batch
      venv\Scripts\activate.bat
      ```
 
-   - **Unix-like Systems (bash)**:
+   - **Bash (\*nix)**:
 
      ```bash
-     source venv/bin/activate
+     source ./venv/bin/activate
+     ```
+
+   - **Fish (\*nix)**
+
+     ```fish
+     source ./venv/bin/activate.fish
      ```
 
    If you encounter any issues activating the virtual environment, make sure you
@@ -352,6 +367,113 @@ pip install aiohttp langcodes pyyaml pandas
 
 Congratulations! You have successfully set up and launched the Discord bot.
 
+## 🛠️ Development <a name = "development"></a>
+
+### Forking the Repository
+
+You obviously need to fork this repository and clone it to your local machine.
+
+Then you may read the any documents related on contributing, you can find most
+of the documents in `tests`, `modules`, `extensions`, and `classes` directory
+on `README.md` file. Each classes and modules has been heavily documented
+regarding their usage and implementation.
+
+"*why not make a docs web?*" you may ask... I personally don't think it's
+necessary to make a docs web for this bot, as it's not a library or framework
+that needs to be documented. It's just a bot, and I think it's better to read
+the documentation directly from the class, module, or function itself.
+
+You may also accepts [Code of Conduct](CODE_OF_CONDUCT.md) and [LICENSE](LICENSE)
+regarding your contribution and modification.
+
+You need to know some stuff about what we've been doing in this bot:
+
+- All 3rd APIs were separated to each file in `classes` directory as... class.
+- All data spit by API are dataclasses, unless it's not possible as some key may
+  not documented properly, missing, or... both (im looking at you, SIMKL).
+- `Enum` is basically fancier `Literal`, and you can assign synonym with same
+  value. However, this is not mandatory, but highly recommended.
+- Classes must have their own test file in `tests` directory.
+- Classes must be run with `with` statement to ensure the connection on `aiohttp`
+  is closed properly.
+- Classes should have auto caching mechanism saved as JSON file in `cache`
+  directory, unless if the method is always changing, such as `get_user` method.
+- All commands were grouped and placed in `extensions` directory.
+- Classes, functions, methods, immutable variables, or even the script itself
+  are documented with docstrings.
+- All functions and variables must be statically typed to prevent any
+  unexpected errors.
+- Naming convetions:
+  - `UpperCamelCase` for classes, dataclass, and enum
+  - `UPPER_SNAKE_CASE` for immutable variables
+  - `snake_case` for functions, methods, mutable variables, and file name
+  - `lowercase` for extension file name
+  - `spaced lowercase` for command name, consist of:
+    - `command` - the command name
+    - `group` - the command group
+    - `subcommand` - the subcommand name
+  - BCP 47 with underscore (`_`) for language code, example:
+    - `en_US` for English (United States)
+    - `ace_ID` for Achinese (Indonesia)
+    - `zh_Hans_CN` for Chinese (Simplified, China)
+- Project must pass all tests and CI/CD before merging to branch.
+
+### Additional Dependencies
+
+Before you can start developing the bot, you need to install additional
+dependencies. Execute the following command:
+
+```bash
+pip install -U -r requirements-dev.txt
+```
+
+### Adding New Commands
+
+1. Create a new file in the `extensions` directory with the following format:
+
+   ```python
+   import interactions as ipy
+
+   class Example(ipy.Extension):
+       def __init__(self, bot):
+           self.bot = bot
+
+       @ipy.slash_command(
+        name="example",
+        description="Example command",
+       )
+       async def example(self, ctx: ipy.SlashContext) -> None:
+           await ctx.send("Example")
+
+   def setup(bot):
+       Example(bot)
+   ```
+
+2. ???
+3. Run the bot via `python main.py` and test the command.
+4. Profit!
+
+### Adding New API Integrations from 1st or 3rd Party
+
+1. Create a new file in the `classes` directory
+2. Read carefully the instruction written in [`classes/README.md`](classes/README.md)
+3. Write test script in `tests` directory then run it
+4. Integrate the class to the commands if test passed
+
+### Formatting, Linting, Batch Testing, and Coverage Reporting
+
+You can easily do all that stuff by just running `dev.py` script.
+
+```bash
+python dev.py
+```
+
+However, autoformat the scripts requires your confirmation, as default
+configuration of this repo is based on DeepSource's configuration, which
+is **a lot** different than the default configuration of `autopep8`.
+
+If you acknowledge the risk, type `y` if asked.
+
 ## ⛏️ Built Using <a name = "built_using"></a>
 
 <!-- markdownlint-disable MD013 -->
@@ -375,6 +497,7 @@ Congratulations! You have successfully set up and launched the Discord bot.
 | [MyAnimeList](https://myanimelist.net/)                               | -               | Anime                                       | Database          | Search and show anime information                                                           |
 | [nattadasu/animeApi](https://github.com/nattadasu/animeApi)           | AGPL-3.0        | Random, Relation                            | Relation          | Linking ID from a database to another database                                              |
 | [nattadasu/nekomimiDb](https://github.com/nattadasu/nekomimiDb)       | MIT             | Random                                      | Database          | Used for getting random nekomimi image                                                      |
+| [Odesli](https://odesli.co/)                                          | -               | Relation                                    | API               | Used for getting music link                                                                 |
 | [`plusminus`](https://pypi.org/project/plusminus/)                    | MIT             | Utility                                     | Module            | Safely evaluate math expression                                                             |
 | [PronounDB](https://pronoundb.org/)                                   | BSD-3-Clause    | Profile                                     | Database          | Used for getting user's pronouns                                                            |
 | [Random.org](https://www.random.org/)                                 | -               | Random                                      | Generator         | Used for generating (true) random number and string                                         |
