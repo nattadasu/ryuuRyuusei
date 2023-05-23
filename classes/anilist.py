@@ -187,7 +187,7 @@ class AniList:
                 tag = AniListTagsStruct(**tag) if tag else None
         return AniListMediaStruct(**data)
 
-    async def nsfwCheck(
+    async def nsfw_check(
         self,
         media_id: int,
         media_type: Literal["ANIME", "MANGA"] | MediaType = MediaType.ANIME,
@@ -206,17 +206,15 @@ class AniList:
             bool: True if the media is NSFW, False if not
         """
         self.cache_expiration_time = 604800
-        media = ""
-        if isinstance(media_type, self.MediaType):
-            media = media_type.value
-        elif isinstance(media_type, Literal):
-            media = media_type
-        cache_file_path = self.get_cache_file_path(f"nsfw/{media.lower()}/{id}.json")
+        if isinstance(media_type, str):
+            media_type = self.MediaType(media_type)
+        media: str = media_type.value
+        cache_file_path = self.get_cache_file_path(f"nsfw/{media.lower()}/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
         query = f"""query {{
-    Media(id: {media_id}, type: {media_type}) {{
+    Media(id: {media_id}, type: {media}) {{
         id
         isAdult
     }}
@@ -242,7 +240,7 @@ class AniList:
             ProviderHttpError: Raised when the HTTP request fails
 
         Returns:
-            dict: The anime information
+            AniListMediaStruct: The anime information
         """
         cache_file_path = self.get_cache_file_path(f"anime/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
@@ -319,7 +317,7 @@ class AniList:
             media_id (int): The ID of the manga
 
         Returns:
-            dict: The manga information
+            AniListMediaStruct: The manga information
         """
         cache_file_path = self.get_cache_file_path(f"manga/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
