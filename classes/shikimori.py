@@ -2,7 +2,7 @@ import aiohttp
 from dataclasses import dataclass
 from enum import Enum
 from typing import Literal
-from datetime import datetime
+from datetime import datetime, timezone
 from classes.excepts import ProviderHttpError
 
 from modules.const import SHIKIMORI_APPLICATION_NAME as USER_AGENT, SHIKIMORI_CLIENT_ID
@@ -220,7 +220,7 @@ class Shikimori:
             ),
             url=data["url"],
             name=data["name"],
-            sex=data["sex"],
+            sex=ShikimoriUserGender(data["sex"]),
             full_years=data["full_years"],
             last_online=data["last_online"],
             website=data["website"],
@@ -328,8 +328,8 @@ class Shikimori:
                     ShikimoriActivityStruct(
                         name=[
                             # convert epoch to datetime
-                            datetime.fromtimestamp(a["name"][0]),
-                            datetime.fromtimestamp(a["name"][1]),
+                            datetime.fromtimestamp(a["name"][0], tz=timezone.utc),
+                            datetime.fromtimestamp(a["name"][1], tz=timezone.utc),
                         ],
                         value=a["value"],
                     )

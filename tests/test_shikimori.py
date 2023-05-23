@@ -16,7 +16,6 @@ class ShikimoriTest(unittest.IsolatedAsyncioTestCase):
         """Test getting user from Shikimori"""
         async with Shikimori() as shiki:
             user = await shiki.get_user("nattadasu", is_nickname=True)
-        print(user)
         self.assertIsInstance(user, ShikimoriUserStruct)
 
 
