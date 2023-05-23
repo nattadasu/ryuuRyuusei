@@ -17,7 +17,9 @@ class UserBackgroundTest(unittest.IsolatedAsyncioTestCase):
     async def test_get_background(self):
         """Test getting background"""
         async with UserBackground() as usrbg:
-            res: UserBackgroundStruct = await usrbg.get_background(user_id=Snowflake(384089845527478272))
+            res: UserBackgroundStruct = await usrbg.get_background(
+                user_id=Snowflake(384089845527478272)
+            )
             self.assertIsInstance(res, UserBackgroundStruct)
 
 

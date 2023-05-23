@@ -422,7 +422,6 @@ class Utilities(ipy.Extension):
 
             await ctx.send(embed=embed)
 
-
     @utilities.subcommand(
         sub_cmd_name="banner",
         sub_cmd_description="Fetch user's banner",
@@ -445,7 +444,12 @@ class Utilities(ipy.Extension):
             ),
         ],
     )
-    async def utilities_banner(self, ctx: ipy.SlashContext, user: ipy.Member | ipy.User = None, scope: Literal['user', 'usrbg'] = 'user'):
+    async def utilities_banner(
+        self,
+        ctx: ipy.SlashContext,
+        user: ipy.Member | ipy.User = None,
+        scope: Literal["user", "usrbg"] = "user",
+    ):
         await ctx.defer()
 
         if not user:
@@ -454,7 +458,7 @@ class Utilities(ipy.Extension):
         user_data = await self.bot.http.get_user(user.id)
         user_data = ipy.User.from_dict(user_data, self.bot)
 
-        if scope == 'user':
+        if scope == "user":
             try:
                 banner = user_data.banner.url
             except AttributeError:
@@ -488,7 +492,6 @@ class Utilities(ipy.Extension):
             )
             await ctx.send(embed=embed)
 
-
     @utilities.subcommand(
         sub_cmd_name="avatar",
         sub_cmd_description="Fetch user's avatar",
@@ -511,13 +514,18 @@ class Utilities(ipy.Extension):
             ),
         ],
     )
-    async def utilities_avatar(self, ctx: ipy.SlashContext, user: ipy.Member | ipy.User = None, scope: Literal['user', 'server'] = 'user'):
+    async def utilities_avatar(
+        self,
+        ctx: ipy.SlashContext,
+        user: ipy.Member | ipy.User = None,
+        scope: Literal["user", "server"] = "user",
+    ):
         await ctx.defer()
 
         if not user:
             user = ctx.author
 
-        if scope == 'user':
+        if scope == "user":
             avatar = user.avatar.url
         else:
             avatar = user.display_avatar.url
