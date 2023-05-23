@@ -154,7 +154,7 @@ class UserDatabase:
         df.to_csv(self.database_path, sep="\t", index=False)
         # verify if its success
         verify = await self.check_if_registered(discord_id)
-        return verify
+        return not verify
 
     async def verify_user(self, discord_id: Snowflake) -> bool:
         """
