@@ -155,14 +155,16 @@ ownerUserUrl = f"https://discord.com/users/{AUTHOR_USERID}"
 
 DECLINED_GDPR: Final[
     str
-] = """**You have not accepted the GDPR/CCPA/CPRA Privacy Consent!**
+] = """## You have not accepted the Privacy Policy!
 Unfortunately, we cannot register you without your consent. However, you can still use the bot albeit limited.
 
 Allowed commands:
-- `/profile mal_username:<str>`
-- `/ping`
+- `/profile myanimelist mal_username:<str>`
+- `/profile anilist anilist_username:<str>`
+- `/profile shikimori shikimori_username:<str>`
+- `/profile lastfm lastfm_username:<str>`
 
-If you want to register, please use the command `/register` again and accept the consent by set the `accept_gdpr` option to `true`!
+If you want to register, please use the command `/register` again and accept the consent by set the `accept_privacy_policy` option to `true`!
 
 We only store your MAL username, MAL UID, Discord username, Discord UID, and joined date for both platforms, also server ID during registration.
 We do not store any other data such as your email, password, or any other personal information.

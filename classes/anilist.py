@@ -388,6 +388,79 @@ class AniList:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
+    async def user(self, username: str, return_id: bool = False) -> dict:
+        """
+        Get user information by their username
+
+        Args:
+            username (str): The username of the user
+            return_id (bool, optional): Whether to return the user ID or not. Defaults to False.
+
+        Raises:
+            ProviderHttpError: Raised when the HTTP request fails
+
+        Returns:
+            dict: The user information
+        """
+        self.cache_expiration_time = 43200
+        cache_file_path = self.get_cache_file_path(f"user/{username}.json")
+        cached_data = self.read_cached_data(cache_file_path)
+        if cached_data is not None and not return_id:
+            return cached_data
+        if return_id:
+            gqlquery = f"""query {{
+    User(name: "{username}") {{
+        id
+    }}
+}}"""
+        else:
+            gqlquery = f"""query {{
+    User(name: "{username}") {{
+        id
+        name
+        about
+        avatar {{
+            large
+            medium
+        }}
+        bannerImage
+        statistics {{
+            anime {{
+                count
+                meanScore
+                minutesWatched
+                statuses{{
+                    count
+                    status
+                }}
+            }}
+            manga {{
+                count
+                meanScore
+                chaptersRead
+                statuses{{
+                    count
+                    status
+                }}
+            }}
+        }}
+        siteUrl
+        donatorTier
+        donatorBadge
+        createdAt
+    }}
+}}"""
+        async with self.session.post(
+            self.base_url, json={"query": gqlquery}
+        ) as response:
+            if response.status == 200:
+                data = await response.json()
+                if not return_id:
+                    self.write_data_to_cache(data["data"]["User"], cache_file_path)
+                return data["data"]["User"]
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
+
     async def search_media(
         self,
         query: str,

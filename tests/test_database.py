@@ -25,11 +25,12 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
             resp = await ud.save_to_database(
                 UserDatabaseClass(
                     discord_id=Snowflake(1234567890),
+                    discord_username="nattadasu",
                     mal_id=1234,
                     mal_joined=tmp,
                     mal_username="nattadasu",
                     registered_at=tmp,
-                    registered_guild=Snowflake(1234567890),
+                    registered_guild_id=Snowflake(1234567890),
                     registered_by=Snowflake(1234567890),
                 )
             )

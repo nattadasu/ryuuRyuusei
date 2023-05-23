@@ -175,16 +175,19 @@ If you have any questions, feel free to join the
 - `/profile lastfm` - Get your Last.fm profile
 - ⌚ `/profile myanimelist` - Get your MyAnimeList profile
 - ⌚ `/profile shikimori` - Get your Shikimori profile
-- ⌚ `/whoami` - Show stored information and settings about you on the bot
+- `/whoami` - Show stored information and settings about you on the bot
   graphically and interactively.
 
 ### Data Control
 
-- ⌚ `/export data` - Export your data from the bot in JSON
-- ⌚ `/register` - Register your MAL account to the bot
-- ⌚ `/unregister` - Unregister your MAL account and drops your settings from the
+- `/export data` - Export your data from the bot in JSON, CSV, YAML, and
+  Python dictionary format
+- `/platform link` - Link your Discord account to other platforms
+- `/platform unlink` - Unlink your Discord account from other platforms
+- `/register` - Register your MAL account to the bot
+- `/unregister` - Unregister your MAL account and drops your settings from the
   bot
-- ⌚ `/verify` - Verify your MAL account to the server that host the bot (you may
+- `/verify` - Verify your MAL account to the server that host the bot (you may
   need to join the club first)
 
 ### Settings Commands

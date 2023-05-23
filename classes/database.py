@@ -16,16 +16,20 @@ class UserDatabaseClass:
 
     discord_id: Snowflake
     """User's Discord Snowflake ID"""
+    discord_username: str
+    """User's Discord username"""
     mal_id: int
     """User's MyAnimeList ID"""
     mal_joined: datetime
     """User's MyAnimeList join date"""
     registered_at: datetime
     """User's registration date"""
-    registered_guild: Snowflake
+    registered_guild_id: Snowflake
     """Guild's Snowflake ID where the user registered"""
     registered_by: Snowflake
     """User's Snowflake ID who registered the user"""
+    registered_guild_name: Optional[str] = None
+    """Guild's name where the user registered"""
     anilist_id: Optional[int] = None
     """User's AniList ID"""
     anilist_username: Optional[str] = None
@@ -34,6 +38,10 @@ class UserDatabaseClass:
     """User's Last.fm username"""
     mal_username: Optional[str] = None
     """User's MyAnimeList username, as a fallback if ID is unreachable"""
+    shikimori_id: Optional[int] = None
+    """User's Shikimori ID"""
+    shikimori_username: Optional[str] = None
+    """User's Shikimori username, as a fallback if ID is unreachable"""
 
 
 class UserDatabase:
@@ -83,18 +91,20 @@ class UserDatabase:
         """
         data = {
             "discordId": user_data.discord_id,
-            "discordUsername": None,
+            "discordUsername": user_data.discord_username,
             "discordJoined": user_data.discord_id.created_at.timestamp(),
             "malUsername": user_data.mal_username,
             "malId": user_data.mal_id,
             "malJoined": user_data.mal_joined.timestamp(),
             "registeredAt": user_data.registered_at.timestamp(),
-            "registeredGuildId": user_data.registered_guild,
+            "registeredGuildId": user_data.registered_guild_id,
             "registeredBy": user_data.registered_by,
-            "registeredGuildName": None,
+            "registeredGuildName": user_data.registered_guild_name,
             "anilistUsername": user_data.anilist_username,
             "anilistId": user_data.anilist_id,
             "lastfmUsername": user_data.lastfm_username,
+            "shikimoriId": user_data.shikimori_id,
+            "shikimoriUsername": user_data.shikimori_username,
         }
         for k, v in data.items():
             if isinstance(v, int):
@@ -106,6 +116,7 @@ class UserDatabase:
             elif v is None:
                 data[k] = '""'
         df = pd.DataFrame(data, index=[0])
+        df = df[data.keys()]
         df.to_csv(
             self.database_path,
             sep="\t",
@@ -117,25 +128,28 @@ class UserDatabase:
     async def update_user(
         self,
         discord_id: Snowflake,
-        row: Literal["malId", "anilistId", "lastfmId"],
+        row: Literal[
+            "anilistId",
+            "anilistUsername",
+            "lastfmUsername",
+            "shikimoriId",
+            "shikimoriUsername",
+        ],
         modified_input: Any,
     ) -> bool:
         """
-        Update information about an user that is not essential for the bot
+        Update information about a user that is not essential for the bot
 
         Args:
             discord_id (Snowflake): Discord ID of the user
-            row (Literal["malId", "anilistId", "lastfmId"]): Row to be updated
+            row (Literal["anilistId", "anilistUsername", "lastfmUsername", "shikimoriId", "shikimoriUsername"]): Row to be modified
             modified_input (Any): New value of the row
 
         Returns:
             bool: True if user is updated, False if not
         """
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        data = df[df["discordId"] == str(discord_id)].index
-        if modified_input is None:
-            modified_input = '""'
-        data[row] = modified_input
+        df.loc[df["discordId"] == str(discord_id), row] = modified_input
         df.to_csv(self.database_path, sep="\t", index=False)
         return True
 
@@ -188,6 +202,7 @@ class UserDatabase:
             UserDatabaseClass: Dataclass contains information about an user
         """
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        df.fillna("", inplace=True)
         row = df[df["discordId"] == str(discord_id)]
         if row.empty:
             raise DatabaseException(
@@ -196,6 +211,7 @@ class UserDatabase:
         data = row.to_dict(orient="records")[0]
         return UserDatabaseClass(
             discord_id=Snowflake(data["discordId"]),
+            discord_username=data["discordUsername"],
             mal_id=int(data["malId"]),
             mal_username=data["malUsername"],
             mal_joined=datetime.fromtimestamp(int(data["malJoined"]), tz=timezone.utc),
@@ -203,8 +219,11 @@ class UserDatabase:
             anilist_username=data["anilistUsername"] if data["anilistUsername"] else None,
             lastfm_username=data["lastfmUsername"] if data["lastfmUsername"] else None,
             registered_at=datetime.fromtimestamp(int(data["registeredAt"]), tz=timezone.utc),
-            registered_guild=Snowflake(data["registeredGuildId"]),
+            registered_guild_id=Snowflake(data["registeredGuildId"]),
+            registered_guild_name=data["registeredGuildName"],
             registered_by=Snowflake(data["registeredBy"]),
+            shikimori_id=id(data["shikimoriId"]) if data["shikimoriId"] else None,
+            shikimori_username=data["shikimoriUsername"] if data["shikimoriUsername"] else None,
         )
 
     async def export_user_data(self, discord_id: Snowflake) -> str:
@@ -218,6 +237,7 @@ class UserDatabase:
             str: JSON string of the user data
         """
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        df.fillna("", inplace=True)
         row = df[df["discordId"] == str(discord_id)]
         if row.empty:
             raise DatabaseException(
@@ -231,7 +251,7 @@ class UserDatabase:
                 data[key] = True
             elif value.lower() == "false":
                 data[key] = False
-            elif value.lower() == "null":
+            elif value.lower() in ["null", "", "None"]:
                 data[key] = None
             else:
                 data[key] = str(value)
