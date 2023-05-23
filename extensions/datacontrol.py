@@ -14,9 +14,14 @@ from classes.excepts import ProviderHttpError
 from classes.jikan import JikanApi
 from classes.lastfm import LastFM
 from classes.shikimori import Shikimori
-from modules.const import (DECLINED_GDPR, EMOJI_SUCCESS,
-                           EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR,
-                           VERIFICATION_SERVER, VERIFIED_ROLE)
+from modules.const import (
+    DECLINED_GDPR,
+    EMOJI_SUCCESS,
+    EMOJI_UNEXPECTED_ERROR,
+    EMOJI_USER_ERROR,
+    VERIFICATION_SERVER,
+    VERIFIED_ROLE,
+)
 
 
 class DataControl(ipy.Extension):
@@ -26,7 +31,9 @@ class DataControl(ipy.Extension):
         self.bot = bot
 
     @staticmethod
-    def generate_error_embed(header: str, message: str, is_user_error: bool = True) -> ipy.Embed:
+    def generate_error_embed(
+        header: str, message: str, is_user_error: bool = True
+    ) -> ipy.Embed:
         """Generate an error embed
 
         Args:
@@ -50,9 +57,7 @@ class DataControl(ipy.Extension):
             description=message,
             color=0xFF0000,
         )
-        embed.set_thumbnail(
-            url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1"
-        )
+        embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
     @staticmethod
@@ -75,9 +80,7 @@ class DataControl(ipy.Extension):
             description=message,
             color=0x00FF00,
         )
-        embed.set_thumbnail(
-            url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1"
-        )
+        embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
     @ipy.slash_command(
@@ -96,9 +99,11 @@ class DataControl(ipy.Extension):
                 type=ipy.OptionType.BOOLEAN,
                 required=True,
             ),
-        ]
+        ],
     )
-    async def register(self, ctx: ipy.SlashContext, mal_username: str, accept_privacy_policy: bool):
+    async def register(
+        self, ctx: ipy.SlashContext, mal_username: str, accept_privacy_policy: bool
+    ):
         await ctx.defer(ephemeral=True)
         if accept_privacy_policy is False:
             await ctx.send(DECLINED_GDPR)
@@ -138,7 +143,6 @@ class DataControl(ipy.Extension):
         )
         await ctx.send(embed=embed)
 
-
     @ipy.slash_command(
         name="platform",
         description="Platform linking utility",
@@ -163,7 +167,7 @@ class DataControl(ipy.Extension):
                         name="Shikimori",
                         value="shikimori",
                     ),
-                ]
+                ],
             ),
             ipy.SlashCommandOption(
                 name="username",
@@ -171,9 +175,14 @@ class DataControl(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=True,
             ),
-        ]
+        ],
     )
-    async def platform_link(self, ctx: ipy.SlashContext, platform: Literal["anilist", "lastfm", "shikimori"], username: str):
+    async def platform_link(
+        self,
+        ctx: ipy.SlashContext,
+        platform: Literal["anilist", "lastfm", "shikimori"],
+        username: str,
+    ):
         await ctx.defer(ephemeral=True)
         async with UserDatabase() as ud:
             is_registered = await ud.check_if_registered(ctx.author.id)
@@ -186,20 +195,30 @@ class DataControl(ipy.Extension):
                     user_id = await anilist.user(username)
                     user_id = user_id["id"]
                 async with UserDatabase() as ud:
-                    await ud.update_user(ctx.author.id, row="anilistId", modified_input=user_id)
-                    await ud.update_user(ctx.author.id, row="anilistUsername", modified_input=username)
+                    await ud.update_user(
+                        ctx.author.id, row="anilistId", modified_input=user_id
+                    )
+                    await ud.update_user(
+                        ctx.author.id, row="anilistUsername", modified_input=username
+                    )
             elif platform == "lastfm":
                 async with LastFM() as lastfm:
                     await lastfm.get_user_info(username)
                 async with UserDatabase() as ud:
-                    await ud.update_user(ctx.author.id, row="lastfmUsername", modified_input=username)
+                    await ud.update_user(
+                        ctx.author.id, row="lastfmUsername", modified_input=username
+                    )
             elif platform == "shikimori":
                 async with Shikimori() as shikimori:
                     user_id = await shikimori.get_user(username)
                     user_id = user_id.id
                 async with UserDatabase() as ud:
-                    await ud.update_user(ctx.author.id, row="shikimoriId", modified_input=user_id)
-                    await ud.update_user(ctx.author.id, row="shikimoriUsername", modified_input=username)
+                    await ud.update_user(
+                        ctx.author.id, row="shikimoriId", modified_input=user_id
+                    )
+                    await ud.update_user(
+                        ctx.author.id, row="shikimoriUsername", modified_input=username
+                    )
             embed = self.generate_success_embed(
                 header="Success!",
                 message=f"Your {platform} account has been linked!",
@@ -212,7 +231,6 @@ class DataControl(ipy.Extension):
                 is_user_error=False,
             )
             await ctx.send(embed=embed)
-
 
     @ipy.slash_command(
         name="platform",
@@ -238,11 +256,13 @@ class DataControl(ipy.Extension):
                         name="Shikimori",
                         value="shikimori",
                     ),
-                ]
+                ],
             ),
-        ]
+        ],
     )
-    async def platform_unlink(self, ctx: ipy.SlashContext, platform: Literal["anilist", "lastfm", "shikimori"]):
+    async def platform_unlink(
+        self, ctx: ipy.SlashContext, platform: Literal["anilist", "lastfm", "shikimori"]
+    ):
         await ctx.defer(ephemeral=True)
         async with UserDatabase() as ud:
             is_registered = await ud.check_if_registered(ctx.author.id)
@@ -252,15 +272,25 @@ class DataControl(ipy.Extension):
         try:
             if platform == "anilist":
                 async with UserDatabase() as ud:
-                    await ud.update_user(ctx.author.id, row="anilistId", modified_input=None)
-                    await ud.update_user(ctx.author.id, row="anilistUsername", modified_input=None)
+                    await ud.update_user(
+                        ctx.author.id, row="anilistId", modified_input=None
+                    )
+                    await ud.update_user(
+                        ctx.author.id, row="anilistUsername", modified_input=None
+                    )
             elif platform == "lastfm":
                 async with UserDatabase() as ud:
-                    await ud.update_user(ctx.author.id, row="lastfmUsername", modified_input=None)
+                    await ud.update_user(
+                        ctx.author.id, row="lastfmUsername", modified_input=None
+                    )
             elif platform == "shikimori":
                 async with UserDatabase() as ud:
-                    await ud.update_user(ctx.author.id, row="shikimoriId", modified_input=None)
-                    await ud.update_user(ctx.author.id, row="shikimoriUsername", modified_input=None)
+                    await ud.update_user(
+                        ctx.author.id, row="shikimoriId", modified_input=None
+                    )
+                    await ud.update_user(
+                        ctx.author.id, row="shikimoriUsername", modified_input=None
+                    )
             embed = self.generate_success_embed(
                 header="Success!",
                 message=f"Your {platform} account has been unlinked!",
@@ -273,7 +303,6 @@ class DataControl(ipy.Extension):
                 is_user_error=False,
             )
             await ctx.send(embed=embed)
-
 
     @ipy.slash_command(
         name="unregister",
@@ -297,7 +326,6 @@ class DataControl(ipy.Extension):
             message="You have been unregistered!",
         )
         await ctx.send(embed=embed)
-
 
     @ipy.slash_command(
         name="export",
@@ -327,11 +355,13 @@ class DataControl(ipy.Extension):
                         name="Python Dict",
                         value="py",
                     ),
-                ]
+                ],
             ),
-        ]
+        ],
     )
-    async def export_data(self, ctx: ipy.SlashContext, file_format: Literal["json", "csv", "yaml"]):
+    async def export_data(
+        self, ctx: ipy.SlashContext, file_format: Literal["json", "csv", "yaml"]
+    ):
         await ctx.defer(ephemeral=True)
         async with UserDatabase() as ud:
             is_registered = await ud.check_if_registered(ctx.author.id)
@@ -355,13 +385,16 @@ class DataControl(ipy.Extension):
                 json.dump(user_data, f, indent=4)
         elif file_format == "csv":
             df = pd.DataFrame([user_data])
-            df.to_csv(f"{filename}.csv", index=False, sep="\t", encoding="utf-8", header=True)
+            df.to_csv(
+                f"{filename}.csv", index=False, sep="\t", encoding="utf-8", header=True
+            )
         elif file_format == "yaml":
             with open(f"{filename}.yaml", "w") as f:
                 yaml.dump(user_data, f, indent=4)
         elif file_format == "py":
             with open(f"{filename}.py", "w") as f:
-                f.write(f"""from typing import Union, TypedDict
+                f.write(
+                    f"""from typing import Union, TypedDict
 
 class UserData(TypedDict):
     \"\"\"User data\"\"\"
@@ -398,7 +431,8 @@ class UserData(TypedDict):
     \"\"\"Shikimori username\"\"\"
 
 user_data: UserData = {user_data}
-""")
+"""
+                )
 
         fn = f"{filename}.{file_format}"
 
@@ -407,19 +441,18 @@ user_data: UserData = {user_data}
             message=f"Your data has been exported to `{fn.replace('cache/','')}`!\nFeel free to download the file!\n\nYour data in JSON format:\n```json\n{jd}```",
         )
 
-        await ctx.send(embed=embed, file=ipy.File(f"{fn}", file_name=f"{fn}".replace("cache/", "")))
+        await ctx.send(
+            embed=embed, file=ipy.File(f"{fn}", file_name=f"{fn}".replace("cache/", ""))
+        )
 
         # Delete the file
         os.remove(f"{fn}")
-
 
     @ipy.slash_command(
         name="verify",
         description="Verify your account",
         dm_permission=False,
-        scopes=[
-            VERIFICATION_SERVER
-        ]
+        scopes=[VERIFICATION_SERVER],
     )
     async def verify(self, ctx: ipy.SlashContext):
         await ctx.defer(ephemeral=True)
@@ -439,7 +472,9 @@ user_data: UserData = {user_data}
 
         # check if verified role exists
         if status is True and str(VERIFIED_ROLE) not in user_roles:
-            await ctx.member.add_role(VERIFIED_ROLE, reason="User verified via slash command")
+            await ctx.member.add_role(
+                VERIFIED_ROLE, reason="User verified via slash command"
+            )
             embed = self.generate_success_embed(
                 header="Success!",
                 message="You have been verified!",
@@ -452,6 +487,7 @@ user_data: UserData = {user_data}
                 is_user_error=True,
             )
             await ctx.send(embed=embed)
+
 
 def setup(bot: ipy.AutoShardedClient):
     DataControl(bot)

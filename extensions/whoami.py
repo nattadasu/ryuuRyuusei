@@ -68,12 +68,16 @@ class WhoAmI(ipy.Extension):
             ),
             ipy.EmbedField(
                 name="Registered Server Name",
-                value=resp.registered_guild_name if resp.registered_guild_name not in [None, ""] else "*None*",
+                value=resp.registered_guild_name
+                if resp.registered_guild_name not in [None, ""]
+                else "*None*",
                 inline=True,
             ),
             ipy.EmbedField(
                 name="Registered by",
-                value=f"Yourself" if resp.registered_by == ctx.author.id else f"<@{resp.registered_by}>",
+                value=f"Yourself"
+                if resp.registered_by == ctx.author.id
+                else f"<@{resp.registered_by}>",
                 inline=True,
             ),
             ipy.EmbedField(
@@ -83,7 +87,9 @@ class WhoAmI(ipy.Extension):
             ),
             ipy.EmbedField(
                 name="Username",
-                value=f"{resp.mal_username}" if resp.mal_username not in [None, ""] else "*Removed*",
+                value=f"{resp.mal_username}"
+                if resp.mal_username not in [None, ""]
+                else "*Removed*",
                 inline=True,
             ),
             ipy.EmbedField(
@@ -103,17 +109,23 @@ class WhoAmI(ipy.Extension):
             ),
             ipy.EmbedField(
                 name="AniList",
-                value=f"{resp.anilist_username} (`{int(resp.anilist_id)}`)" if resp.anilist_username not in [None, ""] else "*None*",
+                value=f"{resp.anilist_username} (`{int(resp.anilist_id)}`)"
+                if resp.anilist_username not in [None, ""]
+                else "*None*",
                 inline=True,
             ),
             ipy.EmbedField(
                 name="Last.fm",
-                value=f"{resp.lastfm_username}" if resp.lastfm_username not in [None, ""] else "*None*",
+                value=f"{resp.lastfm_username}"
+                if resp.lastfm_username not in [None, ""]
+                else "*None*",
                 inline=True,
             ),
             ipy.EmbedField(
                 name="Shikimori",
-                value=f"{resp.shikimori_username} (`{resp.shikimori_id}`)" if resp.shikimori_username not in [None, ""] else "*None*",
+                value=f"{resp.shikimori_username} (`{resp.shikimori_id}`)"
+                if resp.shikimori_username not in [None, ""]
+                else "*None*",
                 inline=True,
             ),
         ]
@@ -126,10 +138,8 @@ class WhoAmI(ipy.Extension):
             title=f"{ctx.author.username}",
             fields=fields,
             color=ctx.author.accent_color,
-            footer=ipy.EmbedFooter(
-                text="* Not saved in database"
-            ),
-            timestamp=datetime.now(tz=timezone.utc)
+            footer=ipy.EmbedFooter(text="* Not saved in database"),
+            timestamp=datetime.now(tz=timezone.utc),
         )
         embed.set_thumbnail(url=ctx.author.display_avatar.url)
         embed.set_image(url=ctx.author.banner.url)

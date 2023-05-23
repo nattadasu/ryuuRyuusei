@@ -216,14 +216,20 @@ class UserDatabase:
             mal_username=data["malUsername"],
             mal_joined=datetime.fromtimestamp(int(data["malJoined"]), tz=timezone.utc),
             anilist_id=float(data["anilistId"]) if data["anilistId"] else None,
-            anilist_username=data["anilistUsername"] if data["anilistUsername"] else None,
+            anilist_username=data["anilistUsername"]
+            if data["anilistUsername"]
+            else None,
             lastfm_username=data["lastfmUsername"] if data["lastfmUsername"] else None,
-            registered_at=datetime.fromtimestamp(int(data["registeredAt"]), tz=timezone.utc),
+            registered_at=datetime.fromtimestamp(
+                int(data["registeredAt"]), tz=timezone.utc
+            ),
             registered_guild_id=Snowflake(data["registeredGuildId"]),
             registered_guild_name=data["registeredGuildName"],
             registered_by=Snowflake(data["registeredBy"]),
             shikimori_id=id(data["shikimoriId"]) if data["shikimoriId"] else None,
-            shikimori_username=data["shikimoriUsername"] if data["shikimoriUsername"] else None,
+            shikimori_username=data["shikimoriUsername"]
+            if data["shikimoriUsername"]
+            else None,
         )
 
     async def export_user_data(self, discord_id: Snowflake) -> str:
