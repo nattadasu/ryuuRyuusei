@@ -2,10 +2,10 @@ import interactions as ipy
 
 from classes.nekomimidb import NekomimiGender
 from classes.randomorg import RandomOrg
+from classes.i18n import LanguageDict
 from modules.i18n import fetch_language_data, read_user_language
 from modules.myanimelist import lookupRandomAnime, malSubmit
 from modules.nekomimidb import submit_nekomimi
-from classes.i18n import LanguageDict
 
 
 class Random(ipy.Extension):

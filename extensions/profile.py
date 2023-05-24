@@ -9,6 +9,7 @@ from classes.database import DatabaseException, UserDatabase
 from classes.excepts import ProviderHttpError
 from classes.jikan import JikanApi, JikanException
 from classes.lastfm import LastFM, LastFMTrackStruct, LastFMUserStruct
+from classes.i18n import LanguageDict
 from modules.commons import (
     convert_float_to_time,
     generate_commons_except_embed,
@@ -17,7 +18,6 @@ from modules.commons import (
 from modules.discord import generate_discord_profile_embed
 from modules.i18n import fetch_language_data, read_user_language
 from modules.myanimelist import MalErrType, mal_exception_embed
-from classes.i18n import LanguageDict
 
 
 class Profile(ipy.Extension):
