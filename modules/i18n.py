@@ -21,9 +21,10 @@ from interactions import (
 from interactions.ext.paginators import Paginator
 
 from modules.const import LANGUAGE_CODE
+from classes.i18n import LanguageDict
 
 
-def fetch_language_data(code: str, useRaw: bool = False) -> dict:
+def fetch_language_data(code: str, useRaw: bool = True) -> LanguageDict:
     """
     Get the language strings for a given language code
 
@@ -32,11 +33,11 @@ def fetch_language_data(code: str, useRaw: bool = False) -> dict:
         useRaw (bool): Whether to return the raw JSON data or not
 
     Returns:
-        dict: The language strings for the given language code
+        LanguageDict: The language strings
     """
     try:
         with open(f"i18n/{code}.json", "r", encoding="utf-8") as f:  # skipcq: PTC-W6004
-            data = jlo(f.read())
+            data: LanguageDict = jlo(f.read())
             if useRaw:
                 return data
             return data["strings"]

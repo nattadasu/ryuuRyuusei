@@ -13,6 +13,7 @@ from classes.thecolorapi import Color, TheColorApi
 from classes.usrbg import UserBackground
 from modules.commons import generate_utils_except_embed, snowflake_to_datetime
 from modules.i18n import fetch_language_data, read_user_language
+from classes.i18n import LanguageDict
 
 
 class Utilities(ipy.Extension):
@@ -42,7 +43,7 @@ class Utilities(ipy.Extension):
     )
     async def utilities_math(self, ctx: ipy.SlashContext, expression: str):
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["utilities"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["utilities"]
         try:
             exp = BAP().evaluate(expression)
             await ctx.send(
@@ -98,7 +99,7 @@ class Utilities(ipy.Extension):
     )
     async def utilities_base64(self, ctx: ipy.SlashContext, mode: str, string: str):
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["utilities"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["utilities"]
         try:
             if mode == "encode":
                 res = b64encode(string.encode()).decode()
@@ -166,7 +167,7 @@ class Utilities(ipy.Extension):
     ):
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["utilities"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["utilities"]
         res: dict = {}
         try:
             if (
@@ -271,7 +272,7 @@ class Utilities(ipy.Extension):
     ):
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["utilities"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["utilities"]
         try:
             params = {
                 "data": string,
@@ -323,7 +324,7 @@ class Utilities(ipy.Extension):
     async def utilities_snowflake(self, ctx: ipy.SlashContext, snowflake: str):
         """Convert a Discord Snowflake to a timestamp"""
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["utilities"]["snowflake"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["utilities"]["snowflake"]
         tmsp = int(snowflake_to_datetime(int(snowflake)))
         await ctx.send(
             embed=ipy.Embed(

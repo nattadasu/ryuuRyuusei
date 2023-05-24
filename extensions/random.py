@@ -5,6 +5,7 @@ from classes.randomorg import RandomOrg
 from modules.i18n import fetch_language_data, read_user_language
 from modules.myanimelist import lookupRandomAnime, malSubmit
 from modules.nekomimidb import submit_nekomimi
+from classes.i18n import LanguageDict
 
 
 class Random(ipy.Extension):
@@ -56,7 +57,7 @@ class Random(ipy.Extension):
     )
     async def random_nekomimi_boy(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["random"]["nekomimi"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["random"]["nekomimi"]
         await submit_nekomimi(ctx=ctx, gender=NekomimiGender.BOY, lang=l_)
 
     @random.subcommand(
@@ -67,7 +68,7 @@ class Random(ipy.Extension):
     )
     async def random_nekomimi_girl(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["random"]["nekomimi"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["random"]["nekomimi"]
         await submit_nekomimi(ctx=ctx, gender=NekomimiGender.GIRL, lang=l_)
 
     @random.subcommand(
@@ -78,7 +79,7 @@ class Random(ipy.Extension):
     )
     async def random_nekomimi_randomize(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["random"]["nekomimi"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["random"]["nekomimi"]
         await submit_nekomimi(ctx=ctx, lang=l_)
 
     @random.subcommand(

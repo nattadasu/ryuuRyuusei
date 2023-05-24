@@ -17,6 +17,7 @@ from modules.commons import (
 )
 from modules.i18n import fetch_language_data, read_user_language
 from modules.myanimelist import MalErrType, mal_exception_embed
+from classes.i18n import LanguageDict
 
 
 class Profile(ipy.Extension):
@@ -47,7 +48,7 @@ class Profile(ipy.Extension):
     async def profile_discord(self, ctx: ipy.SlashContext, user: ipy.User = None):
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul, useRaw=True)
+        l_: LanguageDict = fetch_language_data(ul, useRaw=True)
         lp = l_["strings"]["profile"]
         try:
             if user is None:
@@ -72,7 +73,7 @@ class Profile(ipy.Extension):
 
             fields = [
                 ipy.EmbedField(
-                    name=lp["discord"]["displayName"],
+                    name=lp["discord"]["display_name"],
                     value=sanitize_markdown(data.display_name),
                     inline=True,
                 ),
@@ -220,7 +221,7 @@ class Profile(ipy.Extension):
         embed_layout: Literal["minimal", "old", "new"] = "minimal",
     ):
         await ctx.defer()
-        l_ = fetch_language_data("en_US", True)
+        l_: LanguageDict = fetch_language_data("en_US", True)
 
         if mal_username and user:
             embed = mal_exception_embed(
@@ -504,7 +505,7 @@ class Profile(ipy.Extension):
     async def profile_lastfm(self, ctx: ipy.SlashContext, user: str, maximum: int = 9):
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul, useRaw=True)
+        l_: LanguageDict = fetch_language_data(ul, useRaw=True)
         try:
             async with LastFM() as lfm:
                 profile: LastFMUserStruct = await lfm.get_user_info(user)

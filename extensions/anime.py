@@ -8,6 +8,7 @@ from modules.commons import genrate_search_embed, sanitize_markdown
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
 from modules.myanimelist import malSubmit, searchMalAnime
+from classes.i18n import LanguageDict
 
 
 class Anime(ipy.Extension):
@@ -47,7 +48,7 @@ class Anime(ipy.Extension):
     ):
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul, useRaw=True)
+        l_: LanguageDict = fetch_language_data(ul, useRaw=True)
         send = await ctx.send(
             embed=ipy.Embed(
                 title=l_["commons"]["search"]["init_title"],
