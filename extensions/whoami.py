@@ -21,9 +21,8 @@ class WhoAmI(ipy.Extension):
         if resp is False:
             await ctx.send("You are not registered!")
             return
-        else:
-            async with UserDatabase() as ud:
-                resp = await ud.get_user_data(ctx.author.id)
+        async with UserDatabase() as ud:
+            resp = await ud.get_user_data(ctx.author.id)
 
         fields = [
             ipy.EmbedField(
