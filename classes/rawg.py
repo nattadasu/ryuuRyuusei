@@ -28,9 +28,18 @@ class RawgBaseData:
 class EsrbRating(RawgBaseData):
     """ESRB rating data class"""
 
-    slug: Literal['everyone', 'everyone-10-plus', 'teen', 'mature', 'adults-only', 'rating-pending'] | None
+    slug: Literal[
+        "everyone",
+        "everyone-10-plus",
+        "teen",
+        "mature",
+        "adults-only",
+        "rating-pending",
+    ] | None
     """Slug"""
-    name: Literal['Everyone', 'Everyone 10+', 'Teen', 'Mature', 'Adults Only', 'Rating Pending'] | None
+    name: Literal[
+        "Everyone", "Everyone 10+", "Teen", "Mature", "Adults Only", "Rating Pending"
+    ] | None
     """Name"""
 
 
@@ -54,6 +63,7 @@ class PlatformData(RawgBaseData):
     """Games count"""
     image_background: str | None = None
     """Image background"""
+
 
 @dataclass
 class StoreData(RawgBaseData):
@@ -86,6 +96,7 @@ class GenreData(RawgBaseData):
     image_background: str | None
     """Image background"""
 
+
 @dataclass
 class TagData(RawgBaseData):
     """Tag data class"""
@@ -96,6 +107,7 @@ class TagData(RawgBaseData):
     """Image background"""
     language: str | None
     """Language"""
+
 
 @dataclass
 class Stores:
@@ -108,12 +120,14 @@ class Stores:
     url: str | None
     """URL"""
 
+
 @dataclass
 class ParentPlatform:
     """Parent platform data class"""
 
     platform: PlatformData | None
     """Platform"""
+
 
 @dataclass
 class MetacriticPlatformData:
@@ -126,6 +140,7 @@ class MetacriticPlatformData:
     slug: str | None
     """Slug"""
 
+
 @dataclass
 class Requirements:
     """Requirements data class"""
@@ -134,6 +149,7 @@ class Requirements:
     """Minimum"""
     recommended: str | None = None
     """Recommended"""
+
 
 @dataclass
 class Platforms:
@@ -146,6 +162,7 @@ class Platforms:
     requirements: Requirements | None
     """Requirements"""
 
+
 @dataclass
 class MetacriticPlatforms:
     """Metacritic platforms data class"""
@@ -155,6 +172,7 @@ class MetacriticPlatforms:
     url: str | None
     """URL"""
     platform: MetacriticPlatformData | None
+
 
 @dataclass
 class Ratings:
@@ -168,6 +186,7 @@ class Ratings:
     """Count"""
     percent: float | None
     """Percent"""
+
 
 @dataclass
 class AddedByStatus:
@@ -185,6 +204,7 @@ class AddedByStatus:
     """Dropped"""
     playing: int | None
     """Playing"""
+
 
 @dataclass
 class RawgGameData(RawgBaseData):
@@ -348,10 +368,13 @@ class RawgApi:
                         platform=mp["platform"]["platform"],
                         name=mp["platform"]["name"],
                         slug=mp["platform"]["slug"],
-                    )
-                ) for mp in d["metacritic_platforms"]
+                    ),
+                )
+                for mp in d["metacritic_platforms"]
             ],
-            released=datetime.strptime(f'{d["released"]}T00:00:00+00:00', "%Y-%m-%dT%H:%M:%S%z"),
+            released=datetime.strptime(
+                f'{d["released"]}T00:00:00+00:00', "%Y-%m-%dT%H:%M:%S%z"
+            ),
             tba=d["tba"],
             updated=datetime.strptime(f'{d["updated"]}+00:00', "%Y-%m-%dT%H:%M:%S%z"),
             background_image=d["background_image"],
@@ -365,7 +388,8 @@ class RawgApi:
                     title=r["title"],
                     count=r["count"],
                     percent=r["percent"],
-                ) for r in d["ratings"]
+                )
+                for r in d["ratings"]
             ],
             reactions=d["reactions"],
             added=d["added"],
@@ -409,7 +433,8 @@ class RawgApi:
                         name=pp["platform"]["name"],
                         slug=pp["platform"]["slug"],
                     ),
-                ) for pp in d["parent_platforms"]
+                )
+                for pp in d["parent_platforms"]
             ],
             platforms=[
                 Platforms(
@@ -423,9 +448,12 @@ class RawgApi:
                         games_count=p["platform"]["games_count"],
                         image_background=p["platform"]["image_background"],
                     ),
-                    released_at=datetime.strptime(f'{p["released_at"]}T00:00:00+00:00', "%Y-%m-%dT%H:%M:%S%z"),
-                    requirements=Requirements(**p["requirements"])
-                ) for p in d["platforms"]
+                    released_at=datetime.strptime(
+                        f'{p["released_at"]}T00:00:00+00:00', "%Y-%m-%dT%H:%M:%S%z"
+                    ),
+                    requirements=Requirements(**p["requirements"]),
+                )
+                for p in d["platforms"]
             ],
             stores=[
                 Stores(
@@ -439,7 +467,8 @@ class RawgApi:
                     ),
                     url=s["url"],
                     id=s["id"],
-                ) for s in d["stores"]
+                )
+                for s in d["stores"]
             ],
             developers=[
                 StudioData(
@@ -448,7 +477,8 @@ class RawgApi:
                     slug=d["slug"],
                     games_count=d["games_count"],
                     image_background=d["image_background"],
-                ) for d in d["developers"]
+                )
+                for d in d["developers"]
             ],
             genres=[
                 GenreData(
@@ -457,7 +487,8 @@ class RawgApi:
                     slug=g["slug"],
                     games_count=g["games_count"],
                     image_background=g["image_background"],
-                ) for g in d["genres"]
+                )
+                for g in d["genres"]
             ],
             tags=[
                 TagData(
@@ -467,7 +498,8 @@ class RawgApi:
                     language=t["language"],
                     games_count=t["games_count"],
                     image_background=t["image_background"],
-                ) for t in d["tags"]
+                )
+                for t in d["tags"]
             ],
             publishers=[
                 StudioData(
@@ -476,7 +508,8 @@ class RawgApi:
                     slug=p["slug"],
                     games_count=p["games_count"],
                     image_background=p["image_background"],
-                ) for p in d["publishers"]
+                )
+                for p in d["publishers"]
             ],
             esrb_rating=EsrbRating(
                 id=d["esrb_rating"]["id"],
@@ -488,8 +521,6 @@ class RawgApi:
         )
 
         return pf
-
-
 
     async def search(self, query: str) -> list[dict]:
         """
