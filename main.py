@@ -3,6 +3,7 @@ import os
 import sys
 from datetime import datetime as dtime
 from datetime import timezone as tz
+import traceback
 
 import interactions as ipy
 from interactions.client import const as ipy_const
@@ -101,6 +102,32 @@ async def main():
     await bot.astart()
 
 
+def uptime() -> None:
+    """
+    Prints uptime, how long the bot has been online
+
+    Returns:
+        None
+    """
+    bot_stop: dtime = dtime.now(tz=tz.utc)
+    print("[Bcm] Date: " + bot_stop.strftime("%d/%m/%Y %H:%M:%S"))
+    total_time = bot_stop - bot_run
+    total_time = dtime.strptime(
+        str(total_time),
+        "%H:%M:%S.%f",
+    )
+    # add years to months
+    months = (total_time.month - 1) + ((total_time.year - 1900) * 12)
+    days = total_time.day - 1
+    hours = total_time.hour
+    minutes = total_time.minute
+    seconds = total_time.second
+    milliseconds = total_time.microsecond / 1000
+    total_time = f"{months} months, {days} days, {hours} hours, {minutes} minutes, {seconds} seconds, {milliseconds} milliseconds"
+    print(f"      Uptime: {total_time}")
+    return
+
+
 if __name__ == "__main__":
     print("[Sys] Starting bot...")
     bot_run = now
@@ -110,20 +137,12 @@ if __name__ == "__main__":
             asy = asyncio.run(main())
         except KeyboardInterrupt:
             print("[Sys] Bot stopped by user.")
-            bot_stop: dtime = dtime.now(tz=tz.utc)
-            print("[Bcm] Date: " + bot_stop.strftime("%d/%m/%Y %H:%M:%S"))
-            total_time = bot_stop - bot_run
-            total_time = dtime.strptime(
-                str(total_time),
-                "%H:%M:%S.%f",
-            )
-            # add years to months
-            months = (total_time.month - 1) + ((total_time.year - 1900) * 12)
-            days = total_time.day - 1
-            hours = total_time.hour
-            minutes = total_time.minute
-            seconds = total_time.second
-            milliseconds = total_time.microsecond / 1000
-            total_time = f"{months} months, {days} days, {hours} hours, {minutes} minutes, {seconds} seconds, {milliseconds} milliseconds"
-            print(f"      Uptime: {total_time}")
+            uptime()
             sys.exit(0)
+        except Exception as e:
+            print("[Sys] Bot stopped due to error.")
+            print(f"[Err] {e}")
+            print("[Err] Traceback:")
+            traceback.print_exc()
+            uptime()
+            sys.exit(1)
