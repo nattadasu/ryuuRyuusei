@@ -8,7 +8,12 @@ from classes.pronoundb import PronounDB, Pronouns
 from modules.commons import sanitize_markdown
 
 
-async def generate_discord_profile_embed(bot: ipy.AutoShardedClient | ipy.Client, ctx: ipy.SlashContext, l_: dict, user: ipy.User = None) -> ipy.Embed:
+async def generate_discord_profile_embed(
+    bot: ipy.AutoShardedClient | ipy.Client,
+    ctx: ipy.SlashContext,
+    l_: dict,
+    user: ipy.User = None,
+) -> ipy.Embed:
     """
     Generate a Discord profile embed
 
@@ -50,9 +55,7 @@ async def generate_discord_profile_embed(bot: ipy.AutoShardedClient | ipy.Client
         ),
         ipy.EmbedField(
             name=lp["commons"]["username"],
-            value=sanitize_markdown(
-                data.username + "#" + str(data.discriminator)
-            ),
+            value=sanitize_markdown(data.username + "#" + str(data.discriminator)),
             inline=True,
         ),
         ipy.EmbedField(
@@ -87,8 +90,7 @@ async def generate_discord_profile_embed(bot: ipy.AutoShardedClient | ipy.Client
         else:
             nick = sanitize_markdown(data.username)
             nick += " (" + lp["commons"]["default"] + ")"
-        joined = datetime.strptime(
-            servData["joined_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
+        joined = datetime.strptime(servData["joined_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
         joined = int(joined.timestamp())
         joined = f"<t:{joined}:R>"
         if servData["premium_since"]:
@@ -96,9 +98,7 @@ async def generate_discord_profile_embed(bot: ipy.AutoShardedClient | ipy.Client
                 servData["premium_since"], "%Y-%m-%dT%H:%M:%S.%f%z"
             )
             premium: int = int(premium.timestamp())
-            premium = lp["discord"]["boost_since"].format(
-                TIMESTAMP=f"<t:{premium}:R>"
-            )
+            premium = lp["discord"]["boost_since"].format(TIMESTAMP=f"<t:{premium}:R>")
         else:
             premium = lp["discord"]["not_boosting"]
         fields += [
