@@ -11,9 +11,9 @@ from plusminus import BaseArithmeticParser as BAP
 from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
 from classes.thecolorapi import Color, TheColorApi
 from classes.usrbg import UserBackground
+from classes.i18n import LanguageDict
 from modules.commons import generate_utils_except_embed, snowflake_to_datetime
 from modules.i18n import fetch_language_data, read_user_language
-from classes.i18n import LanguageDict
 
 
 class Utilities(ipy.Extension):

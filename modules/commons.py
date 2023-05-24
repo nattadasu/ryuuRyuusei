@@ -20,11 +20,11 @@ from interactions import (
 )
 
 from classes.anilist import AniListTrailerStruct
+from classes.i18n import LanguageDict
 from modules.const import BOT_TOKEN
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
 from modules.const import LANGUAGE_CODE
 from modules.i18n import fetch_language_data
-from classes.i18n import LanguageDict
 
 deflang: LanguageDict = fetch_language_data(LANGUAGE_CODE, useRaw=True)
 
