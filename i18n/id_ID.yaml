@@ -549,7 +549,8 @@ strings:
       boost_since: "Mem-boost server sejak {TIMESTAMP}"
       not_boosting: Sedang tidak boost
       registered: Pengguna ini terdaftar di bot
-      displayName: Display Name
+      display_name: Display Name
+      pronouns: PronounDB Pronouns
     lastfm:
       created: Akun Dibuat
       total_scrobbles: Total Scrobble
