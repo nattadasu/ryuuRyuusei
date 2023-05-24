@@ -6,6 +6,11 @@ from modules.i18n import paginate_language, search_language, set_default_languag
 
 
 class UserSettings(ipy.Extension):
+    """User Settings commands"""
+
+    def __init__(self, bot: ipy.AutoShardedClient):
+        self.bot = bot
+
     @ipy.slash_command(
         name="usersettings",
         description="Change the bot settings",

@@ -1,6 +1,10 @@
-"""# Commons Module
+"""
+# Commons Module
 
-This module contains the common functions used by the other modules."""
+This module contains the common functions used by the other modules.
+"""
+
+from datetime import timedelta
 
 from re import sub as rSub
 from uuid import uuid4 as id4
@@ -8,21 +12,21 @@ from uuid import uuid4 as id4
 from interactions import (
     Button,
     ButtonStyle,
-    Client,
+    AutoShardedClient,
     Embed,
-    EmbedAttachment,
     EmbedAuthor,
     EmbedField,
     PartialEmoji,
 )
 
-from modules.const import BOT_TOKEN, LANGUAGE_CODE
-from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
-from modules.i18n import fetch_language_data
 from classes.anilist import AniListTrailerStruct
+from classes.i18n import LanguageDict
+from modules.const import BOT_TOKEN
+from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
+from modules.const import LANGUAGE_CODE
+from modules.i18n import fetch_language_data
 
-
-deflang = fetch_language_data(LANGUAGE_CODE, useRaw=True)
+deflang: LanguageDict = fetch_language_data(LANGUAGE_CODE, useRaw=True)
 
 
 def snowflake_to_datetime(snowflake: int) -> int:
@@ -145,7 +149,7 @@ def genrate_search_embed(
     Returns:
         Embed: The generated search selection embed.
     """
-    l_ = fetch_language_data(code=language, useRaw=True)
+    l_: LanguageDict = fetch_language_data(code=language, useRaw=True)
     match len(results):
         case 1:
             count = l_["quantities"][f"{mediaType}"]["one"]
@@ -155,12 +159,12 @@ def genrate_search_embed(
             count = l_["quantities"][f"{mediaType}"]["many"].format(count=len(results))
     dcEm = Embed(
         author=EmbedAuthor(name=platform, url=homepage, icon_url=icon),
-        thumbnail=EmbedAttachment(url=icon),
         color=color,
         title=title,
         description=l_["commons"]["search"]["result"].format(COUNT=count, QUERY=query),
         fields=results,
     )
+    dcEm.set_thumbnail(url=icon)
 
     return dcEm
 
@@ -191,7 +195,7 @@ def generate_utils_except_embed(
         >>> generate_utils_except_embed("An error occurred while processing the request.", "Field", "Value", "Error message")
         <discord.Embed object at 0x...>
     """
-    l_ = fetch_language_data(code=language, useRaw=True)
+    l_: LanguageDict = fetch_language_data(code=language, useRaw=True)
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
     dcEm = Embed(
         color=color,
@@ -203,10 +207,8 @@ def generate_utils_except_embed(
                 name=l_["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
             ),
         ],
-        thumbnail=EmbedAttachment(
-            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
-        ),
     )
+    dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return dcEm
 
@@ -230,7 +232,7 @@ def generate_commons_except_embed(
         Embed: A Discord embed object containing information about the error.
 
     Example:
-        >>> lang_dict = fetch_language_data(code="en_US", useRaw=True)
+        >>> lang_dict: LanguageDict = fetch_language_data(code="en_US", useRaw=True)
         >>> generate_commons_except_embed("An error occurred while processing the request.", "Error message", lang_dict)
         <discord.Embed object at 0x...>
     """
@@ -245,10 +247,8 @@ def generate_commons_except_embed(
                 name=l_["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
             )
         ],
-        thumbnail=EmbedAttachment(
-            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
-        ),
     )
+    dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return dcEm
 
@@ -303,7 +303,36 @@ async def get_parent_nsfw_status(snowflake: int) -> bool:
         >>> print(result)
         True
     """
-    bot_http = Client(token=BOT_TOKEN).http
+    bot_http = AutoShardedClient(token=BOT_TOKEN).http
     guild = await bot_http.get_channel(channel_id=snowflake)
     # close the connection
     return guild.get("nsfw", False)
+
+
+def convert_float_to_time(day_float: float) -> str:
+    """
+    Convert a float representing a number of days to a string representing the number of days, hours, and minutes.
+
+    Args:
+        day_float (float): The number of days.
+
+    Returns:
+        str: A string representing the number of months, days, hours, and minutes.
+    """
+    # Convert day float to total seconds
+    total_seconds = int(day_float * 24 * 60 * 60)
+
+    # Create a timedelta object with the total seconds
+    delta = timedelta(seconds=total_seconds)
+
+    # Extract months, days, hours, and minutes from the timedelta object
+    months = delta.days // 30
+    days = delta.days % 30
+    hours = (delta.seconds // 3600) % 24
+    minutes = (delta.seconds // 60) % 60
+    months = f"{months} months, " if months else ""
+
+    # Format the result string
+    result = f"{months}{days} days, {hours} hours, {minutes} minutes"
+
+    return result

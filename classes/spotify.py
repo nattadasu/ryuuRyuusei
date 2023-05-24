@@ -21,7 +21,8 @@ class SpotifyApi:
         client_id: str = SPOTIFY_CLIENT_ID,
         client_secret: str = SPOTIFY_CLIENT_SECRET,
     ):
-        """Spotify Unofficial Class
+        """
+        Spotify Unofficial Class
 
         Args:
             client_id (str, optional): Spotify Client ID. Defaults to SPOTIFY_CLIENT_ID.
@@ -69,7 +70,7 @@ class SpotifyApi:
                 self.token = data["access_token"]
                 self.write_data_to_cache(data, auth)
             else:
-                raise ProviderHttpError(response.status, response.reason)
+                raise ProviderHttpError(response.reason, response.status)
 
     class MediaType(Enum):
         """Media Type"""
@@ -86,7 +87,8 @@ class SpotifyApi:
         limit: int = 10,
         offset: int = 0,
     ) -> dict:
-        """Search for a track
+        """
+        Search for a track
 
         Args:
             query (str): Search query
@@ -113,10 +115,11 @@ class SpotifyApi:
         ) as response:
             if response.status == 200:
                 return await response.json()
-            raise ProviderHttpError(response.status, response.reason)
+            raise ProviderHttpError(response.reason, response.status)
 
     async def get_track(self, track_id: str) -> dict:
-        """Get track
+        """
+        Get track data
 
         Args:
             track_id (str): Track ID
@@ -137,10 +140,11 @@ class SpotifyApi:
                 data = await response.json()
                 self.write_data_to_cache(data, cache)
                 return data
-            raise ProviderHttpError(response.status, response.reason)
+            raise ProviderHttpError(response.reason, response.status)
 
     async def get_album(self, album_id: str) -> dict:
-        """Get album
+        """
+        Get album data
 
         Args:
             album_id (str): Album ID
@@ -161,10 +165,11 @@ class SpotifyApi:
                 data = await response.json()
                 self.write_data_to_cache(data, cache)
                 return data
-            raise ProviderHttpError(response.status, response.reason)
+            raise ProviderHttpError(response.reason, response.status)
 
     async def get_artist(self, artist_id: str) -> dict:
-        """Get artist
+        """
+        Get artist data
 
         Args:
             artist_id (str): Artist ID
@@ -185,10 +190,11 @@ class SpotifyApi:
                 data = await response.json()
                 self.write_data_to_cache(data, cache)
                 return data
-            raise ProviderHttpError(response.status, response.reason)
+            raise ProviderHttpError(response.reason, response.status)
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
-        """Get cache file path
+        """
+        Get cache file path
 
         Args:
             cache_file_name (str): Cache file name
@@ -199,7 +205,8 @@ class SpotifyApi:
         return os.path.join(self.cache_directory, cache_file_name)
 
     def read_cached_data(self, cache_file_path: str) -> dict | None:
-        """Read cached data
+        """
+        Read cached data
 
         Args:
             cache_file_name (str): Cache file name
@@ -218,7 +225,8 @@ class SpotifyApi:
 
     @staticmethod
     def write_data_to_cache(data, cache_file_path: str):
-        """Write data to cache
+        """
+        Write data to cache
 
         Args:
             data (any): Data to write

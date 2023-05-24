@@ -3,7 +3,7 @@
 import aiohttp
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
-from modules.const import USER_AGENT, MYANIMELIST_CLIENT_ID
+from modules.const import MYANIMELIST_CLIENT_ID, USER_AGENT
 
 
 class MyAnimeList:
@@ -25,7 +25,8 @@ class MyAnimeList:
     """
 
     def __init__(self, client_id: str = MYANIMELIST_CLIENT_ID, nsfw: bool = False):
-        """Initialize the MyAnimeList Asynchronous API Wrapper
+        """
+        Initialize the MyAnimeList Asynchronous API Wrapper
 
         Args:
             client_id (str): Your MyAnimeList Client ID, default to MYANIMELIST_CLIENT_ID
@@ -55,7 +56,8 @@ class MyAnimeList:
         await self.session.close()
 
     async def anime(self, anime_id: int, fields: str | None = None) -> dict:
-        """Get anime information by its ID
+        """
+        Get anime information by its ID
 
         Args:
             anime_id (int): The anime ID
@@ -85,7 +87,8 @@ class MyAnimeList:
         offset: int | None = None,
         fields: str | None = None,
     ):
-        """Search anime by its title
+        """
+        Search anime by its title
 
         Args:
             query (str): The query to search

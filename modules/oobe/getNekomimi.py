@@ -9,7 +9,8 @@ MAIN_SITE = "https://raw.githubusercontent.com/nattadasu/nekomimiDb/main/index.t
 
 
 async def nk_get_data() -> None:
-    """Fetches the data from the nekomimiDb main site and writes it to file.
+    """
+    Fetches the data from the nekomimiDb main site and writes it to file.
 
     Raises:
         aiohttp.ClientError: If there is an issue with the GET request.
@@ -18,14 +19,13 @@ async def nk_get_data() -> None:
         None
     """
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(MAIN_SITE) as response:
-                if response.status != 200:
-                    print(
-                        f"Error fetching data: HTTP {response.status}: {response.reason}"
-                    )
-                    return
-                data = await response.text()
+        async with aiohttp.ClientSession() as session, session.get(
+            MAIN_SITE
+        ) as response:
+            if response.status != 200:
+                print(f"Error fetching data: HTTP {response.status}: {response.reason}")
+                return
+            data = await response.text()
     except aiohttp.ClientError as e:
         print(f"Error fetching data: {e}")
         return

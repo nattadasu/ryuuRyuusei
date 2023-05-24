@@ -1,6 +1,8 @@
-"""# Internationalization Bot Module
+"""
+# Internationalization Bot Module
 
-All language files are stored in the i18n folder. Strings to change and view languages must be in English."""
+All language files are stored in the i18n folder. Strings to change and view languages must be in English.
+"""
 
 
 import csv
@@ -9,25 +11,33 @@ from json import loads as jlo
 
 import pandas as pd
 from fuzzywuzzy import fuzz
-from interactions import BaseContext, Client, Embed, EmbedField, InteractionContext
+from interactions import (
+    BaseContext,
+    AutoShardedClient,
+    Embed,
+    EmbedField,
+    InteractionContext,
+)
 from interactions.ext.paginators import Paginator
 
 from modules.const import LANGUAGE_CODE
+from classes.i18n import LanguageDict
 
 
-def fetch_language_data(code: str, useRaw: bool = False) -> dict:
-    """Get the language strings for a given language code
+def fetch_language_data(code: str, useRaw: bool = True) -> LanguageDict:
+    """
+    Get the language strings for a given language code
 
     Args:
         code (str): The language code to get the strings for
         useRaw (bool): Whether to return the raw JSON data or not
 
     Returns:
-        dict: The language strings for the given language code
+        LanguageDict: The language strings
     """
     try:
-        with open(f"i18n/{code}.json", "r", encoding="utf-8") as f:
-            data = jlo(f.read())
+        with open(f"i18n/{code}.json", "r", encoding="utf-8") as f:  # skipcq: PTC-W6004
+            data: LanguageDict = jlo(f.read())
             if useRaw:
                 return data
             return data["strings"]
@@ -36,7 +46,8 @@ def fetch_language_data(code: str, useRaw: bool = False) -> dict:
 
 
 def read_user_language(ctx: BaseContext | InteractionContext) -> str:
-    """Read the user's language preference from the database
+    """
+    Read the user's language preference from the database
 
     Args:
         ctx (BaseContext | InteractionContext): The context to read the user's language preference from
@@ -69,11 +80,12 @@ def read_user_language(ctx: BaseContext | InteractionContext) -> str:
     return language
 
 
-async def paginate_language(bot: Client, ctx: InteractionContext) -> None:
-    """Paginate the language list
+async def paginate_language(bot: AutoShardedClient, ctx: InteractionContext) -> None:
+    """
+    Paginate the language list
 
     Args:
-        bot (Client): The bot client
+        bot (AutoShardedClient): The bot client
         ctx (InteractionContext): The context to send the language list to
     """
     with open("i18n/_index.json", "r") as f:
@@ -106,7 +118,8 @@ async def paginate_language(bot: Client, ctx: InteractionContext) -> None:
 
 
 def search_language(query: str) -> list[dict]:
-    """Search for a language for auto-complete
+    """
+    Search for a language for auto-complete
 
     Args:
         query (str): The query to search for
@@ -128,7 +141,8 @@ def search_language(query: str) -> list[dict]:
 
 
 def check_lang_exist(code: str) -> bool:
-    """Check if a language exists
+    """
+    Check if a language exists
 
     Args:
         code (str): The language code to check
@@ -147,7 +161,8 @@ def check_lang_exist(code: str) -> bool:
 async def set_default_language(
     code: str, ctx: InteractionContext, isGuild: bool = False
 ) -> None:
-    """Set the user's/guild's language preference
+    """
+    Set the user's/guild's language preference
 
     Args:
         code (str): The language code to set the user's/guild's language preference to

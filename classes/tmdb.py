@@ -10,11 +10,15 @@ from modules.const import TMDB_API_KEY, USER_AGENT
 
 
 class TheMovieDb:
+    """The Movie DB Wrapper"""
+
     def __init__(self, api_key: str = TMDB_API_KEY):
-        """Initialize the TheMovieDb API Wrapper
+        """
+        Initialize the TheMovieDb API Wrapper
 
         Args:
-            api_key (str): TheMovieDb API key, defaults to TMDB_API_KEY"""
+            api_key (str): TheMovieDb API key, defaults to TMDB_API_KEY
+        """
         self.api_key = api_key
         self.session = None
         self.base_url = "https://api.themoviedb.org/3/"
@@ -49,14 +53,16 @@ class TheMovieDb:
         media_id: int,
         media_type: MediaType | Literal["movie", "tv"] = MediaType.TV,
     ) -> bool:
-        """Get the NSFW status of a TV show or movie
+        """
+        Get the NSFW status of a TV show or movie
 
         Args:
             media_id (int): The ID of the TV show or movie
             media_type (MediaType | Literal["movie","tv"]): The media type, defaults to MediaType.TV
 
         Returns:
-            bool: True if the TV show or movie is NSFW, False otherwise"""
+            bool: True if the TV show or movie is NSFW, False otherwise
+        """
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
         cache_file_path = self.get_cache_path(f"{media_type.value}/{media_id}.json")
@@ -78,20 +84,24 @@ class TheMovieDb:
             return jsonFinal["adult"]
 
     def get_cache_path(self, cache_name: str):
-        """Get the cache path
+        """
+        Get the cache path
 
         Args:
-            cache_name (str): The cache name"""
+            cache_name (str): The cache name
+        """
         return os.path.join(self.cache_directory, cache_name)
 
     def read_cache(self, cache_path: str) -> dict | bool | None:
-        """Read the cache
+        """
+        Read the cache
 
         Args:
             cache_path (str): The cache path
 
         Returns:
-            dict | bool | None: The cache data or None if the cache is invalid"""
+            dict | bool | None: The cache data or None if the cache is invalid
+        """
         if os.path.exists(cache_path):
             with open(cache_path, "r") as f:
                 data = json.load(f)
@@ -102,11 +112,13 @@ class TheMovieDb:
 
     @staticmethod
     def write_cache(cache_path: str, data):
-        """Write the cache
+        """
+        Write the cache
 
         Args:
             cache_path (str): The cache path
-            data: The data to write"""
+            data: The data to write
+        """
         cache_data = {
             "timestamp": time.time(),
             "data": data,

@@ -1,20 +1,29 @@
 #!/usr/bin/env python3
 
+import asyncio
 import json
 import os
-import sys
 import subprocess
-import asyncio
+import sys
 
 import isort
 
-
 # for each py files exclude from specific folders, sort import
-excluded_folders = ["venv", "__pycache__"]
+excluded_folders = [
+    "venv",
+    "__pycache__",
+    ".mypycache",
+    "build",
+    "dist",
+    "docs",
+    "cache",
+]
+"""List of folders to exclude from formatting"""
 
 
 def print_file(path_name: str) -> None:
-    """Prints the file name.
+    """
+    Prints the file name.
 
     Args:
         path_name (str): The path name of the file.
@@ -27,7 +36,8 @@ def print_file(path_name: str) -> None:
 
 
 def format_scripts():
-    """Formats all python scripts in project file
+    """
+    Formats all python scripts in project file
 
     Returns:
         None
@@ -67,23 +77,44 @@ def format_scripts():
 
 
 async def loop_test():
-    """Do a test for each API calls
+    """
+    Do a test for each API calls
 
     Returns:
         None
     """
-    # for each py files in tests folder, test the file using unittest
-    for root, dirs, files in os.walk("tests"):
-        for file in files:
-            if file.endswith(".py"):
-                print("Testing " + file)
-                file_path = os.path.join(root, file)
-                sub = subprocess.Popen([sys.executable, file_path])
-                sub.wait()
+    sub = subprocess.Popen(
+        [
+            sys.executable,
+            "-m",
+            "coverage",
+            "run",
+        ]
+    )
+    sub.wait()
+    sub = subprocess.Popen(
+        [
+            sys.executable,
+            "-m",
+            "coverage",
+            "report",
+        ]
+    )
+    sub.wait()
+    sub = subprocess.Popen(
+        [
+            sys.executable,
+            "-m",
+            "coverage",
+            "xml",
+        ]
+    )
+    sub.wait()
 
 
 async def main():
-    """Main function of the script
+    """
+    Main function of the script
 
     Return:
         None
@@ -93,10 +124,7 @@ async def main():
 
     # ask if user want to format all files
     answer = input("Do you want to format all files? (y/N): ")
-    if answer.lower() == "y":
-        answer = True
-    else:
-        answer = False
+    answer = answer.lower() == "y"
 
     # walk through the current directory
     if answer:

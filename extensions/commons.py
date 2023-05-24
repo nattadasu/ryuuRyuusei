@@ -15,17 +15,27 @@ from modules.const import (
     ownerUserUrl,
 )
 from modules.i18n import fetch_language_data, read_user_language
+from classes.i18n import LanguageDict
 
 
 class CommonCommands(ipy.Extension):
-    def __init__(self, bot: ipy.Client, now: dtime = dtime.now(tz=tz.utc)):
+    """Common commands"""
+
+    def __init__(self, bot: ipy.AutoShardedClient, now: dtime = dtime.now(tz=tz.utc)):
+        """
+        Initialize the extension
+
+        Args:
+            bot (ipy.AutoShardedClient): The bot client
+            now (dtime, optional): The current time. Defaults to dtime.now(tz=tz.utc).
+        """
         self.bot = bot
         self.now = now
 
     @ipy.slash_command(name="about", description="Get information about the bot")
     async def about(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["about"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["about"]
         embed = ipy.Embed(
             title=l_["header"],
             description=l_["text"].format(
@@ -41,19 +51,11 @@ class CommonCommands(ipy.Extension):
         await ctx.send(embed=embed)
 
     @ipy.slash_command(name="ping", description="Ping the bot")
-    @ipy.slash_option(
-        name="defer",
-        description="Defer the command",
-        opt_type=ipy.OptionType.BOOLEAN,
-        required=False,
-    )
-    async def ping(self, ctx: ipy.SlashContext, defer: bool = False):
+    async def ping(self, ctx: ipy.SlashContext):
         start = pc()
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["ping"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["ping"]
         langEnd = pc()
-        if defer:
-            await ctx.defer()  # to make sure if benchmark reflects other commands with .defer()
         send = await ctx.send(
             "",
             embed=ipy.Embed(
@@ -110,24 +112,24 @@ class CommonCommands(ipy.Extension):
                 inline=True,
             ),
         ]
-        await send.edit(
-            content="",
-            embed=ipy.Embed(
-                title=l_["pong"]["title"],
-                description=l_["pong"]["text"],
-                color=0x996422,
-                thumbnail=ipy.EmbedAttachment(
-                    url="https://cdn.discordapp.com/attachments/1078005713349115964/1095771964783734874/main.png"
-                ),
-                fields=fields,
-                footer=ipy.EmbedFooter(text=l_["pong"]["footer"]),
+        embed = ipy.Embed(
+            title=l_["pong"]["title"],
+            description=l_["pong"]["text"],
+            color=0x996422,
+            fields=fields,
+            footer=ipy.EmbedFooter(text=l_["pong"]["footer"]),
+            thumbnail=ipy.EmbedAttachment(
+                url="https://cdn.discordapp.com/attachments/1078005713349115964/1095771964783734874/main.png"
             ),
+        )
+        await send.edit(
+            embed=embed,
         )
 
     @ipy.slash_command(name="invite", description="Get the bot invite link")
     async def invite(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["invite"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["invite"]
         invLink = f"https://discord.com/api/oauth2/authorize?client_id={BOT_CLIENT_ID}&permissions=274878221376&scope=bot%20applications.commands"
         dcEm = ipy.Embed(
             title=l_["title"],
@@ -163,7 +165,7 @@ class CommonCommands(ipy.Extension):
     )
     async def privacy(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["privacy"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["privacy"]
         butt = ipy.Button(
             label=l_["read"],
             url="https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md",
@@ -181,7 +183,7 @@ class CommonCommands(ipy.Extension):
     )
     async def support(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul)["support"]
+        l_: LanguageDict = fetch_language_data(ul)["strings"]["support"]
         txt: str = l_["text"]
         em = ipy.Embed(
             title=l_["title"],

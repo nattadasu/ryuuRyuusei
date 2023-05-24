@@ -8,10 +8,10 @@ Usage: python3 firstRun.py
 Example: python3 firstRun.py
 """
 
+import asyncio
 import os
 import shlex
 import subprocess
-import asyncio
 
 from modules.oobe.commons import check_termux, current_os, prepare_database, py_bin_path
 from modules.oobe.getNekomimi import nk_run
@@ -20,7 +20,8 @@ from modules.oobe.malIndexer import mal_run
 
 
 async def first_run(py_bin: str = py_bin_path()):
-    """Runs the first run script.
+    """
+    Runs the first run script.
 
     Args:
         py_bin (str, optional): Path to the Python binary. Defaults to py_bin_path().

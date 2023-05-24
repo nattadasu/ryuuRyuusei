@@ -2,19 +2,20 @@
 import json
 import os
 import time
-from enum import Enum
-from typing import Literal, Any
 from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Literal
 
 from aiohttp import ClientSession
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
-
 from modules.const import USER_AGENT
 
 
 @dataclass
 class AniListTitleStruct:
+    """AniList title dataclass"""
+
     romaji: str | None
     """Romaji title"""
     english: str | None
@@ -25,6 +26,8 @@ class AniListTitleStruct:
 
 @dataclass
 class AniListDateStruct:
+    """AniList date dataclass"""
+
     year: int | None
     """Year"""
     month: int | None
@@ -35,6 +38,8 @@ class AniListDateStruct:
 
 @dataclass
 class AniListImageStruct:
+    """AniList image dataclass"""
+
     large: str | None
     """Large image URL"""
     extraLarge: str | None
@@ -45,6 +50,8 @@ class AniListImageStruct:
 
 @dataclass
 class AniListTagsStruct:
+    """AniList tags dataclass"""
+
     id: int
     """Tag ID"""
     name: str
@@ -57,6 +64,8 @@ class AniListTagsStruct:
 
 @dataclass
 class AniListTrailerStruct:
+    """AniList trailer dataclass"""
+
     id: str | None
     """Trailer ID"""
     site: str | None
@@ -65,6 +74,8 @@ class AniListTrailerStruct:
 
 @dataclass
 class AniListMediaStruct:
+    """AniList media dataclass"""
+
     id: int
     """Media ID"""
     idMal: int | None
@@ -155,7 +166,8 @@ class AniList:
         ANIME = "ANIME"
         MANGA = "MANGA"
 
-    def dict_to_dataclass(self, data: dict):
+    @staticmethod
+    def dict_to_dataclass(data: dict):
         """Format returned dictionary from AniList to its proper dataclass"""
         data["title"] = AniListTitleStruct(**data["title"]) if data["title"] else None
         data["startDate"] = (
@@ -175,12 +187,13 @@ class AniList:
                 tag = AniListTagsStruct(**tag) if tag else None
         return AniListMediaStruct(**data)
 
-    async def nsfwCheck(
+    async def nsfw_check(
         self,
         media_id: int,
         media_type: Literal["ANIME", "MANGA"] | MediaType = MediaType.ANIME,
     ) -> bool:
-        """Check if the media is NSFW
+        """
+        Check if the media is NSFW
 
         Args:
             media_id (int): The ID of the media
@@ -193,17 +206,17 @@ class AniList:
             bool: True if the media is NSFW, False if not
         """
         self.cache_expiration_time = 604800
-        media = ""
-        if isinstance(media_type, self.MediaType):
-            media = media_type.value
-        elif isinstance(media_type, Literal):
-            media = media_type
-        cache_file_path = self.get_cache_file_path(f"nsfw/{media.lower()}/{id}.json")
+        if isinstance(media_type, str):
+            media_type = self.MediaType(media_type)
+        media: str = media_type.value
+        cache_file_path = self.get_cache_file_path(
+            f"nsfw/{media.lower()}/{media_id}.json"
+        )
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
         query = f"""query {{
-    Media(id: {media_id}, type: {media_type}) {{
+    Media(id: {media_id}, type: {media}) {{
         id
         isAdult
     }}
@@ -219,7 +232,8 @@ class AniList:
             raise ProviderHttpError(error_message, response.status)
 
     async def anime(self, media_id: int) -> AniListMediaStruct:
-        """Get anime information by its ID
+        """
+        Get anime information by its ID
 
         Args:
             media_id (int): The ID of the anime
@@ -228,7 +242,7 @@ class AniList:
             ProviderHttpError: Raised when the HTTP request fails
 
         Returns:
-            dict: The anime information
+            AniListMediaStruct: The anime information
         """
         cache_file_path = self.get_cache_file_path(f"anime/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
@@ -298,13 +312,14 @@ class AniList:
             raise ProviderHttpError(error_message, response.status)
 
     async def manga(self, media_id: int) -> AniListMediaStruct:
-        """Get manga information by its ID
+        """
+        Get manga information by its ID
 
         Args:
             media_id (int): The ID of the manga
 
         Returns:
-            dict: The manga information
+            AniListMediaStruct: The manga information
         """
         cache_file_path = self.get_cache_file_path(f"manga/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
@@ -373,18 +388,92 @@ class AniList:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
+    async def user(self, username: str, return_id: bool = False) -> dict:
+        """
+        Get user information by their username
+
+        Args:
+            username (str): The username of the user
+            return_id (bool, optional): Whether to return the user ID or not. Defaults to False.
+
+        Raises:
+            ProviderHttpError: Raised when the HTTP request fails
+
+        Returns:
+            dict: The user information
+        """
+        self.cache_expiration_time = 43200
+        cache_file_path = self.get_cache_file_path(f"user/{username}.json")
+        cached_data = self.read_cached_data(cache_file_path)
+        if cached_data is not None and not return_id:
+            return cached_data
+        if return_id:
+            gqlquery = f"""query {{
+    User(name: "{username}") {{
+        id
+    }}
+}}"""
+        else:
+            gqlquery = f"""query {{
+    User(name: "{username}") {{
+        id
+        name
+        about
+        avatar {{
+            large
+            medium
+        }}
+        bannerImage
+        statistics {{
+            anime {{
+                count
+                meanScore
+                minutesWatched
+                statuses{{
+                    count
+                    status
+                }}
+            }}
+            manga {{
+                count
+                meanScore
+                chaptersRead
+                statuses{{
+                    count
+                    status
+                }}
+            }}
+        }}
+        siteUrl
+        donatorTier
+        donatorBadge
+        createdAt
+    }}
+}}"""
+        async with self.session.post(
+            self.base_url, json={"query": gqlquery}
+        ) as response:
+            if response.status == 200:
+                data = await response.json()
+                if not return_id:
+                    self.write_data_to_cache(data["data"]["User"], cache_file_path)
+                return data["data"]["User"]
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
+
     async def search_media(
         self,
         query: str,
         limit: int = 10,
         media_type: Literal["ANIME", "MANGA"] | MediaType = MediaType.MANGA,
     ) -> list[dict]:
-        """Search anime by its title
+        """
+        Search anime by its title
 
         Args:
             query (str): The title of the anime
-            limit (int, optional): The number of results to return. Defaults to 10.
-            media_type (Literal['ANIME', 'MANGA'] | MediaType, optional): The type of the media. Defaults to MediaType.MANGA.
+            limit (int, optional): The number of results to return. Defaults to 10
+            media_type (Literal['ANIME', 'MANGA'] | MediaType, optional): The type of the media. Defaults to MediaType.MANGA
 
         Raises:
             ProviderTypeError: Raised when the limit is not valid
@@ -431,7 +520,8 @@ class AniList:
             raise ProviderHttpError(error_message, response.status)
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
-        """Get cache file path
+        """
+        Get cache file path
 
         Args:
             cache_file_name (str): Cache file name
@@ -442,7 +532,8 @@ class AniList:
         return os.path.join(self.cache_directory, cache_file_name)
 
     def read_cached_data(self, cache_file_path: str) -> Any | None:
-        """Read cached data
+        """
+        Read cached data
 
         Args:
             cache_file_name (str): Cache file name
@@ -461,7 +552,8 @@ class AniList:
 
     @staticmethod
     def write_data_to_cache(data, cache_file_path: str) -> None:
-        """Write data to cache
+        """
+        Write data to cache
 
         Args:
             data (any): Data to cache

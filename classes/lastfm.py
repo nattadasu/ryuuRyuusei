@@ -1,6 +1,6 @@
-from json import loads
 from dataclasses import dataclass
-from typing import Literal, Any
+from json import loads
+from typing import Any, Literal
 
 from aiohttp import ClientSession
 
@@ -64,6 +64,8 @@ class LastFMTrackStruct:
 
 @dataclass
 class LastFMUserStruct:
+    """LastFM User dataclass"""
+
     name: str
     """User name"""
     age: str
@@ -128,8 +130,17 @@ class LastFM:
         """Close the aiohttp session"""
         await self.session.close()
 
-    def track_dict_to_dataclass(self, data: dict[str, Any]) -> LastFMTrackStruct:
-        """Convert track dict to dataclass"""
+    @staticmethod
+    def track_dict_to_dataclass(data: dict[str, Any]) -> LastFMTrackStruct:
+        """
+        Convert track dict to dataclass
+
+        Args:
+            data (dict[str, Any]): Track dict
+
+        Returns:
+            LastFMTrackStruct: Track dataclass
+        """
         if data["image"]:
             for image in data["image"]:
                 data["image"][data["image"].index(image)] = LastFMImageStruct(
@@ -158,8 +169,17 @@ class LastFM:
             del data["@attr"]
         return LastFMTrackStruct(**data)
 
-    def user_dict_to_dataclass(self, data: dict[str, Any]) -> LastFMUserStruct:
-        """Convert user dict to dataclass"""
+    @staticmethod
+    def user_dict_to_dataclass(data: dict[str, Any]) -> LastFMUserStruct:
+        """
+        Convert user dict to dataclass
+
+        Args:
+            data (dict[str, Any]): User dict
+
+        Returns:
+            LastFMUserStruct: User dataclass
+        """
         if data["image"]:
             for image in data["image"]:
                 data["image"][data["image"].index(image)] = LastFMImageStruct(
@@ -172,7 +192,8 @@ class LastFM:
         return LastFMUserStruct(**data)
 
     async def get_user_info(self, username: str) -> LastFMUserStruct:
-        """Get user info
+        """
+        Get user info
 
         Args:
             username (str): The username
@@ -204,7 +225,8 @@ class LastFM:
     async def get_user_recent_tracks(
         self, username: str, maximum: int = 9
     ) -> list[LastFMTrackStruct]:
-        """Get recent tracks
+        """
+        Get recent tracks
 
         Args:
             username (str): The username

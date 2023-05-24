@@ -1,10 +1,11 @@
-"""# MyAnimeList Module
+"""
+# MyAnimeList Module
 
-This module contains modules that are related to MyAnimeList or Jikan API."""
+This module contains modules that are related to MyAnimeList or Jikan API.
+"""
 
 import html
 import re
-import traceback
 from datetime import datetime, timezone
 from enum import Enum
 from zoneinfo import ZoneInfo
@@ -12,26 +13,25 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 from interactions import (
     Embed,
-    EmbedAttachment,
     EmbedAuthor,
     EmbedField,
     EmbedFooter,
     SlashContext,
 )
 
-from classes.anilist import AniList, AniListMediaStruct, AniListImageStruct
+from classes.anilist import AniList, AniListImageStruct, AniListMediaStruct
 from classes.animeapi import AnimeApi, AnimeApiAnime
 from classes.jikan import JikanApi
 from classes.kitsu import Kitsu
 from classes.myanimelist import MyAnimeList
 from classes.simkl import Simkl
 from modules.commons import (
+    generate_commons_except_embed,
     generate_trailer,
     get_parent_nsfw_status,
     get_random_seed,
     sanitize_markdown,
     trim_cyno,
-    generate_commons_except_embed,
 )
 from modules.const import (
     EMOJI_FORBIDDEN,
@@ -39,14 +39,14 @@ from modules.const import (
     EMOJI_USER_ERROR,
     MYANIMELIST_CLIENT_ID,
     SIMKL_CLIENT_ID,
-    simkl0rels,
     warnThreadCW,
 )
 from modules.i18n import read_user_language
 
 
 def lookupRandomAnime() -> int:
-    """Lookup random anime from MAL
+    """
+    Lookup random anime from MAL
 
     Args:
         None
@@ -65,7 +65,8 @@ def lookupRandomAnime() -> int:
 
 
 async def searchMalAnime(title: str) -> dict | list:
-    """Search anime via MyAnimeList API
+    """
+    Search anime via MyAnimeList API
 
     Args:
         title (str): Anime title
@@ -109,14 +110,15 @@ class MalErrType(Enum):
     SYSTEM = EMOJI_UNEXPECTED_ERROR
 
 
-def malExceptionEmbed(
+def mal_exception_embed(
     description: str,
     error: str,
     lang_dict: dict,
     error_type: MalErrType | str = MalErrType.SYSTEM,
     color: hex = 0xFF0000,
 ) -> Embed:
-    """Generate an embed for MyAnimeList exceptions
+    """
+    Generate an embed for MyAnimeList exceptions
 
     Args:
         description (str): Description of the error
@@ -139,10 +141,8 @@ def malExceptionEmbed(
         title=l_["commons"]["error"],
         description=description,
         fields=[EmbedField(name=l_["commons"]["reason"], value=error, inline=False)],
-        thumbnail=EmbedAttachment(
-            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
-        ),
     )
+    dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return dcEm
 
@@ -160,7 +160,8 @@ async def generate_mal(
     al_dict: AniListMediaStruct | None = None,
     anime_api: AnimeApiAnime | None = None,
 ) -> Embed:
-    """Generate an embed for /anime with MAL via Jikan
+    """
+    Generate an embed for /anime with MAL via Jikan
 
     Args:
         entry_id (int): MAL ID
@@ -238,7 +239,7 @@ async def generate_mal(
             smId = await sim.search_by_id(sim.Provider.MYANIMELIST, m)
             smk = await sim.get_anime(smId[0]["ids"]["simkl"])
     except Exception:
-        smk = simkl0rels
+        smk = {"poster": None, "fanart": None}
 
     smkPost = smk.get("poster")
     smkBg = smk.get("fanart")
@@ -294,7 +295,6 @@ async def generate_mal(
     tgs = sorted(set(tgs), key=str.casefold)
     tgs = ", ".join(tgs) if tgs else "*None*"
 
-    # year = j["aired"]["prop"]["from"]["year"] or "year?"
     astn, aenn = j.aired.from_, j.aired.to
     year = str(astn.year) if astn else "year?"
     astr = j.aired.string
@@ -479,7 +479,6 @@ async def generate_mal(
 > {cyno}
 """,
         color=0x2E51A2,
-        thumbnail=EmbedAttachment(url=poster),
         fields=[
             EmbedField(name=f"English Title{enChkMark}", value=ent, inline=True),
             EmbedField(name="Native Title", value=nat, inline=True),
@@ -490,15 +489,17 @@ async def generate_mal(
             EmbedField(name="Studio", value=stdio, inline=True),
             EmbedField(name="Aired", value=date),
         ],
-        images=[EmbedAttachment(url=background)],
         footer=EmbedFooter(text=note),
     )
+    embed.set_thumbnail(url=poster)
+    embed.set_image(url=background)
 
     return embed
 
 
 async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
-    """Send anime information from MAL to the channel
+    """
+    Send anime information from MAL to the channel
 
     Args:
         ctx (SlashContext): The context of the command
@@ -507,6 +508,7 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
     Raises:
         *None*
     """
+    await ctx.defer()
     channel = ctx.channel
     ul = read_user_language(ctx)
 

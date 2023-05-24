@@ -3,6 +3,7 @@ jikan4snek_cache
 database/**
 cache/**
 !database/.gitkeep
+!database/README.md
 !cache/.gitkeep
 jikanpy/
 i18n/**.json

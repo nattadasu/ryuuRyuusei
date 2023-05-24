@@ -1,10 +1,10 @@
 import json
 import os
 import time
+from dataclasses import asdict, dataclass
 from datetime import datetime as dt
 from enum import Enum
 from typing import Literal
-from dataclasses import dataclass, asdict
 
 from aiohttp import ClientSession
 
@@ -58,6 +58,8 @@ class AnimeApiAnime:
 
 
 class AnimeApi:
+    """AnimeAPI API Wrapper"""
+
     def __init__(self):
         """Initialize the AniAPI API Wrapper"""
         self.base_url = "https://aniapi.nattadasu.my.id"
@@ -98,7 +100,8 @@ class AnimeApi:
         TRAKT = "trakt"
 
     async def get_update_time(self) -> dt:
-        """Get the last update time of AniAPI's database
+        """
+        Get the last update time of AniAPI's database
 
         Returns:
             datetime: The last update time of AniAPI's database
@@ -145,7 +148,8 @@ class AnimeApi:
             "trakt",
         ],
     ) -> AnimeApiAnime:
-        """Get a relation between anime and other platform via Natsu's AniAPI
+        """
+        Get a relation between anime and other platform via Natsu's AniAPI
 
         Args:
             media_id (str | int): Anime ID
@@ -172,7 +176,8 @@ class AnimeApi:
             return AnimeApiAnime()
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
-        """Get cache file path
+        """
+        Get cache file path
 
         Args:
             cache_file_name (str): Cache file name
@@ -183,7 +188,8 @@ class AnimeApi:
         return os.path.join(self.cache_directory, cache_file_name)
 
     def read_cached_data(self, cache_file_path: str) -> dict | None:
-        """Read cached data
+        """
+        Read cached data
 
         Args:
             cache_file_name (str): Cache file name
@@ -202,7 +208,8 @@ class AnimeApi:
 
     @staticmethod
     def write_data_to_cache(data, cache_file_path: str):
-        """Write data to cache
+        """
+        Write data to cache
 
         Args:
             data (any): Data to write to cache

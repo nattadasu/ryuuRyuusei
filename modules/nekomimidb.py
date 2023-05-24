@@ -1,16 +1,20 @@
-"""# nattadasu/nekomimiDb Module
+"""
+# nattadasu/nekomimiDb Module
 
-This module contains the functions used by the nekomimiDb module."""
+This module contains the functions used by the nekomimiDb module.
+"""
 
-from interactions import Embed, EmbedAttachment, EmbedAuthor, EmbedField
+from interactions import Embed, EmbedAuthor, EmbedField
 from interactions import SlashContext as sctx
 
-from classes.nekomimidb import NekomimiDb as neko, NekomimiDbStruct, NekomimiGender
+from classes.nekomimidb import NekomimiDb as neko
+from classes.nekomimidb import NekomimiDbStruct, NekomimiGender
 from modules.platforms import get_platform_color
 
 
 def generate_nekomimi_embed(row: NekomimiDbStruct, lang: dict) -> Embed:
-    """Generate nekomimi embed
+    """
+    Generate nekomimi embed
 
     Args:
         row (NekomimiDbStruct): A row from the database.
@@ -30,11 +34,6 @@ def generate_nekomimi_embed(row: NekomimiDbStruct, lang: dict) -> Embed:
     # Send the image url to the user
     dcEm = Embed(
         title=f"{mediaSource}",
-        images=[
-            EmbedAttachment(
-                url=str(img),
-            ),
-        ],
         color=col,
         author=EmbedAuthor(
             name=lang["author"],
@@ -52,12 +51,14 @@ def generate_nekomimi_embed(row: NekomimiDbStruct, lang: dict) -> Embed:
             ),
         ],
     )
+    dcEm.set_image(url=img)
 
     return dcEm
 
 
 async def submit_nekomimi(ctx: sctx, lang: dict, gender: NekomimiGender = None):
-    """Submit a nekomimi image to Discord
+    """
+    Submit a nekomimi image to Discord
 
     Args:
         ctx (interactions.SlashContext): Discord Slash Context
@@ -67,6 +68,7 @@ async def submit_nekomimi(ctx: sctx, lang: dict, gender: NekomimiGender = None):
     Returns:
         None
     """
+    await ctx.defer()
     data = neko(gender).get_random_nekomimi()
     dcEm = generate_nekomimi_embed(row=data, lang=lang)
     await ctx.send("", embeds=dcEm)

@@ -72,7 +72,8 @@ class RandomOrg:
     async def integers(
         self, num: int, min_val: int, max_val: int, base: int = 10
     ) -> list[int]:
-        """Generate random integers
+        """
+        Generate random integers
 
         Args:
             num (int): Number of integers to generate
@@ -107,7 +108,8 @@ class RandomOrg:
             raise ProviderHttpError(error_message, response.status)
 
     async def sequences(self, min_val: int, max_val: int) -> list[int]:
-        """Generate random sequences
+        """
+        Generate random sequences
 
         Args:
             min_val (int): Minimum value
@@ -141,7 +143,8 @@ class RandomOrg:
         loweralpha: str | OnOff = "on",
         unique: str | OnOff = "on",
     ) -> list[str]:
-        """Generate random strings
+        """
+        Generate random strings
 
         Args:
             num (int): Number of strings to generate

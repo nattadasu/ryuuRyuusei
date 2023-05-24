@@ -90,7 +90,8 @@ class Platform(Enum):
 
 
 def get_platform_color(pf: str | Platform) -> hex:
-    """Get a color code for a specific platform
+    """
+    Get a color code for a specific platform
 
     Args:
         pf (str | Platform): The platform to get the color code for.
@@ -151,7 +152,8 @@ def get_platform_color(pf: str | Platform) -> hex:
 
 
 def get_platform_name(pf: str | Platform) -> str:
-    """Get a platform name from its abbreviation
+    """
+    Get a platform name from its abbreviation
 
     Args:
         pf (str | Platform): The platform to get the name for.
@@ -210,7 +212,8 @@ def get_platform_name(pf: str | Platform) -> str:
 def media_id_to_platform(
     media_id: str, platform: str | Platform, simklType: Union[str, None] = None
 ) -> dict:
-    """Convert a media ID to a platform-specific ID
+    """
+    Convert a media ID to a platform-specific ID
 
     Args:
         media_id (str): The media ID to convert

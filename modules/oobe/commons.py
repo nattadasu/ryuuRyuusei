@@ -87,10 +87,28 @@ def prepare_database():
     Returns:
         None
     """
+    database_cells = [
+        "discordId",
+        "discordUsername",
+        "discordJoined",
+        "malUsername",
+        "malId",
+        "malJoined",
+        "registeredAt",
+        "registeredGuildId",
+        "registeredBy",
+        "registeredGuildName",
+        "anilistUsername",
+        "anilistId",
+        "lastfmUsername",
+        "shikimoriId",
+        "shikimoriUsername",
+    ]
+    database_header = "\t".join(database_cells)
     files = [
         {
             "path": "database/database.csv",
-            "header": "discordId\tdiscordUsername\tdiscordJoined\tmalUsername\tmalId\tmalJoined\tregisteredAt\tregisteredGuild\tregisteredBy\tregisteredGuildName\tanilistUsername\tanilistId\tlastfmUsername",
+            "header": database_header,
         },
         {"path": "database/member.csv", "header": "discordId\tlanguage"},
         {"path": "database/server.csv", "header": "guildId\tlanguage"},

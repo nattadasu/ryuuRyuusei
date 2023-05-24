@@ -3,9 +3,9 @@ import json
 import os
 import time
 import traceback
-from typing import Any, Literal
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Literal
 
 from aiohttp import ClientSession
 
@@ -13,16 +13,22 @@ from modules.const import USER_AGENT
 
 
 class JikanException(Exception):
+    """Exception for Jikan errors"""
+
     def __init__(self, message, status_code):
+        """Params"""
         self.message = message
         self.status_code = status_code
 
     def __str__(self):
+        """String representation"""
         return f"JikanException [{self.status_code}]: {self.message}"
 
 
 @dataclass
 class JikanImageStruct:
+    """Jikan Image Struct"""
+
     image_url: str
     """Standard size image url"""
     small_image_url: str | None = None
@@ -37,6 +43,8 @@ class JikanImageStruct:
 
 @dataclass
 class JikanImages:
+    """Jikan Images Type"""
+
     jpg: JikanImageStruct | None = None
     """JPG image"""
     webp: JikanImageStruct | None = None
@@ -45,6 +53,8 @@ class JikanImages:
 
 @dataclass
 class JikanTrailerStruct:
+    """Jikan Trailer Struct"""
+
     youtube_id: str
     """Youtube ID of the trailer"""
     url: str
@@ -57,6 +67,8 @@ class JikanTrailerStruct:
 
 @dataclass
 class JikanTitlesStruct:
+    """Jikan Titles Struct"""
+
     type: Literal[
         "Default",
         "Synonym",
@@ -79,6 +91,8 @@ class JikanTitlesStruct:
 
 @dataclass
 class JikanPropStruct:
+    """Jikan Date Property Struct"""
+
     day: int | None = None
     """Day of the month"""
     month: int | None = None
@@ -89,6 +103,8 @@ class JikanPropStruct:
 
 @dataclass
 class JikanPropParentStruct:
+    """Jikan Date Property Parent Struct"""
+
     from_: JikanPropStruct | None = None
     """Properties of the start date"""
     to: JikanPropStruct | None = None
@@ -97,6 +113,8 @@ class JikanPropParentStruct:
 
 @dataclass
 class JikanDateStruct:
+    """Jikan Date Struct"""
+
     from_: datetime | None = None
     """Start date"""
     to: datetime | None = None
@@ -109,6 +127,8 @@ class JikanDateStruct:
 
 @dataclass
 class JikanBroadcastStruct:
+    """Jikan Broadcast Struct"""
+
     day: Literal[
         "Mondays",
         "Tuesdays",
@@ -129,6 +149,8 @@ class JikanBroadcastStruct:
 
 @dataclass
 class JikanOtherStruct:
+    """Jikan Other Struct"""
+
     mal_id: int
     """MyAnimeList ID"""
     type: str
@@ -141,6 +163,8 @@ class JikanOtherStruct:
 
 @dataclass
 class JikanRelationStruct:
+    """Jikan Relation Struct"""
+
     relation: str
     """Relation between the entries"""
     entry: list[JikanOtherStruct]
@@ -149,6 +173,8 @@ class JikanRelationStruct:
 
 @dataclass
 class JikanThemeSongStruct:
+    """Jikan Theme Song Struct"""
+
     openings: list[str] | None = None
     """List of opening songs"""
     endings: list[str] | None = None
@@ -157,6 +183,8 @@ class JikanThemeSongStruct:
 
 @dataclass
 class JikanExternalStruct:
+    """Jikan External Struct"""
+
     name: str
     """Name of the external site"""
     url: str
@@ -165,6 +193,8 @@ class JikanExternalStruct:
 
 @dataclass
 class JikanAnimeStruct:
+    """Jikan Anime Struct"""
+
     mal_id: int
     """MyAnimeList ID"""
     url: str
@@ -268,6 +298,8 @@ class JikanAnimeStruct:
 
 @dataclass
 class JikanStatisticsStruct:
+    """Jikan Statistics Struct"""
+
     mean_score: float | None
     """Mean score"""
     completed: int | None
@@ -282,7 +314,9 @@ class JikanStatisticsStruct:
 
 @dataclass
 class JikanAnimeStatisticStruct(JikanStatisticsStruct):
-    days_watched: int | None
+    """Jikan Anime Statistics Struct"""
+
+    days_watched: float | None
     """Number of days watched"""
     watching: int | None
     """Number of entries being watched"""
@@ -296,7 +330,9 @@ class JikanAnimeStatisticStruct(JikanStatisticsStruct):
 
 @dataclass
 class JikanMangaStatisticStruct(JikanStatisticsStruct):
-    days_read: int | None
+    """Jikan Manga Statistics Struct"""
+
+    days_read: float | None
     """Number of (estimated) days read"""
     reading: int | None
     """Number of entries being read"""
@@ -312,6 +348,8 @@ class JikanMangaStatisticStruct(JikanStatisticsStruct):
 
 @dataclass
 class JikanStatistics:
+    """Jikan Statistics"""
+
     anime: JikanAnimeStatisticStruct | None
     """Anime statistics"""
     manga: JikanMangaStatisticStruct | None
@@ -320,6 +358,8 @@ class JikanStatistics:
 
 @dataclass
 class JikanUserTitleStruct:
+    """Jikan User Title Struct"""
+
     mal_id: int
     """MyAnimeList ID"""
     url: str
@@ -330,22 +370,28 @@ class JikanUserTitleStruct:
 
 @dataclass
 class JikanUserAniMangaStruct(JikanUserTitleStruct):
+    """Jikan User Anime/Manga Struct"""
+
     title: str
     """Title of the entry"""
-    type: str | None
+    type: str | None = None
     """Type of the entry"""
-    start_year: int | None
+    start_year: int | None = None
     """Start year of the entry"""
 
 
 @dataclass
 class JikanUserCastStruct(JikanUserTitleStruct):
+    """Jikan User Cast Struct"""
+
     name: str | None
     """Name of the person/character"""
 
 
 @dataclass
 class JikanUpdateEntry:
+    """Jikan Update Entry"""
+
     entry: JikanUserAniMangaStruct
     """Entry that was updated"""
     score: int | None = None
@@ -358,6 +404,8 @@ class JikanUpdateEntry:
 
 @dataclass
 class JikanAnimeUpdateEntry(JikanUpdateEntry):
+    """Jikan Anime Update Entry"""
+
     episodes_seen: int | None = None
     """Number of episodes seen"""
     episodes_total: int | None = None
@@ -366,6 +414,8 @@ class JikanAnimeUpdateEntry(JikanUpdateEntry):
 
 @dataclass
 class JikanMangaUpdateEntry(JikanUpdateEntry):
+    """Jikan Manga Update Entry"""
+
     chapters_read: int | None = None
     """Number of chapters read"""
     chapters_total: int | None = None
@@ -374,6 +424,8 @@ class JikanMangaUpdateEntry(JikanUpdateEntry):
 
 @dataclass
 class JikanUserFavorite:
+    """Jikan User Favorite"""
+
     anime: list[JikanUserAniMangaStruct] | None = None
     """List of favorite anime"""
     manga: list[JikanUserAniMangaStruct] | None = None
@@ -386,6 +438,8 @@ class JikanUserFavorite:
 
 @dataclass
 class JikanUserStatus:
+    """Jikan User Status"""
+
     anime: list[JikanAnimeUpdateEntry] | None = None
     """List of anime updates"""
     manga: list[JikanMangaUpdateEntry] | None = None
@@ -394,6 +448,8 @@ class JikanUserStatus:
 
 @dataclass
 class JikanUserStruct:
+    """Jikan User Struct"""
+
     mal_id: int
     """MyAnimeList ID"""
     username: str
@@ -424,7 +480,20 @@ class JikanUserStruct:
     """External links of the user"""
 
 
-def defineJikanException(error_code: int, error_message: Any) -> JikanException:
+def defineJikanException(error_code: int, error_message: Any) -> None:
+    """
+    Define Jikan Exception
+
+    Args:
+        error_code (int): Error code
+        error_message (Any): Error message
+
+    Raises:
+        JikanException: Jikan Exception
+
+    Returns:
+        None: Action acknowledge
+    """
     try:
         match error_code:
             case 403:
@@ -433,6 +502,12 @@ def defineJikanException(error_code: int, error_message: Any) -> JikanException:
                 em = "**I couldn't find the query on MAL**\nCheck the spelling or well, maybe they don't exist? 🤔"
             case 408:
                 em = "**Jikan had a timeout while fetching the data**\nPlease try again in 3 seconds."
+            case 418:
+                em = f"""**It seems that I can't parse the response from Jikan due to missing data, ouch**
+Please contact Ryuusei's dev team to resolve this issue
+Full message:```
+{error_message}
+```"""
             case 429:
                 em = "**I have been rate-limited by Jikan**\nAny queries related to MyAnimeList may not available "
             case 500:
@@ -455,6 +530,7 @@ class JikanApi:
     """Jikan API wrapper"""
 
     def __init__(self):
+        """Init"""
         self.cache_directory = "cache/jikan"
         self.cache_expiration_time = 86400
         self.base_url = "https://api.jikan.moe/v4"
@@ -474,8 +550,10 @@ class JikanApi:
         """Close the session"""
         await self.session.close()
 
-    def anime_dict_to_dataclass(self, data: dict) -> JikanAnimeStruct:
-        """Convert anime dict to dataclass
+    @staticmethod
+    def anime_dict_to_dataclass(data: dict) -> JikanAnimeStruct:
+        """
+        Convert anime dict to dataclass
 
         Args:
             data (dict): Anime dict
@@ -510,13 +588,15 @@ class JikanApi:
             data["aired"]["prop"]["to"] = data["aired"]["prop"]["to"]
             data["aired"]["prop"]["to"] = JikanPropStruct(**data["aired"]["prop"]["to"])
             data["aired"]["prop"] = JikanPropParentStruct(**data["aired"]["prop"])
-            data["aired"]["from_"] = datetime.strptime(
-                data["aired"]["from"], "%Y-%m-%dT%H:%M:%S%z"
-            )
-            data["aired"]["to"] = datetime.strptime(
-                data["aired"]["to"], "%Y-%m-%dT%H:%M:%S%z"
-            )
+            if data["aired"].get("from", None):
+                data["aired"]["from_"] = datetime.strptime(
+                    data["aired"]["from"], "%Y-%m-%dT%H:%M:%S%z"
+                )
             del data["aired"]["from"]
+            if data["aired"].get("to", None):
+                data["aired"]["to"] = datetime.strptime(
+                    data["aired"]["to"], "%Y-%m-%dT%H:%M:%S%z"
+                )
             data["aired"] = JikanDateStruct(**data["aired"])
 
         if data.get("broadcast", None):
@@ -625,8 +705,10 @@ class JikanApi:
 
         return JikanAnimeStruct(**data)
 
-    def user_dict_to_dataclass(self, data: dict) -> JikanUserStruct:
-        """Convert user dict to dataclass
+    @staticmethod
+    def user_dict_to_dataclass(data: dict) -> JikanUserStruct:
+        """
+        Convert user dict to dataclass
 
         Args:
             data (dict): User dict
@@ -634,7 +716,6 @@ class JikanApi:
         Returns:
             JikanUserStruct: User dataclass
         """
-
         if data["images"]:
             data["images"]["jpg"] = JikanImageStruct(**data["images"]["jpg"])
             data["images"]["webp"] = JikanImageStruct(**data["images"]["webp"])
@@ -750,7 +831,8 @@ class JikanApi:
         return JikanUserStruct(**data)
 
     async def get_user_clubs(self, username: str) -> list[dict]:
-        """Get user joined clubs
+        """
+        Get user joined clubs
 
         Args:
             username (str): MyAnimeList username
@@ -786,7 +868,8 @@ class JikanApi:
             defineJikanException(601, e)
 
     async def get_user_data(self, username: str) -> JikanUserStruct:
-        """Get user data
+        """
+        Get user data
 
         Args:
             username (str): MyAnimeList username
@@ -819,7 +902,7 @@ class JikanApi:
             except Exception as e:
                 retries += 1
                 if retries == 3:
-                    errcode: int = e.status_code if hasattr(e, "status_code") else 500
+                    errcode: int = e.status_code if hasattr(e, "status_code") else 418
                     errmsg: str | dict = e.message if hasattr(e, "message") else e
                     defineJikanException(errcode, errmsg)
                 else:
@@ -827,7 +910,8 @@ class JikanApi:
                     await asyncio.sleep(backoff_time)
 
     async def get_user_by_id(self, user_id: int) -> JikanUserStruct:
-        """Get user data from their MAL ID
+        """
+        Get user data from their MAL ID
 
         Args:
             user_id (int): MyAnimeList user ID
@@ -836,7 +920,7 @@ class JikanApi:
             If Jikan took too long to respond, it will try again in multiples of 3 seconds for exponential backoff
 
         Returns:
-            dict: User data
+            JikanUserStruct: User data
         """
         async with self.session.get(
             f"{self.base_url}/users/userbyid/{user_id}"
@@ -850,7 +934,8 @@ class JikanApi:
         return gud
 
     async def get_anime_data(self, anime_id: int) -> JikanAnimeStruct:
-        """Get anime data
+        """
+        Get anime data
 
         Args:
             anime_id (int): MyAnimeList anime ID
@@ -874,12 +959,13 @@ class JikanApi:
             self.write_data_to_cache(res, cache_file_path)
             return self.anime_dict_to_dataclass(res)
         except Exception as e:
-            errcode: int = e.status_code if hasattr(e, "status_code") else 500
+            errcode: int = e.status_code if hasattr(e, "status_code") else 418
             errmsg: str | dict = e.message if hasattr(e, "message") else e
             defineJikanException(errcode, errmsg)
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
-        """Get cache file path
+        """
+        Get cache file path
 
         Args:
             cache_file_name (str): Cache file name
@@ -890,7 +976,8 @@ class JikanApi:
         return os.path.join(self.cache_directory, cache_file_name)
 
     def read_cached_data(self, cache_file_path: str) -> dict | None:
-        """Read cached data
+        """
+        Read cached data
 
         Args:
             cache_file_name (str): Cache file name
@@ -909,7 +996,8 @@ class JikanApi:
 
     @staticmethod
     def write_data_to_cache(data, cache_file_path: str):
-        """Write data to cache
+        """
+        Write data to cache
 
         Args:
             data (any): Data to write

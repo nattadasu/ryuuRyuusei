@@ -8,9 +8,12 @@ from modules.commons import genrate_search_embed, sanitize_markdown
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
 from modules.myanimelist import malSubmit, searchMalAnime
+from classes.i18n import LanguageDict
 
 
 class Anime(ipy.Extension):
+    """Anime commands"""
+
     @ipy.slash_command(
         name="anime",
         description="Get anime information from MyAnimeList",
@@ -45,7 +48,7 @@ class Anime(ipy.Extension):
     ):
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_ = fetch_language_data(ul, useRaw=True)
+        l_: LanguageDict = fetch_language_data(ul, useRaw=True)
         send = await ctx.send(
             embed=ipy.Embed(
                 title=l_["commons"]["search"]["init_title"],
@@ -138,24 +141,21 @@ class Anime(ipy.Extension):
         except Exception:
             l_ = l_["strings"]["anime"]["search"]["exception"]
             emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_UNEXPECTED_ERROR)
-            await send.edit(
-                content="",
-                embed=ipy.Embed(
-                    title=l_["title"],
-                    description=l_["text"].format(
-                        QUERY=query,
-                    ),
-                    color=0xFF0000,
-                    footer=ipy.EmbedFooter(text=l_["footer"]),
-                    thumbnail=ipy.EmbedAttachment(
-                        url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
-                    ),
+            embed = ipy.Embed(
+                title=l_["title"],
+                description=l_["text"].format(
+                    QUERY=query,
                 ),
+                color=0xFF0000,
+                footer=ipy.EmbedFooter(text=l_["footer"]),
             )
+            embed.set_thumbnail(
+                url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
+            )
+            await send.edit(embed=embed)
 
     @ipy.component_callback("mal_search")
     async def anime_search_data(self, ctx: ipy.ComponentContext) -> None:
-        await ctx.defer()
         ani_id: int = int(ctx.values[0])
         await malSubmit(ctx, ani_id)
 
@@ -172,7 +172,6 @@ class Anime(ipy.Extension):
         ],
     )
     async def anime_info(self, ctx: ipy.SlashContext, mal_id: int):
-        await ctx.defer()
         await malSubmit(ctx, mal_id)
 
 
