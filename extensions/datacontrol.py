@@ -479,14 +479,14 @@ user_data: UserData = {user_data}
                 header="Success!",
                 message="You have been verified!",
             )
-            await ctx.send(embed=embed)
-        else:
+        elif status is True and str(VERIFIED_ROLE) in user_roles:
             embed = self.generate_error_embed(
                 header="Error!",
                 message="You are already verified!",
                 is_user_error=True,
             )
-            await ctx.send(embed=embed)
+
+        await ctx.send(embed=embed)
 
 
 def setup(bot: ipy.AutoShardedClient):
