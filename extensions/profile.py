@@ -9,6 +9,7 @@ from classes.database import DatabaseException, UserDatabase
 from classes.excepts import ProviderHttpError
 from classes.jikan import JikanApi, JikanException
 from classes.lastfm import LastFM, LastFMTrackStruct, LastFMUserStruct
+from classes.pronoundb import PronounDB, Pronouns
 from modules.commons import (convert_float_to_time,
                              generate_commons_except_embed, sanitize_markdown)
 from modules.i18n import fetch_language_data, read_user_language
@@ -59,6 +60,13 @@ class Profile(ipy.Extension):
                 color = data.accent_color.value
             else:
                 color = 0x000000
+            async with PronounDB() as pdb:
+                pronouns = await pdb.get_pronouns(pdb.Platform.DISCORD, userId)
+                if pronouns.pronouns == Pronouns.UNSPECIFIED:
+                    pronouns = "Unset"
+                else:
+                    pronouns = pdb.translate_shorthand(pronouns.pronouns)
+
             fields = [
                 ipy.EmbedField(
                     name=lp["discord"]["displayName"],
@@ -70,6 +78,11 @@ class Profile(ipy.Extension):
                     value=sanitize_markdown(
                         data.username + "#" + str(data.discriminator)
                     ),
+                    inline=True,
+                ),
+                ipy.EmbedField(
+                    name="PronounDB Pronoun",
+                    value=pronouns,
                     inline=True,
                 ),
                 ipy.EmbedField(
@@ -98,7 +111,7 @@ class Profile(ipy.Extension):
                     nick = sanitize_markdown(servData["nick"])
                 else:
                     nick = sanitize_markdown(data.username)
-                    nick += " " + lp["commons"]["default"]
+                    nick += " (" + lp["commons"]["default"] + ")"
                 joined = dtime.strptime(servData["joined_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
                 joined = int(joined.timestamp())
                 joined = f"<t:{joined}:R>"
