@@ -549,7 +549,8 @@ strings:
       boost_since: "Boosting server since {TIMESTAMP}"
       not_boosting: Not boosting
       registered: This user is registered on this bot
-      displayName: Display Name
+      display_name: Display Name
+      pronouns: PronounDB Pronouns
     lastfm:
       created: Account Created
       total_scrobbles: Total Scrobbles
