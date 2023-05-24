@@ -64,7 +64,7 @@ async def main():
         sp = " " * lpg
         print(f"{pg} Loading core/bot extension: {ext}")
         try:
-            if ext == "interactions.ext.sentry" and SENTRY_DSN:
+            if ext == "interactions.ext.sentry" and SENTRY_DSN not in ["", None]:
                 bot.load_extension(ext, token=SENTRY_DSN)
             else:
                 bot.load_extension(ext)
@@ -117,6 +117,13 @@ if __name__ == "__main__":
                 str(total_time),
                 "%H:%M:%S.%f",
             )
-            total_time = total_time.strftime("%H hours, %M minutes, %S seconds")
+            # add years to months
+            months = (total_time.month - 1) + ((total_time.year - 1900) * 12)
+            days = total_time.day - 1
+            hours = total_time.hour
+            minutes = total_time.minute
+            seconds = total_time.second
+            milliseconds = total_time.microsecond / 1000
+            total_time = f"{months} months, {days} days, {hours} hours, {minutes} minutes, {seconds} seconds, {milliseconds} milliseconds"
             print(f"      Uptime: {total_time}")
             sys.exit(0)
