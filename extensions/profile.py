@@ -10,8 +10,11 @@ from classes.excepts import ProviderHttpError
 from classes.jikan import JikanApi, JikanException
 from classes.lastfm import LastFM, LastFMTrackStruct, LastFMUserStruct
 from classes.pronoundb import PronounDB, Pronouns
-from modules.commons import (convert_float_to_time,
-                             generate_commons_except_embed, sanitize_markdown)
+from modules.commons import (
+    convert_float_to_time,
+    generate_commons_except_embed,
+    sanitize_markdown,
+)
 from modules.i18n import fetch_language_data, read_user_language
 from modules.myanimelist import MalErrType, mal_exception_embed
 
@@ -203,15 +206,9 @@ class Profile(ipy.Extension):
                         name="Minimal (Default)",
                         value="minimal",
                     ),
-                    ipy.SlashCommandChoice(
-                        name="Old",
-                        value="old"
-                    ),
-                    ipy.SlashCommandChoice(
-                        name="Highly Detailed",
-                        value="new"
-                    ),
-                ]
+                    ipy.SlashCommandChoice(name="Old", value="old"),
+                    ipy.SlashCommandChoice(name="Highly Detailed", value="new"),
+                ],
             ),
         ],
     )
@@ -220,17 +217,17 @@ class Profile(ipy.Extension):
         ctx: ipy.SlashContext,
         user: ipy.User = None,
         mal_username: str = None,
-        embed_layout: Literal["minimal", "old", "new"] = "minimal"
+        embed_layout: Literal["minimal", "old", "new"] = "minimal",
     ):
         await ctx.defer()
-        l_ = fetch_language_data('en_US', True)
+        l_ = fetch_language_data("en_US", True)
 
         if mal_username and user:
             embed = mal_exception_embed(
                 description="You can't use both `user` and `mal_username` options at the same time!",
                 error_type=MalErrType.USER,
                 lang_dict=l_,
-                error="User and mal_username options used at the same time"
+                error="User and mal_username options used at the same time",
             )
             await ctx.send(embed=embed)
             return
@@ -251,7 +248,7 @@ class Profile(ipy.Extension):
                 description=f"<@!{user.id}> haven't registered the MyAnimeList account to the bot yet!\nUse `/register` to register",
                 error_type=MalErrType.USER,
                 lang_dict=l_,
-                error="User hasn't registered their MAL account yet"
+                error="User hasn't registered their MAL account yet",
             )
             await ctx.send(embed=embed)
             return
@@ -264,7 +261,7 @@ class Profile(ipy.Extension):
                 description="Jikan API returned an error",
                 error_type=e.status_code,
                 lang_dict=l_,
-                error=e.message
+                error=e.message,
             )
             await ctx.send(embed=embed)
             return
@@ -274,10 +271,12 @@ class Profile(ipy.Extension):
         birthday = user_data.birthday
         location = user_data.location
         if location not in ["", None]:
-            location_url = f"https://www.openstreetmap.org/search?query={quote(location)}"
+            location_url = (
+                f"https://www.openstreetmap.org/search?query={quote(location)}"
+            )
             location = f"[{location}]({location_url})"
         else:
-            location= "Unset"
+            location = "Unset"
         gender = user_data.gender if user_data.gender not in ["", None] else "Unset"
         anime = user_data.statistics.anime
         manga = user_data.statistics.manga
@@ -290,7 +289,7 @@ class Profile(ipy.Extension):
             current_year = today.year
             upcoming = birthday.replace(year=current_year)
             if int(upcoming.timestamp()) < int(today.timestamp()):
-                upcoming = upcoming.replace(year=current_year+1)
+                upcoming = upcoming.replace(year=current_year + 1)
             birthday = str(int(timestamped))
             birthday_str = f"<t:{birthday}:D>"
             birthday_rel = f"<t:{birthday}:R>"
@@ -298,7 +297,11 @@ class Profile(ipy.Extension):
         else:
             birthday_str = ""
 
-        birthday_formatted = f"{birthday_str} {birthday_rel} (Next birthday {birthday_rem})" if birthday_str else "Unset"
+        birthday_formatted = (
+            f"{birthday_str} {birthday_rel} (Next birthday {birthday_rem})"
+            if birthday_str
+            else "Unset"
+        )
         joined_formatted = f"<t:{joined}:D> (<t:{joined}:R>)"
 
         components = [
@@ -340,28 +343,16 @@ class Profile(ipy.Extension):
                     inline=True,
                 ),
                 ipy.EmbedField(
-                    name="🎉 Account Created",
-                    value=joined_formatted,
-                    inline=True
+                    name="🎉 Account Created", value=joined_formatted, inline=True
                 ),
                 ipy.EmbedField(
-                    name="🎂 Birthday",
-                    value=birthday_formatted,
-                    inline=True
+                    name="🎂 Birthday", value=birthday_formatted, inline=True
                 ),
             )
             if embed_layout == "new":
                 embed.add_fields(
-                    ipy.EmbedField(
-                        name="🚁 Gender",
-                        value=gender,
-                        inline=True
-                    ),
-                    ipy.EmbedField(
-                        name="📍 Location",
-                        value=location,
-                        inline=True
-                    ),
+                    ipy.EmbedField(name="🚁 Gender", value=gender, inline=True),
+                    ipy.EmbedField(name="📍 Location", value=location, inline=True),
                 )
             embed.add_field(
                 name="🎞️ Anime List Summary",
@@ -379,7 +370,7 @@ class Profile(ipy.Extension):
 ⏰ Planned: {anime.plan_to_watch}
 ⏸️ On Hold: {anime.on_hold}
 🗑️ Dropped: {anime.dropped}""",
-                    inline=True
+                    inline=True,
                 )
                 ani_favs = user_data.favorites.anime
                 ani_fav_list = ""
@@ -397,7 +388,7 @@ class Profile(ipy.Extension):
                 embed.add_field(
                     name="🌟 Top 5 Favorite Anime",
                     value=ani_fav_list if ani_fav_list not in ["", None] else "Unset",
-                    inline=True
+                    inline=True,
                 )
             embed.add_field(
                 name="📔 Manga List Summary",
@@ -416,7 +407,7 @@ class Profile(ipy.Extension):
 ⏰ Planned: {manga.plan_to_read}
 ⏸️ On Hold: {manga.on_hold}
 🗑️ Dropped: {manga.dropped}""",
-                    inline=True
+                    inline=True,
                 )
                 man_favs = user_data.favorites.manga
                 man_fav_list = ""
@@ -443,7 +434,7 @@ class Profile(ipy.Extension):
 * Birthday: {birthday_formatted}
 * Gender: {gender}
 * Location: {location}""",
-                    inline=False
+                    inline=False,
                 ),
                 ipy.EmbedField(
                     name="Anime List Summary",
@@ -452,7 +443,7 @@ class Profile(ipy.Extension):
 * Days Watched: {anime_float}
 * Episodes Watched: {anime.episodes_watched}
 👀 {anime.watching} | ✅ {anime.completed} | ⏰ {anime.plan_to_watch} | ⏸️ {anime.on_hold} | 🗑️ {anime.dropped}""",
-                    inline=True
+                    inline=True,
                 ),
                 ipy.EmbedField(
                     name="Manga List Summary",
@@ -462,7 +453,7 @@ class Profile(ipy.Extension):
 * Chapters Read: {manga.chapters_read}
 * Volumes Read: {manga.volumes_read}
 👀 {manga.reading} | ✅ {manga.completed} | ⏰ {manga.plan_to_read} | ⏸️ {manga.on_hold} | 🗑️ {manga.dropped}""",
-                    inline=True
+                    inline=True,
                 ),
             )
 
@@ -479,19 +470,16 @@ class Profile(ipy.Extension):
                     url=f"https://mal-badges.com/users/{username}",
                 ),
             ]
-            embed.set_image(
-                url=f"https://malheatmap.com/users/{username}/signature"
-            )
+            embed.set_image(url=f"https://malheatmap.com/users/{username}/signature")
             embed.set_footer(
                 text="Powered by Jikan API for data and MAL Heatmap for Activity Heatmap. Data can be inacurrate as Jikan and Ryuusei cache your profile up to a day"
             )
         else:
             embed.set_footer(
-                text="Powered by Jikan API for data. To expand what data will be shown, modify embed_layout parameter to \"old\" or \"new\""
+                text='Powered by Jikan API for data. To expand what data will be shown, modify embed_layout parameter to "old" or "new"'
             )
 
         await ctx.send(embed=embed, components=components)
-
 
     @profile.subcommand(
         sub_cmd_name="lastfm",
