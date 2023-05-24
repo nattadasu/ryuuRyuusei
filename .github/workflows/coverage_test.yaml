@@ -10,10 +10,18 @@ jobs:
     name: Test and Report Coverage
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - if: github.event_name == 'pull_request'
+        name: Checkout to Pull Request Branch
         uses: actions/checkout@v3
         with:
-          ref: ipy/v5.0.0
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - if: github.event_name != 'pull_request'
+        name: Checkout to Push Branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
           fetch-depth: 0
 
       - name: Setup Python
