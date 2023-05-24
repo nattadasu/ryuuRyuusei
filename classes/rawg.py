@@ -3,7 +3,7 @@ import os
 import time
 from copy import deepcopy
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import Literal, Any
 
 from aiohttp import ClientSession
