@@ -547,7 +547,8 @@ class JikanApi:
         """Close the session"""
         await self.session.close()
 
-    def anime_dict_to_dataclass(self, data: dict) -> JikanAnimeStruct:
+    @staticmethod
+    def anime_dict_to_dataclass(data: dict) -> JikanAnimeStruct:
         """
         Convert anime dict to dataclass
 
@@ -701,7 +702,8 @@ class JikanApi:
 
         return JikanAnimeStruct(**data)
 
-    def user_dict_to_dataclass(self, data: dict) -> JikanUserStruct:
+    @staticmethod
+    def user_dict_to_dataclass(data: dict) -> JikanUserStruct:
         """
         Convert user dict to dataclass
 

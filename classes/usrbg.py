@@ -63,8 +63,9 @@ class UserBackground:
             data = json.loads(resp)
             return data
 
+    @staticmethod
     async def _find_user(
-        self, user_id: Snowflake, data: dict
+        user_id: Snowflake, data: dict
     ) -> UserBackgroundStruct | None:
         """
         Find user on the dict, then return datastruct
