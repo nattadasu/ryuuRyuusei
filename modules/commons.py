@@ -4,6 +4,8 @@
 This module contains the common functions used by the other modules.
 """
 
+from datetime import timedelta
+
 from re import sub as rSub
 from uuid import uuid4 as id4
 
@@ -304,3 +306,32 @@ async def get_parent_nsfw_status(snowflake: int) -> bool:
     guild = await bot_http.get_channel(channel_id=snowflake)
     # close the connection
     return guild.get("nsfw", False)
+
+
+def convert_float_to_time(day_float: float) -> str:
+    """
+    Convert a float representing a number of days to a string representing the number of days, hours, and minutes.
+
+    Args:
+        day_float (float): The number of days.
+
+    Returns:
+        str: A string representing the number of months, days, hours, and minutes.
+    """
+    # Convert day float to total seconds
+    total_seconds = int(day_float * 24 * 60 * 60)
+
+    # Create a timedelta object with the total seconds
+    delta = timedelta(seconds=total_seconds)
+
+    # Extract months, days, hours, and minutes from the timedelta object
+    months = delta.days // 30
+    days = delta.days % 30
+    hours = (delta.seconds // 3600) % 24
+    minutes = (delta.seconds // 60) % 60
+    months = f"{months} months, " if months else ""
+
+    # Format the result string
+    result = f"{months}{days} days, {hours} hours, {minutes} minutes"
+
+    return result

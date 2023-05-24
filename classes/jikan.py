@@ -316,7 +316,7 @@ class JikanStatisticsStruct:
 class JikanAnimeStatisticStruct(JikanStatisticsStruct):
     """Jikan Anime Statistics Struct"""
 
-    days_watched: int | None
+    days_watched: float | None
     """Number of days watched"""
     watching: int | None
     """Number of entries being watched"""
@@ -332,7 +332,7 @@ class JikanAnimeStatisticStruct(JikanStatisticsStruct):
 class JikanMangaStatisticStruct(JikanStatisticsStruct):
     """Jikan Manga Statistics Struct"""
 
-    days_read: int | None
+    days_read: float | None
     """Number of (estimated) days read"""
     reading: int | None
     """Number of entries being read"""
@@ -480,7 +480,7 @@ class JikanUserStruct:
     """External links of the user"""
 
 
-def defineJikanException(error_code: int, error_message: Any) -> JikanException:
+def defineJikanException(error_code: int, error_message: Any) -> None:
     """
     Define Jikan Exception
 
@@ -488,8 +488,11 @@ def defineJikanException(error_code: int, error_message: Any) -> JikanException:
         error_code (int): Error code
         error_message (Any): Error message
 
-    Returns:
+    Raises:
         JikanException: Jikan Exception
+
+    Returns:
+        None: Action acknowledge
     """
     try:
         match error_code:
@@ -917,7 +920,7 @@ class JikanApi:
             If Jikan took too long to respond, it will try again in multiples of 3 seconds for exponential backoff
 
         Returns:
-            dict: User data
+            JikanUserStruct: User data
         """
         async with self.session.get(
             f"{self.base_url}/users/userbyid/{user_id}"

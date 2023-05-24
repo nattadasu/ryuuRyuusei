@@ -110,7 +110,7 @@ class MalErrType(Enum):
     SYSTEM = EMOJI_UNEXPECTED_ERROR
 
 
-def malExceptionEmbed(
+def mal_exception_embed(
     description: str,
     error: str,
     lang_dict: dict,
