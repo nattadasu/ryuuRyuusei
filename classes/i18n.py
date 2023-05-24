@@ -22,6 +22,7 @@ class MediaFormats(TypedDict):
 
 class Season(TypedDict):
     """Seasons"""
+
     winter: str
     spring: str
     summer: str
@@ -31,6 +32,7 @@ class Season(TypedDict):
 
 class Year(TypedDict):
     """Year"""
+
     unknown: str
 
 
@@ -112,9 +114,7 @@ class Quantities(TypedDict):
     """Minutes Quantity Context"""
 
 
-FixGenres = TypedDict("FixGenres", {
-    "4_koma": str
-})
+FixGenres = TypedDict("FixGenres", {"4_koma": str})
 """Fix any genres that can't be used as a variable name"""
 
 
@@ -995,6 +995,7 @@ class ProfileCommand(TypedDict):
     lastfm: ProfileLastfmCommand
     """Lastfm"""
 
+
 class UtilityCommons(TypedDict):
     """Common strings for utility commands"""
 
@@ -1003,11 +1004,13 @@ class UtilityCommons(TypedDict):
     string: str
     """String"""
 
+
 class BaseUtilityCommand(TypedDict):
     """Base utility command"""
 
     exception: str
     """Exception"""
+
 
 class UtilityMathCommand(BaseUtilityCommand):
     """Utility math command"""
@@ -1015,8 +1018,10 @@ class UtilityMathCommand(BaseUtilityCommand):
     expression: str
     """Expression"""
 
+
 class UtilityBase64Command(BaseUtilityCommand):
     """Utility base64 command"""
+
 
 class UtilityColorCommand(BaseUtilityCommand):
     """Utility color command"""
@@ -1028,11 +1033,13 @@ class UtilityColorCommand(BaseUtilityCommand):
     powered: str
     """Attribution"""
 
+
 class UtilityQRCommand(BaseUtilityCommand):
     """Utility QR command"""
 
     powered: str
     """Attribution"""
+
 
 class UtilitySnoflakeCommand(TypedDict):
     """Utility snoflake command"""
@@ -1052,6 +1059,7 @@ class UtilitySnoflakeCommand(TypedDict):
     relative: str
     """Relative"""
 
+
 class UtilityCommand(TypedDict):
     """Utility Command"""
 
@@ -1067,6 +1075,7 @@ class UtilityCommand(TypedDict):
     """QR"""
     snoflake: UtilitySnoflakeCommand
     """Snoflake"""
+
 
 class Strings(TypedDict):
     """Strings"""

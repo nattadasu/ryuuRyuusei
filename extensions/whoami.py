@@ -50,20 +50,24 @@ class WhoAmI(ipy.Extension):
                 ),
                 ipy.EmbedField(
                     name="Registered Server Name",
-                    value=resp.registered_guild_name if resp.registered_guild_name not in [
-                        None, ""] else "*None*",
+                    value=resp.registered_guild_name
+                    if resp.registered_guild_name not in [None, ""]
+                    else "*None*",
                     inline=True,
                 ),
                 ipy.EmbedField(
                     name="Registered by",
-                    value=f"Yourself" if resp.registered_by == ctx.author.id else f"<@{resp.registered_by}>",
+                    value=f"Yourself"
+                    if resp.registered_by == ctx.author.id
+                    else f"<@{resp.registered_by}>",
                     inline=True,
                 ),
             ],
             timestamp=resp.registered_at.timestamp(),
         )
         database_embed.set_thumbnail(
-            url="https://3.bp.blogspot.com/-V4IWtEE4mi0/U2sr28tExOI/AAAAAAAAf50/ivdH5uLVwUc/s800/computer_harddisk.png")
+            url="https://3.bp.blogspot.com/-V4IWtEE4mi0/U2sr28tExOI/AAAAAAAAf50/ivdH5uLVwUc/s800/computer_harddisk.png"
+        )
         mal_embed = ipy.Embed(
             title="MyAnimeList Data",
             description="Below is your MyAnimeList data",
@@ -71,8 +75,9 @@ class WhoAmI(ipy.Extension):
             fields=[
                 ipy.EmbedField(
                     name="Username",
-                    value=f"{resp.mal_username}" if resp.mal_username not in [
-                        None, ""] else "*Removed*",
+                    value=f"{resp.mal_username}"
+                    if resp.mal_username not in [None, ""]
+                    else "*Removed*",
                     inline=True,
                 ),
                 ipy.EmbedField(
@@ -89,7 +94,8 @@ class WhoAmI(ipy.Extension):
             timestamp=resp.mal_joined.timestamp(),
         )
         mal_embed.set_thumbnail(
-            url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png")
+            url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"
+        )
         linked_platforms_embed = ipy.Embed(
             title="Linked Platforms Data",
             description="Below is your linked platforms data\nTo link a platform, use `/platform link`",
@@ -97,33 +103,34 @@ class WhoAmI(ipy.Extension):
             fields=[
                 ipy.EmbedField(
                     name="AniList",
-                    value=f"{resp.anilist_username} (`{int(resp.anilist_id)}`)" if resp.anilist_username not in [
-                        None, ""] else "*Unset*",
+                    value=f"{resp.anilist_username} (`{int(resp.anilist_id)}`)"
+                    if resp.anilist_username not in [None, ""]
+                    else "*Unset*",
                     inline=True,
                 ),
                 ipy.EmbedField(
                     name="Last.fm",
-                    value=f"{resp.lastfm_username}" if resp.lastfm_username not in [
-                        None, ""] else "*Unset*",
+                    value=f"{resp.lastfm_username}"
+                    if resp.lastfm_username not in [None, ""]
+                    else "*Unset*",
                     inline=True,
                 ),
                 ipy.EmbedField(
                     name="Shikimori",
-                    value=f"{resp.shikimori_username} (`{resp.shikimori_id}`)" if resp.shikimori_username not in [
-                        None, ""] else "*Unset*",
+                    value=f"{resp.shikimori_username} (`{resp.shikimori_id}`)"
+                    if resp.shikimori_username not in [None, ""]
+                    else "*Unset*",
                     inline=True,
                 ),
             ],
             timestamp=resp.registered_at.timestamp(),
         )
         linked_platforms_embed.set_thumbnail(
-            url="https://3.bp.blogspot.com/-qlSGpgl64rI/Wqih4jf-CuI/AAAAAAABK20/aoPMsqSqO_EEXE4d39WUqSc0nbwTGoV-wCLcBGAs/s0/mark_chain_kusari.png")
-        embeds = [discord_embed, database_embed,
-                  mal_embed, linked_platforms_embed]
-
-        await ctx.send(
-            embeds=embeds
+            url="https://3.bp.blogspot.com/-qlSGpgl64rI/Wqih4jf-CuI/AAAAAAABK20/aoPMsqSqO_EEXE4d39WUqSc0nbwTGoV-wCLcBGAs/s0/mark_chain_kusari.png"
         )
+        embeds = [discord_embed, database_embed, mal_embed, linked_platforms_embed]
+
+        await ctx.send(embeds=embeds)
 
 
 def setup(bot: ipy.AutoShardedClient):
