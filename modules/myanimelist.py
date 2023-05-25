@@ -152,10 +152,8 @@ class MediaIsNsfw(Exception):
 
 
 # old code taken from ipy/v4.3.4
-#! TODO: respect ipy/v5.0.0 and introduce locale
 async def generate_mal(
     entry_id: int,
-    code: str,
     is_nsfw: bool = False,
     al_dict: AniListMediaStruct | None = None,
     anime_api: AnimeApiAnime | None = None,
@@ -165,7 +163,6 @@ async def generate_mal(
 
     Args:
         entry_id (int): MAL ID
-        code (str): Language code
         is_nsfw (bool, optional): NSFW status. Defaults to False.
         al_dict (AniListMediaStruct, optional): AniList data. Defaults to None.
         anime_api (dict, optional): Anime API data. Defaults to None.
@@ -510,7 +507,6 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
     """
     await ctx.defer()
     channel = ctx.channel
-    ul = read_user_language(ctx)
 
     if channel.type in (11, 12):
         nsfwBool = await get_parent_nsfw_status(channel.parent_id)
@@ -534,7 +530,7 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
             alData = {}
 
         dcEm = await generate_mal(
-            ani_id, code=ul, is_nsfw=nsfwBool, al_dict=alData, anime_api=aniApi
+            ani_id, is_nsfw=nsfwBool, al_dict=alData, anime_api=aniApi
         )
         await ctx.send("", embeds=dcEm, components=trailer)
 

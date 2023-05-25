@@ -3,7 +3,6 @@ from datetime import datetime
 import interactions as ipy
 
 from classes.database import UserDatabase
-from classes.i18n import LanguageDict
 from classes.pronoundb import PronounDB, Pronouns
 from modules.commons import sanitize_markdown
 

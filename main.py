@@ -69,9 +69,9 @@ async def main():
                 bot.load_extension(ext, token=SENTRY_DSN)
             else:
                 bot.load_extension(ext)
-        except Exception as e:
+        except Exception as ea:
             print(f"{pg} Error while loading system extension: " + ext)
-            print(f"{sp} {e}")
+            print(f"{sp} {ea}")
             print("[Ext] If this error shows up while restart the bot, ignore")
 
     # Load extensions
@@ -94,9 +94,9 @@ async def main():
                     bot.load_extension("extensions." + ext, now=now)
             else:
                 print(f"{pg} Skipping: {ext}, not a .py file")
-        except Exception as e:
+        except Exception as eb:
             print(f"{pg} Error while loading extension: {ext}")
-            print(f"{sp} {e}")
+            print(f"{sp} {eb}")
             print("[Cog] If this error shows up while restart the bot, ignore")
 
     await bot.astart()
@@ -139,9 +139,9 @@ if __name__ == "__main__":
             print("[Sys] Bot stopped by user.")
             uptime()
             sys.exit(0)
-        except Exception as e:
+        except Exception as ex:
             print("[Sys] Bot stopped due to error.")
-            print(f"[Err] {e}")
+            print(f"[Err] {ex}")
             print("[Err] Traceback:")
             traceback.print_exc()
             uptime()

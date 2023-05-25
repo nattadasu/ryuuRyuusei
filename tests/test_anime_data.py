@@ -45,7 +45,7 @@ async def do_anime(ani_id: int, nsfwBool: bool = False) -> Embed:
         else:
             trailer = []
     dcEm = await generate_mal(
-        ani_id, code="en_US", is_nsfw=nsfwBool, al_dict=alData, anime_api=aniApi
+        ani_id, is_nsfw=nsfwBool, al_dict=alData, anime_api=aniApi
     )
     return dcEm
 

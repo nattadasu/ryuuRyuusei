@@ -211,8 +211,8 @@ class Profile(ipy.Extension):
             title=username,
             url=f"https://myanimelist.net/profile/{username}",
             author=ipy.EmbedAuthor(
-                name=f"MyAnimeList Profile",
-                url=f"https://myanimelist.net/",
+                name="MyAnimeList Profile",
+                url="https://myanimelist.net/",
                 icon_url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png",
             ),
             color=0x2E51A2,
@@ -246,7 +246,7 @@ class Profile(ipy.Extension):
 * Days Watched: {anime_float}
 * Episodes Watched: {anime.episodes_watched}""",
                 inline=True if embed_layout == "minimal" else False,
-            ),
+            )
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Anime Statuses",

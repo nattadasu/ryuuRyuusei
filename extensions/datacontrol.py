@@ -34,7 +34,8 @@ class DataControl(ipy.Extension):
     def generate_error_embed(
         header: str, message: str, is_user_error: bool = True
     ) -> ipy.Embed:
-        """Generate an error embed
+        """
+        Generate an error embed
 
         Args:
             header (str): Header of the embed
@@ -62,7 +63,8 @@ class DataControl(ipy.Extension):
 
     @staticmethod
     def generate_success_embed(header: str, message: str) -> ipy.Embed:
-        """Generate a success embed
+        """
+        Generate a success embed
 
         Args:
             header (str): Header of the embed

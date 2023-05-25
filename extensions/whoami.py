@@ -57,7 +57,7 @@ class WhoAmI(ipy.Extension):
                 ),
                 ipy.EmbedField(
                     name="Registered by",
-                    value=f"Yourself"
+                    value="Yourself"
                     if resp.registered_by == ctx.author.id
                     else f"<@{resp.registered_by}>",
                     inline=True,
