@@ -114,7 +114,6 @@ class Quantities(TypedDict):
     """Minutes Quantity Context"""
 
 
-
 class Genres(TypedDict):
     """Genres Context"""
 
