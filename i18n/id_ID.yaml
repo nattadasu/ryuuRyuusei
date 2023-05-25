@@ -87,7 +87,7 @@ quantities:
     two: 2 menit
     many: "{count} menit"
 genres:
-  4_koma: 4 Panel
+  _yon_koma: 4-koma
   achromatic: Akromatik
   achronological_order: Urutan Anakronologis
   acting: Akting
