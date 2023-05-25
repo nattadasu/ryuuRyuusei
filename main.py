@@ -1,15 +1,28 @@
+import sys
+
+from modules.oobe.commons import UnsupportedVersion
+
+py_ver = sys.version_info
+
+if py_ver < (3, 10):
+    raise UnsupportedVersion(
+        f"Python version {py_ver.major}.{py_ver.minor}.{py_ver.micro} is not supported. Please use Python 3.10 or newer.",
+        f"{py_ver.major}.{py_ver.minor}.{py_ver.micro}",
+    )
+
+print(f"[Pyt] Python version : {py_ver.major}.{py_ver.minor}.{py_ver.micro}")
+print(f"[Pyt] Python binary  : {sys.executable}")
+
 import asyncio
 import os
-import sys
+import traceback
 from datetime import datetime as dtime
 from datetime import timezone as tz
-import traceback
 
 import interactions as ipy
 from interactions.client import const as ipy_const
 
 from modules.const import BOT_TOKEN, SENTRY_DSN, USER_AGENT
-
 
 now: dtime = dtime.now(tz=tz.utc)
 
@@ -41,11 +54,11 @@ async def on_ready():
     lbg = len(bg)
     sp = " " * lbg
     print("[Sys] Bot is ready!")
-    print(f"{sp} Logged in as: {bot.user.display_name}")
-    print(f"{sp} User ID     : {bot.user.id}")
-    print(f"{sp} Guilds      : {guilds}")
-    print(f"{sp} Shards      : {bot.total_shards}")
-    print(f"{sp} User Agent  : {USER_AGENT}")
+    print(f"{sp} Logged in as : {bot.user.display_name}")
+    print(f"{sp} User ID      : {bot.user.id}")
+    print(f"{sp} Guilds       : {guilds}")
+    print(f"{sp} Shards       : {bot.total_shards}")
+    print(f"{sp} User Agent   : {USER_AGENT}")
 
 
 async def main():
@@ -97,6 +110,8 @@ async def main():
         except Exception as eb:
             print(f"{pg} Error while loading extension: {ext}")
             print(f"{sp} {eb}")
+            print(f"{sp} Traceback:")
+            traceback.print_exc()
             print("[Cog] If this error shows up while restart the bot, ignore")
 
     await bot.astart()
@@ -141,7 +156,7 @@ if __name__ == "__main__":
             sys.exit(0)
         except Exception as ex:
             print("[Sys] Bot stopped due to error.")
-            print(f"[Err] {ex}")
+            print(f"      {ex}")
             print("[Err] Traceback:")
             traceback.print_exc()
             uptime()
