@@ -245,8 +245,8 @@ class Profile(ipy.Extension):
 * Mean Score: ⭐ {anime.mean_score}/10
 * Days Watched: {anime_float}
 * Episodes Watched: {anime.episodes_watched}""",
-                inline=True if embed_layout == "minimal" else False,
-            )
+                inline=embed_layout == "minimal",
+            ),
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Anime Statuses",
@@ -282,7 +282,7 @@ class Profile(ipy.Extension):
 * Days Read, Estimated: {manga_float}
 * Chapters Read: {manga.chapters_read}
 * Volumes Read: {manga.volumes_read}""",
-                inline=True if embed_layout == "minimal" else False,
+                inline=embed_layout == "minimal",
             )
             if embed_layout == "new":
                 embed.add_field(
