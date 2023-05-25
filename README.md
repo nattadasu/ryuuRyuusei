@@ -260,9 +260,18 @@ system:
 
 - Git
 - Python (version 3.10 or higher)
+- For Linux user, you might want to install several additional packages:
+  - `gcc-c++`, `g++`, or `build-essential` depending on your distro
+  - `python3-dev` or `python3-devel` (or omit `3`) depending on your distro
 
 You can verify your Python version by running `python --version` or
-`python3 --version` in your terminal/command prompt.
+`python3 --version` or `py -3 --version` in your terminal/command prompt.
+
+> **Note**
+>
+> In this guide, I will use `python` to refer to Python 3.10 or higher, and
+> your system might use `python3` or `py -3` instead. So please adjust the
+> command based on your system.
 
 Also, you might need Discord account and Discord Bot Token.
 
