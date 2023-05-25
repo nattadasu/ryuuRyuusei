@@ -78,7 +78,6 @@ class SimklRelations:
 
     def to_dict(self) -> dict:
         """Convert the dataclass to a dictionary"""
-
         return asdict(self)
 
 

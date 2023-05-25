@@ -45,7 +45,6 @@ class DataControl(ipy.Extension):
         Returns:
             ipy.Embed: Error embed
         """
-
         # grab emoji ID
         if is_user_error is True:
             emoji = re.search(r"<:(\w+):(\d+)>", EMOJI_USER_ERROR)
@@ -73,7 +72,6 @@ class DataControl(ipy.Extension):
         Returns:
             ipy.Embed: Success embed
         """
-
         # grab emoji ID
         emoji = re.search(r"<:(\w+):(\d+)>", EMOJI_SUCCESS)
         emoji_id = int(emoji.group(2))

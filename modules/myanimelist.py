@@ -41,7 +41,6 @@ from modules.const import (
     SIMKL_CLIENT_ID,
     warnThreadCW,
 )
-from modules.i18n import read_user_language
 
 
 def lookupRandomAnime() -> int:

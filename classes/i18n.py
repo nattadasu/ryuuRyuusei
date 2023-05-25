@@ -114,13 +114,12 @@ class Quantities(TypedDict):
     """Minutes Quantity Context"""
 
 
-FixGenres = TypedDict("FixGenres", {"4_koma": str})
-"""Fix any genres that can't be used as a variable name"""
 
-
-class Genres(FixGenres):
+class Genres(TypedDict):
     """Genres Context"""
 
+    _yon_koma: str
+    """4-Koma"""
     achromatic: str
     """Achromatic"""
     achronological_order: str

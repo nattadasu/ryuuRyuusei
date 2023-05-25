@@ -239,14 +239,15 @@ class Profile(ipy.Extension):
                     ipy.EmbedField(name="🚁 Gender", value=gender, inline=True),
                     ipy.EmbedField(name="📍 Location", value=location, inline=True),
                 )
-            embed.add_field(
-                name="🎞️ Anime List Summary",
-                value=f"""* Total: {anime.total_entries}
+            anime_value_str = f"""* Total: {anime.total_entries}
 * Mean Score: ⭐ {anime.mean_score}/10
 * Days Watched: {anime_float}
-* Episodes Watched: {anime.episodes_watched}""",
+* Episodes Watched: {anime.episodes_watched}"""
+            embed.add_field(
+                name="🎞️ Anime List Summary",
+                value=anime_value_str,
                 inline=embed_layout == "minimal",
-            ),
+            )
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Anime Statuses",
@@ -275,13 +276,14 @@ class Profile(ipy.Extension):
                     value=ani_fav_list if ani_fav_list not in ["", None] else "Unset",
                     inline=True,
                 )
-            embed.add_field(
-                name="📔 Manga List Summary",
-                value=f"""* Total: {manga.total_entries}
+            manga_value_str = f"""* Total: {manga.total_entries}
 * Mean Score: ⭐ {manga.mean_score}/10
 * Days Read, Estimated: {manga_float}
 * Chapters Read: {manga.chapters_read}
-* Volumes Read: {manga.volumes_read}""",
+* Volumes Read: {manga.volumes_read}"""
+            embed.add_field(
+                name="📔 Manga List Summary",
+                value=manga_value_str,
                 inline=embed_layout == "minimal",
             )
             if embed_layout == "new":
