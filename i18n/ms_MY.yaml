@@ -87,7 +87,7 @@ quantities:
     two: 2 minutes
     many: "{count} minutes"
 genres:
-  4_koma: 4-koma
+  _yon_koma: 4-koma
   achromatic: Achromatic
   achronological_order: Achronological Order
   acting: Acting
