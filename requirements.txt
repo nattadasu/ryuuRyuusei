@@ -10,6 +10,7 @@ language_data
 pandas
 plusminus
 python-dotenv
+python-Levenshtein
 pyyaml
 regex
 sentry_sdk
