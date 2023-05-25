@@ -166,6 +166,10 @@ class UserDatabase:
         df = pd.read_csv(self.database_path, sep="\t", dtype=str)
         df.drop(df[df["discordId"] == str(discord_id)].index, inplace=True)
         df.to_csv(self.database_path, sep="\t", index=False)
+        # drop from member settings
+        df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
+        df2.drop(df2[df2["discordId"] == str(discord_id)].index, inplace=True)
+        df2.to_csv("database/member.csv", sep="\t", index=False)
         # verify if its success
         verify = await self.check_if_registered(discord_id)
         return not verify
@@ -250,6 +254,13 @@ class UserDatabase:
                 f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error"
             )
         data = row.to_dict(orient="records")[0]
+        df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
+        df2.fillna("", inplace=True)
+        row2 = df2[df2["discordId"] == str(discord_id)]
+        data2 = row2.to_dict(orient="records")[0]
+        data2.pop("discordId")
+        data2 = {f"settings_{key}": value for key, value in data2.items()}
+        data.update(data2)
         for key, value in data.items():
             if value.isdigit():
                 data[key] = int(value)

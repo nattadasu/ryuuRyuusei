@@ -431,6 +431,8 @@ class UserData(TypedDict):
     \"\"\"Shikimori ID\"\"\"
     shikimoriUsername: Union[str, None]
     \"\"\"Shikimori username\"\"\"
+    settings_language: str
+    \"\"\"Language setting\"\"\"
 
 user_data: UserData = {user_data}
 """
