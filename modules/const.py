@@ -57,6 +57,8 @@ TMDB_API_KEY: Final[str] = ge("TMDB_API_KEY")
 """TMDB API key"""
 TMDB_API_VERSION: Final[int] = ge("TMDB_API_VERSION")
 """TMDB API version"""
+TOPGG_API_TOKEN: Final[str] = ge("TOPGG_API_TOKEN")
+"""Top.gg API token"""
 TRAKT_API_VERSION: Final[int] = ge("TRAKT_API_VERSION")
 """Trakt API version"""
 TRAKT_CLIENT_ID: Final[str] = ge("TRAKT_CLIENT_ID")
