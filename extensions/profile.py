@@ -91,7 +91,7 @@ class Profile(ipy.Extension):
                         name="Minimal (Default)",
                         value="minimal",
                     ),
-                    ipy.SlashCommandChoice(name="Old", value="old"),
+                    ipy.SlashCommandChoice(name="Classic", value="old"),
                     ipy.SlashCommandChoice(name="Highly Detailed", value="new"),
                 ],
             ),

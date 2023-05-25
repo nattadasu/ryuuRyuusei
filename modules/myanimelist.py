@@ -8,10 +8,13 @@ import html
 import re
 from datetime import datetime, timezone
 from enum import Enum
+from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
 import pandas as pd
 from interactions import (
+    Button,
+    ButtonStyle,
     Embed,
     EmbedAuthor,
     EmbedField,
@@ -156,7 +159,7 @@ async def generate_mal(
     is_nsfw: bool = False,
     al_dict: AniListMediaStruct | None = None,
     anime_api: AnimeApiAnime | None = None,
-) -> Embed:
+) -> list[Embed, Button]:
     """
     Generate an embed for /anime with MAL via Jikan
 
@@ -170,7 +173,7 @@ async def generate_mal(
         MediaIsNsfw: NSFW is not allowed
 
     Returns:
-        Embed: Embed object
+        list[Embed, Button]: Embed and button
     """
 
     async with JikanApi() as jikan:
@@ -490,8 +493,13 @@ async def generate_mal(
     )
     embed.set_thumbnail(url=poster)
     embed.set_image(url=background)
+    anime_stats: Button = Button(
+        style=ButtonStyle.URL,
+        label="Anime Stats",
+        url=f"https://anime-stats.net/anime/show/{quote(rot)}",
+    )
 
-    return embed
+    return [embed, anime_stats]
 
 
 async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
@@ -532,6 +540,8 @@ async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
         dcEm = await generate_mal(
             ani_id, is_nsfw=nsfwBool, al_dict=alData, anime_api=aniApi
         )
+        trailer += [dcEm[1]]
+        dcEm = dcEm[0]
         await ctx.send("", embeds=dcEm, components=trailer)
 
     except MediaIsNsfw as e:
