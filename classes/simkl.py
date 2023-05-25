@@ -13,13 +13,13 @@ from typing import List, Literal
 from urllib.parse import quote
 
 import aiohttp
-from dataclassy import dataclass, as_dict
+from dataclasses import dataclass, asdict
 
 from classes.excepts import ProviderHttpError, SimklTypeError
 from modules.const import SIMKL_CLIENT_ID, USER_AGENT
 
 
-@dataclass(kwargs=True)
+@dataclass
 class SimklRelations:
     """Simkl Relations dataclass"""
 
@@ -75,6 +75,11 @@ class SimklRelations:
     """English Wikipedia ID"""
     wikijp: str | int | None = None
     """Japanese Wikipedia ID"""
+
+    def to_dict(self) -> dict:
+        """Convert the dataclass to a dictionary"""
+
+        return asdict(self)
 
 
 class SimklMediaGenre(Enum):
@@ -285,7 +290,7 @@ class Simkl:
         self,
         provider: Provider | str,
         id: int | str,
-        media_type: TmdbMediaTypes | str | None = None,
+        media_type: TmdbMediaTypes | Literal["show", "movie"] | None = None,
     ) -> dict:
         """
         Search by ID
@@ -293,7 +298,7 @@ class Simkl:
         Args:
             provider (Provider | str): Provider to search
             id (int): ID of the provider
-            media_type (TmdbMediaTypes | str | None, optional): Media type of the title, must be SHOW or MOVIE. Defaults to None
+            media_type (TmdbMediaTypes | Literal["show", "movie"] | None, optional): Media type of the title, must be SHOW or MOVIE. Defaults to None
 
         Raises:
             SimklTypeError: If provider is TMDB and media_type is not provided
@@ -538,7 +543,35 @@ class Simkl:
         cache_file_path = self.get_cache_file_path(f"ids/{media_type}/{id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
-            return SimklRelations(**cached_data)
+            cached_data = SimklRelations(
+                title=cached_data["title"],
+                slug=cached_data["slug"],
+                poster=cached_data["poster"],
+                fanart=cached_data["fanart"],
+                anitype=cached_data["anitype"],
+                type=cached_data["type"],
+                allcin=cached_data["allcin"],
+                anfo=cached_data["anfo"],
+                anidb=cached_data["anidb"],
+                anilist=cached_data["anilist"],
+                animeplanet=cached_data["animeplanet"],
+                anisearch=cached_data["anisearch"],
+                ann=cached_data["ann"],
+                hulu=cached_data["hulu"],
+                imdb=cached_data["imdb"],
+                kitsu=cached_data["kitsu"],
+                livechart=cached_data["livechart"],
+                mal=cached_data["mal"],
+                netflix=cached_data["netflix"],
+                offjp=cached_data["offjp"],
+                simkl=cached_data["simkl"],
+                tmdb=cached_data["tmdb"],
+                tvdb=cached_data["tvdb"],
+                tvdbslug=cached_data["tvdbslug"],
+                wikien=cached_data["wikien"],
+                wikijp=cached_data["wikijp"],
+            )
+            return cached_data
         if media_type == "anime":
             async with Simkl(self.client_id) as simkl:
                 data = await simkl.get_anime(id)
@@ -553,7 +586,7 @@ class Simkl:
                 "You've might entered false media_type", SimklMediaTypes
             )
 
-        nullrels = as_dict(SimklRelations())
+        nullrels = asdict(SimklRelations())
 
         mids = {**nullrels, **data.get("ids", {})}
         for k, v in mids.items():
@@ -579,7 +612,35 @@ class Simkl:
                 continue
             mids[k] = data.get(k, None)
         self.write_data_to_cache(mids, cache_file_path)
-        return SimklRelations(**mids)
+        relations = SimklRelations(
+            title=mids["title"],
+            slug=mids["slug"],
+            poster=mids["poster"],
+            fanart=mids["fanart"],
+            anitype=mids["anitype"],
+            type=mids["type"],
+            allcin=mids["allcin"],
+            anfo=mids["anfo"],
+            anidb=mids["anidb"],
+            anilist=mids["anilist"],
+            animeplanet=mids["animeplanet"],
+            anisearch=mids["anisearch"],
+            ann=mids["ann"],
+            hulu=mids["hulu"],
+            imdb=mids["imdb"],
+            kitsu=mids["kitsu"],
+            livechart=mids["livechart"],
+            mal=mids["mal"],
+            netflix=mids["netflix"],
+            offjp=mids["offjp"],
+            simkl=mids["simkl"],
+            tmdb=mids["tmdb"],
+            tvdb=mids["tvdb"],
+            tvdbslug=mids["tvdbslug"],
+            wikien=mids["wikien"],
+            wikijp=mids["wikijp"],
+        )
+        return relations
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
         """

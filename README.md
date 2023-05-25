@@ -164,7 +164,7 @@ If you have any questions, feel free to join the
   AniList, MyAnimeList, and Shikimori
 - ⌚ `/relations music album` - Get external link relation for an album
 - ⌚ `/relations music track` - Get external link relation for a track
-- ⌚ `/relations shows` - Get external link relation for an anime, TV, or movie
+- `/relations shows` - Get external link relation for an anime, TV, or movie
 
 ### Profile Lookup Commands
 
@@ -173,7 +173,7 @@ If you have any questions, feel free to join the
 - ⌚ `/profile anilist` - Get your AniList profile
 - `/profile discord` - Get your Discord profile
 - `/profile lastfm` - Get your Last.fm profile
-- ⌚ `/profile myanimelist` - Get your MyAnimeList profile
+- `/profile myanimelist` - Get your MyAnimeList profile
 - ⌚ `/profile shikimori` - Get your Shikimori profile
 - `/whoami` - Show stored information and settings about you on the bot
   graphically and interactively.

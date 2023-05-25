@@ -1,6 +1,7 @@
 from collections import defaultdict
 from enum import Enum
 from typing import Union
+from interactions import EmbedField
 
 
 class Platform(Enum):
@@ -206,11 +207,11 @@ def get_platform_name(pf: str | Platform) -> str:
         "tvtime": "TV Time",
     }
 
-    return pfDict.get(pf, "Unknown")
+    return pfDict.get(pf.value, "Unknown")
 
 
 def media_id_to_platform(
-    media_id: str, platform: str | Platform, simklType: Union[str, None] = None
+    media_id: str, platform: str | Platform, simkl_type: Union[str, None] = None
 ) -> dict:
     """
     Convert a media ID to a platform-specific ID
@@ -218,7 +219,7 @@ def media_id_to_platform(
     Args:
         media_id (str): The media ID to convert
         platform (str | Platform): The platform to convert the ID to
-        simklType (Union[str, None], optional): The type of media to convert the ID to. Defaults to None.
+        simkl_type (Union[str, None], optional): The type of media to convert the ID to. Defaults to None.
 
     Raises:
         ValueError: If the platform is not supported
@@ -282,7 +283,7 @@ def media_id_to_platform(
             "emoid": "1088801946313429013",
         },
         "simkl": {
-            "uid": f"https://simkl.com/{simklType}/{media_id}",
+            "uid": f"https://simkl.com/{simkl_type}/{media_id}",
             "emoid": "1073630754275348631",
         },
         "shoboi": {
@@ -317,9 +318,68 @@ def media_id_to_platform(
     }
 
     try:
-        data = platform_dict[platform]
-        data["pf"] = get_platform_name(platform)
+        data = platform_dict[platform.value]
+        data["pf"] = get_platform_name(platform.value)
 
         return data
     except KeyError:
         raise ValueError(f"Invalid platform: {platform}")
+
+
+def platforms_to_fields(currPlatform: str, **k) -> list[EmbedField]:
+    """Convert a platform to a dictionary of fields"""
+    relsEm = []
+
+    platform_mappings = {
+        'allcin': 'allcin',
+        'anidb': 'anidb',
+        'anilist': 'anilist',
+        'ann': 'ann',
+        'animeplanet': 'animeplanet',
+        'anisearch': 'anisearch',
+        'annict': 'annict',
+        'imdb': 'imdb',
+        'kaize': 'kaize',
+        'kitsu': 'kitsu',
+        'livechart': 'livechart',
+        'myanimelist': 'myanimelist',
+        'notify': 'notify',
+        'otakotaku': 'otakotaku',
+        'shikimori': 'shikimori',
+        'shoboi': 'shoboi',
+        'silveryasha': 'silveryasha',
+        'simkl': 'simkl',
+        'trakt': 'trakt',
+        'tmdb': 'tmdb',
+        'tvdb': 'tvdb'
+    }
+
+    for platform, value in k.items():
+        try:
+            if value is not None and currPlatform != platform:
+                pin = media_id_to_platform(value, platform_mappings[platform])
+                if platform == "tvdb":
+                    value = str(value).removeprefix("https://www.thetvdb.com/")
+                relsEm.append(
+                    EmbedField(
+                        name=f"<:{platform_mappings[platform]}:{pin['emoid']}> {pin['pf']}",
+                        value=f"[{value}](<{pin['uid']}>)",
+                        inline=True
+                    )
+                )
+        except KeyError:
+            continue
+
+    if k['tvdb'] is not None and k['is_slug'] is False and k['tvtyp'] == 'series':
+        tvtime = k['tvdb'].split('=')
+        media_id = tvtime[1]
+        pin = media_id_to_platform(media_id=media_id, platform='tvtime')
+        relsEm.append(
+            EmbedField(
+                name=f"<:tvTime:{pin['emoid']}> {pin['pf']}",
+                value=f"[{k['tvdb']}](<{pin['uid']}>)",
+                inline=True
+            )
+        )
+
+    return relsEm
