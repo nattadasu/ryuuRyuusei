@@ -47,7 +47,10 @@ class ExtenalSitesRelations(ipy.Extension):
         async with Simkl() as simkl:
             entry = await simkl.search_by_id(provider, media_id, media_type=media_type)
             if entry is None:
-                raise SimklTypeError("Could not find any entry with the given ID", expected_type=list[dict])
+                raise SimklTypeError(
+                    "Could not find any entry with the given ID",
+                    expected_type=list[dict],
+                )
             return entry[0]
 
     @staticmethod
