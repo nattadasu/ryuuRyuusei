@@ -14,6 +14,14 @@ class Kitsu:
 
     def __init__(self):
         """Initialize the Kitsu API Wrapper"""
+        self.session = None
+        self.base_url = "https://kitsu.io/api/edge/"
+        self.params = None
+        self.cache_directory = "cache/kitsu"
+        self.cache_time = 86400
+
+    async def __aenter__(self):
+        """Enter the async context manager"""
         self.session = aiohttp.ClientSession(
             headers={
                 "User-Agent": USER_AGENT,
@@ -21,23 +29,17 @@ class Kitsu:
                 "Content-Type": "application/vnd.api+json",
             }
         )
-        self.base_url = "https://kitsu.io/api/edge/"
         self.params = {
             # public client ID provided by Kitsu themselves
             "client_id": "dd031b32d2f56c990b1425efe6c42ad847e7fe3ab46bf1299f05ecd856bdb7dd"
         }
-        self.cache_directory = "cache/kitsu"
-        self.cache_time = 86400
-
-    def __aenter__(self):
-        """Enter the async context manager"""
         return self
 
-    def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Exit the async context manager"""
         self.close()
 
-    def close(self):
+    async def close(self):
         """Close the aiohttp session"""
         self.session.close()
 
