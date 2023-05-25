@@ -36,7 +36,7 @@ async def first_run(py_bin: str = py_bin_path()):
     if not os.path.exists("requirements.txt"):
         raise Exception("Please run the script from the root directory.")
     # Check if Termux is used
-    env = {'MATHLAB': 'm'} if check_termux() else {}
+    env = {"MATHLAB": "m"} if check_termux() else {}
     # Install dependencies
     print(
         "Installing and upgrading dependencies for the next step and the bot itself..."
