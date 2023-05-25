@@ -170,7 +170,7 @@ class Profile(ipy.Extension):
         joined = int(user_data.joined.timestamp())
         if birthday is not None:
             timestamped = birthday.timestamp()
-            today = dtime.utcnow()
+            today = dtime.now(tz=tz.utc)
             current_year = today.year
             upcoming = birthday.replace(year=current_year)
             if int(upcoming.timestamp()) < int(today.timestamp()):

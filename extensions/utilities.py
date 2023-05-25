@@ -1,7 +1,7 @@
 import re
 from base64 import b64decode, b64encode
 from urllib.parse import urlencode as urlenc
-from datetime import datetime
+from datetime import datetime, timezone
 
 import interactions as ipy
 from typing import Literal
@@ -413,7 +413,7 @@ class Utilities(ipy.Extension):
                 ],
                 color=0x566A82,
                 footer=ipy.EmbedFooter(text="Powered by IsItDownRightNow"),
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=timezone.utc),
             )
 
             embed.set_thumbnail(
@@ -478,7 +478,7 @@ class Utilities(ipy.Extension):
             embed = ipy.Embed(
                 title=f"{user.display_name}'s {title} banner",
                 color=0x566A82,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(tz=timezone.utc),
             )
             embed.set_thumbnail(url=user.display_avatar.url)
             embed.set_image(url=banner)
@@ -534,7 +534,7 @@ class Utilities(ipy.Extension):
         embed = ipy.Embed(
             title=f"{user.display_name}'s avatar",
             color=0x566A82,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(tz=timezone.utc),
         )
         embed.set_image(url=avatar)
         await ctx.send(embed=embed)

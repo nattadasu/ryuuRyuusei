@@ -1,7 +1,7 @@
 import os
 import sys
 import unittest
-from datetime import datetime
+from datetime import datetime, timezone
 from asyncio import sleep
 from typing import Any, Coroutine
 
@@ -20,7 +20,7 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_save_data(self):
         """Test saving data"""
-        tmp = datetime.utcnow()
+        tmp = datetime.now(tz=timezone.utc)
         async with UserDatabase() as ud:
             resp = await ud.save_to_database(
                 UserDatabaseClass(
@@ -55,7 +55,7 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
     async def test_export_data(self):
         """Test exporting user data"""
         async with UserDatabase() as ud:
-            resp = await ud.export_user_data(Snowflake(1234567890))
+            resp = await ud.export_user_data(1234567890)
         self.assertTrue(resp is not None)
 
     async def test_remove_data(self):

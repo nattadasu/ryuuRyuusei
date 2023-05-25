@@ -1,7 +1,7 @@
 import json
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Literal
 
 import interactions as ipy
@@ -133,7 +133,7 @@ class DataControl(ipy.Extension):
                     mal_id=mal_id,
                     mal_username=mal_username,
                     mal_joined=mal_joined,
-                    registered_at=datetime.utcnow(),
+                    registered_at=datetime.now(tz=timezone.utc),
                     registered_guild_id=ctx.guild.id,
                     registered_guild_name=ctx.guild.name,
                     registered_by=ctx.author.id,
@@ -378,7 +378,7 @@ class DataControl(ipy.Extension):
             user_data = await ud.export_user_data(ctx.author.id)
             user_data = json.loads(user_data)
 
-        filename = f"cache/export_{ctx.author.id}_{int(datetime.utcnow().timestamp())}"
+        filename = f"cache/export_{ctx.author.id}_{int(datetime.now(tz=timezone.utc).timestamp())}"
 
         # stringify json
         jd = json.dumps(user_data)

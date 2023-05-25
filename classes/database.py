@@ -215,7 +215,7 @@ class UserDatabase:
             mal_id=int(data["malId"]),
             mal_username=data["malUsername"],
             mal_joined=datetime.fromtimestamp(int(data["malJoined"]), tz=timezone.utc),
-            anilist_id=float(data["anilistId"]) if data["anilistId"] else None,
+            anilist_id=data["anilistId"] if data["anilistId"] else None,
             anilist_username=data["anilistUsername"]
             if data["anilistUsername"]
             else None,
@@ -232,12 +232,12 @@ class UserDatabase:
             else None,
         )
 
-    async def export_user_data(self, discord_id: Snowflake) -> str:
+    async def export_user_data(self, discord_id: int) -> str:
         """
         Export user data as JSON
 
         Args:
-            discord_id (Snowflake): Discord ID of the user
+            discord_id (int): Discord ID of the user
 
         Returns:
             str: JSON string of the user data
