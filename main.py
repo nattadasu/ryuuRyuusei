@@ -1,3 +1,11 @@
+from modules.const import BOT_TOKEN, SENTRY_DSN, USER_AGENT
+from interactions.client import const as ipy_const
+import interactions as ipy
+from datetime import timezone as tz
+from datetime import datetime as dtime
+import traceback
+import os
+import asyncio
 import sys
 
 from modules.oobe.commons import UnsupportedVersion
@@ -13,16 +21,6 @@ if py_ver < (3, 10):
 print(f"[Pyt] Python version : {py_ver.major}.{py_ver.minor}.{py_ver.micro}")
 print(f"[Pyt] Python binary  : {sys.executable}")
 
-import asyncio
-import os
-import traceback
-from datetime import datetime as dtime
-from datetime import timezone as tz
-
-import interactions as ipy
-from interactions.client import const as ipy_const
-
-from modules.const import BOT_TOKEN, SENTRY_DSN, USER_AGENT
 
 now: dtime = dtime.now(tz=tz.utc)
 

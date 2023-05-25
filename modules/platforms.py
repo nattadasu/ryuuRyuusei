@@ -331,27 +331,27 @@ def platforms_to_fields(currPlatform: str, **k) -> list[EmbedField]:
     relsEm = []
 
     platform_mappings = {
-        'allcin': 'allcin',
-        'anidb': 'anidb',
-        'anilist': 'anilist',
-        'ann': 'ann',
-        'animeplanet': 'animeplanet',
-        'anisearch': 'anisearch',
-        'annict': 'annict',
-        'imdb': 'imdb',
-        'kaize': 'kaize',
-        'kitsu': 'kitsu',
-        'livechart': 'livechart',
-        'myanimelist': 'myanimelist',
-        'notify': 'notify',
-        'otakotaku': 'otakotaku',
-        'shikimori': 'shikimori',
-        'shoboi': 'shoboi',
-        'silveryasha': 'silveryasha',
-        'simkl': 'simkl',
-        'trakt': 'trakt',
-        'tmdb': 'tmdb',
-        'tvdb': 'tvdb'
+        "allcin": "allcin",
+        "anidb": "anidb",
+        "anilist": "anilist",
+        "ann": "ann",
+        "animeplanet": "animeplanet",
+        "anisearch": "anisearch",
+        "annict": "annict",
+        "imdb": "imdb",
+        "kaize": "kaize",
+        "kitsu": "kitsu",
+        "livechart": "livechart",
+        "myanimelist": "myanimelist",
+        "notify": "notify",
+        "otakotaku": "otakotaku",
+        "shikimori": "shikimori",
+        "shoboi": "shoboi",
+        "silveryasha": "silveryasha",
+        "simkl": "simkl",
+        "trakt": "trakt",
+        "tmdb": "tmdb",
+        "tvdb": "tvdb",
     }
 
     for platform, value in k.items():
@@ -364,21 +364,21 @@ def platforms_to_fields(currPlatform: str, **k) -> list[EmbedField]:
                     EmbedField(
                         name=f"<:{platform_mappings[platform]}:{pin['emoid']}> {pin['pf']}",
                         value=f"[{value}](<{pin['uid']}>)",
-                        inline=True
+                        inline=True,
                     )
                 )
         except KeyError:
             continue
 
-    if k['tvdb'] is not None and k['is_slug'] is False and k['tvtyp'] == 'series':
-        tvtime = k['tvdb'].split('=')
+    if k["tvdb"] is not None and k["is_slug"] is False and k["tvtyp"] == "series":
+        tvtime = k["tvdb"].split("=")
         media_id = tvtime[1]
-        pin = media_id_to_platform(media_id=media_id, platform='tvtime')
+        pin = media_id_to_platform(media_id=media_id, platform="tvtime")
         relsEm.append(
             EmbedField(
                 name=f"<:tvTime:{pin['emoid']}> {pin['pf']}",
                 value=f"[{k['tvdb']}](<{pin['uid']}>)",
-                inline=True
+                inline=True,
             )
         )
 
