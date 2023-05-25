@@ -36,30 +36,29 @@ async def first_run(py_bin: str = py_bin_path()):
     if not os.path.exists("requirements.txt"):
         raise Exception("Please run the script from the root directory.")
     # Check if Termux is used
-    env = 'MATHLAB="m" ' if check_termux() else ""
+    env = {'MATHLAB': 'm'} if check_termux() else {}
     # Install dependencies
     print(
         "Installing and upgrading dependencies for the next step and the bot itself..."
     )
     if current_os() == "Windows":
         subprocess.run(
-            [env + "pip", "install", "-U", "-r", "requirements.txt"],
-            shell=False,
+            ["pip", "install", "-U", "-r", "requirements.txt"],
             check=True,
         )
     else:
-        os.system(
-            shlex.join(
-                [
-                    env + shlex.quote(py_bin),
-                    "-m",
-                    "pip",
-                    "install",
-                    "-U",
-                    "-r",
-                    "requirements.txt",
-                ]
-            )
+        subprocess.run(
+            [
+                shlex.quote(py_bin),
+                "-m",
+                "pip",
+                "install",
+                "-U",
+                "-r",
+                "requirements.txt",
+            ],
+            env=env,
+            check=True,
         )
     # Prepare the database
     print("Preparing the database as database.csv in tabbed format...")
