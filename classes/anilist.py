@@ -141,14 +141,18 @@ class AniListMediaStruct:
     duration: int | None = None
     """Anime episode duration in minutes"""
 
+
 @dataclass
 class AniListStatusBase:
     """Base AniList status dataclass"""
 
-    status: Literal["CURRENT", "PLANNING", "COMPLETED", "DROPPED", "PAUSED", "REPEATING"] | None = None
+    status: Literal[
+        "CURRENT", "PLANNING", "COMPLETED", "DROPPED", "PAUSED", "REPEATING"
+    ] | None = None
     """Status"""
     count: int | None = None
     """Status count"""
+
 
 @dataclass
 class AniListStatisticBase:
@@ -161,6 +165,7 @@ class AniListStatisticBase:
     statuses: list[AniListStatusBase] | None = None
     """Statistic statuses"""
 
+
 @dataclass
 class AniListAnimeStatistic(AniListStatisticBase):
     """AniList anime statistic dataclass"""
@@ -169,6 +174,7 @@ class AniListAnimeStatistic(AniListStatisticBase):
     """Minutes watched"""
     episodesWatched: int | None = None
     """Episodes watched"""
+
 
 @dataclass
 class AniListMangaStatistic(AniListStatisticBase):
@@ -188,6 +194,7 @@ class AniListUserStatisticStruct:
     """Anime statistic object"""
     manga: AniListMangaStatistic | None = None
     """Manga statistic object"""
+
 
 @dataclass
 class AniListUserMediaNode:
@@ -210,6 +217,7 @@ class AniListUserFavoriteStruct:
     """Staff favorites"""
     studios: None = None
     """Studio favorites"""
+
 
 @dataclass
 class AniListUserStruct:
@@ -260,7 +268,9 @@ class AniList:
         if int(ANILIST_OAUTH_EXPIRY) > datetime.now(tz=timezone.utc).timestamp():
             self.headers["Authorization"] = f"Bearer {self.access_token}"
         else:
-            print("[API] [AniList] [WARNING] Access token has expired, please refresh it, otherwise bot won't show NSFW content")
+            print(
+                "[API] [AniList] [WARNING] Access token has expired, please refresh it, otherwise bot won't show NSFW content"
+            )
         self.session = ClientSession()
         return self
 
@@ -317,17 +327,27 @@ class AniList:
         data["avatar"] = (
             AniListImageStruct(**data["avatar"]) if data["avatar"] else None
         )
-        data["createdAt"] = datetime.fromtimestamp(data["createdAt"], timezone.utc) if data["createdAt"] else None
+        data["createdAt"] = (
+            datetime.fromtimestamp(data["createdAt"], timezone.utc)
+            if data["createdAt"]
+            else None
+        )
         if data["statistics"]["anime"]:
             data["statistics"]["anime"]["statuses"] = [
-                AniListStatusBase(**status) for status in data["statistics"]["anime"]["statuses"]
+                AniListStatusBase(**status)
+                for status in data["statistics"]["anime"]["statuses"]
             ]
-            data["statistics"]["anime"] = AniListAnimeStatistic(**data["statistics"]["anime"])
+            data["statistics"]["anime"] = AniListAnimeStatistic(
+                **data["statistics"]["anime"]
+            )
         if data["statistics"]["manga"]:
             data["statistics"]["manga"]["statuses"] = [
-                AniListStatusBase(**status) for status in data["statistics"]["manga"]["statuses"]
+                AniListStatusBase(**status)
+                for status in data["statistics"]["manga"]["statuses"]
             ]
-            data["statistics"]["manga"] = AniListMangaStatistic(**data["statistics"]["manga"])
+            data["statistics"]["manga"] = AniListMangaStatistic(
+                **data["statistics"]["manga"]
+            )
         data["statistics"] = (
             AniListUserStatisticStruct(**data["statistics"])
             if data["statistics"]
@@ -335,14 +355,20 @@ class AniList:
         )
         if data["favourites"]["anime"]:
             data["favourites"]["anime"]["nodes"] = [
-                self._media_dict_to_dataclass(media) for media in data["favourites"]["anime"]["nodes"]
+                self._media_dict_to_dataclass(media)
+                for media in data["favourites"]["anime"]["nodes"]
             ]
-            data["favourites"]["anime"] = AniListUserMediaNode(**data["favourites"]["anime"])
+            data["favourites"]["anime"] = AniListUserMediaNode(
+                **data["favourites"]["anime"]
+            )
         if data["favourites"]["manga"]:
             data["favourites"]["manga"]["nodes"] = [
-                self._media_dict_to_dataclass(media) for media in data["favourites"]["manga"]["nodes"]
+                self._media_dict_to_dataclass(media)
+                for media in data["favourites"]["manga"]["nodes"]
             ]
-            data["favourites"]["manga"] = AniListUserMediaNode(**data["favourites"]["manga"])
+            data["favourites"]["manga"] = AniListUserMediaNode(
+                **data["favourites"]["manga"]
+            )
         data["favourites"] = (
             AniListUserFavoriteStruct(**data["favourites"])
             if data["favourites"]

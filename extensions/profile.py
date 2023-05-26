@@ -400,7 +400,7 @@ class Profile(ipy.Extension):
         ctx: ipy.SlashContext,
         user: ipy.Member | ipy.User = None,
         lfm_username: str = None,
-        maximum: int = 9
+        maximum: int = 9,
     ):
         await ctx.defer()
         ul = read_user_language(ctx)
@@ -440,7 +440,9 @@ class Profile(ipy.Extension):
         try:
             async with LastFM() as lfm:
                 profile: LastFMUserStruct = await lfm.get_user_info(lfm_username)
-                tracks: list[LastFMTrackStruct] = await lfm.get_user_recent_tracks(lfm_username, maximum)
+                tracks: list[LastFMTrackStruct] = await lfm.get_user_recent_tracks(
+                    lfm_username, maximum
+                )
         except ProviderHttpError as e:
             embed = generate_commons_except_embed(
                 description=e.message,
@@ -452,11 +454,13 @@ class Profile(ipy.Extension):
 
         fields = [
             ipy.EmbedField(
-                name=f"▶️ {sanitize_markdown(tr.name)}" if tr.nowplaying else sanitize_markdown(tr.name),
+                name=f"▶️ {sanitize_markdown(tr.name)}"
+                if tr.nowplaying
+                else sanitize_markdown(tr.name),
                 value=f"""{sanitize_markdown(tr.artist.name)}
 {sanitize_markdown(tr.album.name)}
 {f"<t:{tr.date.epoch}:R>" if not tr.nowplaying else "*Currently playing*"}, [Link]({self.quote_lastfm_url(tr.url)})""",
-                inline=True
+                inline=True,
             )
             for tr in tracks
         ]
@@ -527,7 +531,7 @@ Total scrobbles: {profile.playcount}
                     ipy.SlashCommandChoice(name="Card", value="card"),
                     ipy.SlashCommandChoice(name="Minimal (default)", value="minimal"),
                     ipy.SlashCommandChoice(name="Classic", value="old"),
-                    ipy.SlashCommandChoice(name="Highly Detailed", value="new")
+                    ipy.SlashCommandChoice(name="Highly Detailed", value="new"),
                 ],
             ),
         ],
@@ -537,12 +541,7 @@ Total scrobbles: {profile.playcount}
         ctx: ipy.SlashContext,
         user: ipy.Member | ipy.User = None,
         anilist_username: str = None,
-        embed_layout: Literal[
-            "card",
-            "minimal",
-            "old",
-            "new"
-        ] = "minimal",
+        embed_layout: Literal["card", "minimal", "old", "new"] = "minimal",
     ) -> None:
         await ctx.defer()
         ul = read_user_language(ctx)
@@ -606,7 +605,9 @@ Total scrobbles: {profile.playcount}
         donator = f"Tier {donator}" if donator != 0 else "Not a donator"
 
         banner = user_data.bannerImage
-        joined_formatted = f"<t:{int(created_at.timestamp())}:D> (<t:{int(created_at.timestamp())}:R>)"
+        joined_formatted = (
+            f"<t:{int(created_at.timestamp())}:D> (<t:{int(created_at.timestamp())}:R>)"
+        )
         anime_current = 0
         anime_planning = 0
         anime_completed = 0
@@ -642,9 +643,7 @@ Total scrobbles: {profile.playcount}
         manga_mean_score = manga_stats.meanScore
         manga_chapters_read = manga_stats.chaptersRead
         manga_volumes_read = manga_stats.volumesRead
-        manga_float = convert_float_to_time(
-            (8 * manga_chapters_read) / 1440
-        )
+        manga_float = convert_float_to_time((8 * manga_chapters_read) / 1440)
         for status in manga_stats.statuses:
             match status.status:
                 case "CURRENT":
@@ -687,7 +686,7 @@ Total scrobbles: {profile.playcount}
             url=user_url,
             author=embed_author,
             color=embed_color,
-            timestamp=dtime.now(tz=tz.utc)
+            timestamp=dtime.now(tz=tz.utc),
         )
         embed.set_thumbnail(url=avatar)
 
@@ -714,7 +713,7 @@ Total scrobbles: {profile.playcount}
                     name="💎 Donator",
                     value=f"{donator}{donator_flair}",
                     inline=True,
-                )
+                ),
             )
             anime_value_str = f"""* Total: {anime_completed + anime_current + anime_dropped + anime_paused + anime_planning}
 * Mean Score: ⭐ {anime_mean_score}/100
@@ -739,7 +738,9 @@ Total scrobbles: {profile.playcount}
                 ani_fav_list = ""
                 if ani_favs:
                     for index, fav in enumerate(ani_favs):
-                        ani_fav_list += f"{index + 1}. [{fav.title.romaji}]({fav.siteUrl})\n"
+                        ani_fav_list += (
+                            f"{index + 1}. [{fav.title.romaji}]({fav.siteUrl})\n"
+                        )
                 embed.add_field(
                     name="🌟 Top 5 Favorite Anime",
                     value=ani_fav_list if ani_fav_list else "Unset",
@@ -769,7 +770,9 @@ Total scrobbles: {profile.playcount}
                 manga_fav_list = ""
                 if manga_favs:
                     for index, fav in enumerate(manga_favs):
-                        manga_fav_list += f"{index + 1}. [{fav.title.romaji}]({fav.siteUrl})\n"
+                        manga_fav_list += (
+                            f"{index + 1}. [{fav.title.romaji}]({fav.siteUrl})\n"
+                        )
                 embed.add_field(
                     name="🌟 Top 5 Favorite Manga",
                     value=manga_fav_list if manga_fav_list else "Unset",
@@ -821,6 +824,7 @@ Total scrobbles: {profile.playcount}
             embed.set_image(url=banner)
 
         await ctx.send(embed=embed, components=components)
+
 
 def setup(bot):
     Profile(bot)
