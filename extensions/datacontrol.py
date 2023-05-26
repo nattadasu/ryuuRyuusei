@@ -328,7 +328,7 @@ To complete your registration, please follow the instructions below:""",
         try:
             if platform == "anilist":
                 async with AniList() as anilist:
-                    user_id = await anilist.user(username)
+                    user_id = await anilist.user(username, return_id=True)
                     user_id = user_id["id"]
                 async with UserDatabase() as ud:
                     await ud.update_user(
