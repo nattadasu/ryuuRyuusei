@@ -1,7 +1,7 @@
 import json
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Literal
 
 import interactions as ipy
@@ -11,9 +11,10 @@ import yaml
 from classes.anilist import AniList
 from classes.database import UserDatabase, UserDatabaseClass
 from classes.excepts import ProviderHttpError
-from classes.jikan import JikanApi
+from classes.html.myanimelist import HtmlMyAnimeList
 from classes.lastfm import LastFM
 from classes.shikimori import Shikimori
+from classes.verificator import Verificator
 from modules.const import (
     DECLINED_GDPR,
     EMOJI_SUCCESS,
@@ -83,6 +84,28 @@ class DataControl(ipy.Extension):
         embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
+    async def _check_if_registered(self, ctx: ipy.ComponentContext | ipy.SlashContext) -> bool:
+        """
+        Check if the user is registered
+
+        Args:
+            ctx (ipy.ComponentContext | ipy.SlashContext): Context
+
+        Returns:
+            bool: Whether the user is registered
+        """
+        async with UserDatabase() as ud:
+            is_registered = await ud.check_if_registered(ctx.author.id)
+            if is_registered is True:
+                embed = self.generate_error_embed(
+                    header="Look out!",
+                    message="You are already registered!",
+                    is_user_error=True,
+                )
+                await ctx.send(embed=embed)
+                return True
+            return False
+
     @ipy.slash_command(
         name="register",
         description="Register yourself to the database",
@@ -108,20 +131,110 @@ class DataControl(ipy.Extension):
         if accept_privacy_policy is False:
             await ctx.send(DECLINED_GDPR)
             return
-        async with UserDatabase() as ud:
-            is_registered = await ud.check_if_registered(ctx.author.id)
-            if is_registered is True:
-                embed = self.generate_error_embed(
-                    header="Look out!",
-                    message="You are already registered!",
-                    is_user_error=True,
+        checker = await self._check_if_registered(ctx)
+        if checker is True:
+            return
+        fields = [
+            ipy.EmbedField(
+                name="1. Sign in to MyAnimeList",
+                value=f"To make thing easier, sign your account in on your default browser. [Click here to sign in](https://myanimelist.net/login.php).",
+            ),
+            ipy.EmbedField(
+                name="2. Go to your profile settings",
+                value=f"Once you are signed in, go to your profile settings. [Click here to go to your profile settings](https://myanimelist.net/editprofile.php).",
+            ),
+            ipy.EmbedField(
+                name='3. Scroll down to "My Details" and find "Location"',
+                value="Don't worry, you can change it back later.",
+            ),
+        ]
+
+        overwrite_prompt = "4. Copy the following text and overwrite/paste it into the Location field"
+
+        with Verificator() as verify:
+            # check if user still have pending verification
+            is_pending = verify.get_user_uuid(ctx.author.id)
+            if is_pending is not None:
+                remaining_time = is_pending.epoch_time + 43200
+                fields.append(
+                    ipy.EmbedField(
+                        name=overwrite_prompt,
+                        value=f"```\n{is_pending.uuid}\n```**Note:** Your verification code expires <t:{remaining_time}:R>.",
+                    )
                 )
-                await ctx.send(embed=embed)
-                return
-        async with JikanApi() as jikan:
-            mal = await jikan.get_user_data(mal_username)
-            mal_id = mal.mal_id
-            mal_joined = mal.joined
+                epoch = datetime.fromtimestamp(
+                    is_pending.epoch_time, tz=timezone.utc
+                )
+            else:
+                generate = verify.save_user_uuid(
+                    ctx.author.id,
+                    mal_username
+                )
+                remaining_time = generate.epoch_time + 43200
+                fields.append(
+                    ipy.EmbedField(
+                        name=overwrite_prompt,
+                        value=f"```\n{generate.uuid}\n```**Note:** Your verification code expires <t:{remaining_time}:R>.",
+                    )
+                )
+                epoch = datetime.fromtimestamp(
+                    generate.epoch_time, tz=timezone.utc
+                )
+
+        fields += [
+            ipy.EmbedField(
+                name="5. Save your changes",
+                value="Once you are done, save your changes, then confirm your registration by clicking the button below.",
+            ),
+        ]
+        embed = ipy.Embed(
+            title="Registration",
+            description=f"""## Hi, {ctx.author.display_name}!
+
+To complete your registration, please follow the instructions below:""",
+            fields=fields,
+            footer=ipy.EmbedFooter(
+                text="If you have any questions, feel free to contact the developer. Verification codes are valid for 12 hours.",
+            ),
+            timestamp=epoch,
+            color=0x7289DA,
+        )
+        embed.set_thumbnail(url=ctx.author.display_avatar.url)
+        components = [
+            ipy.Button(
+                style=ipy.ButtonStyle.BLURPLE,
+                label="Confirm registration",
+                custom_id="account_register",
+            )
+        ]
+        await ctx.send(embed=embed, components=components)
+
+    @ipy.component_callback("account_register")
+    async def callback_registration(self, ctx: ipy.ComponentContext):
+        await ctx.defer(ephemeral=True)
+        checker = await self._check_if_registered(ctx)
+        if checker is True:
+            return
+        # check if user location matches the generated uuid
+        with Verificator() as verify:
+            user_code = verify.get_user_uuid(ctx.author.id)
+        if user_code is not None:
+            mal_username = user_code.mal_username
+        else:
+            return
+        async with HtmlMyAnimeList() as hmal:
+            mal_data = await hmal.get_user(mal_username)
+            mal_id = mal_data.mal_id
+            mal_joined = mal_data.joined
+            user_location = mal_data.location
+        if user_location != user_code.uuid:
+            embed = self.generate_error_embed(
+                header="Look out!",
+                message="Your location does not match the generated code. Please try again.",
+                is_user_error=True,
+            )
+            await ctx.send(embed=embed)
+            return
 
         async with UserDatabase() as ud:
             await ud.save_to_database(
