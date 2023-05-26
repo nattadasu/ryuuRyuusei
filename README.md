@@ -21,8 +21,8 @@
 
 ---
 
-<p align="center"> 🤖 A Title (Anime, Manga, Game, TV, Movie) Lookup and Member
-Verificator Bot for Discord, With Privacy in Mind.
+<p align="center">Find your profile and your favorite media titles with
+Ryuuzaki Ryuusei. 🚀
     <br>
 </p>
 
@@ -30,14 +30,33 @@ Verificator Bot for Discord, With Privacy in Mind.
 
 ## 🧐 About <a name = "about"></a>
 
-Ryuuzaki Ryuusei is a Discord bot that can be used to verify MAL club members
-and advanced media title lookup (anime, manga, games, tv, movie) statically
-while it keeping simple and easy to use, also respecting users under GDPR,
-CCPA/CPRA, and other privacy laws.
+Are you a fan of anime, manga, games, TV shows, and movies? Do you want to find
+a Discord bot that can help you look up your profile from Discord without going
+anywhere and search for information about your favorite media titles from
+various sources? If yes, then you should check out Ryuuzaki Ryuusei! 🙌
 
-The underlying bot frameworks are kinda heavily-typed, so it's might be a bit
-resilient to breaking changes, even with 3rd party API wrappers that were
-written in-house.
+Ryuuzaki Ryuusei is a Discord bot that uses interactions.py and Python to offer
+a variety of features and commands for Discord users. You can look up your
+profile from Discord, AniList, Shikimori, MyAnimeList, and Last.fm and customize
+your summary for each platform. You can also search for anime, manga, games, TV
+shows, and movies from platforms like MyAnimeList, AniList, SIMKL, Spotify, and
+more. You can also export your data in different formats and enjoy true
+randomness with some commands. 🚀
+
+The bot cares about your privacy by not storing any data on its server except
+for essential information. You can also delete your data anytime using the
+`/unregister` command. For more details, you can read the
+[Privacy Policy](PRIVACY.md). 🔒
+
+The bot has many commands for different purposes, such as anime, manga, game, TV
+show, movie, music, and external link lookups. You can also access profile
+lookup commands, data control commands, settings commands (for both users and
+servers), randomization commands, and utility commands.
+
+If you want to learn more about Ryuuzaki Ryuusei or invite it to your server,
+you can use the `/about`, `/help`, `/invite`, `/ping`, `/privacy`, and
+`/support` commands. You can also join the official support server or visit the
+GitHub repository to contribute to the development of the bot. 💖
 
 By inviting this bot to your server or using it, you agree to the
 [Privacy Policy](PRIVACY.md) and [Terms of Service](TERMS_OF_SERVICE.md).
@@ -79,10 +98,10 @@ If you have any questions, feel free to join the
 
 > This also will be our to-do list for the bot. :3
 
-- [x] MAL account verification (only for self-hosted bot).
 - [x] Privacy-friendly: no data is stored on the bot's server, except for the
-      user's Discord ID and MAL username. See [Privacy Policy](PRIVACY.md) for
-      more information.
+      essential data and caches. See [Privacy Policy](PRIVACY.md) for more
+      information.
+- [x] Easily link optional supported platform by using `/platform link` command.
 - [x] Delete your data from the bot's database at any time as you wish using
       `/unregister` command.
 - [x] Beautiful embed with thumbnail and footer.
@@ -95,11 +114,10 @@ If you have any questions, feel free to join the
         and more).
   - [x] A lot of information about the media compared to competitors: synopsis,
         genres and themes, rating with total votes, and more!
-  - [x] Know ID of the title you want to search? Use `/relations` command group
-        instantly!
-- [x] Shows your birthday; including remaining days to your upcoming birthday
-      (based on MyAnimeList user profile).
-- [x] Customizable Last.fm scrobble summary.
+  - [x] Know ID of the title you want to search? Use `/media search` command
+        group instantly!
+- [x] Shows your birthday directly from your MyAnimeList profile summary.
+- [x] Customizable summaries for MyAnimeList, Last.fm, AniList, and Shikimori.
 - [x] Export your data in JSON or Python dictionary format.
 - [x] Experience the *"true"* randomness result on `/anime random` and
       `/random nekomimi` commands![^1]
@@ -184,7 +202,7 @@ If you have any questions, feel free to join the
 - `/profile myanimelist` - Get your MyAnimeList profile
 - ⌚ `/profile shikimori` - Get your Shikimori profile
 - `/whoami` - Show stored information and settings about you on the bot
-  graphically and interactively.
+  graphically and interactively
 
 ### Data Control
 
@@ -231,7 +249,7 @@ If you have any questions, feel free to join the
   - `/random nekomimi boy` - Show an image of a boy in nekomimi
   - `/random nekomimi girl` - Show an image of a girl in nekomimi
   - `/random nekomimi randomize` - Show an image of a character in nekomimi
-    regardless the gender.
+    regardless the gender
 - `/random number` - Get a random number from Random.org
 - `/random string` - Get a random string from Random.org
 - ⌚ `/random tv` - Get a random TV show from SIMKL
@@ -246,8 +264,18 @@ If you have any questions, feel free to join the
 - `/utilities color` - Get color information
 - `/utilities math` - Evaluate a mathematical expression
 - `/utilities qrcode` - Generate a QR code from a string
-- `/utilities site status` - Check if the site is up or down.
+- `/utilities site status` - Check if the site is up or down
 - `/utilities snowflake` - Get a snowflake's information
+
+### Dictionary Commands
+
+> Search a term from known dictionary!
+
+#### Urban Dictionary
+
+- ⌚ `/dictionary urban search` - Search a term from Urban Dictionary
+- ⌚ `/dictionary urban wotd` - Get a word of the day from Urban Dictionary
+- ⌚ `/dictionary urban random` - Get a random word from Urban Dictionary
 
 ### Commons Bot Commands
 
