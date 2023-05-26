@@ -10,9 +10,7 @@ from modules.const import TOPGG_API_TOKEN, BOT_CLIENT_ID
 
 
 class TopGG:
-    """
-    # Top.gg API Wrapper
-    """
+    """# Top.gg API Wrapper"""
 
     def __init__(self, token: str = TOPGG_API_TOKEN, bot_id: int = BOT_CLIENT_ID):
         """
@@ -28,23 +26,17 @@ class TopGG:
         self.headers = None
 
     async def __aenter__(self):
-        """
-        Enter async context
-        """
+        """Enter async context"""
         self.session = aiohttp.ClientSession()
         self.headers = {"Authorization": self.token}
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
-        """
-        Exit async context
-        """
+        """Exit async context"""
         await self.close()
 
     async def close(self):
-        """
-        Close the session
-        """
+        """Close the session"""
         await self.session.close()
 
     async def post_bot_stats(

@@ -34,9 +34,7 @@ from datetime import datetime, timezone
 
 
 async def get_auth_code():
-    """
-    Get the authentication code from AniList.
-    """
+    """Get the authentication code from AniList."""
     auth_endpoint = "https://anilist.co/api/v2/oauth/authorize"
     client_id_param = f"client_id={ANILIST_CLIENT_ID}"
     redirect_uri_param = f'redirect_uri={urllib.parse.quote(ANILIST_REDIRECT_URI, "")}'
