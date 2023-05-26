@@ -9,12 +9,23 @@ Requirements:
 * AniList client ID
 * AniList client secret
 * Enabled NSFW content on AniList account
+
+Attribution Notice:
+This script was translated from Modules/Get-AniListAuth.ps1 (yes, PowerShell script)
+on nattadasu's/Animanga-Initiative's animeManga-autoBackup repository under MIT License
+using OpenAI's ChatGPT-3 engine.
+
+*You might say, why would you attribute a PowerShell script on a Python project?*
+Simple, it was me who wrote that PowerShell script. ¯\_(ツ)_/¯
+
+Source:
+https://github.com/Animanga-Initiative/animeManga-autoBackup/blob/main/Modules/Get-AniListAuth.ps1
 """
 
 import asyncio
 import aiohttp
 import urllib.parse
-from modules.const import ANILIST_CLIENT_ID, ANILIST_CLIENT_SECRET, ANILIST_REDIRECT_URI, ANILIST_USERNAME
+from modules.const import ANILIST_CLIENT_ID, ANILIST_CLIENT_SECRET, ANILIST_REDIRECT_URI
 from datetime import datetime, timezone
 
 async def get_auth_code():
@@ -26,7 +37,7 @@ async def get_auth_code():
     redirect_uri_param = f'redirect_uri={urllib.parse.quote(ANILIST_REDIRECT_URI, "")}'
     response_param = "response_type=code"
     get_auth_code = f"{auth_endpoint}?{client_id_param}&{redirect_uri_param}&{response_param}"
-    print(f"Hello there, {ANILIST_USERNAME}! 👋\n")
+    print(f"Hello there! 👋\n")
     print("To authenticate with AniList, we need to open your browser to the AniList website.")
     print(f"Authentication URL:\n{get_auth_code}\n")
     print("We'll wait for your response 😉")

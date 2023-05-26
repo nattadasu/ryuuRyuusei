@@ -27,8 +27,6 @@ ANILIST_CLIENT_SECRET: Final[str] = ge("ANILIST_CLIENT_SECRET")
 """AniList client secret"""
 ANILIST_REDIRECT_URI: Final[str] = ge("ANILIST_REDIRECT_URI")
 """AniList redirect URI"""
-ANILIST_USERNAME: Final[str] = ge("ANILIST_USERNAME")
-"""AniList username"""
 ANILIST_ACCESS_TOKEN: Final[str] = ge("ANILIST_ACCESS_TOKEN")
 """AniList access token"""
 ANILIST_OAUTH_REFRESH: Final[str] = ge("ANILIST_OAUTH_REFRESH")
