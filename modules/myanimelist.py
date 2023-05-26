@@ -102,6 +102,7 @@ async def searchMalAnime(title: str) -> dict | list:
             d["node"]["media_type"] = "unknown"
     return data["data"]
 
+
 class MediaIsNsfw(Exception):
     """Media is NSFW exception"""
 

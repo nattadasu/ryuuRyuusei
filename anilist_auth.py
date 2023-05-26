@@ -25,8 +25,13 @@ https://github.com/Animanga-Initiative/animeManga-autoBackup/blob/main/Modules/G
 import asyncio
 import aiohttp
 import urllib.parse
-from modules.const import ANILIST_CLIENT_ID, ANILIST_CLIENT_SECRET, ANILIST_REDIRECT_URI
+from modules.const import (
+    ANILIST_CLIENT_ID,
+    ANILIST_CLIENT_SECRET,
+    ANILIST_REDIRECT_URI,
+)
 from datetime import datetime, timezone
+
 
 async def get_auth_code():
     """
@@ -42,6 +47,7 @@ async def get_auth_code():
     print(f"Authentication URL:\n{get_auth_code}\n")
     print("We'll wait for your response 😉")
 
+
 async def fetch_access_token(auth_code: str):
     token_endpoint = "https://anilist.co/api/v2/oauth/token"
     client_id_param = f"client_id={ANILIST_CLIENT_ID}"
@@ -52,9 +58,11 @@ async def fetch_access_token(auth_code: str):
         "client_id": ANILIST_CLIENT_ID,
         "client_secret": ANILIST_CLIENT_SECRET,
         "redirect_uri": ANILIST_REDIRECT_URI,
-        "code": auth_code
+        "code": auth_code,
     }
-    token_uri = f"{token_endpoint}?{client_id_param}&{client_secret_param}&{redirect_uri_param}"
+    token_uri = (
+        f"{token_endpoint}?{client_id_param}&{client_secret_param}&{redirect_uri_param}"
+    )
     headers = {"Accept": "application/json"}
     async with aiohttp.ClientSession() as session:
         async with session.post(token_uri, json=json_req, headers=headers) as response:
@@ -62,6 +70,7 @@ async def fetch_access_token(auth_code: str):
             now = int(datetime.now(tz=timezone.utc).timestamp())
             token["expires_in"] += now
             return token
+
 
 async def main():
     await get_auth_code()
@@ -76,6 +85,7 @@ async def main():
     print("ANILIST_OAUTH_EXPIRY=", end="")
     print(token["expires_in"])
 
+
 if __name__ == "__main__":
     try:
         asyncio.run(main())
@@ -83,4 +93,3 @@ if __name__ == "__main__":
         print("\n\nExiting...")
     except EOFError:
         print("\n\nExiting...")
-
