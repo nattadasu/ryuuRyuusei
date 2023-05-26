@@ -17,7 +17,7 @@ from interactions import (
     Embed,
     EmbedAuthor,
     EmbedField,
-    PartialEmoji
+    PartialEmoji,
 )
 
 from classes.anilist import AniListTrailerStruct
@@ -338,12 +338,14 @@ def convert_float_to_time(day_float: float) -> str:
 
     return result
 
+
 class PlatformErrType(Enum):
     """Error Type for Platform"""
 
     USER = EMOJI_USER_ERROR
     NSFW = EMOJI_FORBIDDEN
     SYSTEM = EUNER
+
 
 def platform_exception_embed(
     description: str,
