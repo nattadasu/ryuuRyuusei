@@ -5,6 +5,7 @@ import traceback
 from datetime import datetime as dtime
 from datetime import timezone as tz
 
+from aiohttp import ClientConnectorError
 import interactions as ipy
 from interactions.client import const as ipy_const
 
@@ -153,6 +154,10 @@ if __name__ == "__main__":
             print("[Sys] Bot stopped by user.")
             uptime()
             sys.exit(0)
+        except ClientConnectorError:
+            print("[Sys] Bot stopped due to connection error.")
+            uptime()
+            sys.exit(1)
         except Exception as ex:
             print("[Sys] Bot stopped due to error.")
             print(f"      {ex}")
