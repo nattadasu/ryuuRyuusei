@@ -4,7 +4,7 @@ from classes.nekomimidb import NekomimiGender
 from classes.randomorg import RandomOrg
 from classes.i18n import LanguageDict
 from modules.i18n import fetch_language_data, read_user_language
-from modules.myanimelist import lookupRandomAnime, malSubmit
+from modules.myanimelist import lookupRandomAnime, mal_submit
 from modules.nekomimidb import submit_nekomimi
 
 
@@ -26,6 +26,7 @@ class Random(ipy.Extension):
         sub_cmd_description="Get a random anime",
     )
     async def random_anime(self, ctx: ipy.SlashContext):
+        await ctx.defer()
         send = await ctx.send(
             embed=ipy.Embed(
                 title="Random Anime",
@@ -47,7 +48,7 @@ class Random(ipy.Extension):
                 ),
             )
         )
-        await malSubmit(ctx, anime)
+        await mal_submit(ctx, anime)
 
     @random.subcommand(
         group_name="nekomimi",

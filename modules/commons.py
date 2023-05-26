@@ -122,7 +122,7 @@ def get_random_seed(value: int = 9) -> int:
     return seed
 
 
-def genrate_search_embed(
+def generate_search_embed(
     language: str,
     mediaType: str,
     platform: str,

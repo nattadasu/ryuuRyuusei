@@ -4,10 +4,10 @@ from re import sub as rSub
 import interactions as ipy
 
 from modules.anilist import search_al_anime
-from modules.commons import genrate_search_embed, sanitize_markdown
+from modules.commons import generate_search_embed, sanitize_markdown
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
-from modules.myanimelist import malSubmit, searchMalAnime
+from modules.myanimelist import mal_submit, searchMalAnime
 from classes.i18n import LanguageDict
 
 
@@ -156,8 +156,9 @@ class Anime(ipy.Extension):
 
     @ipy.component_callback("mal_search")
     async def anime_search_data(self, ctx: ipy.ComponentContext) -> None:
+        await ctx.defer()
         ani_id: int = int(ctx.values[0])
-        await malSubmit(ctx, ani_id)
+        await mal_submit(ctx, ani_id)
 
     @anime.subcommand(
         sub_cmd_name="info",
@@ -172,7 +173,8 @@ class Anime(ipy.Extension):
         ],
     )
     async def anime_info(self, ctx: ipy.SlashContext, mal_id: int):
-        await malSubmit(ctx, mal_id)
+        await ctx.defer()
+        await mal_submit(ctx, mal_id)
 
 
 def setup(bot):

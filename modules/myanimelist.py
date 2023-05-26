@@ -455,7 +455,7 @@ async def generate_mal(
     return [embed, anime_stats]
 
 
-async def malSubmit(ctx: SlashContext, ani_id: int) -> None:
+async def mal_submit(ctx: SlashContext, ani_id: int) -> None:
     """
     Send anime information from MAL to the channel
 
