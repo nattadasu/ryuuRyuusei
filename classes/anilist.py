@@ -3,24 +3,25 @@ import json
 import os
 import time
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Literal
 
 from aiohttp import ClientSession
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
-from modules.const import USER_AGENT
+from modules.const import USER_AGENT, ANILIST_ACCESS_TOKEN, ANILIST_OAUTH_EXPIRY
 
 
 @dataclass
 class AniListTitleStruct:
     """AniList title dataclass"""
 
-    romaji: str | None
+    romaji: str | None = None
     """Romaji title"""
-    english: str | None
+    english: str | None = None
     """English title"""
-    native: str | None
+    native: str | None = None
     """Native title"""
 
 
@@ -28,11 +29,11 @@ class AniListTitleStruct:
 class AniListDateStruct:
     """AniList date dataclass"""
 
-    year: int | None
+    year: int | None = None
     """Year"""
-    month: int | None
+    month: int | None = None
     """Month"""
-    day: int | None
+    day: int | None = None
     """Day"""
 
 
@@ -40,11 +41,13 @@ class AniListDateStruct:
 class AniListImageStruct:
     """AniList image dataclass"""
 
-    large: str | None
+    medium: str | None = None
+    """Medium image URL"""
+    large: str | None = None
     """Large image URL"""
-    extraLarge: str | None
+    extraLarge: str | None = None
     """Extra large image URL"""
-    color: str | None
+    color: str | None = None
     """Average HEX ("#RRGGBB") color of the image"""
 
 
@@ -56,9 +59,9 @@ class AniListTagsStruct:
     """Tag ID"""
     name: str
     """Tag name"""
-    isMediaSpoiler: bool | None
+    isMediaSpoiler: bool | None = None
     """Whether the tag is a spoiler for this media"""
-    isAdult: bool | None
+    isAdult: bool | None = None
     """Whether the tag is only for adult 18+ media"""
 
 
@@ -66,9 +69,9 @@ class AniListTagsStruct:
 class AniListTrailerStruct:
     """AniList trailer dataclass"""
 
-    id: str | None
+    id: str | None = None
     """Trailer ID"""
-    site: str | None
+    site: str | None = None
     """Trailer site, commonly "youtube" or "dailymotion"."""
 
 
@@ -78,11 +81,11 @@ class AniListMediaStruct:
 
     id: int
     """Media ID"""
-    idMal: int | None
+    idMal: int | None = None
     """MyAnimeList ID"""
-    title: AniListTitleStruct | None
+    title: AniListTitleStruct | None = None
     """Media title object"""
-    isAdult: bool | None
+    isAdult: bool | None = None
     """Whether the media is 18+"""
     format: Literal[
         "TV",
@@ -95,38 +98,40 @@ class AniListMediaStruct:
         "MANGA",
         "NOVEL",
         "ONE_SHOT",
-    ] | None
+    ] | None = None
     """Media format"""
-    description: str | None
+    description: str | None = None
     """Media description"""
-    isAdult: bool | None
+    isAdult: bool | None = None
     """Whether the media is 18+"""
-    synonyms: list[str | None] | None
+    synonyms: list[str | None] | None = None
     """Media synonyms"""
-    startDate: AniListDateStruct | None
+    startDate: AniListDateStruct | None = None
     """Media start date"""
-    endDate: AniListDateStruct | None
+    endDate: AniListDateStruct | None = None
     """Media end date"""
     status: Literal[
         "FINISHED", "RELEASING", "NOT_YET_RELEASED", "CANCELLED", "HIATUS"
-    ] | None
+    ] | None = None
     """Media release status"""
-    coverImage: AniListImageStruct | None
+    coverImage: AniListImageStruct | None = None
     """Media cover/poster/visual key image object"""
-    bannerImage: str | None
+    bannerImage: str | None = None
     """Media banner image URL"""
-    genres: list[str | None] | None
+    genres: list[str | None] | None = None
     """Media genres"""
-    tags: list[AniListTagsStruct] | None
+    tags: list[AniListTagsStruct] | None = None
     """Media tags/themes"""
-    averageScore: int | None
+    averageScore: int | None = None
     """Media weighted average score"""
-    meanScore: int | None
+    meanScore: int | None = None
     """Media mean score"""
-    stats: dict[str, list[dict[str, Any] | None]] | None
+    stats: dict[str, list[dict[str, Any] | None]] | None = None
     """Media statistics, doesn't set as dataclass because it's a nested dictionary"""
-    trailer: AniListTrailerStruct | None
+    trailer: AniListTrailerStruct | None = None
     """Media trailer object"""
+    siteUrl: str | None = None
+    """Media AniList URL"""
     chapters: int | None = None
     """Manga chapters"""
     volumes: int | None = None
@@ -136,6 +141,102 @@ class AniListMediaStruct:
     duration: int | None = None
     """Anime episode duration in minutes"""
 
+@dataclass
+class AniListStatusBase:
+    """Base AniList status dataclass"""
+
+    status: Literal["CURRENT", "PLANNING", "COMPLETED", "DROPPED", "PAUSED", "REPEATING"] | None = None
+    """Status"""
+    count: int | None = None
+    """Status count"""
+
+@dataclass
+class AniListStatisticBase:
+    """Base AniList statistic dataclass"""
+
+    count: int | None = None
+    """Statistic count"""
+    meanScore: int | None = None
+    """Statistic mean score"""
+    statuses: list[AniListStatusBase] | None = None
+    """Statistic statuses"""
+
+@dataclass
+class AniListAnimeStatistic(AniListStatisticBase):
+    """AniList anime statistic dataclass"""
+
+    minutesWatched: int | None = None
+    """Minutes watched"""
+    episodesWatched: int | None = None
+    """Episodes watched"""
+
+@dataclass
+class AniListMangaStatistic(AniListStatisticBase):
+    """AniList manga statistic dataclass"""
+
+    chaptersRead: int | None = None
+    """Chapters read"""
+    volumesRead: int | None = None
+    """Volumes read"""
+
+
+@dataclass
+class AniListUserStatisticStruct:
+    """AniList user statistic dataclass"""
+
+    anime: AniListAnimeStatistic | None = None
+    """Anime statistic object"""
+    manga: AniListMangaStatistic | None = None
+    """Manga statistic object"""
+
+@dataclass
+class AniListUserMediaNode:
+    """AniList user media node dataclass"""
+
+    nodes: list[AniListMediaStruct] | None = None
+
+
+@dataclass
+class AniListUserFavoriteStruct:
+    """AniList user favorite dataclass"""
+
+    anime: AniListUserMediaNode | None = None
+    """Anime favorites"""
+    manga: AniListUserMediaNode | None = None
+    """Manga favorites"""
+    characters: None = None
+    """Character favorites"""
+    staff: None = None
+    """Staff favorites"""
+    studios: None = None
+    """Studio favorites"""
+
+@dataclass
+class AniListUserStruct:
+    """AniList user dataclass"""
+
+    id: int
+    """User ID"""
+    name: str
+    """User name"""
+    about: str | None = None
+    """User about/bio"""
+    siteUrl: str | None = None
+    """User AniList URL"""
+    avatar: AniListImageStruct | None = None
+    """User avatar image object"""
+    bannerImage: str | None = None
+    """User banner image URL"""
+    donatorTier: int | None = None
+    """User donator tier"""
+    donatorBadge: str | None = None
+    """User donator badge"""
+    createdAt: datetime | None = None
+    """User creation date"""
+    statistics: AniListUserStatisticStruct | None = None
+    """User statistics object"""
+    favourites: AniListUserFavoriteStruct | None = None
+
 
 class AniList:
     """AniList Asynchronous API Wrapper"""
@@ -144,12 +245,23 @@ class AniList:
         """Initialize the AniList API Wrapper"""
         self.base_url = "https://graphql.anilist.co"
         self.session = None
+        self.headers = None
+        self.access_token = ANILIST_ACCESS_TOKEN
         self.cache_directory = "cache/anilist"
         self.cache_expiration_time = 86400  # 1 day in seconds
 
     async def __aenter__(self):
         """Create the session"""
-        self.session = ClientSession(headers={"User-Agent": USER_AGENT})
+        self.headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": USER_AGENT,
+        }
+        if int(ANILIST_OAUTH_EXPIRY) > datetime.now(tz=timezone.utc).timestamp():
+            self.headers["Authorization"] = f"Bearer {self.access_token}"
+        else:
+            print("[API] [AniList] [WARNING] Access token has expired, please refresh it, otherwise bot won't show NSFW content")
+        self.session = ClientSession()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -167,25 +279,76 @@ class AniList:
         MANGA = "MANGA"
 
     @staticmethod
-    def dict_to_dataclass(data: dict):
+    def _media_dict_to_dataclass(data: dict):
         """Format returned dictionary from AniList to its proper dataclass"""
         data["title"] = AniListTitleStruct(**data["title"]) if data["title"] else None
-        data["startDate"] = (
-            AniListDateStruct(**data["startDate"]) if data["startDate"] else None
-        )
-        data["endDate"] = (
-            AniListDateStruct(**data["endDate"]) if data["endDate"] else None
-        )
-        data["coverImage"] = (
-            AniListImageStruct(**data["coverImage"]) if data["coverImage"] else None
-        )
-        data["trailer"] = (
-            AniListTrailerStruct(**data["trailer"]) if data["trailer"] else None
-        )
-        if data["tags"] is not None:
-            for tag in data["tags"]:
-                tag = AniListTagsStruct(**tag) if tag else None
+        if data.get("startDate"):
+            data["startDate"] = (
+                AniListDateStruct(**data["startDate"]) if data["startDate"] else None
+            )
+        if data.get("endDate"):
+            data["endDate"] = (
+                AniListDateStruct(**data["endDate"]) if data["endDate"] else None
+            )
+        if data.get("coverImage"):
+            data["coverImage"] = (
+                AniListImageStruct(**data["coverImage"]) if data["coverImage"] else None
+            )
+        if data.get("trailer"):
+            data["trailer"] = (
+                AniListTrailerStruct(**data["trailer"]) if data["trailer"] else None
+            )
+        if data.get("tags"):
+            if data["tags"] is not None:
+                for tag in data["tags"]:
+                    tag = AniListTagsStruct(**tag) if tag else None
         return AniListMediaStruct(**data)
+
+    def _user_dict_to_dataclass(self, data: dict) -> AniListUserStruct:
+        """
+        Format returned dictionary from AniList to its proper dataclass
+
+        Args:
+            data (dict): Dictionary to format
+
+        Returns:
+            AniListUserStruct: Formatted dataclass
+        """
+        data["avatar"] = (
+            AniListImageStruct(**data["avatar"]) if data["avatar"] else None
+        )
+        data["createdAt"] = datetime.fromtimestamp(data["createdAt"], timezone.utc) if data["createdAt"] else None
+        if data["statistics"]["anime"]:
+            data["statistics"]["anime"]["statuses"] = [
+                AniListStatusBase(**status) for status in data["statistics"]["anime"]["statuses"]
+            ]
+            data["statistics"]["anime"] = AniListAnimeStatistic(**data["statistics"]["anime"])
+        if data["statistics"]["manga"]:
+            data["statistics"]["manga"]["statuses"] = [
+                AniListStatusBase(**status) for status in data["statistics"]["manga"]["statuses"]
+            ]
+            data["statistics"]["manga"] = AniListMangaStatistic(**data["statistics"]["manga"])
+        data["statistics"] = (
+            AniListUserStatisticStruct(**data["statistics"])
+            if data["statistics"]
+            else None
+        )
+        if data["favourites"]["anime"]:
+            data["favourites"]["anime"]["nodes"] = [
+                self._media_dict_to_dataclass(media) for media in data["favourites"]["anime"]["nodes"]
+            ]
+            data["favourites"]["anime"] = AniListUserMediaNode(**data["favourites"]["anime"])
+        if data["favourites"]["manga"]:
+            data["favourites"]["manga"]["nodes"] = [
+                self._media_dict_to_dataclass(media) for media in data["favourites"]["manga"]["nodes"]
+            ]
+            data["favourites"]["manga"] = AniListUserMediaNode(**data["favourites"]["manga"])
+        data["favourites"] = (
+            AniListUserFavoriteStruct(**data["favourites"])
+            if data["favourites"]
+            else None
+        )
+        return AniListUserStruct(**data)
 
     async def nsfw_check(
         self,
@@ -247,7 +410,7 @@ class AniList:
         cache_file_path = self.get_cache_file_path(f"anime/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
-            return self.dict_to_dataclass(cached_data)
+            return self._media_dict_to_dataclass(cached_data)
         gqlquery = f"""query {{
     Media(id: {media_id}, type: ANIME) {{
         id
@@ -307,7 +470,7 @@ class AniList:
             if response.status == 200:
                 data = await response.json()
                 self.write_data_to_cache(data["data"]["Media"], cache_file_path)
-                return self.dict_to_dataclass(data["data"]["Media"])
+                return self._media_dict_to_dataclass(data["data"]["Media"])
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
@@ -324,7 +487,7 @@ class AniList:
         cache_file_path = self.get_cache_file_path(f"manga/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
-            return self.dict_to_dataclass(cached_data)
+            return self._media_dict_to_dataclass(cached_data)
         gqlquery = f"""query {{
     Media(id: {media_id}, type: MANGA) {{
         id
@@ -384,11 +547,11 @@ class AniList:
             if response.status == 200:
                 data = await response.json()
                 self.write_data_to_cache(data["data"]["Media"], cache_file_path)
-                return self.dict_to_dataclass(data["data"]["Media"])
+                return self._media_dict_to_dataclass(data["data"]["Media"])
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def user(self, username: str, return_id: bool = False) -> dict:
+    async def user(self, username: str, return_id: bool = False) -> AniListUserStruct:
         """
         Get user information by their username
 
@@ -400,13 +563,14 @@ class AniList:
             ProviderHttpError: Raised when the HTTP request fails
 
         Returns:
-            dict: The user information
+            AniListUserStruct: The user information
         """
         self.cache_expiration_time = 43200
         cache_file_path = self.get_cache_file_path(f"user/{username}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None and not return_id:
-            return cached_data
+            formatted_data = self._user_dict_to_dataclass(cached_data)
+            return formatted_data
         if return_id:
             gqlquery = f"""query {{
     User(name: "{username}") {{
@@ -429,6 +593,7 @@ class AniList:
                 count
                 meanScore
                 minutesWatched
+                episodesWatched
                 statuses{{
                     count
                     status
@@ -438,9 +603,34 @@ class AniList:
                 count
                 meanScore
                 chaptersRead
+                volumesRead
                 statuses{{
                     count
                     status
+                }}
+            }}
+        }}
+        favourites {{
+            anime(perPage:5){{
+                nodes {{
+                    id
+                    title {{
+                        romaji
+                        english
+                        native
+                    }}
+                    siteUrl
+                }}
+            }}
+            manga(perPage:5){{
+                nodes {{
+                    id
+                    title {{
+                        romaji
+                        english
+                        native
+                    }}
+                    siteUrl
                 }}
             }}
         }}
@@ -457,7 +647,8 @@ class AniList:
                 data = await response.json()
                 if not return_id:
                     self.write_data_to_cache(data["data"]["User"], cache_file_path)
-                return data["data"]["User"]
+                formatted_data = self._user_dict_to_dataclass(data["data"]["User"])
+                return formatted_data
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 

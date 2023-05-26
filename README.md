@@ -178,7 +178,7 @@ If you have any questions, feel free to join the
 
 > Shows your profile information from supported platforms.
 
-- ⌚ `/profile anilist` - Get your AniList profile
+- `/profile anilist` - Get your AniList profile
 - `/profile discord` - Get your Discord profile
 - `/profile lastfm` - Get your Last.fm profile
 - `/profile myanimelist` - Get your MyAnimeList profile
