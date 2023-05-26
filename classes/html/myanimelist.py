@@ -68,51 +68,59 @@ class HtmlMyAnimeList:
         soup = BeautifulSoup(html, "html5lib")
         report_link = soup.find("a", {"class": "header-right mt4 mr0"}).get("href")
         user_id = re.search(r"id=(\d+)", report_link).group(1)
-        image_div = soup.find('div', class_='user-image mb8')
+        image_div = soup.find("div", class_="user-image mb8")
         if image_div:
-            image = image_div.find('img')
+            image = image_div.find("img")
             if image:
-                image = image.get('data-src')
+                image = image.get("data-src")
             else:
                 image = None
         else:
             image = None
 
         # Extract the relevant information
-        last_online = soup.find('span', class_='user-status-title', text='Last Online')
+        last_online = soup.find("span", class_="user-status-title", text="Last Online")
         if last_online:
-            last_online = last_online.find_next('span', class_='user-status-data').text.strip()
-            if last_online == 'Now':
+            last_online = last_online.find_next(
+                "span", class_="user-status-data"
+            ).text.strip()
+            if last_online == "Now":
                 last_online = datetime.now(timezone.utc)
         else:
             last_online = None
 
-        gender = soup.find('span', class_='user-status-title', text='Gender')
+        gender = soup.find("span", class_="user-status-title", text="Gender")
         if gender:
-            gender = gender.find_next('span', class_='user-status-data').text.strip()
+            gender = gender.find_next("span", class_="user-status-data").text.strip()
         else:
             gender = None
 
-        birthday = soup.find('span', class_='user-status-title', text='Birthday')
+        birthday = soup.find("span", class_="user-status-title", text="Birthday")
         if birthday:
-            birthday = birthday.find_next('span', class_='user-status-data').text.strip()
+            birthday = birthday.find_next(
+                "span", class_="user-status-data"
+            ).text.strip()
             try:
-                birthday = datetime.strptime(birthday, '%b %d, %Y').replace(tzinfo=timezone.utc)
+                birthday = datetime.strptime(birthday, "%b %d, %Y").replace(
+                    tzinfo=timezone.utc
+                )
             except ValueError:
                 birthday = None
         else:
             birthday = None
 
-        location = soup.find('span', class_='user-status-title', text='Location')
+        location = soup.find("span", class_="user-status-title", text="Location")
         if location:
-            location = location.find_next('span', class_='user-status-data').text.strip()
+            location = location.find_next(
+                "span", class_="user-status-data"
+            ).text.strip()
         else:
             location = None
 
-        joined = soup.find('span', class_='user-status-title', text='Joined')
+        joined = soup.find("span", class_="user-status-title", text="Joined")
         if joined:
-            joined = joined.find_next('span', class_='user-status-data').text.strip()
-            joined = datetime.strptime(joined, '%b %d, %Y').replace(tzinfo=timezone.utc)
+            joined = joined.find_next("span", class_="user-status-data").text.strip()
+            joined = datetime.strptime(joined, "%b %d, %Y").replace(tzinfo=timezone.utc)
         else:
             joined = None
 
@@ -121,12 +129,8 @@ class HtmlMyAnimeList:
             username=username,
             url=self.base_url + f"profile/{username}",
             images=JikanImages(
-                jpg=JikanImageStruct(
-                    image_url=image
-                ),
-                webp=JikanImageStruct(
-                    image_url=image
-                ),
+                jpg=JikanImageStruct(image_url=image),
+                webp=JikanImageStruct(image_url=image),
             ),
             last_online=last_online,
             birthday=birthday,
