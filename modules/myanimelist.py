@@ -110,7 +110,7 @@ class MediaIsNsfw(Exception):
 async def generate_mal(
     entry_id: int,
     is_nsfw: bool = False,
-    al_dict: AniListMediaStruct | None = None,
+    anilist_data: AniListMediaStruct | None = None,
     anime_api: AnimeApiAnime | None = None,
 ) -> list[Embed, Button]:
     """
@@ -119,7 +119,7 @@ async def generate_mal(
     Args:
         entry_id (int): MAL ID
         is_nsfw (bool, optional): NSFW status. Defaults to False.
-        al_dict (AniListMediaStruct, optional): AniList data. Defaults to None.
+        anilist_data (AniListMediaStruct, optional): AniList data. Defaults to None.
         anime_api (dict, optional): Anime API data. Defaults to None.
 
     Raises:
@@ -132,7 +132,7 @@ async def generate_mal(
     async with JikanApi() as jikan:
         j = await jikan.get_anime_data(entry_id)
 
-    al = al_dict
+    al = anilist_data
 
     msg_for_thread = warnThreadCW if is_nsfw is not None else ""
 
@@ -180,7 +180,7 @@ async def generate_mal(
     if not al:
 
         class al:
-            coverImage = AniListImageStruct(extraLarge=None, large=None, color=None)
+            coverImage = AniListImageStruct()
             bannerImage = None
 
     alPost = al.coverImage.extraLarge
@@ -487,9 +487,7 @@ async def mal_submit(ctx: SlashContext, ani_id: int) -> None:
 
     try:
         async with AnimeApi() as aniapi:
-            aniApi = await aniapi.get_relation(
-                media_id=ani_id, platform=aniapi.AnimeApiPlatforms.MYANIMELIST
-            )
+            aniApi = await aniapi.get_relation(media_id=ani_id, platform=aniapi.AnimeApiPlatforms.MYANIMELIST)
 
         if aniApi.anilist is not None:
             async with AniList() as al:
@@ -498,7 +496,7 @@ async def mal_submit(ctx: SlashContext, ani_id: int) -> None:
                 if alData.trailer and alData.trailer.site == "youtube":
                     trailer.append(generate_trailer(data=alData))
         else:
-            alData = {}
+            alData = None
 
         dcEm, buttons = await generate_mal(ani_id, is_nsfw=nsfw_bool, anilist_data=alData, anime_api=aniApi)
         trailer.extend(buttons)
