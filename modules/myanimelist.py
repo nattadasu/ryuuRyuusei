@@ -7,7 +7,6 @@ This module contains modules that are related to MyAnimeList or Jikan API.
 import html
 import re
 from datetime import datetime, timezone
-from enum import Enum
 from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
@@ -102,52 +101,6 @@ async def searchMalAnime(title: str) -> dict | list:
         if "media_type" not in d["node"]:
             d["node"]["media_type"] = "unknown"
     return data["data"]
-
-
-class MalErrType(Enum):
-    """MyAnimeList Error Type"""
-
-    USER = EMOJI_USER_ERROR
-    NSFW = EMOJI_FORBIDDEN
-    SYSTEM = EMOJI_UNEXPECTED_ERROR
-
-
-def mal_exception_embed(
-    description: str,
-    error: str,
-    lang_dict: dict,
-    error_type: MalErrType | str = MalErrType.SYSTEM,
-    color: hex = 0xFF0000,
-) -> Embed:
-    """
-    Generate an embed for MyAnimeList exceptions
-
-    Args:
-        description (str): Description of the error
-        error (str): Error message
-        lang_dict (dict): Language dictionary
-        error_type (MalErrType | str, optional): Error type. Defaults to MalErrType.SYSTEM.
-        color (hex, optional): Embed color. Defaults to 0xFF0000.
-
-    Returns:
-        Embed: Embed object
-    """
-    l_ = lang_dict
-    if isinstance(error_type, MalErrType):
-        error_type = error_type.value
-    else:
-        error_type = str(error_type)
-    emoji = re.sub(r"(<:.*:)(\d+)(>)", r"\2", error_type)
-    dcEm = Embed(
-        color=color,
-        title=l_["commons"]["error"],
-        description=description,
-        fields=[EmbedField(name=l_["commons"]["reason"], value=error, inline=False)],
-    )
-    dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
-
-    return dcEm
-
 
 class MediaIsNsfw(Exception):
     """Media is NSFW exception"""

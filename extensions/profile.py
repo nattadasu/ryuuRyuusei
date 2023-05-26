@@ -17,7 +17,7 @@ from modules.commons import (
 )
 from modules.discord import generate_discord_profile_embed
 from modules.i18n import fetch_language_data, read_user_language
-from modules.myanimelist import MalErrType, mal_exception_embed
+from modules.commons import PlatformErrType, platform_exception_embed
 
 
 class Profile(ipy.Extension):
@@ -108,9 +108,9 @@ class Profile(ipy.Extension):
         l_: LanguageDict = fetch_language_data("en_US", True)
 
         if mal_username and user:
-            embed = mal_exception_embed(
+            embed = platform_exception_embed(
                 description="You can't use both `user` and `mal_username` options at the same time!",
-                error_type=MalErrType.USER,
+                error_type=PlatformErrType.USER,
                 lang_dict=l_,
                 error="User and mal_username options used at the same time",
             )
@@ -129,9 +129,9 @@ class Profile(ipy.Extension):
                 mal_username = None
 
         if mal_username is None:
-            embed = mal_exception_embed(
+            embed = platform_exception_embed(
                 description=f"<@!{user.id}> haven't registered the MyAnimeList account to the bot yet!\nUse `/register` to register",
-                error_type=MalErrType.USER,
+                error_type=PlatformErrType.USER,
                 lang_dict=l_,
                 error="User hasn't registered their MAL account yet",
             )
@@ -142,7 +142,7 @@ class Profile(ipy.Extension):
             async with JikanApi() as jikan:
                 user_data = await jikan.get_user_data(username=mal_username)
         except JikanException as e:
-            embed = mal_exception_embed(
+            embed = platform_exception_embed(
                 description="Jikan API returned an error",
                 error_type=e.status_code,
                 lang_dict=l_,
@@ -374,9 +374,15 @@ class Profile(ipy.Extension):
         options=[
             ipy.SlashCommandOption(
                 name="user",
+                description="User to get profile information of",
+                type=ipy.OptionType.USER,
+                required=False,
+            ),
+            ipy.SlashCommandOption(
+                name="lfm_username",
                 description="Username on Last.fm to get profile information of",
                 type=ipy.OptionType.STRING,
-                required=True,
+                required=False,
             ),
             ipy.SlashCommandOption(
                 name="maximum",
@@ -388,16 +394,52 @@ class Profile(ipy.Extension):
             ),
         ],
     )
-    async def profile_lastfm(self, ctx: ipy.SlashContext, user: str, maximum: int = 9):
+    async def profile_lastfm(
+        self,
+        ctx: ipy.SlashContext,
+        user: ipy.Member | ipy.User = None,
+        lfm_username: str = None,
+        maximum: int = 9
+    ):
         await ctx.defer()
         ul = read_user_language(ctx)
         l_: LanguageDict = fetch_language_data(ul, useRaw=True)
+
+        if lfm_username and user:
+            embed = generate_commons_except_embed(
+                description="You can't use both `user` and `lfm_username` options at the same time!",
+                error_type=PlatformErrType.USER,
+                lang_dict=l_,
+                error="User and lfm_username options used at the same time",
+            )
+            await ctx.send(embed=embed)
+            return
+
+        if user is None:
+            user = ctx.author
+
+        if lfm_username is None:
+            try:
+                async with UserDatabase() as db:
+                    user_data = await db.get_user_data(discord_id=user.id)
+                    lfm_username = user_data.lastfm_username
+            except DatabaseException:
+                lfm_username = None
+
+            if lfm_username is None:
+                embed = platform_exception_embed(
+                    description=f"<@!{user.id}> haven't linked the Last.fm account to the bot yet!\nUse `/platform link` to link",
+                    error_type=PlatformErrType.USER,
+                    lang_dict=l_,
+                    error="User hasn't link their account yet",
+                )
+                await ctx.send(embed=embed)
+                return
+
         try:
             async with LastFM() as lfm:
-                profile: LastFMUserStruct = await lfm.get_user_info(user)
-                tracks: list[LastFMTrackStruct] = await lfm.get_user_recent_tracks(
-                    user, maximum
-                )
+                profile: LastFMUserStruct = await lfm.get_user_info(lfm_username)
+                tracks: list[LastFMTrackStruct] = await lfm.get_user_recent_tracks(lfm_username, maximum)
         except ProviderHttpError as e:
             embed = generate_commons_except_embed(
                 description=e.message,
@@ -407,54 +449,22 @@ class Profile(ipy.Extension):
             await ctx.send(embed=embed)
             return
 
-        fields = []
-        if maximum >= 1:
-            rpt = "Recently played tracks"
-            rptDesc = f"Here are the recently played tracks of {user} on Last.fm"
-            fields.append(ipy.EmbedField(name=rpt, value=rptDesc, inline=False))
-
-        for tr in tracks:
-            tr.name = sanitize_markdown(tr.name)
-            tr.artist.name = sanitize_markdown(tr.artist.name)
-            tr.album.name = sanitize_markdown(tr.album.name)
-            scu = tr.url
-            scus = scu.split("/")
-            # assumes the url as such: https://www.last.fm/music/Artist/_/Track
-            # so, the artist is at index 4, and track is at index 6
-            # in index 4 and 6, encode the string to be url compatible with percent encoding
-            # then, join the list back to a string
-
-            scus[4] = urlquote(scus[4])
-            scus[6] = urlquote(scus[6])
-            scu = "/".join(scus)
-            scu = scu.replace("%25", "%")
-
-            if tr.nowplaying is True:
-                title = f"▶️ {tr.name}"
-                dt = "*Currently playing*"
-            else:
-                title = tr.name
-                dt = tr.date.epoch
-                dt = f"<t:{dt}:R>"
-            fields += [
-                ipy.EmbedField(
-                    name=title,
-                    value=f"""{tr.artist.name}
-{tr.album.name}
-{dt}, [Link]({tr.url})""",
-                    inline=True,
-                )
-            ]
+        fields = [
+            ipy.EmbedField(
+                name=f"▶️ {sanitize_markdown(tr.name)}" if tr.nowplaying else sanitize_markdown(tr.name),
+                value=f"""{sanitize_markdown(tr.artist.name)}
+{sanitize_markdown(tr.album.name)}
+{f"<t:{tr.date.epoch}:R>" if not tr.nowplaying else "*Currently playing*"}, [Link]({self.quote_lastfm_url(tr.url)})""",
+                inline=True
+            )
+            for tr in tracks
+        ]
 
         img = profile.image[-1].url
         lfmpro = profile.subscriber
-        badge = "🌟 " if lfmpro is True else ""
-        icShine = f"{badge}Last.FM Pro User\n" if lfmpro is True else ""
-        realName = (
-            "Real name: " + profile.realname + "\n"
-            if profile.realname not in [None, ""]
-            else ""
-        )
+        badge = "🌟 " if lfmpro else ""
+        icShine = f"{badge}Last.FM Pro User\n" if lfmpro else ""
+        realName = f"Real name: {profile.realname}\n" if profile.realname else ""
 
         embed = ipy.Embed(
             author=ipy.EmbedAuthor(
@@ -472,6 +482,24 @@ Total scrobbles: {profile.playcount}
         )
         embed.set_thumbnail(url=img)
         await ctx.send(embed=embed)
+
+    @staticmethod
+    def quote_lastfm_url(url: str) -> str:
+        """
+        Quote the Last.fm URL to be used in embed
+
+        Args:
+            url (str): URL to be quoted
+
+        Returns:
+            str: Quoted URL
+        """
+        scus = url.split("/")
+        scus[4] = urlquote(scus[4])
+        scus[6] = urlquote(scus[6])
+        quoted_url = "/".join(scus)
+        quoted_url = quoted_url.replace("%25", "%")
+        return quoted_url
 
 
 def setup(bot):

@@ -4,26 +4,27 @@
 This module contains the common functions used by the other modules.
 """
 
+import re
 from datetime import timedelta
-
+from enum import Enum
 from re import sub as rSub
 from uuid import uuid4 as id4
 
 from interactions import (
+    AutoShardedClient,
     Button,
     ButtonStyle,
-    AutoShardedClient,
     Embed,
     EmbedAuthor,
     EmbedField,
-    PartialEmoji,
+    PartialEmoji
 )
 
 from classes.anilist import AniListTrailerStruct
 from classes.i18n import LanguageDict
-from modules.const import BOT_TOKEN
+from modules.const import BOT_TOKEN, EMOJI_FORBIDDEN
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
-from modules.const import LANGUAGE_CODE
+from modules.const import EMOJI_USER_ERROR, LANGUAGE_CODE
 from modules.i18n import fetch_language_data
 
 deflang: LanguageDict = fetch_language_data(LANGUAGE_CODE, useRaw=True)
@@ -336,3 +337,46 @@ def convert_float_to_time(day_float: float) -> str:
     result = f"{months}{days} days, {hours} hours, {minutes} minutes"
 
     return result
+
+class PlatformErrType(Enum):
+    """Error Type for Platform"""
+
+    USER = EMOJI_USER_ERROR
+    NSFW = EMOJI_FORBIDDEN
+    SYSTEM = EUNER
+
+def platform_exception_embed(
+    description: str,
+    error: str,
+    lang_dict: dict,
+    error_type: PlatformErrType | str = PlatformErrType.SYSTEM,
+    color: hex = 0xFF0000,
+) -> Embed:
+    """
+    Generate an embed of exception reason for platform.
+
+    Args:
+        description (str): Description of the error
+        error (str): Error message
+        lang_dict (dict): Language dictionary
+        error_type (PlatformErrType | str, optional): Error type. Defaults to PlatformErrType.SYSTEM.
+        color (hex, optional): Embed color. Defaults to 0xFF0000.
+
+    Returns:
+        Embed: Embed object
+    """
+    l_ = lang_dict
+    if isinstance(error_type, PlatformErrType):
+        error_type = error_type.value
+    else:
+        error_type = str(error_type)
+    emoji = re.sub(r"(<:.*:)(\d+)(>)", r"\2", error_type)
+    dcEm = Embed(
+        color=color,
+        title=l_["commons"]["error"],
+        description=description,
+        fields=[EmbedField(name=l_["commons"]["reason"], value=error, inline=False)],
+    )
+    dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
+
+    return dcEm
