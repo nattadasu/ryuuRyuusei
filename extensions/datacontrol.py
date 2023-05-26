@@ -84,7 +84,9 @@ class DataControl(ipy.Extension):
         embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
-    async def _check_if_registered(self, ctx: ipy.ComponentContext | ipy.SlashContext) -> bool:
+    async def _check_if_registered(
+        self, ctx: ipy.ComponentContext | ipy.SlashContext
+    ) -> bool:
         """
         Check if the user is registered
 
@@ -149,7 +151,9 @@ class DataControl(ipy.Extension):
             ),
         ]
 
-        overwrite_prompt = "4. Copy the following text and overwrite/paste it into the Location field"
+        overwrite_prompt = (
+            "4. Copy the following text and overwrite/paste it into the Location field"
+        )
 
         with Verificator() as verify:
             # check if user still have pending verification
@@ -162,14 +166,9 @@ class DataControl(ipy.Extension):
                         value=f"```\n{is_pending.uuid}\n```**Note:** Your verification code expires <t:{remaining_time}:R>.",
                     )
                 )
-                epoch = datetime.fromtimestamp(
-                    is_pending.epoch_time, tz=timezone.utc
-                )
+                epoch = datetime.fromtimestamp(is_pending.epoch_time, tz=timezone.utc)
             else:
-                generate = verify.save_user_uuid(
-                    ctx.author.id,
-                    mal_username
-                )
+                generate = verify.save_user_uuid(ctx.author.id, mal_username)
                 remaining_time = generate.epoch_time + 43200
                 fields.append(
                     ipy.EmbedField(
@@ -177,9 +176,7 @@ class DataControl(ipy.Extension):
                         value=f"```\n{generate.uuid}\n```**Note:** Your verification code expires <t:{remaining_time}:R>.",
                     )
                 )
-                epoch = datetime.fromtimestamp(
-                    generate.epoch_time, tz=timezone.utc
-                )
+                epoch = datetime.fromtimestamp(generate.epoch_time, tz=timezone.utc)
 
         fields += [
             ipy.EmbedField(
