@@ -1,6 +1,4 @@
-"""
-# Urban Dictionary Unofficial API Wrapper
-"""
+"""# Urban Dictionary Unofficial API Wrapper"""
 
 import aiohttp
 from dataclasses import dataclass
