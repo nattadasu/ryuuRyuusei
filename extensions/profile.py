@@ -265,9 +265,8 @@ class Profile(ipy.Extension):
                     ani_fav_top = ani_favs[:5]
                     # generate string
                     for index, anime in enumerate(ani_fav_top):
-                        # trim title up to 200 characters
-                        if len(anime.title) > 200:
-                            anime.title = anime.title[:197] + "..."
+                        if len(anime.title) >= 100:
+                            anime.title = anime.title[:97] + "..."
                         split = anime.url.split("/")
                         if split[-1].isdigit() is False:
                             anime.url = "/".join(split[:-1])
@@ -302,8 +301,8 @@ class Profile(ipy.Extension):
                 if len(man_favs) > 0:
                     man_fav_top = man_favs[:5]
                     for index, manga in enumerate(man_fav_top):
-                        if len(manga.title) > 200:
-                            manga.title = manga.title[:197] + "..."
+                        if len(manga.title) >= 100:
+                            manga.title = manga.title[:97] + "..."
                         split = manga.url.split("/")
                         if split[-1].isdigit() is False:
                             manga.url = "/".join(split[:-1])
@@ -452,7 +451,7 @@ class Profile(ipy.Extension):
 
         fields = [
             ipy.EmbedField(
-                name=f"▶️ {sanitize_markdown(tr.name)}" if tr.nowplaying else sanitize_markdown(tr.name),
+                name=f"{'▶️' if tr.nowplaying else ''} {self.trim_lastfm_title(tr.name)}",
                 value=f"""{sanitize_markdown(tr.artist.name)}
 {sanitize_markdown(tr.album.name)}
 {f"<t:{tr.date.epoch}:R>" if not tr.nowplaying else "*Currently playing*"}, [Link]({self.quote_lastfm_url(tr.url)})""",
@@ -483,6 +482,22 @@ Total scrobbles: {profile.playcount}
         )
         embed.set_thumbnail(url=img)
         await ctx.send(embed=embed)
+
+    @staticmethod
+    def trim_lastfm_title(title: str) -> str:
+        """
+        Trim the title to be used in embed up to 100 chars
+
+        Args:
+            title (str): Title to be trimmed
+
+        Returns:
+            str: Trimmed title
+        """
+        if len(title) >= 100:
+            title = title[:97] + "..."
+        title = sanitize_markdown(title)
+        return title
 
     @staticmethod
     def quote_lastfm_url(url: str) -> str:
@@ -739,6 +754,8 @@ Total scrobbles: {profile.playcount}
                 ani_fav_list = ""
                 if ani_favs:
                     for index, fav in enumerate(ani_favs):
+                        if len(fav.title.romaji) >= 100:
+                            fav.title.romaji = fav.title.romaji[:97] + "..."
                         ani_fav_list += f"{index + 1}. [{fav.title.romaji}]({fav.siteUrl})\n"
                 embed.add_field(
                     name="🌟 Top 5 Favorite Anime",
@@ -769,6 +786,8 @@ Total scrobbles: {profile.playcount}
                 manga_fav_list = ""
                 if manga_favs:
                     for index, fav in enumerate(manga_favs):
+                        if len(fav.title.romaji) >= 100:
+                            fav.title.romaji = fav.title.romaji[:97] + "..."
                         manga_fav_list += f"{index + 1}. [{fav.title.romaji}]({fav.siteUrl})\n"
                 embed.add_field(
                     name="🌟 Top 5 Favorite Manga",
