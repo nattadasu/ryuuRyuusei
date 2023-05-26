@@ -41,9 +41,13 @@ async def get_auth_code():
     client_id_param = f"client_id={ANILIST_CLIENT_ID}"
     redirect_uri_param = f'redirect_uri={urllib.parse.quote(ANILIST_REDIRECT_URI, "")}'
     response_param = "response_type=code"
-    get_auth_code = f"{auth_endpoint}?{client_id_param}&{redirect_uri_param}&{response_param}"
+    get_auth_code = (
+        f"{auth_endpoint}?{client_id_param}&{redirect_uri_param}&{response_param}"
+    )
     print(f"Hello there! 👋\n")
-    print("To authenticate with AniList, we need to open your browser to the AniList website.")
+    print(
+        "To authenticate with AniList, we need to open your browser to the AniList website."
+    )
     print(f"Authentication URL:\n{get_auth_code}\n")
     print("We'll wait for your response 😉")
 

@@ -753,7 +753,9 @@ Total scrobbles: {profile.playcount}
                     for index, fav in enumerate(ani_favs):
                         if len(fav.title.romaji) >= 100:
                             fav.title.romaji = fav.title.romaji[:97] + "..."
-                        ani_fav_list += f"{index + 1}. [{fav.title.romaji}]({fav.siteUrl})\n"
+                        ani_fav_list += (
+                            f"{index + 1}. [{fav.title.romaji}]({fav.siteUrl})\n"
+                        )
                 embed.add_field(
                     name="🌟 Top 5 Favorite Anime",
                     value=ani_fav_list if ani_fav_list else "Unset",
@@ -785,7 +787,9 @@ Total scrobbles: {profile.playcount}
                     for index, fav in enumerate(manga_favs):
                         if len(fav.title.romaji) >= 100:
                             fav.title.romaji = fav.title.romaji[:97] + "..."
-                        manga_fav_list += f"{index + 1}. [{fav.title.romaji}]({fav.siteUrl})\n"
+                        manga_fav_list += (
+                            f"{index + 1}. [{fav.title.romaji}]({fav.siteUrl})\n"
+                        )
                 embed.add_field(
                     name="🌟 Top 5 Favorite Manga",
                     value=manga_fav_list if manga_fav_list else "Unset",
