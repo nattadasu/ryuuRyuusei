@@ -256,7 +256,8 @@ To complete your registration, please follow the instructions below:""",
         await ctx.send(embed=embed)
 
     @ipy.Task.create(ipy.IntervalTrigger(hours=1))
-    async def check_for_expired_verification_codes(self) -> None:  # skipcq: PYL-W0613
+    # skipcq: PYL-W0613
+    async def check_for_expired_verification_codes(self) -> None:
         """Check for expired verification codes every hour."""
         directory = "cache/verify/"
         badge = "[Tsk] [/register]"
