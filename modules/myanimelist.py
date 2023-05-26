@@ -451,8 +451,23 @@ async def generate_mal(
         label="Anime Stats",
         url=f"https://anime-stats.net/anime/show/{quote(rot)}",
     )
+    myani_li: Button = Button(
+        style=ButtonStyle.URL,
+        label="MyAni.Li",
+        url=f"https://myani.li/#/anime/details/{m}",
+    )
+    themes_moe: Button = Button(
+        style=ButtonStyle.URL,
+        label="Themes.moe",
+        url=f"https://themes.moe/list/search/{quote(rot)}",
+    )
+    buttons = [
+        myani_li,
+        anime_stats,
+        themes_moe,
+    ]
 
-    return [embed, anime_stats]
+    return [embed, buttons]
 
 
 async def mal_submit(ctx: SlashContext, ani_id: int) -> None:
@@ -466,15 +481,10 @@ async def mal_submit(ctx: SlashContext, ani_id: int) -> None:
     Raises:
         *None*
     """
-    await ctx.defer()
     channel = ctx.channel
-
-    if channel.type in (11, 12):
-        nsfwBool = await get_parent_nsfw_status(channel.parent_id)
-    else:
-        nsfwBool = channel.nsfw
-
+    nsfw_bool = channel.type in (11, 12) and await get_parent_nsfw_status(channel.parent_id) or channel.nsfw
     trailer = []
+
     try:
         async with AnimeApi() as aniapi:
             aniApi = await aniapi.get_relation(
@@ -490,11 +500,8 @@ async def mal_submit(ctx: SlashContext, ani_id: int) -> None:
         else:
             alData = {}
 
-        dcEm = await generate_mal(
-            ani_id, is_nsfw=nsfwBool, al_dict=alData, anime_api=aniApi
-        )
-        trailer += [dcEm[1]]
-        dcEm = dcEm[0]
+        dcEm, buttons = await generate_mal(ani_id, is_nsfw=nsfw_bool, anilist_data=alData, anime_api=aniApi)
+        trailer.extend(buttons)
         await ctx.send("", embeds=dcEm, components=trailer)
 
     except MediaIsNsfw as e:
