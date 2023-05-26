@@ -4,8 +4,8 @@
 
 |                  |                |
 | ---------------- | -------------- |
-| **Effective**    | April 13, 2023  |
-| **Last Updated** | April 30, 2023  |
+| **Effective**    | June 16, 2023 |
+| **Last Updated** | May 27, 2023 |
 
 Greetings, and welcome to Ryuuzaki Ryuusei's Privacy Policy. Through this
 document, we aim to provide you with an explanation of how your personal
@@ -26,13 +26,13 @@ Whilst we encourage you to peruse this Privacy Policy thoroughly, here's a brief
 synopsis of the data categories we collect, store, and use with consent from
 yourself:
 
-* **We collect personal information tied about you**, with your consent, the
+- **We collect personal information tied about you**, with your consent, the
   following data:
-  * [Discord][discord]: username, discriminator, user snowflake ID, joined date,
+  - [Discord][discord]: username, discriminator, user snowflake ID, joined date,
     guild/server ID of registration, server name, date of registration, user
     referral (if any)
-  * [MyAnimeList][mal]: username, user ID, joined date
-* **We share limited personal information about you and/or other**, required for
+  - [MyAnimeList][mal]: username, user ID, joined date
+- **We share limited personal information about you and/or other**, required for
   the bot to function as expected, with the following services:
   > **Warning**
   >
@@ -45,11 +45,11 @@ yourself:
   > For more information, you can visit the privacy policies of the
   > questioned services. You also have the right to opt-out of these services by
   > deleting your data from these services.
-  * [MyAnimeList][mal] (via [Jikan][jikan]): MyAnimeList Username
-  * [Last.FM][lastfm]: Last.FM Username
-  * [MAL-Heatmap][malh]: MyAnimeList Username
-  * [Discord][discord]: Message Author Identifier
-* **We do not collect, store, or use any logs of messages sent by system about
+  - [MyAnimeList][mal] (via [Jikan][jikan]): MyAnimeList Username
+  - [Last.FM][lastfm]: Last.FM Username
+  - [MAL-Heatmap][malh]: MyAnimeList Username
+  - [Discord][discord]: Message Author Identifier
+- **We do not collect, store, or use any logs of messages sent by system about
   you under any circumstances**. Logging of messages only occurs when you
   invoked general commands (such as `/help`, `/anime`, `/manga`, etc.) and
   during the bot's development process. Maintenance will announced in the Bot
@@ -58,50 +58,57 @@ yourself:
 <!-- omit in toc -->
 ## Table of Contents
 
-* [Definitions](#definitions)
-* [About Us](#about-us)
-* [User Consent](#user-consent)
-* [User Data Collection and Usage](#user-data-collection-and-usage)
-  * [Discord: User](#discord-user)
-  * [MyAnimeList: User](#myanimelist-user)
-* [User Data Sharing](#user-data-sharing)
-  * [MyAnimeList: Global](#myanimelist-global)
-  * [Last.FM](#lastfm)
-  * [MAL-Heatmap](#mal-heatmap)
-  * [Discord: Global](#discord-global)
-* [Data Caching](#data-caching)
-* [Data Logging](#data-logging)
-* [Access to User Data](#access-to-user-data)
-* [Data Retention](#data-retention)
-* [User Rights](#user-rights)
-  * [Right to Opt-Out](#right-to-opt-out)
-  * [Right to Non-Discrimination](#right-to-non-discrimination)
-  * [Right to Access, Know, and Data Portability](#right-to-access-know-and-data-portability)
-  * [Right to Modify, Rectify, Delete, or Restrict Processing](#right-to-modify-rectify-delete-or-restrict-processing)
-  * [Right to Limit](#right-to-limit)
-  * [Right to Stop Processing on Your Server](#right-to-stop-processing-on-your-server)
-* [Prevention of User Data Leakage](#prevention-of-user-data-leakage)
-* [Changes to this Privacy Policy](#changes-to-this-privacy-policy)
-* [Disclaimer for Warranty and Liability](#disclaimer-for-warranty-and-liability)
+- [Definitions](#definitions)
+- [About Us](#about-us)
+- [User Consent](#user-consent)
+- [User Data Collection and Usage](#user-data-collection-and-usage)
+  - [Discord: User](#discord-user)
+  - [MyAnimeList: User](#myanimelist-user)
+  - [AniList: User](#anilist-user)
+  - [Shikimori: User](#shikimori-user)
+  - [Last.FM: User](#lastfm-user)
+  - [Personal Information](#personal-information)
+- [User Data Sharing](#user-data-sharing)
+  - [MyAnimeList: Global](#myanimelist-global)
+  - [Last.FM: Global](#lastfm-global)
+  - [AniList: Global](#anilist-global)
+  - [MAL-Heatmap](#mal-heatmap)
+  - [Discord: Global](#discord-global)
+  - [PronounDB](#pronoundb)
+  - [Shikimori: Global](#shikimori-global)
+- [Data Caching](#data-caching)
+- [Data Logging](#data-logging)
+- [Access to User Data](#access-to-user-data)
+- [Data Retention](#data-retention)
+- [User Rights](#user-rights)
+  - [Right to Opt-Out](#right-to-opt-out)
+  - [Right to Non-Discrimination](#right-to-non-discrimination)
+  - [Right to Access, Know, and Data Portability](#right-to-access-know-and-data-portability)
+  - [Right to Modify, Rectify, Delete, or Restrict Processing](#right-to-modify-rectify-delete-or-restrict-processing)
+  - [Right to Limit](#right-to-limit)
+  - [Right to Stop Processing on Your Server](#right-to-stop-processing-on-your-server)
+- [Prevention of User Data Leakage](#prevention-of-user-data-leakage)
+- [Changes to this Privacy Policy](#changes-to-this-privacy-policy)
+- [Disclaimer for Warranty and Liability](#disclaimer-for-warranty-and-liability)
 
 ## Definitions
 
-* **Ryuuzaki Ryuusei/Bot/System/Service** is defined as the software used to
+- **Ryuuzaki Ryuusei/Bot/System/Service** is defined as the software used to
   provide users with services.
-* **Data Controller** refers to any organization or individual determining the
+- **Data Controller** refers to any organization or individual determining the
   method and purpose of processing personal information.
-* **We/Us/Our/Owner** collectively refer to [nattadasu][gh-nattadasu], who is a
+- **We/Us/Our/Owner** collectively refer to [nattadasu][gh-nattadasu], who is a
   Data Controller of your personal information.
 
 ---
 
-* **You/Author/User**, unless otherwise specified, refers to a person who
+- **You/Author/User**, unless otherwise specified, refers to a person who
   invoked the bot command.
-* **Discriminator** is a unique numerical value that is allocated to each user
+- **Discriminator** is a unique numerical value that is allocated to each user
   on Discord platform.
-* **Personal Information** is any information that is capable of identifying an
+- **Personal Information** is any information that is capable of identifying an
   individual, for instance, name, email address or user ID.
-* **Sensitive Personal Information** is a specific subset of personal
+- **Sensitive Personal Information** is a specific subset of personal
   information that includes certain government  (such as social security
   numbers); an account log-in, financial account, debit card, or credit card
   number with any required security code, password, or credentials allowing
@@ -110,12 +117,13 @@ yourself:
   consumer; information concerning a consumer’s health, sex life, or sexual
   orientation; or information about racial or ethnic origin, religious or
   philosophical beliefs, or union membership.
-* **Server/Guild** is a Discord digital space made up of different types of
+- **Server/Guild** is a Discord digital space made up of different types of
   channels that users can join and interact with each other.
-* **Title**, unless otherwise specified, refers to a media content, such as
+- **Title**, unless otherwise specified, refers to a media content, such as
   anime, manga, TV, movie, music, etc.
-* **User Referral** is a user who referred or added you to the bot through admin
+- **User Referral** is a user who referred or added you to the bot through admin
   commands.
+- **API** is a software interface to communicate to other software.
 
 ## About Us
 
@@ -148,30 +156,70 @@ date of registration, and user referral (if any).
 
 This data is used to provide the following functionality:
 
-* `/export_data` command
-* `/profile` command
-* `/register` command
-* `/unregister` command
-* `/whois` command
+- `/export data` command
+- `/profile` group command, this includes, but not limited to:
+  - `/profile anilist`
+  - `/profile discord`
+  - `/profile lastfm`
+  - `/profile myanimelist`
+  - `/profile shikimori`
+- `/register` command
+- `/unregister` command
+- `/whoami` command
 
 ### MyAnimeList: User
 
 Similar to Discord, Ryuuzaki Ryuusei collects MyAnimeList User data, such as
-username, User ID, and joined date.
+username, User ID, and joined date which is provided by sending a request to
+Jikan API and MyAnimeList.
 
 This data is used to provide the following functionality:
 
-* `/export_data` command
-* `/profile` command
-* `/register` command
-* `/whois` command
+- `/export data` command
+- `/profile myanimelist` command
+- `/register` command
+
+### AniList: User
+
+During linking your AniList account to registered account in bot database,
+we collect your AniList username and User ID provided by sending a request to
+AniList API.
+
+This data is used to provide the following functionality:
+
+- `/platform link` command
+- `/platform unlink` command
+- `/profile anilist` command
+
+### Shikimori: User
+
+During linking your Shikimori account to registered account in bot database,
+we collect your Shikimori username and User ID provided by sending a request to
+Shikimori API.
+
+This data is used to provide the following functionality:
+
+- `/platform link` command
+- `/platform unlink` command
+- `/profile shikimori` command
+
+### Last.FM: User
+
+During linking your Last.FM account to registered account in bot database,
+we collect your Last.fm username as is.
+
+This data is used to provide the following functionality:
+
+- `/platform link` command
+- `/platform unlink` command
+- `/profile lastfm` command
 
 ### Personal Information
 
 Ryuuzaki Ryuusei may collect and store limited personal information that you
 provide when you configure your experience using the bot, such as:
 
-* Languages that you prefer to use the bot
+- Languages that you prefer to use the bot
 
 ## User Data Sharing
 
@@ -189,20 +237,34 @@ removing their data from the bot.
 To offer user profile lookup, Ryuuzaki Ryuusei use [Jikan API][jikan] which is a
 third-party software that assists in accessing [MyAnimeList][mal] to obtain
 information about the user's profile. This information is used by Ryuuzaki
-Ryuusei for `/profile`, `/admin_register`, `/register`, and `/verify` commands.
+Ryuusei for `/profile myanimelist` and `/verify` commands.
 
-### Last.FM
+During `/register` command is invoked, bot will directly connect to MyAnimeList
+to obtain live data by scraping user's profile page to check verification code.
+
+### Last.FM: Global
 
 Last.FM username is shared with the [Last.FM][lastfm] service to retrieve
 information regarding the user's profile and recently played tracks. This
-information is accessed by Ryuuzaki Ryuusei exclusively for `/lastfm` command
-purposes.
+information is accessed by Ryuuzaki Ryuusei for `/profile lastfm` command.
+
+Last.FM's username can be used else during platform linking to your registered
+account on the bot to only obtain user ID.
+
+### AniList: Global
+
+Similarly to Last.FM, AniList username is shared to [AniList][al] to allow user
+showcasing their profile, and will return any data that is required to render
+the result when invoking `/profile anilist` command.
+
+AniList's username can be used else during platform linking to your registered
+account on the bot to only obtain user ID.
 
 ### MAL-Heatmap
 
 MyAnimeList username is shared with [MAL-Heatmap][malh] to obtain data related
 to the user's histories in a visualized heatmap format. This information is used
-solely for the purpose of providing data in the `/profile` command.
+solely for the purpose of providing data in the `/profile myanimelist` command.
 
 ### Discord: Global
 
@@ -210,29 +272,73 @@ The bot utilizes Discord infrastructure to retrieve information regarding the
 user's profile and write command actor for server audit logs. The information is
 used to provide the following functionality:
 
-* `/admin_register` command
-* `/admin_verify` actor
-* `/profile` command
-* `/register` command
-* `/unregister` command
-* `/verify` command
-* `/whois` command
+- `/profile discord` command
+- `/utilities avatar` command
+- `/utilities banner` command
+- `/register` command
+- `/unregister` command
+- `/verify` command
+- `/whoami` command
+
+### PronounDB
+
+During `/profile discord` command is invoked, bot will communicate to
+[PronounDB][pdb] to fetch currently set pronoun on the platform using Discord
+user ID. The information is used to provide the following functionality:
+
+- `/profile discord` command
+- `/whoami` command
+
+### Shikimori: Global
+
+Shikimori username is shared with the [Shikimori][shiki] to allow user
+showcasing their profile, and will return any data that is required to render
+the result when invoking `/profile shikimori` command.
+
+Shikimori's username can be used else during platform linking to your registered
+account on the bot to only obtain user ID.
 
 ## Data Caching
 
-Ryuuzaki Ryuusei stores information for the purpose of caching, which is
-intended to reduce the number of requests made to external services and decrease
-the time it takes to retrieve information. This function only caches information
-that is related to a Title, and does not transmit and store any information
-about you other than the bot's IP address and/or query request and responses.
+Ryuuzaki Ryuusei stores information for the purpose of caching for limited time,
+which is intended to reduce the number of requests made to external services and
+decrease the time it takes to retrieve information. This function only caches
+information that is related to a Title and optionally limited Personal
+Information, and does not transmit any information about you other than the
+bot's IP address, User Agent and/or query request and responses.
+
+Below is the table explaining retention period for each features from 3rd party
+API:
+
+|                 Platform | Retention Period                                    |
+| -----------------------: | :-------------------------------------------------- |
+|                  AniList | 1 day                                               |
+|    AniList: User Profile | 12 hours                                            |
+|      AniList: NSFW Check | 1 week                                              |
+|                 AnimeAPI | 1 day                                               |
+|                    Jikan | 1 day                                               |
+|      Jikan: User Profile | 12 hours on Ryuuzaki Ryuusei, 1 day on Jikan Server |
+|                    Kitsu | 1 day                                               |
+|                  Last.FM | *Does not cache*                                    |
+|              MyAnimeList | *Does not cache*                                    |
+|                PronounDB | 1 week                                              |
+|                     RAWG | 1 day                                               |
+|                Shikimori | *Does not cache*                                    |
+|                    SIMKL | 1 day                                               |
+|                  Spotify | 2 weeks                                             |
+|            The Color API | 1 week                                              |
+| The Movie DB: NSFW Check | 30 days                                             |
+|                    Trakt | 1 day                                               |
+|                    usrbg | 60 hours (2 days, 12 hours)                         |
 
 ## Data Logging
 
-Ryuuzaki Ryuusei does not log any information related to the User. In situations
-related to development, bug fixing, and testing, however, general information
-such as bot startup, command execution, API process, and errors may be logged,
-but these logs will only be used for debugging purposes, and will be terminated
-once the bot is production-ready.
+Ryuuzaki Ryuusei does not log any information related to the User activity. In
+situations related to development, bug fixing, and testing, however, general
+information such as bot startup, command execution, API process, and errors may
+be logged, but these logs will only be used for debugging purposes, and will be
+terminated once the bot is production-ready if the log does provide some
+information related to User's data.
 
 The maintenance and development of the bot are overseen by a Data Controller,
 and in instances where logging is enabled, users shall be notified through
@@ -240,9 +346,9 @@ Support Server announcements and Bot Activity status.
 
 ## Access to User Data
 
-Users can access their data by utilizing the `/export_data` command. Once
-executed, Ryuuzaki Ryuusei will generate a JSON file that contains all the
-information that the bot has gathered about the user.
+Users can access their data by utilizing the `/export data` command. Once
+executed, Ryuuzaki Ryuusei will generate a JSON string and preferred file format
+that contains all the information that the bot has gathered about the user.
 
 It's important to note that this data export represents a mirror of the
 information that is stored in the bot. If you would like to see which data
@@ -250,7 +356,7 @@ points are being collected by Ryuuzaki Ryuusei, please refer to the
 [User Data Collection and Usage](#user-data-collection-and-usage) section of
 this document.
 
-If you prefer an interactive way to check information stored in bot, `/whois`
+If you prefer an interactive way to check information stored in bot, `/whoami`
 command is available as well.
 
 All user data is stored in a database that is written in CSV format. This
@@ -277,6 +383,11 @@ Ryuuzaki Ryuusei will keep the User's data for as long as they are registered in
 the bot. If the User wishes to erase their data from the bot, they can employ
 `/unregister` command to request the removal of their data.
 
+Do note cached data during retention period can not removed until the period
+itself has expired. If you wish to remove related cached immediately after
+unregistration, please contact the Data Controller in the [About Us](#about-us)
+section.
+
 ## User Rights
 
 You have the following rights under the
@@ -300,9 +411,9 @@ this Privacy Policy.
 ### Right to Access, Know, and Data Portability
 
 You have the right to access your personal information. If you wish to exercise
-this right, please utilize `/export_data` command.
+this right, please utilize `/export data` command.
 
-To see information about your data interactively, please utilize `/whois`
+To see information about your data interactively, please utilize `/whoami`
 command.
 
 ### Right to Modify, Rectify, Delete, or Restrict Processing
@@ -340,7 +451,7 @@ that there is no data leakage on our service. However, if you happen to identify
 any data leakage, kindly contact the Data Controller mentioned in the
 [About Us](#about-us) section.
 
-Certain commands such as `/whois` and `/profile` may display the User's data.
+Certain commands such as `/whoami` and `/profile *` may display the User's data.
 This is a deliberate feature and not categorized as data leakage.
 
 To conceal your data from other users, please use the `/unregister` command
@@ -388,6 +499,8 @@ Data Controller.
 [lastfm]: https://last.fm
 [mal]: https://myanimelist.net
 [malh]: https://malheatmap.com
+[pdb]: https://pronoundb.org
+[shiki]: https://shikimori.me
 [simkl]: https://simkl.com
 [tmdb]: https://www.themoviedb.org
 [trakt]: https://trakt.tv
