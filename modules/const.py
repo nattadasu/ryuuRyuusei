@@ -21,6 +21,20 @@ ld()
 
 database = r"database/database.csv"
 
+ANILIST_CLIENT_ID: Final[str] = ge("ANILIST_CLIENT_ID")
+"""AniList client ID"""
+ANILIST_CLIENT_SECRET: Final[str] = ge("ANILIST_CLIENT_SECRET")
+"""AniList client secret"""
+ANILIST_REDIRECT_URI: Final[str] = ge("ANILIST_REDIRECT_URI")
+"""AniList redirect URI"""
+ANILIST_USERNAME: Final[str] = ge("ANILIST_USERNAME")
+"""AniList username"""
+ANILIST_ACCESS_TOKEN: Final[str] = ge("ANILIST_ACCESS_TOKEN")
+"""AniList access token"""
+ANILIST_OAUTH_REFRESH: Final[str] = ge("ANILIST_OAUTH_REFRESH")
+"""AniList OAuth refresh token"""
+ANILIST_OAUTH_EXPIRY: Final[int] = int(ge("ANILIST_OAUTH_EXPIRY"))
+"""AniList OAuth expiry time, in seconds"""
 AUTHOR_USERID: Final[int] = ge("AUTHOR_USERID")
 """The bot author's user ID"""
 AUTHOR_USERNAME: Final[str] = ge("AUTHOR_USERNAME")
