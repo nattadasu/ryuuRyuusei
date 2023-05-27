@@ -19,7 +19,6 @@ from interactions import (
     EmbedField,
     EmbedFooter,
     SlashContext,
-    Snowflake_Type
 )
 
 from classes.anilist import AniList, AniListImageStruct, AniListMediaStruct
@@ -38,8 +37,6 @@ from modules.commons import (
 )
 from modules.const import (
     EMOJI_FORBIDDEN,
-    EMOJI_UNEXPECTED_ERROR,
-    EMOJI_USER_ERROR,
     MYANIMELIST_CLIENT_ID,
     SIMKL_CLIENT_ID,
     warnThreadCW,
