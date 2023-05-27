@@ -529,6 +529,14 @@ strings:
           Ryuusei ngga dapat hasil cari buat {QUERY} di MyAnimeList. Coba periksa lagi kuerinya dan coba lagi.
         footer: >
           Tip: pakai judul asli/native biar dapat hasil yang akurat... itu kalau kamu tahu cara nulisnya dalam bahasa Jepang :P
+  manga:
+    search:
+      exception:
+        title: Error
+        text: >-
+          I couldn't able to find any results for {QUERY} on AniList. Please check your query and try again.
+        footer: >
+          Pro tip: Use native title to get the most accurate result... that if you know how to write it in Japanese :P
   profile:
     commons:
       about: "Informasi mengenai {USER}"
