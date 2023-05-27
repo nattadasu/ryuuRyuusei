@@ -489,7 +489,9 @@ async def mal_submit(ctx: SlashContext | ComponentContext, ani_id: int) -> None:
 
     try:
         async with AnimeApi() as aniapi:
-            aniApi = await aniapi.get_relation(media_id=ani_id, platform=aniapi.AnimeApiPlatforms.MYANIMELIST)
+            aniApi = await aniapi.get_relation(
+                media_id=ani_id, platform=aniapi.AnimeApiPlatforms.MYANIMELIST
+            )
 
         if aniApi.anilist is not None:
             async with AniList() as anilist:
@@ -500,9 +502,11 @@ async def mal_submit(ctx: SlashContext | ComponentContext, ani_id: int) -> None:
         else:
             alData = None
 
-        dcEm, buttons = await generate_mal(ani_id, is_nsfw=nsfw_bool, anilist_data=alData, anime_api=aniApi)
+        dcEm, buttons = await generate_mal(
+            ani_id, is_nsfw=nsfw_bool, anilist_data=alData, anime_api=aniApi
+        )
         trailer.extend(buttons)  # type: ignore
-        await ctx.send("", embeds=dcEm, components=trailer)  # type: ignore
+        await ctx.send(embeds=dcEm, components=trailer)  # type: ignore
 
     except MediaIsNsfw as e:
         await ctx.send(f"**{e}**\n")

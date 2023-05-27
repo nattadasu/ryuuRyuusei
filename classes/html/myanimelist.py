@@ -62,7 +62,7 @@ class HtmlMyAnimeList:
         async with self.session.get(self.base_url + f"profile/{username}") as resp:
             if resp.status == 404:
                 raise defineJikanException(404, "User not found")
-            elif resp.status != 200:
+            if resp.status != 200:
                 raise ProviderHttpError(resp.status, resp.reason)
             html = await resp.text()
         soup = BeautifulSoup(html, "html5lib")

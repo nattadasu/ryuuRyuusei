@@ -1,6 +1,4 @@
-"""
-# Urban Dictionary Unofficial API Wrapper
-"""
+"""# Urban Dictionary Unofficial API Wrapper"""
 
 import aiohttp
 from dataclasses import dataclass
@@ -9,6 +7,7 @@ from bs4 import BeautifulSoup
 
 from classes.excepts import ProviderHttpError
 from modules.const import USER_AGENT
+
 
 @dataclass
 class UrbanDictionaryEntry:
@@ -80,9 +79,7 @@ class UrbanDictionary:
                 )
             data = await resp.json()
             if len(data["list"]) == 0:
-                raise ProviderHttpError(
-                    f"{term} not found in Urban Dictionary", 404
-                )
+                raise ProviderHttpError(f"{term} not found in Urban Dictionary", 404)
             listed: list[UrbanDictionaryEntry] = []
             for entry in data["list"]:
                 entry["written_on"].replace("Z", "+00:00")
@@ -158,4 +155,3 @@ class UrbanDictionary:
             entry["written_on"].replace("Z", "+00:00")
             entry["written_on"] = datetime.fromisoformat(entry["written_on"])
             return UrbanDictionaryEntry(**entry)
-

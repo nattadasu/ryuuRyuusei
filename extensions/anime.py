@@ -69,16 +69,12 @@ class Anime(ipy.Extension):
             for a in res:
                 if a["node"]["start_season"] is None:
                     a["node"]["start_season"] = {"season": "Unknown", "year": "Year"}
-                media_type: str = (
-                    l_["commons"]["media_formats"].get(
-                        a["node"]["media_type"].lower(),
-                        l_["commons"]["unknown"],
-                    )
+                media_type: str = l_["commons"]["media_formats"].get(
+                    a["node"]["media_type"].lower(),
+                    l_["commons"]["unknown"],
                 )
-                season: str = (
-                    l_["commons"]["season"].get(
-                        a["node"]["start_season"]["season"], "unknown"
-                    )
+                season: str = l_["commons"]["season"].get(
+                    a["node"]["start_season"]["season"], "unknown"
                 )
                 year: str = (
                     a["node"]["start_season"]["year"]
@@ -89,7 +85,9 @@ class Anime(ipy.Extension):
                     title = title[:253] + "..."
                 mdTitle: str = sanitize_markdown(title)
                 alt = a["node"]["alternative_titles"]
-                native: str = sanitize_markdown(alt["ja"]) + "\n" if alt and alt["ja"] else ""
+                native: str = (
+                    sanitize_markdown(alt["ja"]) + "\n" if alt and alt["ja"] else ""
+                )
                 f.append(
                     ipy.EmbedField(
                         name=mdTitle,
@@ -136,16 +134,17 @@ class Anime(ipy.Extension):
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             embed = ipy.Embed(
                 title=l_["title"],
-                description=l_["text"].replace(
-                    "MyAnimeList",
-                    "AniList"
-                    if provider == "anilist"
-                    else "MyAnimeList"
-                ).format(QUERY=f"`{query}`"),
+                description=l_["text"]
+                .replace(
+                    "MyAnimeList", "AniList" if provider == "anilist" else "MyAnimeList"
+                )
+                .format(QUERY=f"`{query}`"),
                 color=0xFF0000,
                 footer=ipy.EmbedFooter(text=l_["footer"]),
             )
-            embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
+            embed.set_thumbnail(
+                url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
+            )
             await send.edit(embed=embed)
 
     @ipy.component_callback("mal_search")
