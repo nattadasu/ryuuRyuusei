@@ -292,26 +292,26 @@ class AniList:
     def _media_dict_to_dataclass(data: dict):
         """Format returned dictionary from AniList to its proper dataclass"""
         data["title"] = AniListTitleStruct(**data["title"]) if data["title"] else None
-        if data.get("startDate"):
+        if data.get("startDate", None):
             data["startDate"] = (
                 AniListDateStruct(**data["startDate"]) if data["startDate"] else None
             )
-        if data.get("endDate"):
+        if data.get("endDate", None):
             data["endDate"] = (
                 AniListDateStruct(**data["endDate"]) if data["endDate"] else None
             )
-        if data.get("coverImage"):
+        if data.get("coverImage", None):
             data["coverImage"] = (
                 AniListImageStruct(**data["coverImage"]) if data["coverImage"] else None
             )
-        if data.get("trailer"):
+        if data.get("trailer", None):
             data["trailer"] = (
                 AniListTrailerStruct(**data["trailer"]) if data["trailer"] else None
             )
-        if data.get("tags"):
-            if data["tags"] is not None:
-                for tag in data["tags"]:
-                    tag = AniListTagsStruct(**tag) if tag else None
+        if data.get("tags", None):
+            data["tags"] = [
+                AniListTagsStruct(**tag) for tag in data["tags"]
+            ]
         return AniListMediaStruct(**data)
 
     def _user_dict_to_dataclass(self, data: dict) -> AniListUserStruct:
@@ -719,6 +719,7 @@ class AniList:
                 year
             }
             season
+            status
         }
     }
 }"""
