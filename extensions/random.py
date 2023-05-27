@@ -1,8 +1,12 @@
+from typing import Literal
+
 import interactions as ipy
 
+from classes.anibrain import AniBrainAI, AniBrainAiMedia
 from classes.nekomimidb import NekomimiGender
 from classes.randomorg import RandomOrg
 from classes.i18n import LanguageDict
+from modules.anilist import anilist_submit
 from modules.i18n import fetch_language_data, read_user_language
 from modules.myanimelist import lookupRandomAnime, mal_submit
 from modules.nekomimidb import submit_nekomimi
@@ -23,7 +27,7 @@ class Random(ipy.Extension):
 
     @random.subcommand(
         sub_cmd_name="anime",
-        sub_cmd_description="Get a random anime",
+        sub_cmd_description="Get a random anime, powered by AnimeAPI",
     )
     async def random_anime(self, ctx: ipy.SlashContext):
         await ctx.defer()
@@ -49,6 +53,90 @@ class Random(ipy.Extension):
             )
         )
         await mal_submit(ctx, anime)
+
+    @random.subcommand(
+        sub_cmd_name="manga",
+        sub_cmd_description="Get a random manga, powered by AniBrain",
+        options=[
+            ipy.SlashCommandOption(
+                name="media_type",
+                description="The media type to get",
+                type=ipy.OptionType.STRING,
+                choices=[
+                    ipy.SlashCommandChoice(
+                        name="Manga, Manhwa, Manhua (default)",
+                        value="manga",
+                    ),
+                    ipy.SlashCommandChoice(
+                        name="One-shot",
+                        value="one_shot",
+                    ),
+                    ipy.SlashCommandChoice(
+                        name="Light Novel",
+                        value="light_novel",
+                    ),
+                ],
+                required=False,
+            ),
+        ]
+    )
+    async def random_manga(self, ctx: ipy.SlashContext, media_type: Literal['manga', 'one_shot', 'light_novel'] = "manga"):
+        await ctx.defer()
+        send = await ctx.send(
+            embed=ipy.Embed(
+                title="Random Manga",
+                description="Getting a random manga...",
+                color=0x02a9ff,
+                footer=ipy.EmbedFooter(
+                    text="This may take a while...",
+                ),
+            )
+        )
+        media_data = list[AniBrainAiMedia]
+        async with AniBrainAI() as anibrain:
+            countries = [
+                anibrain.CountryOfOrigin.JAPAN,
+                anibrain.CountryOfOrigin.KOREA,
+                anibrain.CountryOfOrigin.CHINA,
+            ]
+            match media_type:
+                case "manga":
+                    media_data = await anibrain.get_manga(
+                        filter_country=countries,
+                    )
+                case "one_shot":
+                    media_data = await anibrain.get_one_shot(
+                        filter_country=countries,
+                    )
+                case "light_novel":
+                    media_data = await anibrain.get_light_novel(
+                        filter_country=countries,
+                    )
+        media_id = int
+        for entry in media_data:
+            if entry.anilistId is not None:
+                media_id = entry.anilistId
+                break
+        else:
+            await send.edit(
+                embed=ipy.Embed(
+                    title="Random Manga",
+                    description="We couldn't find any manga. Please try again.",
+                    color=0xff0000,
+                )
+            )
+            return
+        await send.edit(
+            embed=ipy.Embed(
+                title="Random manga",
+                description=f"We've found AniList ID [`{media_id}`](https://anilist.co/manga/{media_id}). Fetching info...",
+                color=0x02a9ff,
+                footer=ipy.EmbedFooter(
+                    text="This may take a while...",
+                ),
+            )
+        )
+        await anilist_submit(ctx, media_id)
 
     @random.subcommand(
         group_name="nekomimi",

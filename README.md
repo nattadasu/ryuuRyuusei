@@ -151,8 +151,8 @@ If you have any questions, feel free to join the
 
 > Utilize AniList
 
-- ⌚ `/manga info` - Get information about a manga using direct AniList ID
-- ⌚ `/manga search` - Search for a manga
+- `/manga info` - Get information about a manga using direct AniList ID
+- `/manga search` - Search for a manga
 
 ### Game Commands
 
@@ -242,7 +242,7 @@ If you have any questions, feel free to join the
 
 - `/random anime` - Get a random anime from MyAnimeList, powered by
   [AnimeApi](https://nttds.my.id/discord)
-- ⌚ `/random manga` - Get a random manga from AniList, powered by
+- `/random manga` - Get a random manga from AniList, powered by
   [AniBrain](https://anibrain.ai)
 - ⌚ `/random movie` - Get a random movie from SIMKL
 - `/random nekomimi` - Get a random nekomimi image from nattadasu's nekomimiDb
