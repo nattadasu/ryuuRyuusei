@@ -14,6 +14,7 @@ import pandas as pd
 from interactions import (
     Button,
     ButtonStyle,
+    ComponentContext,
     Embed,
     EmbedAuthor,
     EmbedField,
@@ -23,6 +24,7 @@ from interactions import (
 
 from classes.anilist import AniList, AniListImageStruct, AniListMediaStruct
 from classes.animeapi import AnimeApi, AnimeApiAnime
+from classes.excepts import MediaIsNsfw
 from classes.jikan import JikanApi
 from classes.kitsu import Kitsu
 from classes.myanimelist import MyAnimeList
@@ -30,10 +32,10 @@ from classes.simkl import Simkl
 from modules.commons import (
     generate_commons_except_embed,
     generate_trailer,
-    get_parent_nsfw_status,
+    get_nsfw_status,
     get_random_seed,
     sanitize_markdown,
-    trim_cyno,
+    trim_synopsis,
 )
 from modules.const import (
     EMOJI_FORBIDDEN,
@@ -159,9 +161,9 @@ async def generate_mal(
             cyno = sanitize_markdown(cynoin)
             if synl >= 3:
                 cyno += "\n> \n> "
-                cyno += trim_cyno(sanitize_markdown(j_spl[2]))
+                cyno += trim_synopsis(sanitize_markdown(j_spl[2]))
         elif len(str(cynoin)) >= 1000:
-            cyno = trim_cyno(sanitize_markdown(cynoin))
+            cyno = trim_synopsis(sanitize_markdown(cynoin))
         else:
             cyno = sanitize_markdown(cynoin)
 
@@ -471,19 +473,18 @@ async def generate_mal(
     return [embed, buttons]
 
 
-async def mal_submit(ctx: SlashContext, ani_id: int) -> None:
+async def mal_submit(ctx: SlashContext | ComponentContext, ani_id: int) -> None:
     """
     Send anime information from MAL to the channel
 
     Args:
-        ctx (SlashContext): The context of the command
+        ctx (SlashContext | ComponentContext): The context of the command
         ani_id (int): The anime ID
 
     Raises:
         *None*
     """
-    channel = ctx.channel
-    nsfw_bool = channel.type in (11, 12) and await get_parent_nsfw_status(int(channel.parent_id)) or channel.nsfw  # type: ignore
+    nsfw_bool = await get_nsfw_status(ctx)
     trailer = []
 
     try:

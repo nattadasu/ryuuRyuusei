@@ -14,10 +14,12 @@ from interactions import (
     AutoShardedClient,
     Button,
     ButtonStyle,
+    ComponentContext,
     Embed,
     EmbedAuthor,
     EmbedField,
     PartialEmoji,
+    SlashContext,
 )
 
 from classes.anilist import AniListTrailerStruct
@@ -51,7 +53,7 @@ def snowflake_to_datetime(snowflake: int) -> int:
     return timestamp_unix
 
 
-def trim_cyno(message: str) -> str:
+def trim_synopsis(message: str) -> str:
     """
     Trim a string to 1000 characters and add ellipsis if it exceeds that length.
 
@@ -62,7 +64,7 @@ def trim_cyno(message: str) -> str:
         str: The trimmed string with ellipsis appended if the original string exceeded 1000 characters.
 
     Example:
-        >>> trim_cyno("This is a very long string that is over 1000 characters and needs to be trimmed.")
+        >>> trim_synopsis("This is a very long string that is over 1000 characters and needs to be trimmed.")
         'This is a very long string that is over 1000 characters and needs to be trimmed...'
     """
     if len(message) > 1000:
@@ -86,6 +88,7 @@ def sanitize_markdown(text: str) -> str:
         str: The sanitized string of text.
     """
     replacements = {
+        "\\": "\\\\",
         "_": "\\_",
         "(": "\\(",
         ")": "\\)",
@@ -100,7 +103,6 @@ def sanitize_markdown(text: str) -> str:
         ">": "\\>",
         "|": "\\|",
         "~": "\\~",
-        "\\": "\\\\",
     }
 
     for pattern, repl in replacements.items():
@@ -337,6 +339,24 @@ async def get_parent_nsfw_status(snowflake: int) -> bool:
     guild = await bot_http.get_channel(channel_id=snowflake)
     # close the connection
     return guild.get("nsfw", False)
+
+async def get_nsfw_status(context: ComponentContext | SlashContext) -> bool:
+    """
+    Check if a channel is NSFW or not
+
+    Args:
+        context (ComponentContext | SlashContext): The context of the command.
+
+    Returns:
+        bool: The age restriction status of the channel, or False if the channel does not have a parent or the parent's age restriction status could not be determined.
+    """
+    channel = context.channel
+    if channel.type == 11 or channel.type == 12:
+        prId = channel.parent_id
+        nsfwBool = await get_parent_nsfw_status(prId)
+    else:
+        nsfwBool = channel.nsfw
+    return nsfwBool
 
 
 def convert_float_to_time(day_float: float) -> str:

@@ -1,5 +1,4 @@
 import asyncio
-from re import sub as rSub
 
 import interactions as ipy
 
@@ -119,13 +118,16 @@ class Anime(ipy.Extension):
                 icon="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png",
                 color=0x2F51A3,
             )
-            await send.edit(
-                embed=result,
-                components=ipy.ActionRow(
+            components: list[ipy.ActionRow] = [
+                ipy.ActionRow(
                     ipy.StringSelectMenu(
                         *so, placeholder="Choose an anime", custom_id="mal_search"
-                    )
+                    ),
                 ),
+            ]
+            await send.edit(
+                embed=result,
+                components=components,
             )
             await asyncio.sleep(60)
             await send.edit(components=[])

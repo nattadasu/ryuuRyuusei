@@ -231,7 +231,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
 warnThreadCW = MESSAGE_WARN_CONTENTS
 """The alias of `MESSAGE_WARN_CONTENTS`"""
 
-bannedTags = [
+banned_tags = [
     "Amputation",
     "Anal Sex",
     "Ashikoki",

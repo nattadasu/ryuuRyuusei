@@ -256,7 +256,7 @@ To complete your registration, please follow the instructions below:""",
         directory = "cache/verify/"
         path = f"{ctx.author.id}.json"
         await ctx.send(embed=embed)
-        file_path = os.path.join(directory, file)
+        file_path = os.path.join(directory, path)
         os.remove(file_path)
 
     @ipy.Task.create(ipy.IntervalTrigger(hours=1))
