@@ -49,21 +49,23 @@ class Manga(ipy.Extension):
             so: list[ipy.StringSelectOption] = []
             async with AniList() as anilist:
                 results = await anilist.search_media(
-                    query,
-                    limit=5,
-                    media_type=anilist.MediaType.MANGA
+                    query, limit=5, media_type=anilist.MediaType.MANGA
                 )
             if not results:
                 raise ValueError("No results found")
             for res in results:
                 media_id = res["id"]
                 format_raw: str | None = res["format"]
-                format = format_raw.capitalize().replace("_", "-") if format_raw else "Unknown format"
+                format = (
+                    format_raw.capitalize().replace("_", "-")
+                    if format_raw
+                    else "Unknown format"
+                )
                 status_raw: str | None = res["status"]
                 match status_raw:
                     case None:
                         status = "Unknown status"
-                    case 'NOT_YET_RELEASED':
+                    case "NOT_YET_RELEASED":
                         status = "Not yet released"
                     case _:
                         status = status_raw.capitalize()
@@ -109,12 +111,14 @@ class Manga(ipy.Extension):
                 title=title,
                 results=f,
                 icon="https://anilist.co/img/icons/android-chrome-192x192.png",
-                color=0x02a9ff,
+                color=0x02A9FF,
             )
             components: list[ipy.ActionRow] = [
                 ipy.ActionRow(
                     ipy.StringSelectMenu(
-                        *so, placeholder="Choose a manga", custom_id="anilist_manga_search"
+                        *so,
+                        placeholder="Choose a manga",
+                        custom_id="anilist_manga_search",
                     ),
                 ),
             ]
@@ -133,7 +137,9 @@ class Manga(ipy.Extension):
                 color=0xFF0000,
                 footer=ipy.EmbedFooter(text=l_["footer"]),
             )
-            embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
+            embed.set_thumbnail(
+                url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
+            )
             await send.edit(embed=embed)
 
     @ipy.component_callback("anilist_manga_search")

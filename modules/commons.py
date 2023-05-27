@@ -110,6 +110,7 @@ def sanitize_markdown(text: str) -> str:
 
     return text
 
+
 def convert_html_to_markdown(text: str) -> str:
     """
     Convert a string of HTML-formatted text to Markdown.
@@ -121,18 +122,19 @@ def convert_html_to_markdown(text: str) -> str:
         str: The converted string of Markdown-formatted text.
     """
     replacements = {
-        r'\n': '',
-        r'<(/)?i>|<(/)?em>': '*',
-        r'<(/)?b>|<(/)?strong>': '**',
-        r'<(/)?u>': '__',
-        r'<(/)?strike>|<(/)?s>': '~~',
-        r'<(/)?br>': '\n',
+        r"\n": "",
+        r"<(/)?i>|<(/)?em>": "*",
+        r"<(/)?b>|<(/)?strong>": "**",
+        r"<(/)?u>": "__",
+        r"<(/)?strike>|<(/)?s>": "~~",
+        r"<(/)?br>": "\n",
     }
 
     for pattern, repl in replacements.items():
         text = re.sub(pattern, repl, text, flags=re.IGNORECASE)
 
     return text
+
 
 def get_random_seed(value: int = 9) -> int:
     """
@@ -248,7 +250,7 @@ def generate_utils_except_embed(
 def generate_commons_except_embed(
     description: str,
     error: str,
-    lang_dict: dict = deflang, # type: ignore
+    lang_dict: dict = deflang,  # type: ignore
     color: int = 0xFF0000,
 ) -> Embed:
     """
@@ -285,9 +287,7 @@ def generate_commons_except_embed(
     return dcEm
 
 
-def generate_trailer(
-    data: dict | AniListTrailerStruct, is_mal: bool = False
-) -> Button:
+def generate_trailer(data: dict | AniListTrailerStruct, is_mal: bool = False) -> Button:
     """
     Generate a button for playing the trailer of a given anime.
 
@@ -319,6 +319,7 @@ def generate_trailer(
     )
     return button
 
+
 async def get_parent_nsfw_status(snowflake: int) -> bool:
     """
     Get the age restriction status of a channel's parent if the command was invoked in a thread or forum.
@@ -339,6 +340,7 @@ async def get_parent_nsfw_status(snowflake: int) -> bool:
     guild = await bot_http.get_channel(channel_id=snowflake)
     # close the connection
     return guild.get("nsfw", False)
+
 
 async def get_nsfw_status(context: ComponentContext | SlashContext) -> bool:
     """
@@ -426,7 +428,9 @@ def platform_exception_embed(
         color=color,
         title=l_["commons"]["error"],
         description=description,
-        fields=[EmbedField(name=l_["commons"]["reason"], value=error, inline=False)],  # type: ignore
+        fields=[
+            EmbedField(name=l_["commons"]["reason"], value=error, inline=False)
+        ],  # type: ignore
     )
     dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 

@@ -47,9 +47,7 @@ class Profile(ipy.Extension):
         ],
     )
     async def profile_discord(
-        self,
-        ctx: ipy.SlashContext,
-        user: ipy.User | ipy.Member | None = None
+        self, ctx: ipy.SlashContext, user: ipy.User | ipy.Member | None = None
     ):
         await ctx.defer()
         ul = read_user_language(ctx)
@@ -403,7 +401,7 @@ class Profile(ipy.Extension):
     async def profile_lastfm(
         self,
         ctx: ipy.SlashContext,
-        user: ipy.Member | ipy.User  | None = None,
+        user: ipy.Member | ipy.User | None = None,
         lfm_username: str | None = None,
         maximum: int = 9,
     ):
@@ -582,7 +580,9 @@ Total scrobbles: {profile.playcount}
         if anilist_username is None:
             try:
                 async with UserDatabase() as db:
-                    user_data_dc: UserDatabaseClass = await db.get_user_data(discord_id=user.id)
+                    user_data_dc: UserDatabaseClass = await db.get_user_data(
+                        discord_id=user.id
+                    )
                     anilist_username = user_data_dc.anilist_username
             except DatabaseException:
                 anilist_username = None

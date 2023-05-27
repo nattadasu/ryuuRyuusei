@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import unittest
+
 try:
     from modules.i18n import (
         check_lang_exist,

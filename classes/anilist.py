@@ -309,9 +309,7 @@ class AniList:
                 AniListTrailerStruct(**data["trailer"]) if data["trailer"] else None
             )
         if data.get("tags", None):
-            data["tags"] = [
-                AniListTagsStruct(**tag) for tag in data["tags"]
-            ]
+            data["tags"] = [AniListTagsStruct(**tag) for tag in data["tags"]]
         return AniListMediaStruct(**data)
 
     def _user_dict_to_dataclass(self, data: dict) -> AniListUserStruct:
