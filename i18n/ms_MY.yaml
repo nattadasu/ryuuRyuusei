@@ -529,6 +529,14 @@ strings:
           I couldn't able to find any results for {QUERY} on MyAnimeList. Please check your query and try again.
         footer: >
           Pro tip: Use native title to get the most accurate result... that if you know how to write it in Japanese :P
+  manga:
+    search:
+      exception:
+        title: Error
+        text: >-
+          I couldn't able to find any results for {QUERY} on AniList. Please check your query and try again.
+        footer: >
+          Pro tip: Use native title to get the most accurate result... that if you know how to write it in Japanese :P
   profile:
     commons:
       about: "Information about {USER}"
