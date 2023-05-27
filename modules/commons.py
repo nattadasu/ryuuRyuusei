@@ -85,23 +85,52 @@ def sanitize_markdown(text: str) -> str:
     Returns:
         str: The sanitized string of text.
     """
-    text = (
-        text.replace("*", "\\*")
-        .replace("_", "\\_")
-        .replace("`", "\\`")
-        .replace("~", "\\~")
-        .replace("|", "\\|")
-        .replace(">", "\\>")
-        .replace("<", "\\<")
-        .replace("[", "\\[")
-        .replace("]", "\\]")
-        .replace("(", "\\(")
-        .replace(")", "\\)")
-        .replace("/", "\\/")
-        .replace("@", "\\@")
-    )
+    replacements = {
+        "_": "\\_",
+        "(": "\\(",
+        ")": "\\)",
+        "[": "\\[",
+        "]": "\\]",
+        "@": "\\@",
+        "*": "\\*",
+        "/": "\\/",
+        "#": "\\#",
+        "`": "\\`",
+        "<": "\\<",
+        ">": "\\>",
+        "|": "\\|",
+        "~": "\\~",
+        "\\": "\\\\",
+    }
+
+    for pattern, repl in replacements.items():
+        text = text.replace(pattern, repl)
+
     return text
 
+def convert_html_to_markdown(text: str) -> str:
+    """
+    Convert a string of HTML-formatted text to Markdown.
+
+    Args:
+        text (str): The string of HTML-formatted text to convert.
+
+    Returns:
+        str: The converted string of Markdown-formatted text.
+    """
+    replacements = {
+        r'\n': '',
+        r'<(/)?i>|<(/)?em>': '*',
+        r'<(/)?b>|<(/)?strong>': '**',
+        r'<(/)?u>': '__',
+        r'<(/)?strike>|<(/)?s>': '~~',
+        r'<(/)?br>': '\n',
+    }
+
+    for pattern, repl in replacements.items():
+        text = re.sub(pattern, repl, text, flags=re.IGNORECASE)
+
+    return text
 
 def get_random_seed(value: int = 9) -> int:
     """
