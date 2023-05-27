@@ -42,3 +42,21 @@ async def search_al_anime(title: str) -> dict:
 
     # Return the formatted data
     return formatted_data
+
+
+async def bypass_anilist_nsfw_tag(alm: AniListMediaStruct) -> bool:
+    """Bypass adult rated tagged entry on AniList if it's only an Ecchi tag"""
+    # get the genres
+    tgs = []
+    if alm.genres is not None:
+        tgs += [g for g in alm.genres]
+    if alm.tags is not None:
+        tgs += [t.name for t in alm.tags]
+
+    if None in tgs:
+        tgs.remove(None)
+
+    if "Ecchi" in tgs:
+        return True
+    else:
+        return False
