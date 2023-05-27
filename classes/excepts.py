@@ -37,4 +37,8 @@ class SimklTypeError(Exception):
         return f"SimklTypeError: {self.message} (expected {self.expected_type})"
 
 
+class MediaIsNsfw(Exception):
+    """Media is NSFW exception"""
+
+
 __all__ = ["ProviderHttpError", "ProviderTypeError", "SimklTypeError"]

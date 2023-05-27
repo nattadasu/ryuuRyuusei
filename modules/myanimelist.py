@@ -101,10 +101,6 @@ async def searchMalAnime(title: str) -> dict | list:
     return data["data"]
 
 
-class MediaIsNsfw(Exception):
-    """Media is NSFW exception"""
-
-
 # old code taken from ipy/v4.3.4
 async def generate_mal(
     entry_id: int,
