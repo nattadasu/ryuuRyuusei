@@ -24,13 +24,13 @@ from modules.const import LANGUAGE_CODE
 from classes.i18n import LanguageDict
 
 
-def fetch_language_data(code: str, useRaw: bool = True) -> LanguageDict:
+def fetch_language_data(code: str, use_raw: bool = True) -> LanguageDict:
     """
     Get the language strings for a given language code
 
     Args:
         code (str): The language code to get the strings for
-        useRaw (bool): Whether to return the raw JSON data or not
+        use_raw (bool): Whether to return the raw JSON data or not
 
     Returns:
         LanguageDict: The language strings
@@ -38,9 +38,9 @@ def fetch_language_data(code: str, useRaw: bool = True) -> LanguageDict:
     try:
         with open(f"i18n/{code}.json", "r", encoding="utf-8") as f:  # skipcq: PTC-W6004
             data: LanguageDict = jlo(f.read())
-            if useRaw:
+            if use_raw:
                 return data
-            return data["strings"]
+            return data["strings"]  # type: ignore
     except FileNotFoundError:
         return fetch_language_data(LANGUAGE_CODE)
 
@@ -65,19 +65,14 @@ def read_user_language(ctx: BaseContext | InteractionContext) -> str:
         return user_row["language"].iloc[0]
 
     try:
-        with open("database/server.csv", "r", newline="") as csvfile:
-            reader = csv.reader(csvfile, delimiter="\t")
-            next(reader)  # skip header row
-            for row in reader:
-                if row[0] == str(ctx.guild.id):
-                    language = row[1]
-                    break
-            else:
-                language = LANGUAGE_CODE
+        server_df = pd.read_csv("database/server.csv", sep="\t")
+        server_row = server_df.loc[server_df["discordId"] == ctx.guild.id]  # type: ignore
+        if len(server_row) > 0:
+            return server_row["language"].iloc[0]
     except BaseException:
-        language = LANGUAGE_CODE
+        pass
 
-    return language
+    return LANGUAGE_CODE
 
 
 async def paginate_language(bot: AutoShardedClient, ctx: InteractionContext) -> None:
@@ -175,12 +170,12 @@ async def set_default_language(
         # check if guild is already in database
         try:
             df = pd.read_csv("database/server.csv", sep="\t")
-            if df.query(f"serverId == {ctx.guild.id}").empty:
-                df = pd.DataFrame(
-                    [[ctx.guild.id, code]], columns=["serverId", "language"]
+            if df.query(f"serverId == {ctx.guild.id}").empty:  # type: ignore
+                dfa = pd.DataFrame(
+                    [[ctx.guild.id, code]], columns=["serverId", "language"]  # type: ignore
                 )
-                df = df.append(df, ignore_index=True)
-                df.to_csv("database/server.csv", sep="\t", index=False)
+                dfen = dfa.append(df, ignore_index=True)
+                dfen.to_csv("database/server.csv", sep="\t", index=False)
             else:
                 # if it is, update it
                 df.loc[df["serverId"] == ctx.guild.id, "language"] = code
@@ -204,11 +199,11 @@ async def set_default_language(
             )
 
             if df.query(f"discordId == '{str(ctx.author.id)}'").empty:
-                df = pd.DataFrame(
+                dfa = pd.DataFrame(
                     [[str(ctx.author.id), code]], columns=["discordId", "language"]
                 )
-                df = df.append(df, ignore_index=True)
-                df.to_csv("database/member.csv", sep="\t", index=False)
+                dfen = dfa.append(df, ignore_index=True)
+                dfen.to_csv("database/member.csv", sep="\t", index=False)
             else:
                 # if it is, update it
                 df.loc[df["discordId"] == str(ctx.author.id), "language"] = f"{code}"

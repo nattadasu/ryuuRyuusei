@@ -2,7 +2,6 @@ import json
 import os
 import sys
 import unittest
-
 try:
     from modules.i18n import (
         check_lang_exist,
@@ -69,7 +68,7 @@ class LanguageTest(unittest.IsolatedAsyncioTestCase):
         """Test reading language JSON"""
         with open("i18n/en_US.json", "r") as f:
             base = json.load(f)
-        self.assertEqual(fetch_language_data("en_US", useRaw=True), base)
+        self.assertEqual(fetch_language_data("en_US", use_raw=True), base)
 
     async def test_set_default_language(self):
         """Test setting default language"""

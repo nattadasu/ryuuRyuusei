@@ -48,7 +48,7 @@ class Anime(ipy.Extension):
     ):
         await ctx.defer()
         ul: str = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul, useRaw=True)
+        l_: LanguageDict = fetch_language_data(ul, use_raw=True)
         send = await ctx.send(
             embed=ipy.Embed(
                 title=l_["commons"]["search"]["init_title"],

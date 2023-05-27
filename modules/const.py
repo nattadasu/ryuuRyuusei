@@ -11,7 +11,7 @@ This module also contains some mutable variables/constant that are used oftenly 
 
 from os import getenv as ge
 from subprocess import check_output as chout
-from typing import Final
+from typing import cast, Final
 
 from dotenv import load_dotenv as ld
 
@@ -21,79 +21,80 @@ ld()
 
 database = r"database/database.csv"
 
-ANILIST_CLIENT_ID: Final[str] = ge("ANILIST_CLIENT_ID")
+
+ANILIST_CLIENT_ID: Final[str] = cast(str, ge("ANILIST_CLIENT_ID"))
 """AniList client ID"""
-ANILIST_CLIENT_SECRET: Final[str] = ge("ANILIST_CLIENT_SECRET")
+ANILIST_CLIENT_SECRET: Final[str] = cast(str, ge("ANILIST_CLIENT_SECRET"))
 """AniList client secret"""
-ANILIST_REDIRECT_URI: Final[str] = ge("ANILIST_REDIRECT_URI")
+ANILIST_REDIRECT_URI: Final[str] = cast(str, ge("ANILIST_REDIRECT_URI"))
 """AniList redirect URI"""
-ANILIST_ACCESS_TOKEN: Final[str] = ge("ANILIST_ACCESS_TOKEN")
+ANILIST_ACCESS_TOKEN: Final[str] = cast(str, ge("ANILIST_ACCESS_TOKEN"))
 """AniList access token"""
-ANILIST_OAUTH_REFRESH: Final[str] = ge("ANILIST_OAUTH_REFRESH")
+ANILIST_OAUTH_REFRESH: Final[str] = cast(str, ge("ANILIST_OAUTH_REFRESH"))
 """AniList OAuth refresh token"""
-ANILIST_OAUTH_EXPIRY: Final[int] = int(ge("ANILIST_OAUTH_EXPIRY"))
+ANILIST_OAUTH_EXPIRY: Final[int] = cast(int, ge("ANILIST_OAUTH_EXPIRY"))
 """AniList OAuth expiry time, in seconds"""
-AUTHOR_USERID: Final[int] = ge("AUTHOR_USERID")
+AUTHOR_USERID: Final[int] = cast(int, ge("AUTHOR_USERID"))
 """The bot author's user ID"""
-AUTHOR_USERNAME: Final[str] = ge("AUTHOR_USERNAME")
+AUTHOR_USERNAME: Final[str] = cast(str, ge("AUTHOR_USERNAME"))
 """The bot author's username"""
-BOT_CLIENT_ID: Final[int] = ge("BOT_CLIENT_ID")
+BOT_CLIENT_ID: Final[int] = cast(int, ge("BOT_CLIENT_ID"))
 """The bot's client ID"""
-BOT_SUPPORT_SERVER: Final[str] = ge("BOT_SUPPORT_SERVER")
+BOT_SUPPORT_SERVER: Final[str] = cast(str, ge("BOT_SUPPORT_SERVER"))
 """The bot's support server invite link"""
-BOT_TOKEN: Final[str] = ge("BOT_TOKEN")
+BOT_TOKEN: Final[str] = cast(str, ge("BOT_TOKEN"))
 """The bot's token"""
-CLUB_ID: Final[int] = ge("CLUB_ID")
+CLUB_ID: Final[int] = cast(int, ge("CLUB_ID"))
 """MyAnimeList club ID"""
-LASTFM_API_KEY: Final[str] = ge("LASTFM_API_KEY")
+LASTFM_API_KEY: Final[str] = cast(str, ge("LASTFM_API_KEY"))
 """Last.fm API key"""
-MYANIMELIST_CLIENT_ID: Final[str] = ge("MYANIMELIST_CLIENT_ID")
+MYANIMELIST_CLIENT_ID: Final[str] = cast(str, ge("MYANIMELIST_CLIENT_ID"))
 """MyAnimeList client ID"""
-RAWG_API_KEY: Final[str] = ge("RAWG_API_KEY")
+RAWG_API_KEY: Final[str] = cast(str, ge("RAWG_API_KEY"))
 """RAWG API key"""
-SENTRY_DSN: Final[str] = ge("SENTRY_DSN")
+SENTRY_DSN: Final[str] = cast(str, ge("SENTRY_DSN"))
 """Sentry DSN"""
-SHIKIMORI_CLIENT_ID: Final[str] = ge("SHIKIMORI_CLIENT_ID")
+SHIKIMORI_CLIENT_ID: Final[str] = cast(str, ge("SHIKIMORI_CLIENT_ID"))
 """Shikimori client ID"""
-SHIKIMORI_CLIENT_SECRET: Final[str] = ge("SHIKIMORI_CLIENT_SECRET")
+SHIKIMORI_CLIENT_SECRET: Final[str] = cast(str, ge("SHIKIMORI_CLIENT_SECRET"))
 """Shikimori client secret"""
-SHIKIMORI_APPLICATION_NAME: Final[str] = ge("SHIKIMORI_APPLICATION_NAME")
+SHIKIMORI_APPLICATION_NAME: Final[str] = cast(str, ge("SHIKIMORI_APPLICATION_NAME"))
 """Shikimori application name"""
-SIMKL_CLIENT_ID: Final[str] = ge("SIMKL_CLIENT_ID")
+SIMKL_CLIENT_ID: Final[str] = cast(str, ge("SIMKL_CLIENT_ID"))
 """SIMKL client ID"""
-SPOTIFY_CLIENT_ID: Final[str] = ge("SPOTIFY_CLIENT_ID")
+SPOTIFY_CLIENT_ID: Final[str] = cast(str, ge("SPOTIFY_CLIENT_ID"))
 """Spotify client ID"""
-SPOTIFY_CLIENT_SECRET: Final[str] = ge("SPOTIFY_CLIENT_SECRET")
+SPOTIFY_CLIENT_SECRET: Final[str] = cast(str, ge("SPOTIFY_CLIENT_SECRET"))
 """Spotify client secret"""
-TMDB_API_KEY: Final[str] = ge("TMDB_API_KEY")
+TMDB_API_KEY: Final[str] = cast(str, ge("TMDB_API_KEY"))
 """TMDB API key"""
-TMDB_API_VERSION: Final[int] = ge("TMDB_API_VERSION")
+TMDB_API_VERSION: Final[int] = cast(int, ge("TMDB_API_VERSION"))
 """TMDB API version"""
-TOPGG_API_TOKEN: Final[str] = ge("TOPGG_API_TOKEN")
+TOPGG_API_TOKEN: Final[str] = cast(str, ge("TOPGG_API_TOKEN"))
 """Top.gg API token"""
-TRAKT_API_VERSION: Final[int] = ge("TRAKT_API_VERSION")
+TRAKT_API_VERSION: Final[int] = cast(int, ge("TRAKT_API_VERSION"))
 """Trakt API version"""
-TRAKT_CLIENT_ID: Final[str] = ge("TRAKT_CLIENT_ID")
+TRAKT_CLIENT_ID: Final[str] = cast(str, ge("TRAKT_CLIENT_ID"))
 """Trakt client ID"""
-VERIFICATION_SERVER: Final[int] = ge("VERIFICATION_SERVER")
+VERIFICATION_SERVER: Final[int] = cast(int, ge("VERIFICATION_SERVER"))
 """Verification server ID"""
-VERIFIED_ROLE: Final[int] = ge("VERIFIED_ROLE")
+VERIFIED_ROLE: Final[int] = cast(int, ge("VERIFIED_ROLE"))
 """Verified role ID"""
 
-EMOJI_ATTENTIVE: Final[str] = ge("EMOJI_ATTENTIVE")
+EMOJI_ATTENTIVE: Final[str] = cast(str, ge("EMOJI_ATTENTIVE"))
 """The attentive emoji"""
-EMOJI_DOUBTING: Final[str] = ge("EMOJI_DOUBTING")
+EMOJI_DOUBTING: Final[str] = cast(str, ge("EMOJI_DOUBTING"))
 """The doubting emoji"""
-EMOJI_FORBIDDEN: Final[str] = ge("EMOJI_FORBIDDEN")
+EMOJI_FORBIDDEN: Final[str] = cast(str, ge("EMOJI_FORBIDDEN"))
 """The forbidden emoji"""
-EMOJI_SUCCESS: Final[str] = ge("EMOJI_SUCCESS")
+EMOJI_SUCCESS: Final[str] = cast(str, ge("EMOJI_SUCCESS"))
 """The success emoji"""
-EMOJI_UNEXPECTED_ERROR: Final[str] = ge("EMOJI_UNEXPECTED_ERROR")
+EMOJI_UNEXPECTED_ERROR: Final[str] = cast(str, ge("EMOJI_UNEXPECTED_ERROR"))
 """The unexpected error emoji"""
-EMOJI_USER_ERROR: Final[str] = ge("EMOJI_USER_ERROR")
+EMOJI_USER_ERROR: Final[str] = cast(str, ge("EMOJI_USER_ERROR"))
 """The user error emoji"""
 
-LANGUAGE_CODE: Final[str] = ge("LANGUAGE_CODE")
+LANGUAGE_CODE: Final[str] = cast(str, ge("LANGUAGE_CODE"))
 """Default language code"""
 
 

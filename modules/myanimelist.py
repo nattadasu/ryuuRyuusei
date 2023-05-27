@@ -19,6 +19,7 @@ from interactions import (
     EmbedField,
     EmbedFooter,
     SlashContext,
+    Snowflake_Type
 )
 
 from classes.anilist import AniList, AniListImageStruct, AniListMediaStruct
@@ -113,7 +114,7 @@ async def generate_mal(
     is_nsfw: bool = False,
     anilist_data: AniListMediaStruct | None = None,
     anime_api: AnimeApiAnime | None = None,
-) -> list[Embed, Button]:
+) -> list[Embed | list[Button]]:
     """
     Generate an embed for /anime with MAL via Jikan
 
@@ -127,17 +128,20 @@ async def generate_mal(
         MediaIsNsfw: NSFW is not allowed
 
     Returns:
-        list[Embed, Button]: Embed and button
+        list[Embed | list[Button]]: Embed and button
     """
 
     async with JikanApi() as jikan:
         j = await jikan.get_anime_data(entry_id)
 
-    al = anilist_data
+    if anilist_data is not None:
+        al: AniListMediaStruct = anilist_data
+    else:
+        al: None = None
 
     msg_for_thread = warnThreadCW if is_nsfw is not None else ""
 
-    if not is_nsfw:
+    if not is_nsfw and j.genres is not None:
         for g in j.genres:
             gn = g.name
             if "Hentai" in gn:
@@ -175,7 +179,8 @@ async def generate_mal(
         ):
             cyno += cynmo
 
-    jJpg = j.images.jpg
+    if j.images is not None and j.images.jpg is not None:
+        jJpg = j.images.jpg
     note = "Images from "
 
     if not al:
@@ -442,11 +447,13 @@ async def generate_mal(
             EmbedField(name="Status", value=stat, inline=True),
             EmbedField(name="Studio", value=stdio, inline=True),
             EmbedField(name="Aired", value=date),
-        ],
+        ],  # type: ignore
         footer=EmbedFooter(text=note),
     )
-    embed.set_thumbnail(url=poster)
-    embed.set_image(url=background)
+    if poster is not None:
+        embed.set_thumbnail(url=poster)
+    if background is not None:
+        embed.set_image(url=background)
     anime_stats: Button = Button(
         style=ButtonStyle.URL,
         label="Anime Stats",
@@ -483,7 +490,7 @@ async def mal_submit(ctx: SlashContext, ani_id: int) -> None:
         *None*
     """
     channel = ctx.channel
-    nsfw_bool = channel.type in (11, 12) and await get_parent_nsfw_status(channel.parent_id) or channel.nsfw
+    nsfw_bool = channel.type in (11, 12) and await get_parent_nsfw_status(int(channel.parent_id)) or channel.nsfw  # type: ignore
     trailer = []
 
     try:
@@ -491,17 +498,17 @@ async def mal_submit(ctx: SlashContext, ani_id: int) -> None:
             aniApi = await aniapi.get_relation(media_id=ani_id, platform=aniapi.AnimeApiPlatforms.MYANIMELIST)
 
         if aniApi.anilist is not None:
-            async with AniList() as al:
-                alData = await al.anime(media_id=aniApi.anilist)
+            async with AniList() as anilist:
+                alData = await anilist.anime(media_id=aniApi.anilist)
 
-                if alData.trailer and alData.trailer.site == "youtube":
-                    trailer.append(generate_trailer(data=alData))
+                if alData is not None and alData.trailer is not None:
+                    trailer.append(generate_trailer(data=alData.trailer))
         else:
             alData = None
 
         dcEm, buttons = await generate_mal(ani_id, is_nsfw=nsfw_bool, anilist_data=alData, anime_api=aniApi)
-        trailer.extend(buttons)
-        await ctx.send("", embeds=dcEm, components=trailer)
+        trailer.extend(buttons)  # type: ignore
+        await ctx.send("", embeds=dcEm, components=trailer)  # type: ignore
 
     except MediaIsNsfw as e:
         await ctx.send(f"**{e}**\n")
@@ -509,6 +516,6 @@ async def mal_submit(ctx: SlashContext, ani_id: int) -> None:
     except Exception as e:
         embed = generate_commons_except_embed(
             description="We are unable to get the anime information from MyAnimeList via Jikan",
-            error=e,
+            error=f"{e}",
         )
         await ctx.send("", embed=embed)

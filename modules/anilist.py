@@ -1,7 +1,7 @@
-from classes.anilist import AniList
+from classes.anilist import AniList, AniListMediaStruct
+from typing import Any
 
-
-async def search_al_anime(title: str) -> dict:
+async def search_al_anime(title: str) -> list[dict[str, Any]]:
     """
     Search anime via AniList API, formatted in MAL style
 
@@ -9,7 +9,7 @@ async def search_al_anime(title: str) -> dict:
         title (str): Title of the anime to search for
 
     Returns:
-        dict: The formatted data
+        list[dict[str, Any]]: The formatted data
     """
     async with AniList() as anilist:
         data = await anilist.search_media(
@@ -17,7 +17,7 @@ async def search_al_anime(title: str) -> dict:
         )
 
     # Create an empty list to store the formatted data
-    formatted_data = []
+    formatted_data: list[dict[str, Any]] = []
 
     # Loop through each item in the AniList response
     for item in data:

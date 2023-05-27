@@ -27,7 +27,7 @@ from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
 from modules.const import EMOJI_USER_ERROR, LANGUAGE_CODE
 from modules.i18n import fetch_language_data
 
-deflang: LanguageDict = fetch_language_data(LANGUAGE_CODE, useRaw=True)
+deflang = fetch_language_data(LANGUAGE_CODE, use_raw=True)
 
 
 def snowflake_to_datetime(snowflake: int) -> int:
@@ -46,7 +46,7 @@ def snowflake_to_datetime(snowflake: int) -> int:
     """
     timestamp_bin = bin(int(snowflake) >> 22)
     timestamp_dec = int(timestamp_bin, 0)
-    timestamp_unix = (timestamp_dec + 1420070400000) / 1000
+    timestamp_unix = (timestamp_dec + 1420070400000) // 1000
 
     return timestamp_unix
 
@@ -128,7 +128,7 @@ def generate_search_embed(
     platform: str,
     homepage: str,
     title: str,
-    color: hex,
+    color: int,
     icon: str,
     query: str,
     results: list[EmbedField],
@@ -142,7 +142,7 @@ def generate_search_embed(
         platform (str): The platform of the search results.
         homepage (str): The homepage of the search results.
         title (str): The title of the search embed.
-        color (hex): The color of the search embed.
+        color (int): The color of the search embed.
         icon (str): The icon of the search embed.
         query (str): The search query string.
         results (list[EmbedField]): The search results to display in the embed.
@@ -150,7 +150,7 @@ def generate_search_embed(
     Returns:
         Embed: The generated search selection embed.
     """
-    l_: LanguageDict = fetch_language_data(code=language, useRaw=True)
+    l_: LanguageDict = fetch_language_data(code=language, use_raw=True)
     match len(results):
         case 1:
             count = l_["quantities"][f"{mediaType}"]["one"]
@@ -163,7 +163,7 @@ def generate_search_embed(
         color=color,
         title=title,
         description=l_["commons"]["search"]["result"].format(COUNT=count, QUERY=query),
-        fields=results,
+        fields=results,  # type: ignore
     )
     dcEm.set_thumbnail(url=icon)
 
@@ -176,7 +176,7 @@ def generate_utils_except_embed(
     field_value: str,
     error: str,
     language: str = "en_US",
-    color: hex = 0xFF0000,
+    color: int = 0xFF0000,
 ) -> Embed:
     """
     Generate an embed for exceptions in the utilities module.
@@ -187,7 +187,7 @@ def generate_utils_except_embed(
         field_value (str): The value of the field to include in the embed.
         error (str): The error message to include in the embed.
         language (str, optional): The language code to use for the error message. Defaults to "en_US".
-        color (hex, optional): The color of the embed. Defaults to 0xFF0000 (red).
+        color (int, optional): The color of the embed. Defaults to 0xFF0000 (red).
 
     Returns:
         Embed: A Discord embed object containing information about the error.
@@ -196,7 +196,7 @@ def generate_utils_except_embed(
         >>> generate_utils_except_embed("An error occurred while processing the request.", "Field", "Value", "Error message")
         <discord.Embed object at 0x...>
     """
-    l_: LanguageDict = fetch_language_data(code=language, useRaw=True)
+    l_: LanguageDict = fetch_language_data(code=language, use_raw=True)
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
     dcEm = Embed(
         color=color,
@@ -207,7 +207,7 @@ def generate_utils_except_embed(
             EmbedField(
                 name=l_["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
             ),
-        ],
+        ],  # type: ignore
     )
     dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
@@ -217,8 +217,8 @@ def generate_utils_except_embed(
 def generate_commons_except_embed(
     description: str,
     error: str,
-    lang_dict: dict = deflang,
-    color: hex = 0xFF0000,
+    lang_dict: dict = deflang, # type: ignore
+    color: int = 0xFF0000,
 ) -> Embed:
     """
     Generate an embed for general exceptions.
@@ -227,13 +227,13 @@ def generate_commons_except_embed(
         description (str): A description of the error that occurred.
         error (str): The error message to include in the embed.
         lang_dict (dict): A dictionary containing language codes and their associated values. Defaults to default language set on .env.
-        color (hex, optional): The color of the embed. Defaults to 0xFF0000 (red).
+        color (int, optional): The color of the embed. Defaults to 0xFF0000 (red).
 
     Returns:
         Embed: A Discord embed object containing information about the error.
 
     Example:
-        >>> lang_dict: LanguageDict = fetch_language_data(code="en_US", useRaw=True)
+        >>> lang_dict: LanguageDict = fetch_language_data(code="en_US", use_raw=True)
         >>> generate_commons_except_embed("An error occurred while processing the request.", "Error message", lang_dict)
         <discord.Embed object at 0x...>
     """
@@ -246,7 +246,7 @@ def generate_commons_except_embed(
         fields=[
             EmbedField(
                 name=l_["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
-            )
+            )  # type: ignore
         ],
     )
     dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
@@ -255,15 +255,14 @@ def generate_commons_except_embed(
 
 
 def generate_trailer(
-    data: dict | AniListTrailerStruct, is_mal: bool = False, is_simkl: bool = False
+    data: dict | AniListTrailerStruct, is_mal: bool = False
 ) -> Button:
     """
     Generate a button for playing the trailer of a given anime.
 
     Args:
         data (dict | AniListTrailerStruct): A dictionary/dataclass containing information about the anime.
-        is_mal (bool, optional): Whether the anime is from MyAnimeList. Defaults to False.
-        is_simkl (bool, optional): Whether the anime is from Simkl. Defaults to False.
+        is_mal (bool, optional): Whether the anime is from MyAnimeList. Defaults to False..
 
     Returns:
         Button: A Discord button object for playing the anime's trailer.
@@ -273,20 +272,21 @@ def generate_trailer(
         >>> generate_trailer(data)
         <discord_components.button.Button object at 0x...>
     """
-    if is_mal:
-        ytid = data["youtube_id"]
-    elif is_simkl:
-        ytid = data["youtube"]
-    else:
+    if isinstance(data, dict):
+        ytid = data.get("youtube_id" if is_mal else "youtube")
+    elif isinstance(data, AniListTrailerStruct):
         ytid = data.id
-    final = Button(
+    else:
+        raise TypeError("Invalid data type.")
+    if not ytid:
+        raise ValueError("No trailer found.")
+    button = Button(
         label="PV/CM on YouTube",
         style=ButtonStyle.LINK,
         url=f"https://www.youtube.com/watch?v={ytid}",
         emoji=PartialEmoji(id=975564205228965918, name="Youtube"),
     )
-    return final
-
+    return button
 
 async def get_parent_nsfw_status(snowflake: int) -> bool:
     """
@@ -352,7 +352,7 @@ def platform_exception_embed(
     error: str,
     lang_dict: dict,
     error_type: PlatformErrType | str = PlatformErrType.SYSTEM,
-    color: hex = 0xFF0000,
+    color: int = 0xFF0000,
 ) -> Embed:
     """
     Generate an embed of exception reason for platform.
@@ -362,7 +362,7 @@ def platform_exception_embed(
         error (str): Error message
         lang_dict (dict): Language dictionary
         error_type (PlatformErrType | str, optional): Error type. Defaults to PlatformErrType.SYSTEM.
-        color (hex, optional): Embed color. Defaults to 0xFF0000.
+        color (int, optional): Embed color. Defaults to 0xFF0000.
 
     Returns:
         Embed: Embed object
@@ -377,7 +377,7 @@ def platform_exception_embed(
         color=color,
         title=l_["commons"]["error"],
         description=description,
-        fields=[EmbedField(name=l_["commons"]["reason"], value=error, inline=False)],
+        fields=[EmbedField(name=l_["commons"]["reason"], value=error, inline=False)],  # type: ignore
     )
     dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 

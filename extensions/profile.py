@@ -6,7 +6,7 @@ from urllib.parse import quote_plus as urlquote, quote
 import interactions as ipy
 
 from classes.anilist import AniList, AniListUserStruct
-from classes.database import DatabaseException, UserDatabase
+from classes.database import DatabaseException, UserDatabase, UserDatabaseClass
 from classes.excepts import ProviderHttpError
 from classes.jikan import JikanApi, JikanException
 from classes.lastfm import LastFM, LastFMTrackStruct, LastFMUserStruct
@@ -46,10 +46,14 @@ class Profile(ipy.Extension):
             )
         ],
     )
-    async def profile_discord(self, ctx: ipy.SlashContext, user: ipy.User = None):
+    async def profile_discord(
+        self,
+        ctx: ipy.SlashContext,
+        user: ipy.User | ipy.Member | None = None
+    ):
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul, useRaw=True)
+        l_: LanguageDict = fetch_language_data(ul, use_raw=True)
         try:
             embed = await generate_discord_profile_embed(
                 bot=self.bot,
@@ -61,7 +65,7 @@ class Profile(ipy.Extension):
         except Exception as e:
             embed = generate_commons_except_embed(
                 description=l_["strings"]["profile"]["exception"]["general"],
-                error=e,
+                error=f"{e}",
                 lang_dict=l_,
             )
             await ctx.send(embed=embed)
@@ -101,8 +105,8 @@ class Profile(ipy.Extension):
     async def profile_myanimelist(
         self,
         ctx: ipy.SlashContext,
-        user: ipy.User = None,
-        mal_username: str = None,
+        user: ipy.User | ipy.Member | None = None,
+        mal_username: str | None = None,
         embed_layout: Literal["minimal", "old", "new"] = "minimal",
     ):
         await ctx.defer()
@@ -156,7 +160,7 @@ class Profile(ipy.Extension):
         user_id = user_data.mal_id
         birthday = user_data.birthday
         location = user_data.location
-        if location not in ["", None]:
+        if location not in ["", None] and type(location) == str:
             location_url = (
                 f"https://www.openstreetmap.org/search?query={quote(location)}"
             )
@@ -182,6 +186,8 @@ class Profile(ipy.Extension):
             birthday_rem = f"<t:{int(upcoming.timestamp())}:R>"
         else:
             birthday_str = ""
+            birthday_rem: str = ""
+            birthday_rel: str = ""
 
         birthday_formatted = (
             f"{birthday_str} {birthday_rel} (Next birthday {birthday_rem})"
@@ -397,16 +403,16 @@ class Profile(ipy.Extension):
     async def profile_lastfm(
         self,
         ctx: ipy.SlashContext,
-        user: ipy.Member | ipy.User = None,
-        lfm_username: str = None,
+        user: ipy.Member | ipy.User  | None = None,
+        lfm_username: str | None = None,
         maximum: int = 9,
     ):
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul, useRaw=True)
+        l_: LanguageDict = fetch_language_data(ul, use_raw=True)
 
         if lfm_username and user:
-            embed = generate_commons_except_embed(
+            embed = platform_exception_embed(
                 description="You can't use both `user` and `lfm_username` options at the same time!",
                 error_type=PlatformErrType.USER,
                 lang_dict=l_,
@@ -552,16 +558,16 @@ Total scrobbles: {profile.playcount}
     async def profile_anilist(
         self,
         ctx: ipy.SlashContext,
-        user: ipy.Member | ipy.User = None,
-        anilist_username: str = None,
+        user: ipy.Member | ipy.User | None = None,
+        anilist_username: str | None = None,
         embed_layout: Literal["card", "minimal", "old", "new"] = "minimal",
     ) -> None:
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul, useRaw=True)
+        l_: LanguageDict = fetch_language_data(ul, use_raw=True)
 
         if anilist_username and user:
-            embed = generate_commons_except_embed(
+            embed = platform_exception_embed(
                 description="You can't use both `user` and `anilist_username` options at the same time!",
                 error_type=PlatformErrType.USER,
                 lang_dict=l_,
@@ -576,8 +582,8 @@ Total scrobbles: {profile.playcount}
         if anilist_username is None:
             try:
                 async with UserDatabase() as db:
-                    user_data = await db.get_user_data(discord_id=user.id)
-                    anilist_username = user_data.anilist_username
+                    user_data_dc: UserDatabaseClass = await db.get_user_data(discord_id=user.id)
+                    anilist_username = user_data_dc.anilist_username
             except DatabaseException:
                 anilist_username = None
 
@@ -595,10 +601,11 @@ Total scrobbles: {profile.playcount}
             async with AniList() as al:
                 user_data: AniListUserStruct = await al.user(anilist_username)
         except ProviderHttpError as e:
-            embed = generate_commons_except_embed(
+            embed = platform_exception_embed(
                 description=e.message,
-                error=e,
+                error=f"{e}",
                 lang_dict=l_,
+                error_type=PlatformErrType.SYSTEM,
             )
             await ctx.send(embed=embed)
             return
@@ -834,7 +841,8 @@ Total scrobbles: {profile.playcount}
                     url=f"{user_url}/stats/manga/overview",
                 ),
             ]
-            embed.set_image(url=banner)
+            if banner:
+                embed.set_image(url=banner)
 
         await ctx.send(embed=embed, components=components)
 

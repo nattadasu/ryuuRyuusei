@@ -11,7 +11,7 @@ async def generate_discord_profile_embed(
     bot: ipy.AutoShardedClient | ipy.Client,
     ctx: ipy.SlashContext,
     l_: dict,
-    user: ipy.User = None,
+    user: ipy.User | ipy.Member | None = None,
 ) -> ipy.Embed:
     """
     Generate a Discord profile embed
@@ -26,13 +26,14 @@ async def generate_discord_profile_embed(
         ipy.Embed: The embed
     """
     lp = l_["strings"]["profile"]
+    userId: str
     if user is None:
-        userId = ctx.author.id
+        userId = str(ctx.author.id)
     else:
-        userId = user.id
+        userId = str(user.id)
     servData = {}
     user_data = await bot.http.get_user(userId)
-    data = ipy.User.from_dict(user_data, bot)
+    data = ipy.User.from_dict(user_data, bot) # type: ignore
     if ctx.guild:
         servData = await bot.http.get_member(ctx.guild.id, userId)
     if data.accent_color:
@@ -76,30 +77,30 @@ async def generate_discord_profile_embed(
     avatar = data.avatar.url
     # if user is on a server, show server-specific info
     if ctx.guild:
-        if servData["avatar"]:
-            avatar = f"https://cdn.discordapp.com/guilds/{ctx.guild.id}/users/{userId}/avatars/{servData['avatar']}"
+        if servData["avatar"]:  # type: ignore
+            avatar = f"https://cdn.discordapp.com/guilds/{ctx.guild.id}/users/{userId}/avatars/{servData['avatar']}"  # type: ignore
             # if avatar is animated, add .gif extension
-            if servData["avatar"].startswith("a_"):
+            if servData["avatar"].startswith("a_"):  # type: ignore
                 avatar += ".gif"
             else:
                 avatar += ".png"
             avatar += "?size=4096"
-        if servData["nick"] is not None:
-            nick = sanitize_markdown(servData["nick"])
+        if servData["nick"] is not None:  # type: ignore
+            nick = sanitize_markdown(servData["nick"])  # type: ignore
         else:
             nick = sanitize_markdown(data.username)
             nick += " (" + lp["commons"]["default"] + ")"
         joined = datetime.strptime(servData["joined_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
         joined = int(joined.timestamp())
         joined = f"<t:{joined}:R>"
-        if servData["premium_since"]:
-            premium = datetime.strptime(
-                servData["premium_since"], "%Y-%m-%dT%H:%M:%S.%f%z"
+        if servData["premium_since"]:  # type: ignore
+            premium_dt: datetime = datetime.strptime(
+                servData["premium_since"], "%Y-%m-%dT%H:%M:%S.%f%z"  # type: ignore
             )
-            premium: int = int(premium.timestamp())
-            premium = lp["discord"]["boost_since"].format(TIMESTAMP=f"<t:{premium}:R>")
+            premium_ts: int = int(premium_dt.timestamp())
+            premium_str: str = lp["discord"]["boost_since"].format(TIMESTAMP=f"<t:{premium_ts}:R>")
         else:
-            premium = lp["discord"]["not_boosting"]
+            premium_str = lp["discord"]["not_boosting"]
         fields += [
             ipy.EmbedField(
                 name=lp["discord"]["joined_server"],
@@ -113,7 +114,7 @@ async def generate_discord_profile_embed(
             ),
             ipy.EmbedField(
                 name=lp["discord"]["boost_status"],
-                value=premium,
+                value=premium_str,
                 inline=True,
             ),
         ]
@@ -126,10 +127,10 @@ async def generate_discord_profile_embed(
     if data.bot:
         botStatus = "\n🤖 " + lp["commons"]["bot"]
     async with UserDatabase() as db:
-        reg = await db.check_if_registered(discord_id=userId)
+        reg = await db.check_if_registered(discord_id=ipy.Snowflake(int(userId)))
     if reg is True:
         regStatus = "\n✅ " + lp["discord"]["registered"]
-    embed = ipy.Embed(
+    embed: ipy.Embed = ipy.Embed(
         title=lp["discord"]["title"],
         description=lp["commons"]["about"].format(
             USER=data.mention,
@@ -137,10 +138,12 @@ async def generate_discord_profile_embed(
         + botStatus
         + regStatus,
         color=color,
-        fields=fields,
+        fields=fields,  # type: ignore
     )
 
-    embed.set_thumbnail(url=avatar)
-    embed.set_image(url=banner)
+    if avatar is not None:
+        embed.set_thumbnail(url=avatar)
+    if banner is not None:
+        embed.set_image(url=banner)
 
     return embed
