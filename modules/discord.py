@@ -33,7 +33,7 @@ async def generate_discord_profile_embed(
         userId = str(user.id)
     servData = {}
     user_data = await bot.http.get_user(userId)
-    data = ipy.User.from_dict(user_data, bot) # type: ignore
+    data = ipy.User.from_dict(user_data, bot)  # type: ignore
     if ctx.guild:
         servData = await bot.http.get_member(ctx.guild.id, userId)
     if data.accent_color:
@@ -78,7 +78,8 @@ async def generate_discord_profile_embed(
     # if user is on a server, show server-specific info
     if ctx.guild:
         if servData["avatar"]:  # type: ignore
-            avatar = f"https://cdn.discordapp.com/guilds/{ctx.guild.id}/users/{userId}/avatars/{servData['avatar']}"  # type: ignore
+            # type: ignore
+            avatar = f"https://cdn.discordapp.com/guilds/{ctx.guild.id}/users/{userId}/avatars/{servData['avatar']}"
             # if avatar is animated, add .gif extension
             if servData["avatar"].startswith("a_"):  # type: ignore
                 avatar += ".gif"
@@ -95,10 +96,14 @@ async def generate_discord_profile_embed(
         joined = f"<t:{joined}:R>"
         if servData["premium_since"]:  # type: ignore
             premium_dt: datetime = datetime.strptime(
-                servData["premium_since"], "%Y-%m-%dT%H:%M:%S.%f%z"  # type: ignore
+                # type: ignore
+                servData["premium_since"],
+                "%Y-%m-%dT%H:%M:%S.%f%z",
             )
             premium_ts: int = int(premium_dt.timestamp())
-            premium_str: str = lp["discord"]["boost_since"].format(TIMESTAMP=f"<t:{premium_ts}:R>")
+            premium_str: str = lp["discord"]["boost_since"].format(
+                TIMESTAMP=f"<t:{premium_ts}:R>"
+            )
         else:
             premium_str = lp["discord"]["not_boosting"]
         fields += [

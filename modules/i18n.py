@@ -66,7 +66,8 @@ def read_user_language(ctx: BaseContext | InteractionContext) -> str:
 
     try:
         server_df = pd.read_csv("database/server.csv", sep="\t")
-        server_row = server_df.loc[server_df["discordId"] == ctx.guild.id]  # type: ignore
+        # type: ignore
+        server_row = server_df.loc[server_df["discordId"] == ctx.guild.id]
         if len(server_row) > 0:
             return server_row["language"].iloc[0]
     except BaseException:
@@ -172,7 +173,8 @@ async def set_default_language(
             df = pd.read_csv("database/server.csv", sep="\t")
             if df.query(f"serverId == {ctx.guild.id}").empty:  # type: ignore
                 dfa = pd.DataFrame(
-                    [[ctx.guild.id, code]], columns=["serverId", "language"]  # type: ignore
+                    [[ctx.guild.id, code]],
+                    columns=["serverId", "language"],  # type: ignore
                 )
                 dfen = dfa.append(df, ignore_index=True)
                 dfen.to_csv("database/server.csv", sep="\t", index=False)

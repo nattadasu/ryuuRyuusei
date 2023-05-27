@@ -78,15 +78,19 @@ class Random(ipy.Extension):
                 ],
                 required=False,
             ),
-        ]
+        ],
     )
-    async def random_manga(self, ctx: ipy.SlashContext, media_type: Literal['manga', 'one_shot', 'light_novel'] = "manga"):
+    async def random_manga(
+        self,
+        ctx: ipy.SlashContext,
+        media_type: Literal["manga", "one_shot", "light_novel"] = "manga",
+    ):
         await ctx.defer()
         send = await ctx.send(
             embed=ipy.Embed(
                 title="Random Manga",
                 description="Getting a random manga...",
-                color=0x02a9ff,
+                color=0x02A9FF,
                 footer=ipy.EmbedFooter(
                     text="This may take a while...",
                 ),
@@ -122,7 +126,7 @@ class Random(ipy.Extension):
                 embed=ipy.Embed(
                     title="Random Manga",
                     description="We couldn't find any manga. Please try again.",
-                    color=0xff0000,
+                    color=0xFF0000,
                 )
             )
             return
@@ -130,7 +134,7 @@ class Random(ipy.Extension):
             embed=ipy.Embed(
                 title="Random manga",
                 description=f"We've found AniList ID [`{media_id}`](https://anilist.co/manga/{media_id}). Fetching info...",
-                color=0x02a9ff,
+                color=0x02A9FF,
                 footer=ipy.EmbedFooter(
                     text="This may take a while...",
                 ),
