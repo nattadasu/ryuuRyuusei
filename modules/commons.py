@@ -89,6 +89,7 @@ def sanitize_markdown(text: str) -> str:
     """
     replacements = {
         "\\": "\\\\",
+        "\r": " ", # remove carriage returns
         "_": "\\_",
         "(": "\\(",
         ")": "\\)",
@@ -108,7 +109,7 @@ def sanitize_markdown(text: str) -> str:
     for pattern, repl in replacements.items():
         text = text.replace(pattern, repl)
 
-    return text
+    return text.strip()
 
 
 def convert_html_to_markdown(text: str) -> str:
