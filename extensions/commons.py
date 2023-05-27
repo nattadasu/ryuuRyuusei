@@ -4,11 +4,13 @@ from datetime import timezone as tz
 from time import perf_counter as pc
 
 import interactions as ipy
+from aiohttp import __version__ as aiohttp_version
 
 from modules.const import (
     AUTHOR_USERNAME,
     BOT_CLIENT_ID,
     BOT_SUPPORT_SERVER,
+    USER_AGENT,
     database,
     gittyHash,
     gtHsh,
@@ -36,8 +38,11 @@ class CommonCommands(ipy.Extension):
     async def about(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
         l_: LanguageDict = fetch_language_data(ul)["strings"]["about"]
+        authors = ""
+        for u in self.bot.owners:
+            authors += f"* {u.username} (<@!{u.id}>)\n"
         embed = ipy.Embed(
-            title=l_["header"],
+            title="About",
             description=l_["text"].format(
                 BOT_CLIENT_ID=BOT_CLIENT_ID,
                 AUTHOR_USERNAME=AUTHOR_USERNAME,
@@ -46,8 +51,37 @@ class CommonCommands(ipy.Extension):
                 gtHsh=gtHsh,
                 gittyHash=gittyHash,
             ),
+            fields=[
+                ipy.EmbedField(
+                    name="User Agent",
+                    value=f'```http\nUser-Agent: "{USER_AGENT}"\n```',
+                    inline=False,
+                ),
+                ipy.EmbedField(
+                    name="Interactions.py Version",
+                    value=f"```py\n{ipy.__version__}\n```",
+                    inline=True,
+                ),
+                ipy.EmbedField(
+                    name="Aiohttp Version",
+                    value=f"```py\n{aiohttp_version}\n```",
+                    inline=True,
+                ),
+                ipy.EmbedField(
+                    name="Python Version",
+                    value=f"```py\n{ipy.__py_version__}\n```",
+                    inline=True,
+                ),
+                ipy.EmbedField(
+                    name="Bot Author",
+                    value=f"{authors}",
+                    inline=False,
+                ),
+            ],
             color=0x996422,
         )
+        embed.set_thumbnail(self.bot.user.avatar.url)
+        embed.set_footer(text="To get uptime and other info, use /ping")
         await ctx.send(embed=embed)
 
     @ipy.slash_command(name="ping", description="Ping the bot")
