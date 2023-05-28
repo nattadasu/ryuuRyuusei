@@ -152,6 +152,7 @@ class Anime(ipy.Extension):
         await ctx.defer()
         ani_id: int = int(ctx.values[0])
         await mal_submit(ctx, ani_id)
+        await asyncio.sleep(65)
         await ctx.delete(ctx.message_id)
 
     @anime.subcommand(

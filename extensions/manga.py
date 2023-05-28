@@ -98,7 +98,7 @@ class Manga(ipy.Extension):
                     ipy.StringSelectOption(
                         label=md_title[:77] + "..." if len(md_title) > 77 else md_title,
                         value=str(media_id),
-                        description=f"{format}, {status}, {year}",
+                        description=f"{format_str}, {status}, {year}",
                     )
                 )
             title = l_["commons"]["search"]["result_title"].format(
@@ -128,7 +128,7 @@ class Manga(ipy.Extension):
                 embed=result_embed,
                 components=components,
             )
-            asyncio.sleep(60)
+            await asyncio.sleep(60)
             await send.edit(components=[])
         except Exception as _:
             l_: dict[str, str] = l_["strings"]["manga"]["search"]["exception"]
@@ -149,6 +149,7 @@ class Manga(ipy.Extension):
         await ctx.defer()
         entry_id: int = int(ctx.values[0])
         await anilist_submit(ctx, entry_id)
+        await asyncio.sleep(65)
         await ctx.delete(ctx.message_id)
 
     @manga.subcommand(

@@ -125,6 +125,7 @@ class TvShow(ipy.Extension):
         await ctx.defer()
         entry_id: int = int(ctx.values[0])
         await simkl_submit(ctx, entry_id, "tv")
+        await asyncio.sleep(65)
         await ctx.delete(ctx.message_id)
 
     @tv.subcommand(
