@@ -140,11 +140,23 @@ If you have any questions, feel free to join the
 > Any command that has ⌚ as prefix means that the command is not currently
 > available during heavy rewrite. It will be available soon, well... hopefully.
 
+### Commons Bot Commands
+
+- `/about` - Get information about the bot
+- `/help` - Get a list of all curretly available commands
+- `/invite` - Get the bot's invite link
+- `/ping` - Check the bot latency
+- `/privacy` - Get information about the bot's privacy policy
+- `/support` - Support the bot by donating or contributing to the bot's
+  development
+
 ### Anime Commands
 
 > Utilize MyAnimeList via Jikan
 
 - `/anime info` - Get information about an anime using direct MyAnimeList ID
+- `/anime random` - Get a random anime from MyAnimeList, powered by
+  [AnimeApi](https://nttds.my.id/discord)
 - `/anime search` - Search for an anime, using AniList's search API
 
 ### Manga Commands
@@ -152,6 +164,8 @@ If you have any questions, feel free to join the
 > Utilize AniList
 
 - `/manga info` - Get information about a manga using direct AniList ID
+- `/manga random` - Get a random manga from AniList, powered by
+  [AniBrain](https://anibrain.ai)
 - `/manga search` - Search for a manga
 
 ### Game Commands
@@ -166,8 +180,10 @@ If you have any questions, feel free to join the
 > Utilize SIMKL for Metadata and TMDB for NSFW check
 
 - ⌚ `/movie info` - Get information about a movie using direct SIMKL ID
+- ⌚ `/movie random` - Get a random movie from SIMKL
 - ⌚ `/movie search` - Search for a movie
 - ⌚ `/tv info` - Get information about a TV show using direct SIMKL ID
+- ⌚ `/tv random` - Get a random TV show from SIMKL
 - ⌚ `/tv search` - Search for a TV show
 
 ### Music Commands
@@ -235,25 +251,14 @@ If you have any questions, feel free to join the
   verification code from either `/serversettings member register` or `/register`
   command, used when user can't invoke `/register`
 - `/serversettings member verify_club` - Verify member's MAL account to the
-  server that host the bot, used when user can't invoke `/verify`
+  server that hosts the bot, used when user can't invoke `/verify`
 
 ### Randomization Commands
 
-> Collection of commands that returns random result.
+> Collection of commands that returns (true) random result.
 
-- `/random anime` - Get a random anime from MyAnimeList, powered by
-  [AnimeApi](https://nttds.my.id/discord)
-- `/random manga` - Get a random manga from AniList, powered by
-  [AniBrain](https://anibrain.ai)
-- ⌚ `/random movie` - Get a random movie from SIMKL
-- `/random nekomimi` - Get a random nekomimi image from nattadasu's nekomimiDb
-  - `/random nekomimi boy` - Show an image of a boy in nekomimi
-  - `/random nekomimi girl` - Show an image of a girl in nekomimi
-  - `/random nekomimi randomize` - Show an image of a character in nekomimi
-    regardless the gender
 - `/random number` - Get a random number from Random.org
 - `/random string` - Get a random string from Random.org
-- ⌚ `/random tv` - Get a random TV show from SIMKL
 
 ### Utility Commands
 
@@ -268,6 +273,16 @@ If you have any questions, feel free to join the
 - `/utilities site status` - Check if the site is up or down
 - `/utilities snowflake` - Get a snowflake's information
 
+### Images: Cat Ears (Nekomimi) Commands
+
+> Collection of commands that returns SFW images of characters in cat ears
+> (nekomimi). Powered by [nattadasu's nekomimiDB](https://github.com/nattadasu/nekomimiDb).
+
+- `/nekomimi random any` - Get a random image of character in cat ears
+  (nekomimi) of whatever gender they are.
+- `/nekomimi random boy` - Get a random image of boy character in cat ears.
+- `/nekomimi random girl` - Get a random image of girl character in cat ears.
+
 ### Dictionary Commands
 
 > Search a term from known dictionary!
@@ -277,16 +292,6 @@ If you have any questions, feel free to join the
 - ⌚ `/dictionary urban search` - Search a term from Urban Dictionary
 - ⌚ `/dictionary urban wotd` - Get a word of the day from Urban Dictionary
 - ⌚ `/dictionary urban random` - Get a random word from Urban Dictionary
-
-### Commons Bot Commands
-
-- `/about` - Get information about the bot
-- `/help` - Get a list of all curretly available commands
-- `/invite` - Get the bot's invite link
-- `/ping` - Check the bot latency
-- `/privacy` - Get information about the bot's privacy policy
-- `/support` - Support the bot by donating or contributing to the bot's
-  development
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
