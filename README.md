@@ -178,12 +178,12 @@ If you have any questions, feel free to join the
 
 > Utilize SIMKL for Metadata and TMDB for NSFW check
 
-- ⌚ `/movie info` - Get information about a movie using direct SIMKL ID
-- ⌚ `/movie random` - Get a random movie from SIMKL
-- ⌚ `/movie search` - Search for a movie
-- ⌚ `/tv info` - Get information about a TV show using direct SIMKL ID
-- ⌚ `/tv random` - Get a random TV show from SIMKL
-- ⌚ `/tv search` - Search for a TV show
+- `/movie info` - Get information about a movie using direct SIMKL ID
+- `/movie random` - Get a random movie from SIMKL
+- `/movie search` - Search for a movie
+- `/tv info` - Get information about a TV show using direct SIMKL ID
+- `/tv random` - Get a random TV show from SIMKL
+- `/tv search` - Search for a TV show
 
 ### Music Commands
 
