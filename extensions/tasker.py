@@ -33,6 +33,7 @@ class BotTasker(Extension):
             "kitsu": a_day,
             "pronoundb": a_week,
             "rawg": a_day,
+            "shikimori": {"base": a_day, "user": half_day},
             "simkl": a_day,
             "spotify": a_week * 2,
             "thecolorapi": a_week,

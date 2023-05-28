@@ -352,7 +352,7 @@ API:
 |              MyAnimeList | *Does not cache*                                    |
 |                PronounDB | 1 week                                              |
 |                     RAWG | 1 day                                               |
-|                Shikimori | *Does not cache*                                    |
+|  Shikimori: User Profile | 12 hours                                            |
 |                    SIMKL | 1 day                                               |
 |                  Spotify | 2 weeks                                             |
 |            The Color API | 1 week                                              |

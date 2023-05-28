@@ -216,7 +216,7 @@ If you have any questions, feel free to join the
 - `/profile discord` - Get your Discord profile
 - `/profile lastfm` - Get your Last.fm profile
 - `/profile myanimelist` - Get your MyAnimeList profile
-- ⌚ `/profile shikimori` - Get your Shikimori profile
+- `/profile shikimori` - Get your Shikimori profile
 - `/whoami` - Show stored information and settings about you on the bot
   graphically and interactively
 
