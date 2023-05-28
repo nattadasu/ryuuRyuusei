@@ -51,19 +51,17 @@ class Games(ipy.Extension):
                 results = await rawg.search(query=query)
             f = []
             for r in results:
-                rhel = r['released']
+                rhel = r["released"]
                 f += [
                     ipy.EmbedField(
-                        name=r['name'],
-                        value=f"*Released on: {rhel}*",
-                        inline=False
+                        name=r["name"], value=f"*Released on: {rhel}*", inline=False
                     )
                 ]
                 so += [
                     ipy.StringSelectOption(
-                        label=r['name'],
-                        value=r['slug'],
-                        description=f"Released: {rhel}"
+                        label=r["name"],
+                        value=r["slug"],
+                        description=f"Released: {rhel}",
                     )
                 ]
             result_embed = generate_search_embed(

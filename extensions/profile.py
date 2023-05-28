@@ -1019,7 +1019,7 @@ Total scrobbles: {profile.playcount}
         embed_author = ipy.EmbedAuthor(
             name="Shikimori Profile",
             url="https://shikimori.me",
-            icon_url="https://cdn.discordapp.com/emojis/1073441855645155468.webp"
+            icon_url="https://cdn.discordapp.com/emojis/1073441855645155468.webp",
         )
         embed_color = 0x343434
         components = [
@@ -1145,6 +1145,7 @@ Total scrobbles: {profile.playcount}
             )
 
         await ctx.send(embed=embed, components=components)
+
 
 def setup(bot):
     Profile(bot)

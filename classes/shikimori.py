@@ -234,7 +234,7 @@ class Shikimori:
                 "RyuuzakiRyuusei", SHIKIMORI_APPLICATION_NAME
             ),
             "Accept": "application/json",
-            "Content-Type": "application/json; charset=utf-8"
+            "Content-Type": "application/json; charset=utf-8",
         }
         self.params = {"client_id": SHIKIMORI_CLIENT_ID}
         return self
@@ -307,7 +307,8 @@ class Shikimori:
                     datetime.fromtimestamp(a["name"][1], tz=timezone.utc),
                 ],
                 value=a["value"],
-            ) for a in data["stats"]["activity"]
+            )
+            for a in data["stats"]["activity"]
         ]
         data["stats"]["has_anime"] = data["stats"]["has_anime?"]
         del data["stats"]["has_anime?"]
@@ -316,14 +317,15 @@ class Shikimori:
         data["stats"] = ShikimoriStatistics(**data["stats"])
         if data.get("favourites", None):
             for k, v in data["favourites"].items():
-                data["favourites"][k] = [
-                    ShikimoriFavoriteStruct(**a) for a in data["favourites"][k]
-                ] if v is not None or len(v) > 0 else None
+                data["favourites"][k] = (
+                    [ShikimoriFavoriteStruct(**a) for a in data["favourites"][k]]
+                    if v is not None or len(v) > 0
+                    else None
+                )
             data["favourites"] = ShikimoriFavorites(**data["favourites"])
         data["sex"] = ShikimoriUserGender(data["sex"])
         user = ShikimoriUserStruct(**data)
         return user
-
 
     async def get_user(
         self, user_id: int | str, is_nickname: bool = True
@@ -352,7 +354,8 @@ class Shikimori:
         user_id_int = data["id"]
         favs = f"{self.base_url}users/{user_id_int}/favourites"
         favourites: dict = await self._request(
-            "GET", favs,
+            "GET",
+            favs,
         )
         data["favourites"] = favourites
         self.write_data_to_cache(data, cache_file_path)
