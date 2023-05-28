@@ -50,9 +50,7 @@ class Random(ipy.Extension):
             embed.set_footer(text="Please try again later")
             emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", EMOJI_UNEXPECTED_ERROR)
             embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
-            await ctx.send(
-                embed=embed,
-            )
+            await ctx.send(embed=embed)
             return
 
         answers = [
@@ -77,18 +75,18 @@ class Random(ipy.Extension):
             "Outlook not so good.",
             "Very doubtful.",
         ]
-        ans = numbers[0]
-        if ans >= 0 and ans < 5:
+
+        if numbers[0] < 5:
             emoji = EMOJI_SUCCESS
-        elif ans >= 5 and ans < 10:
+        elif numbers[0] < 10:
             emoji = EMOJI_ATTENTIVE
-        elif ans >= 10 and ans < 15:
+        elif numbers[0] < 15:
             emoji = EMOJI_DOUBTING
-        elif ans >= 15 and ans < 20:
+        else:
             emoji = EMOJI_UNEXPECTED_ERROR
 
         emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", emoji)
-        emoji_url=f"https://cdn.discordapp.com/emojis/{emoji}.png"
+        emoji_url = f"https://cdn.discordapp.com/emojis/{emoji}.png"
 
         embed = ipy.Embed(
             title="8ball",
@@ -100,16 +98,14 @@ class Random(ipy.Extension):
                 ),
                 ipy.EmbedField(
                     name="My Answer",
-                    value=f"**{answers[ans]}**",
+                    value=f"**{answers[numbers[0]]}**",
                     inline=False,
                 ),
             ],
             color=0x1F1F1F,
         )
         embed.set_thumbnail(url=emoji_url)
-        await ctx.send(
-            embed=embed,
-        )
+        await ctx.send(embed=embed)
 
 
     @random.subcommand(
