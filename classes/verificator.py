@@ -65,10 +65,10 @@ class Verificator:
         return str(uuid4())
 
     def save_user_uuid(
-            self,
-            discord_id: int,
-            mal_username: str,
-        ) -> VerificatorUser:
+        self,
+        discord_id: int,
+        mal_username: str,
+    ) -> VerificatorUser:
         """
         Save user UUID
 

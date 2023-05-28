@@ -24,11 +24,7 @@ class BotTasker(Extension):
         a_month = a_day * 30
 
         known_caches = {
-            "anilist": {
-                "base": a_day,
-                "user": half_day,
-                "nsfw": a_week
-            },
+            "anilist": {"base": a_day, "user": half_day, "nsfw": a_week},
             "animeapi": a_day,
             "jikan": {
                 "base": a_day,
