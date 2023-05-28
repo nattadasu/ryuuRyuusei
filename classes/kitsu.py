@@ -37,11 +37,11 @@ class Kitsu:
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Exit the async context manager"""
-        self.close()
+        await self.close()
 
     async def close(self):
         """Close the aiohttp session"""
-        self.session.close()
+        await self.session.close()
 
     class MediaType(Enum):
         """Media type enum"""
