@@ -620,7 +620,7 @@ Total scrobbles: {profile.playcount}
         if donator >= 3:
             donator_flair = f" (`{user_data.donatorBadge}`)"
         elif donator >= 1:
-            donator_flair = f" (Donator)"
+            donator_flair = " (Donator)"
         else:
             donator_flair = ""
         donator = f"Tier {donator}" if donator != 0 else "Not a donator"

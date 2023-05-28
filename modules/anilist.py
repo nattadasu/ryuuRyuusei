@@ -268,7 +268,7 @@ async def generate_anilist(
         if average_score == 0:
             people_voted += " (UNSCORED)"
     elif people_voted == 1:
-        people_voted = f"1 person voted"
+        people_voted = "1 person voted"
 
     year = "Unknown year"
     start_date = ""
@@ -326,20 +326,20 @@ async def generate_anilist(
                 value=english if english else "*None*",
                 inline=True,
             ),
-            EmbedField(name=f"Native Title", value=native, inline=True),
+            EmbedField(name="Native Title", value=native, inline=True),
             EmbedField(
-                name=f"Synonyms",
+                name="Synonyms",
                 value=syns,
             ),
             EmbedField(
                 name=f"Genres and Tags{'*' if sy_chk_mark else ''}",
                 value=tags_formatted,
             ),
-            EmbedField(name=f"Volumes", value=volumes, inline=True),
-            EmbedField(name=f"Chapters", value=chapters, inline=True),
-            EmbedField(name=f"Status", value=status, inline=True),
+            EmbedField(name="Volumes", value=volumes, inline=True),
+            EmbedField(name="Chapters", value=chapters, inline=True),
+            EmbedField(name="Status", value=status, inline=True),
             EmbedField(
-                name=f"Published",
+                name="Published",
                 value=f"{start_date} - {end_date} ({start_date.replace('D', 'R')})",
             ),
         ],

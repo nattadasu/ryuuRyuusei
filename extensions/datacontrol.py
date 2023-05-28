@@ -142,11 +142,11 @@ class DataControl(ipy.Extension):
         fields = [
             ipy.EmbedField(
                 name="1. Sign in to MyAnimeList",
-                value=f"To make thing easier, sign your account in on your default browser. [Click here to sign in](https://myanimelist.net/login.php).",
+                value="To make thing easier, sign your account in on your default browser. [Click here to sign in](https://myanimelist.net/login.php).",
             ),
             ipy.EmbedField(
                 name="2. Go to your profile settings",
-                value=f"Once you are signed in, go to your profile settings. [Click here to go to your profile settings](https://myanimelist.net/editprofile.php).",
+                value="Once you are signed in, go to your profile settings. [Click here to go to your profile settings](https://myanimelist.net/editprofile.php).",
             ),
             ipy.EmbedField(
                 name='3. Scroll down to "My Details" and find "Location"',
