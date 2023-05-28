@@ -523,7 +523,9 @@ class Simkl:
             raise ProviderHttpError(error_message, response.status)
 
     async def get_title_ids(
-        self, media_id: int, media_type: SimklMediaTypes | Literal["anime", "movie", "tv"]
+        self,
+        media_id: int,
+        media_type: SimklMediaTypes | Literal["anime", "movie", "tv"],
     ) -> SimklRelations:
         """
         Get IDs of the title

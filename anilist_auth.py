@@ -68,9 +68,7 @@ async def fetch_access_token(auth_code: str):
     )
     headers = {"Accept": "application/json"}
     async with aiohttp.ClientSession() as session, session.post(
-        token_uri,
-        json=json_req,
-        headers=headers
+        token_uri, json=json_req, headers=headers
     ) as response:
         token = await response.json()
         now = int(datetime.now(tz=timezone.utc).timestamp())

@@ -72,7 +72,7 @@ class TopGG:
         elif shard_id is None or shard_count is None:
             raise ProviderTypeError(
                 "Both shard_id and shard_count must be provided if one of them is provided",
-                ["shard_id", "shard_count"]
+                ["shard_id", "shard_count"],
             )
         async with self.session.post(
             f"{self.base_url}/bots/{self.bot_id}/stats",
@@ -80,8 +80,5 @@ class TopGG:
             headers=self.headers,
         ) as resp:
             if resp.status not in [200, 204]:
-                raise ProviderHttpError(
-                    resp.reason,
-                    resp.status
-                )
+                raise ProviderHttpError(resp.reason, resp.status)
             return resp.status
