@@ -6,7 +6,7 @@ from modules.anilist import search_al_anime
 from modules.commons import generate_search_embed, sanitize_markdown
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
-from modules.myanimelist import mal_submit, searchMalAnime
+from modules.myanimelist import mal_submit, search_mal_anime, lookup_random_anime
 from classes.i18n import LanguageDict
 
 
@@ -61,7 +61,7 @@ class Anime(ipy.Extension):
             if provider == "anilist":
                 res = await search_al_anime(title=query)
             elif provider == "mal":
-                res = await searchMalAnime(title=query)
+                res = await search_mal_anime(title=query)
             if not res:
                 raise Exception("No result")
             f: list[ipy.EmbedField] = []
@@ -169,6 +169,35 @@ class Anime(ipy.Extension):
     async def anime_info(self, ctx: ipy.SlashContext, mal_id: int):
         await ctx.defer()
         await mal_submit(ctx, mal_id)
+
+    @anime.subcommand(
+        sub_cmd_name="random",
+        sub_cmd_description="Get a random anime, powered by AnimeAPI",
+    )
+    async def anime_random(self, ctx: ipy.SlashContext):
+        await ctx.defer()
+        send = await ctx.send(
+            embed=ipy.Embed(
+                title="Random Anime",
+                description="Getting a random anime...",
+                color=0x213498,
+                footer=ipy.EmbedFooter(
+                    text="This may take a while...",
+                ),
+            )
+        )
+        anime = lookup_random_anime()
+        await send.edit(
+            embed=ipy.Embed(
+                title="Random Anime",
+                description=f"We've found MAL ID [`{anime}`](https://myanimelist.net/anime/{anime}). Fetching info...",
+                color=0x213498,
+                footer=ipy.EmbedFooter(
+                    text="This may take a while...",
+                ),
+            )
+        )
+        await mal_submit(ctx, anime)
 
 
 def setup(bot):
