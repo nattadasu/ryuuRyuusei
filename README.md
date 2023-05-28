@@ -229,12 +229,13 @@ If you have any questions, feel free to join the
 
 - `/serversettings language set` - Set your preferred language for the bot
   response
-- ⌚ `/serversettings member register` - Register member's MAL account to the bot,
+- `/serversettings member register` - Register member's MAL account to the bot,
   used when user can't invoke `/register`
-- ⌚ `/serversettings member unregister` - Unregister member's MAL account from the
-  bot, used when user can't invoke `/unregister`
-- ⌚ `/serversettings member verify` - Verify member's MAL account to the server
-  that host the bot, used when user can't invoke `/verify`
+- `/seversettings member verify` - Verify memeber's MAL account after receiving
+  verification code from either `/serversettings member register` or `/register`
+  command, used when user can't invoke `/register`
+- `/serversettings member verify_club` - Verify member's MAL account to the
+  server that host the bot, used when user can't invoke `/verify`
 
 ### Randomization Commands
 

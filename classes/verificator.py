@@ -64,7 +64,11 @@ class Verificator:
         """
         return str(uuid4())
 
-    def save_user_uuid(self, discord_id: int, mal_username: str) -> VerificatorUser:
+    def save_user_uuid(
+            self,
+            discord_id: int,
+            mal_username: str,
+        ) -> VerificatorUser:
         """
         Save user UUID
 
@@ -86,7 +90,10 @@ class Verificator:
         self.write_data_to_cache(data.to_dict(), cache_file_path)
         return data
 
-    def get_user_uuid(self, discord_id: int) -> VerificatorUser | None:
+    def get_user_uuid(
+        self,
+        discord_id: int,
+    ) -> VerificatorUser | None:
         """
         Get user UUID
 

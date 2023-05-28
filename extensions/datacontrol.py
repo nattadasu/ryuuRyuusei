@@ -127,6 +127,7 @@ class DataControl(ipy.Extension):
                 required=True,
             ),
         ],
+        dm_permission=False,
     )
     async def register(
         self, ctx: ipy.SlashContext, mal_username: str, accept_privacy_policy: bool
