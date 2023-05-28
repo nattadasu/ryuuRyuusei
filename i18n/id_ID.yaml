@@ -537,6 +537,30 @@ strings:
           I couldn't able to find any results for {QUERY} on AniList. Please check your query and try again.
         footer: >
           Pro tip: Use native title to get the most accurate result... that if you know how to write it in Japanese :P
+  games:
+    search:
+      exception:
+        title: Error
+        text: >-
+          I couldn't able to find any results for {QUERY} on RAWG. Please check your query and try again.
+        footer: >
+          Pro tip: Use native title to get the most accurate result... But I can't guarantee if RAWG has original title, it depends.
+  tv:
+    search:
+      exception:
+        title: Error
+        text: >-
+          I couldn't able to find any results for {QUERY} on SIMKL. Please check your query and try again.
+        footer: >
+          Pro tip: Use native title to get the most accurate result... that if you know how to write it
+  movies:
+    search:
+      exception:
+        title: Error
+        text: >-
+          I couldn't able to find any results for {QUERY} on SIMKL. Please check your query and try again.
+        footer: >
+          Pro tip: Use native title to get the most accurate result... that if you know how to write it
   profile:
     commons:
       about: "Informasi mengenai {USER}"
