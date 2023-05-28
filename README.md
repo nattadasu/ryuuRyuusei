@@ -257,6 +257,7 @@ If you have any questions, feel free to join the
 
 > Collection of commands that returns (true) random result.
 
+- `/random 8ball` - Ask the magic 8 ball
 - `/random number` - Get a random number from Random.org
 - `/random string` - Get a random string from Random.org
 

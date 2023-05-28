@@ -1,6 +1,14 @@
+import re
+
 import interactions as ipy
 
-from classes.randomorg import RandomOrg
+from classes.randomorg import ProviderHttpError, RandomOrg
+from modules.const import (
+    EMOJI_ATTENTIVE,
+    EMOJI_DOUBTING,
+    EMOJI_SUCCESS,
+    EMOJI_UNEXPECTED_ERROR
+)
 
 
 class Random(ipy.Extension):
@@ -15,6 +23,94 @@ class Random(ipy.Extension):
     )
     async def random(self, ctx: ipy.SlashContext):
         pass
+
+    @random.subcommand(
+        sub_cmd_name="8ball",
+        sub_cmd_description="Get a random answer to your question",
+        options=[
+            ipy.SlashCommandOption(
+                name="question",
+                description="Your question",
+                required=True,
+                type=ipy.OptionType.STRING,
+            ),
+        ]
+    )
+    async def random_8ball(self, ctx: ipy.SlashContext, question: str):
+        await ctx.defer()
+        try:
+            async with RandomOrg() as rand:
+                numbers = await rand.integers(num=1, min_val=0, max_val=19, base=10)
+        except ProviderHttpError:
+            embed = ipy.Embed(
+                title="Unexpected error",
+                description="An unexpected error has occurred while trying to get a random number from random.org",
+                color=0xFF0000,
+            )
+            embed.set_footer(text="Please try again later")
+            emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", EMOJI_UNEXPECTED_ERROR)
+            embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
+            await ctx.send(
+                embed=embed,
+            )
+            return
+
+        answers = [
+            "It is certain.",
+            "It is decidedly so.",
+            "Without a doubt.",
+            "Yes definitely.",
+            "You may rely on it.",
+            "As I see it, yes.",
+            "Most likely.",
+            "Outlook good.",
+            "Yes.",
+            "Signs point to yes.",
+            "Reply hazy, try again.",
+            "Ask again later.",
+            "Better not tell you now.",
+            "Cannot predict now.",
+            "Concentrate and ask again.",
+            "Don't count on it.",
+            "My reply is no.",
+            "My sources say no.",
+            "Outlook not so good.",
+            "Very doubtful.",
+        ]
+        ans = numbers[0]
+        if ans >= 0 and ans < 5:
+            emoji = EMOJI_SUCCESS
+        elif ans >= 5 and ans < 10:
+            emoji = EMOJI_ATTENTIVE
+        elif ans >= 10 and ans < 15:
+            emoji = EMOJI_DOUBTING
+        elif ans >= 15 and ans < 20:
+            emoji = EMOJI_UNEXPECTED_ERROR
+
+        emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", emoji)
+        emoji_url=f"https://cdn.discordapp.com/emojis/{emoji}.png"
+
+        embed = ipy.Embed(
+            title="8ball",
+            fields=[
+                ipy.EmbedField(
+                    name="Question",
+                    value=f"{question}",
+                    inline=False,
+                ),
+                ipy.EmbedField(
+                    name="My Answer",
+                    value=f"**{answers[ans]}**",
+                    inline=False,
+                ),
+            ],
+            color=0x1F1F1F,
+        )
+        embed.set_thumbnail(url=emoji_url)
+        await ctx.send(
+            embed=embed,
+        )
+
 
     @random.subcommand(
         sub_cmd_name="number",
