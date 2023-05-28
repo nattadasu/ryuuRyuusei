@@ -87,7 +87,7 @@ quantities:
     two: 2 menit
     many: "{count} menit"
 genres:
-  4_koma: 4 Panel
+  _yon_koma: 4-koma
   achromatic: Akromatik
   achronological_order: Urutan Anakronologis
   acting: Akting
@@ -408,7 +408,7 @@ genres:
   werewolf: Manusia Serigala
   witch: Penyihir
   work: Pekerjaan
-  workplace: Tempat Kerja
+  workplace: Wor kplace
   wrestling: Gulat
   writing: Penulisan
   wuxia: Wuxia
@@ -421,17 +421,17 @@ strings:
   #all of the key names is basically the command name in the bot
   about:
     text: >-
-      <@!{BOT_CLIENT_ID}> adalah bot yang dibuat dan digunakan secara pribadi oleh [nattadasu](https://nattadasu.my.id) dengan tujuan awal untuk verifikasi anggota dan integrasi profil MAL. Bot ini didistribusikan di bawah lisensi [AGPL 3.0](https://www.gnu.org/licenses/agpl-3.0.en.html). ([Kode Sumber](https://github.com/nattadasu/ryuuRyuusei), kode sumber di repositori mungkin lebih lama dari produksi utama yang dikelola oleh nattadasu).
+      <@!{BOT_CLIENT_ID}> is a bot personally created and used by [nattadasu](https://nattadasu.my.id) with the initial purpose as for member verification and MAL profile integration bot, which is distributed under [AGPL 3.0](https://www.gnu.org/licenses/agpl-3.0.en.html) license. ([Source Code](https://github.com/nattadasu/ryuuRyuusei), source code in repository may be older than main production maintained by nattadasu) 
 
-      Namun, karena kemampuan bot dalam mencari informasi tentang pengguna, anime di MAL, dan manga di AniList yang sangat baik, tautan undangan tersedia untuk siapa saja yang tertarik mengundang bot (lihat `/invite`). 
+      However, due to how advanced the bot in querying information regarding user, anime on MAL, and manga on AniList, invite link is available for anyone who's interested to invite the bot (see `/invite`). 
 
-      Bot ini mungkin memerlukan persetujuan kamu untuk mengumpulkan dan menyimpan data kamu saat kamu menggunakan perintah `/register`. Kamu dapat melihat kebijakan privasi dengan menggunakan perintah `/privacy`. 
+      This bot may requires your consent to collect and store your data when you invoke `/register` command. You can see the privacy policy by using `/privacy` command. 
 
-      Namun, kamu masih dapat menggunakan bot tanpa mengumpulkan data kamu, meskipun penggunaannya terbatas. 
+      However, you still able to use the bot without collecting your data, albeit limited usage. 
 
-      Jika kamu ingin menghubungi penulis, kirim DM ke [{AUTHOR_USERNAME}]({ownerUserUrl}) atau melalui [server dukungan]({BOT_SUPPORT_SERVER}). 
+      If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({ownerUserUrl}) or via [support server]({BOT_SUPPORT_SERVER}). 
 
-      Versi bot, dalam hash Git: [`{gtHsh}`](https://github.com/nattadasu/ryuuRyuusei/commit/{gittyHash})
+      Bot version, in Git hash: [`{gtHsh}`](https://github.com/nattadasu/ryuuRyuusei/commit/{gittyHash})
   ping:
     ping:
       title: Ping
@@ -479,11 +479,41 @@ strings:
     title: Kebijakan Privasi (versi singkat) Ryuuzaki Ryuusei
     read: Lihat versi lengkap (Bahasa Inggris)
     text: >-
-      Hello and thank you for your interest to read this tl;dr version of Privacy Policy. In this message we shortly briefing which content we collect, store, and use, including what third party services we used for bot to function as expected. You can read the full version of [Privacy Policy here at anytime you wish](https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md). __We collect, store, and use following data__: - Discord: username, discriminator, user snowflake ID, joined date, guild/server ID of registration, server name, date of registration, user referral (if any) - MyAnimeList: username, user ID, joined date __We shared limited personal information about you to 3rd Party__: This is required for the bot to function as expected, with the following services: Discord, Last.FM, MAL Heatmap, MyAnimeList __We cached data for limited features of the bot__: Used to reduce the amount of API calls to 3rd party services, and to reduce the amount of time to process the data and no information tied to you. __We do not collect, however, following data__: Any logs of messages sent by system about you under any circumstances. Logging of messages only occurs when you invoked general commands (such as `/help`, `/anime`, `/manga`, etc.) and during the bot's development process. Maintenance will announced in the Bot status channel in Support Server and Bot Activity. Data stored locally to Data Maintainer's (read: owner) server/machine of this bot as CSV. To read your profile that we've collected, type `/export_data` following your username. As user, you have right to access, know, data portability, modify/rectify, delete, restrict, limit, opt-out, and/or withdraw your consent to use your data. For any contact information, type `/about`.
+      Hello and thank you for your interest to read this tl;dr version of Privacy Policy. 
+
+      In this message we shortly briefing which content we collect, store, and use, including what third party services we used for bot to function as expected. You can read the full version of [Privacy Policy here at anytime you wish](https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md). 
+
+      __We collect, store, and use following data__: 
+      - Discord: username, discriminator, user snowflake ID, joined date, guild/server ID of registration, server name, date of registration, user referral (if any) 
+      - MyAnimeList: username, user ID, joined date 
+
+      __We shared limited personal information about you to 3rd Party__: 
+      This is required for the bot to function as expected, with the following services: 
+      Discord, Last.FM, MAL Heatmap, MyAnimeList 
+
+      __We cached data for limited features of the bot__: 
+      Used to reduce the amount of API calls to 3rd party services, and to reduce the amount of time to process the data and no information tied to you. 
+
+      __We do not collect, however, following data__: 
+      Any logs of messages sent by system about you under any circumstances. Logging of messages only occurs when you invoked general commands (such as `/help`, `/anime`, `/manga`, etc.) and during the bot's development process. Maintenance will announced in the Bot status channel in Support Server and Bot Activity. 
+
+      Data stored locally to Data Maintainer's (read: owner) server/machine of this bot as CSV. To read your profile that we've collected, type `/export_data` following your username. 
+
+      As user, you have right to access, know, data portability, modify/rectify, delete, restrict, limit, opt-out, and/or withdraw your consent to use your data. 
+
+      For any contact information, type `/about`.
   support:
     title: Dukung Pengembangan Ryuuzaki Ryuusei!
     text: >-
-      Hai! Terima kasih banget nih sudah mau dukung Ryuusei! Kamu bisa dukung Ryuusei lewat [Ko-Fi]({KOFI}), [PayPal]({PAYPAL}), [Patreon]({PATREON}), atau [GitHub Sponsors]({GHSPONSOR}). Kalau kamu cuma punya akun bank/e-money Indonesia, kamu bisa dukung Ryuusei lewat [Trakteer]({TRAKTEER}) atau [Saweria]({SAWERIA}). Atau, kalau kamu seorang pengembang, kamu bisa bantu Ryuusei lebih pandai di [GitHub]({GHREPO}). Kalau ada yang mau ditanyain atau mau ngobrol santai, boleh juga langsung gabung ke [server dukungan Ryuusei]({SUPPORT}) ya!
+      Thanks for your interest in supporting me! 
+
+      You can support me on [Ko-Fi]({KOFI}), [PayPal]({PAYPAL}}), [Patreon]({PATREON}),or [GitHub Sponsors]({GHSPONSOR}). 
+
+      For Indonesian users, you can use [Trakteer]({TRAKTEER}) or [Saweria]({SAWERIA}). 
+
+      Or, are you a developer? You can contribute to the bot's code on [GitHub]({GHREPO}). 
+
+      If you have any questions (or more payment channels), please join my [support server]({SUPPORT})!
   random:
     nekomimi:
       author: Ditenagai oleh nattadasu/nekomimiDb
@@ -499,6 +529,14 @@ strings:
           Ryuusei ngga dapat hasil cari buat {QUERY} di MyAnimeList. Coba periksa lagi kuerinya dan coba lagi.
         footer: >
           Tip: pakai judul asli/native biar dapat hasil yang akurat... itu kalau kamu tahu cara nulisnya dalam bahasa Jepang :P
+  manga:
+    search:
+      exception:
+        title: Error
+        text: >-
+          I couldn't able to find any results for {QUERY} on AniList. Please check your query and try again.
+        footer: >
+          Pro tip: Use native title to get the most accurate result... that if you know how to write it in Japanese :P
   profile:
     commons:
       about: "Informasi mengenai {USER}"
@@ -509,7 +547,7 @@ strings:
       bot: Pengguna ini adalah bot
     exception:
       general: Terjadi kesalahan ketika mengambil informasi tentang pengguna
-      unknown: Pengguna tidak diketahui, silahkan periksa kueri kamu dan coba lagi
+      unknown: Unknown user, please check your query and try agains
     discord:
       title: Profil Discord
       snowflake: Snowflake/ID
@@ -519,6 +557,8 @@ strings:
       boost_since: "Mem-boost server sejak {TIMESTAMP}"
       not_boosting: Sedang tidak boost
       registered: Pengguna ini terdaftar di bot
+      display_name: Display Name
+      pronouns: PronounDB Pronouns
     lastfm:
       created: Akun Dibuat
       total_scrobbles: Total Scrobble
