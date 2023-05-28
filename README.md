@@ -136,7 +136,6 @@ If you have any questions, feel free to join the
 
 > **Note**
 >
-> Since you're accessing this rewrite branch of the bot...
 > Any command that has ⌚ as prefix means that the command is not currently
 > available during heavy rewrite. It will be available soon, well... hopefully.
 
@@ -172,8 +171,8 @@ If you have any questions, feel free to join the
 
 > Utilize RAWG
 
-- ⌚ `/games info` - Get information about a game using direct RAWG ID
-- ⌚ `/games search` - Search for a game
+- `/games info` - Get information about a game using direct RAWG ID
+- `/games search` - Search for a game
 
 ### TV and Movie Commands
 

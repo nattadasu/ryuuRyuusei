@@ -35,11 +35,11 @@ class EsrbRating(RawgBaseData):
         "mature",
         "adults-only",
         "rating-pending",
-    ] | None
+    ] | None = None
     """Slug"""
     name: Literal[
         "Everyone", "Everyone 10+", "Teen", "Mature", "Adults Only", "Rating Pending"
-    ] | None
+    ] | None = None
     """Name"""
 
 
@@ -47,11 +47,11 @@ class EsrbRating(RawgBaseData):
 class PlatformData(RawgBaseData):
     """Each platform data class"""
 
-    id: int | None
+    id: int | None = None
     """ID"""
-    slug: str | None
+    slug: str | None = None
     """Slug"""
-    name: str | None
+    name: str | None = None
     """Name"""
     image: str | None = None
     """Image"""
@@ -69,11 +69,11 @@ class PlatformData(RawgBaseData):
 class StoreData(RawgBaseData):
     """Store data class"""
 
-    domain: str | None
+    domain: str | None = None
     """Domain"""
-    games_count: int | None
+    games_count: int | None = None
     """Games count"""
-    image_background: str | None
+    image_background: str | None = None
     """Image background"""
 
 
@@ -81,9 +81,9 @@ class StoreData(RawgBaseData):
 class StudioData(RawgBaseData):
     """Studio (developer, publisher) data class"""
 
-    games_count: int | None
+    games_count: int | None = None
     """Games count"""
-    image_background: str | None
+    image_background: str | None = None
     """Image background"""
 
 
@@ -91,9 +91,9 @@ class StudioData(RawgBaseData):
 class GenreData(RawgBaseData):
     """Genre data class"""
 
-    games_count: int | None
+    games_count: int | None = None
     """Games count"""
-    image_background: str | None
+    image_background: str | None = None
     """Image background"""
 
 
@@ -101,11 +101,11 @@ class GenreData(RawgBaseData):
 class TagData(RawgBaseData):
     """Tag data class"""
 
-    games_count: int | None
+    games_count: int | None = None
     """Games count"""
-    image_background: str | None
+    image_background: str | None = None
     """Image background"""
-    language: str | None
+    language: str | None = None
     """Language"""
 
 
@@ -113,11 +113,11 @@ class TagData(RawgBaseData):
 class Stores:
     """Stores data class"""
 
-    id: int | None
+    id: int | None = None
     """ID"""
-    store: StoreData | None
+    store: StoreData | None = None
     """Store"""
-    url: str | None
+    url: str | None = None
     """URL"""
 
 
@@ -125,7 +125,7 @@ class Stores:
 class ParentPlatform:
     """Parent platform data class"""
 
-    platform: PlatformData | None
+    platform: PlatformData | None = None
     """Platform"""
 
 
@@ -133,11 +133,11 @@ class ParentPlatform:
 class MetacriticPlatformData:
     """Metacritic platform data class"""
 
-    platform: int | None
+    platform: int | None = None
     """Platform"""
-    name: str | None
+    name: str | None = None
     """Name"""
-    slug: str | None
+    slug: str | None = None
     """Slug"""
 
 
@@ -155,11 +155,11 @@ class Requirements:
 class Platforms:
     """Platforms data class"""
 
-    platform: PlatformData | None
+    platform: PlatformData | None = None
     """Platform"""
-    released_at: datetime | None
+    released_at: datetime | None = None
     """Released at"""
-    requirements: Requirements | None
+    requirements: Requirements | None = None
     """Requirements"""
 
 
@@ -167,24 +167,24 @@ class Platforms:
 class MetacriticPlatforms:
     """Metacritic platforms data class"""
 
-    metascore: int | None
+    metascore: int | None = None
     """Metascore"""
-    url: str | None
+    url: str | None = None
     """URL"""
-    platform: MetacriticPlatformData | None
+    platform: MetacriticPlatformData | None = None
 
 
 @dataclass
 class Ratings:
     """Ratings data class"""
 
-    id: int | None
+    id: int | None = None
     """ID"""
-    title: str | None
+    title: str | None = None
     """Title"""
-    count: int | None
+    count: int | None = None
     """Count"""
-    percent: float | None
+    percent: float | None = None
     """Percent"""
 
 
@@ -192,17 +192,17 @@ class Ratings:
 class AddedByStatus:
     """Added by status data class"""
 
-    yet: int | None
+    yet: int | None = None
     """Yet"""
-    owned: int | None
+    owned: int | None = None
     """Owned"""
-    beaten: int | None
+    beaten: int | None = None
     """Beaten"""
-    toplay: int | None
+    toplay: int | None = None
     """To play"""
-    dropped: int | None
+    dropped: int | None = None
     """Dropped"""
-    playing: int | None
+    playing: int | None = None
     """Playing"""
 
 
@@ -210,105 +210,105 @@ class AddedByStatus:
 class RawgGameData(RawgBaseData):
     """Rawg game data class"""
 
-    name_original: str | None
+    name_original: str | None = None
     """Name original"""
-    description: str | None
+    description: str | None = None
     """Description"""
-    metacritic: int | None
+    metacritic: int | None = None
     """Metacritic"""
-    metacritic_platforms: list[MetacriticPlatforms] | None
+    metacritic_platforms: list[MetacriticPlatforms] | None = None
     """Metacritic platforms"""
-    released: datetime | None
+    released: datetime | None = None
     """Released"""
-    tba: bool | None
+    tba: bool | None = None
     """To be announced (TBA) status"""
-    updated: datetime | None
+    updated: datetime | None = None
     """Updated"""
-    background_image: str | None
+    background_image: str | None = None
     """Background image"""
-    background_image_additional: str | None
+    background_image_additional: str | None = None
     """Background image additional"""
-    website: str | None
+    website: str | None = None
     """Website"""
-    rating: float | None
+    rating: float | None = None
     """Rating"""
-    rating_top: int | None
+    rating_top: int | None = None
     """Rating top"""
-    ratings: list[Ratings] | None
+    ratings: list[Ratings] | None = None
     """Ratings"""
-    reactions: dict | None
+    reactions: dict | None = None
     """Reactions"""
-    added: int | None
+    added: int | None = None
     """Added"""
-    added_by_status: dict
+    added_by_status: AddedByStatus | None = None
     """Added by status"""
-    playtime: timedelta | None
+    playtime: timedelta | None = None
     """Playtime in hours"""
-    screenshots_count: int | None
+    screenshots_count: int | None = None
     """Screenshots count"""
-    movies_count: int | None
+    movies_count: int | None = None
     """Movies count"""
-    creators_count: int | None
+    creators_count: int | None = None
     """Creators count"""
-    achievements_count: int | None
+    achievements_count: int | None = None
     """Achievements count"""
-    parent_achievements_count: int | None
+    parent_achievements_count: int | None = None
     """Parent achievements count"""
-    reddit_url: str | None
+    reddit_url: str | None = None
     """Reddit URL"""
-    reddit_name: str | None
+    reddit_name: str | None = None
     """Reddit name"""
-    reddit_description: str | None
+    reddit_description: str | None = None
     """Reddit description"""
-    reddit_logo: str | None
+    reddit_logo: str | None = None
     """Reddit logo"""
-    reddit_count: int | None
+    reddit_count: int | None = None
     """Reddit count"""
-    twitch_count: int | None
+    twitch_count: int | None = None
     """Twitch count"""
-    youtube_count: int | None
+    youtube_count: int | None = None
     """YouTube count"""
-    reviews_text_count: int | None
+    reviews_text_count: int | None = None
     """Reviews text count"""
-    ratings_count: int | None
+    ratings_count: int | None = None
     """Ratings count"""
-    suggestions_count: int | None
+    suggestions_count: int | None = None
     """Suggestions count"""
-    alternative_names: list[str] | None
+    alternative_names: list[str] | None = None
     """Alternative names"""
-    metacritic_url: str | None
+    metacritic_url: str | None = None
     """Metacritic URL"""
-    parents_count: int | None
+    parents_count: int | None = None
     """Parents count"""
-    additions_count: int | None
+    additions_count: int | None = None
     """Additions count"""
-    game_series_count: int | None
+    game_series_count: int | None = None
     """Game series count"""
-    user_game: str | None
+    user_game: str | None = None
     """User game"""
-    reviews_count: int | None
+    reviews_count: int | None = None
     """Reviews count"""
-    saturated_color: str | None
+    saturated_color: str | None = None
     """Saturated color"""
-    dominant_color: str | None
+    dominant_color: str | None = None
     """Dominant color"""
-    parent_platforms: list[ParentPlatform] | None
+    parent_platforms: list[ParentPlatform] | None = None
     """Parent Platforms"""
-    esrb_rating: EsrbRating | None
+    esrb_rating: EsrbRating | None = None
     """ESRB rating"""
-    platforms: list[Platforms] | None
+    platforms: list[Platforms] | None = None
     """Platforms"""
-    stores: list[Stores] | None
+    stores: list[Stores] | None = None
     """Stores"""
-    developers: list[StudioData] | None
+    developers: list[StudioData] | None = None
     """Developers"""
-    genres: list[GenreData] | None
+    genres: list[GenreData] | None = None
     """Genres"""
-    tags: list[TagData] | None
+    tags: list[TagData] | None = None
     """Tags"""
-    publishers: list[StudioData] | None
+    publishers: list[StudioData] | None = None
     """Publishers"""
-    description_raw: str | None
+    description_raw: str | None = None
     """Description raw"""
     clip: Any = None
     """Clip"""
@@ -344,183 +344,79 @@ class RawgApi:
     @staticmethod
     def _convert(data: dict) -> RawgGameData:
         """
-        Convert RAWG API data to RawgGameData
+        Convert RAWG API data to RawgGameData class
 
         Args:
             data (dict): RAWG API data
 
         Returns:
-            RawgGameData: Converted data
+            RawgGameData: RawgGameData class
         """
-        d = data
-        pf = RawgGameData(
-            id=d["id"],
-            slug=d["slug"],
-            name=d["name"],
-            name_original=d["name_original"],
-            description=d["description"],
-            metacritic=d["metacritic"],
-            metacritic_platforms=[
+        if data.get("metacritic_platforms", None):
+            data["metacritic_platforms"] = [
                 MetacriticPlatforms(
-                    metascore=mp["metascore"],
-                    url=mp["url"],
-                    platform=MetacriticPlatformData(
-                        platform=mp["platform"]["platform"],
-                        name=mp["platform"]["name"],
-                        slug=mp["platform"]["slug"],
-                    ),
-                )
-                for mp in d["metacritic_platforms"]
-            ],
-            released=datetime.strptime(
-                f'{d["released"]}T00:00:00+00:00', "%Y-%m-%dT%H:%M:%S%z"
-            ),
-            tba=d["tba"],
-            updated=datetime.strptime(f'{d["updated"]}+00:00', "%Y-%m-%dT%H:%M:%S%z"),
-            background_image=d["background_image"],
-            background_image_additional=d["background_image_additional"],
-            website=d["website"],
-            rating=d["rating"],
-            rating_top=d["rating_top"],
-            ratings=[
-                Ratings(
-                    id=r["id"],
-                    title=r["title"],
-                    count=r["count"],
-                    percent=r["percent"],
-                )
-                for r in d["ratings"]
-            ],
-            reactions=d["reactions"],
-            added=d["added"],
-            added_by_status=AddedByStatus(
-                yet=d["added_by_status"]["yet"],
-                owned=d["added_by_status"]["owned"],
-                beaten=d["added_by_status"]["beaten"],
-                toplay=d["added_by_status"]["toplay"],
-                dropped=d["added_by_status"]["dropped"],
-                playing=d["added_by_status"]["playing"],
-            ),
-            playtime=timedelta(hours=float(d["playtime"])),
-            screenshots_count=d["screenshots_count"],
-            movies_count=d["movies_count"],
-            creators_count=d["creators_count"],
-            achievements_count=d["achievements_count"],
-            parent_achievements_count=d["parent_achievements_count"],
-            reddit_url=d["reddit_url"],
-            reddit_name=d["reddit_name"],
-            reddit_description=d["reddit_description"],
-            reddit_logo=d["reddit_logo"],
-            reddit_count=d["reddit_count"],
-            twitch_count=d["twitch_count"],
-            youtube_count=d["youtube_count"],
-            reviews_text_count=d["reviews_text_count"],
-            ratings_count=d["ratings_count"],
-            suggestions_count=d["suggestions_count"],
-            alternative_names=d["alternative_names"],
-            metacritic_url=d["metacritic_url"],
-            parents_count=d["parents_count"],
-            additions_count=d["additions_count"],
-            game_series_count=d["game_series_count"],
-            user_game=d["user_game"],
-            reviews_count=d["reviews_count"],
-            saturated_color=d["saturated_color"],
-            dominant_color=d["dominant_color"],
-            parent_platforms=[
-                ParentPlatform(
-                    platform=PlatformData(
-                        id=pp["platform"]["id"],
-                        name=pp["platform"]["name"],
-                        slug=pp["platform"]["slug"],
-                    ),
-                )
-                for pp in d["parent_platforms"]
-            ],
-            platforms=[
+                    metascore=x["metascore"],
+                    url=x["url"],
+                    platform=MetacriticPlatformData(**x["platform"]),
+                ) for x in data["metacritic_platforms"]
+            ]
+        if data.get("released", None):
+            rel = f'{data["released"]}T00:00:00+0000'
+            data["released"] = datetime.strptime(rel, "%Y-%m-%dT%H:%M:%S%z")
+        if data.get("updated", None):
+            upd = f"{data['updated']}+0000"
+            data["updated"] = datetime.strptime(upd, "%Y-%m-%dT%H:%M:%S%z")
+        if data.get("ratings", None):
+            data["ratings"] = [
+                Ratings(**x) for x in data["ratings"]
+            ]
+        if data.get("added_by_status", None):
+            data["added_by_status"] = AddedByStatus(**data["added_by_status"])
+        if data.get("playtime", None):
+            data["playtime"] = timedelta(hours=data["playtime"])
+        if data.get("parent_platforms", None):
+            data["parent_platforms"] = [
+                ParentPlatform(PlatformData(**x["platform"])) for x in data["parent_platforms"]
+            ]
+        if data.get("platforms", None):
+            data["platforms"] = [
                 Platforms(
-                    platform=PlatformData(
-                        id=p["platform"]["id"],
-                        name=p["platform"]["name"],
-                        slug=p["platform"]["slug"],
-                        image=p["platform"]["image"],
-                        year_end=p["platform"]["year_end"],
-                        year_start=p["platform"]["year_start"],
-                        games_count=p["platform"]["games_count"],
-                        image_background=p["platform"]["image_background"],
-                    ),
-                    released_at=datetime.strptime(
-                        f'{p["released_at"]}T00:00:00+00:00', "%Y-%m-%dT%H:%M:%S%z"
-                    ),
-                    requirements=Requirements(**p["requirements"]),
-                )
-                for p in d["platforms"]
-            ],
-            stores=[
+                    platform=PlatformData(**x["platform"]),
+                    released_at=datetime.strptime(f'{x["released_at"]}T00:00:00+0000', "%Y-%m-%dT%H:%M:%S%z") if x["released_at"] else None,
+                    requirements=Requirements(**x["requirements"]) if x["requirements"] else None,
+                ) for x in data["platforms"]
+            ]
+        if data.get("stores", None):
+            data["stores"] = [
                 Stores(
-                    store=StoreData(
-                        id=s["store"]["id"],
-                        name=s["store"]["name"],
-                        slug=s["store"]["slug"],
-                        domain=s["store"]["domain"],
-                        games_count=s["store"]["games_count"],
-                        image_background=s["store"]["image_background"],
-                    ),
-                    url=s["url"],
-                    id=s["id"],
-                )
-                for s in d["stores"]
-            ],
-            developers=[
-                StudioData(
-                    id=d["id"],
-                    name=d["name"],
-                    slug=d["slug"],
-                    games_count=d["games_count"],
-                    image_background=d["image_background"],
-                )
-                for d in d["developers"]
-            ],
-            genres=[
-                GenreData(
-                    id=g["id"],
-                    name=g["name"],
-                    slug=g["slug"],
-                    games_count=g["games_count"],
-                    image_background=g["image_background"],
-                )
-                for g in d["genres"]
-            ],
-            tags=[
-                TagData(
-                    id=t["id"],
-                    name=t["name"],
-                    slug=t["slug"],
-                    language=t["language"],
-                    games_count=t["games_count"],
-                    image_background=t["image_background"],
-                )
-                for t in d["tags"]
-            ],
-            publishers=[
-                StudioData(
-                    id=p["id"],
-                    name=p["name"],
-                    slug=p["slug"],
-                    games_count=p["games_count"],
-                    image_background=p["image_background"],
-                )
-                for p in d["publishers"]
-            ],
-            esrb_rating=EsrbRating(
-                id=d["esrb_rating"]["id"],
-                name=d["esrb_rating"]["name"],
-                slug=d["esrb_rating"]["slug"],
-            ),
-            clip=None,
-            description_raw=d["description_raw"],
-        )
+                    store=StoreData(**x["store"]),
+                    url=x["url"],
+                    id=x["id"],
+                ) for x in data["stores"]
+            ]
+        if data.get("developers", None):
+            data["developers"] = [
+                StudioData(**x) for x in data["developers"]
+            ]
+        if data.get("publishers", None):
+            data["publishers"] = [
+                StudioData(**x) for x in data["publishers"]
+            ]
+        if data.get("genres", None):
+            data["genres"] = [
+                GenreData(**x) for x in data["genres"]
+            ]
+        if data.get("tags", None):
+            data["tags"] = [
+                TagData(**x) for x in data["tags"]
+            ]
+        if data.get("esrb_rating", None):
+            data["esrb_rating"] = EsrbRating(**data["esrb_rating"])
+        if data.get("description_raw", None):
+            data["description_raw"] = data["description_raw"].replace("<br>", "\n")
 
-        return pf
+        return RawgGameData(**data)
+
 
     async def search(self, query: str) -> list[dict]:
         """
