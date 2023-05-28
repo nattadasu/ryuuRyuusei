@@ -1,246 +1,191 @@
-from modules.commons import *
-from modules.const import *
+import re
+
+from interactions import (
+    Button,
+    ButtonStyle,
+    ComponentContext,
+    Embed,
+    EmbedAuthor,
+    EmbedField,
+    SlashContext,
+)
+
+from classes.excepts import ProviderHttpError
+from classes.rawg import RawgApi, RawgGameData
+from modules.commons import (
+    platform_exception_embed,
+    PlatformErrType,
+    sanitize_markdown,
+    trim_synopsis,
+)
+from modules.i18n import fetch_language_data
 
 
-async def searchRawg(query: str) -> dict:
-    """Search game on RAWG"""
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://api.rawg.io/api/games?key={RAWG_API_KEY}&search={query}&page_size=5') as resp:
-            if resp.status != 200:
-                raise Exception(f"RAWG API returned {resp.status}")
-            rawgRes = await resp.json()
-        await session.close()
-        return rawgRes['results']
+async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
+    """
+    Generate embed for RAWG API
 
+    Args:
+        data (RawgGameData): RAWG API data
 
-async def getRawgData(slug: str) -> dict:
-    """Get information of a title in RAWG"""
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://api.rawg.io/api/games/{slug}?key={RAWG_API_KEY}') as resp:
-            if resp.status != 200:
-                raise Exception(f"RAWG API returned {resp.status}")
-            rawgRes = await resp.json()
-        await session.close()
-        if len(rawgRes) == 0:
-            raise Exception("**No results found!**")
-        return rawgRes
+    Returns:
+        list[Embed, Button]: Embed and button
+    """
+    # Extract data from the input object
+    id = data.slug
 
+    # Process alternative names
+    syns = sorted(
+        set(data.alternative_names) - {data.name, data.name_original}, key=str.casefold
+    )
+    syns = syns[:8] if len(syns) > 8 else syns
+    syns_text = ", ".join(syns) if syns else "*None*"
+    if len(syns) < len(data.alternative_names):
+        syns_text += f", *and {len(data.alternative_names) - len(syns)} more*"
 
-async def generateRawg(data: dict) -> interactions.Embed:
-    """Generate embed for RAWG API"""
-    # get the data
-    id = data['slug']
-    syns = data['alternative_names']
-    ent = data['name']
-    nat = data['name_original']
-    ogt = [ent, nat]
-    syns = [x for x in syns if x not in ogt]
-    syns = sorted(set(syns), key=str.casefold)
-    synsl = len(syns)
+    # Process platforms
+    pfs = sorted({pf.platform.name for pf in data.platforms}, key=str.casefold)
+    pfs_text = ", ".join(pfs)
 
-    if synsl > 8:
-        syns = syns[:8]
-        syns = ", ".join(syns)
-        syns += f", *and {synsl - 8} more*"
-    elif synsl > 0:
-        syns = ", ".join(syns)
+    # Process ratings
+    scr = data.rating or 0
+    mc_scr = data.metacritic or 0
+
+    # Process ESRB rating
+    rte = data.esrb_rating.name if data.esrb_rating else "Unknown Rating"
+
+    # Process developers
+    devs = sorted({d.name for d in data.developers}, key=str.casefold)
+    devs_text = ", ".join(devs) if devs else "*None*"
+
+    # Process publishers
+    pubs = sorted({p.name for p in data.publishers}, key=str.casefold)
+    pubs_text = ", ".join(pubs) if pubs else "*None*"
+
+    # Process game description
+    description = data.description_raw
+    if description is None:
+        cyno = "*None*"
     else:
-        syns = "*None*"
+        cyno = sanitize_markdown(description)
+        descs = cyno.split("\n")
+        synl = len(descs[0])
+        desc_attr = f"\n> \n> [Read more on RAWG](https://rawg.io/games/{id})"
 
-    pfs = []
-    for pf in data['platforms']:
-        pfs += [f"{pf['platform']['name']}"]
-
-    pfs = sorted(set(pfs), key=str.casefold)
-    pfs = ", ".join(pfs)
-
-    scr = data['rating']
-    mc_scr = data['metacritic']
-
-    rte = data['esrb_rating']
-    if rte is None:
-        rte = "Unknown Rating"
-    else:
-        rte = rte['name']
-
-    devs = []
-    for d in data['developers']:
-        devs += [f"{d['name']}"]
-
-    if len(devs) > 0:
-        devs = sorted(set(devs), key=str.casefold)
-        devs = ", ".join(devs)
-    else:
-        devs = "*None*"
-
-    pubs = []
-    for p in data['publishers']:
-        pubs += [f"{p['name']}"]
-
-    if len(pubs) > 0:
-        pubs = sorted(set(pubs), key=str.casefold)
-        pubs = ", ".join(pubs)
-    else:
-        pubs = "*None*"
-
-    cyno = data['description_raw']
-    if cyno is None:
-        cyno = "*No description provided*"
-    else:
-        cyno = cyno.replace("\r", "")
-        cyno = cyno.split('\n')
-        cynl = len(cyno)
-        cynoin = cyno[0]
-        cynmo = f"\n> \n> [Read more on RAWG](https://rawg.io/games/{id})"
-
-        if len(str(cynoin)) <= 150:
-            daff = cynoin
-            if cynl >= 2:
-                for i in range(2, cynl + 1):
-                    if (len(str(cyno[i])) > 0) or (cyno[i] != ""):
-                        cynoAdd = cyno[i]
-                        cynoAdd = sanitizeMarkdown(cynoAdd)
+        if synl >= 1000:
+            cyno = trim_synopsis(descs[0])
+        elif synl <= 150:
+            cyno = descs[0]
+            if len(descs) >= 2:
+                for i in range(1, len(descs)):
+                    if descs[i] not in ["", " "]:
+                        cyno += "\n> \n> "
+                        cyno += trim_synopsis(descs[i])
                         break
-                cyno = sanitizeMarkdown(daff)
-                cyno += '\n> \n> '
-                cyno += trimCyno(cynoAdd)
             else:
-                cyno = sanitizeMarkdown(daff)
-        elif len(str(cynoin)) >= 1000:
-            cyno = trimCyno(cynoin)
+                cyno += desc_attr
         else:
-            cyno = cynoin
+            cyno = trim_synopsis(descs[0])
 
-        if (cyno[-3:] == "...") or ((len(str(cynoin)) >= 150) and (cynl > 3)) or ((len(str(cynoin)) >= 1000) and (cynl > 1)):
-            cyno += cynmo
+        if (
+            cyno.endswith("...")
+            or (synl >= 150 and len(descs) > 2)
+            or (synl >= 1000 and len(descs) > 1)
+        ):
+            cyno += desc_attr
 
-    tgs = []
-    for g in data['genres']:
-        tgs += [f"{g['name']}"]
-    for t in data['tags']:
-        tgs += [f"{t['name']}"]
-
+    # Process genres and tags
+    tgs = sorted({g.name.title() for g in data.genres + data.tags}, key=str.casefold)
+    tgs_text = (
+        ", ".join(tgs[:20]) if len(tgs) > 20 else ", ".join(tgs) if tgs else "*None*"
+    )
     if len(tgs) > 20:
-        lefties = int(len(tgs) - int(20))
-        tgs = sorted(set(tgs[:20]), key=str.casefold)
-        tgs = ", ".join(tgs)
-        tgs += f", *and {lefties} more*"
-    elif len(tgs) > 0:
-        tgs = sorted(set(tgs), key=str.casefold)
-        tgs = ", ".join(tgs)
-    else:
-        tgs = "*None*"
+        lefties = len(tgs) - 20
+        tgs_text += f", *and {lefties} more*"
 
-    daten = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+    # Process release date
+    rel = "Unknown year"
+    if not data.tba and data.released is not None:
+        year = data.released.strftime("%Y")
+        rel = f"<t:{int(data.released.timestamp())}:D> (<t:{int(data.released.timestamp())}:R>)"
 
-    if data['tba'] is False:
-        rel = data['released']
-        rel = re.sub(r'^(\d{4})-(\d{2})-(\d{2})', r'\1-\2-\3', rel)
-        rel = (datetime.datetime.strptime(
-            f"{rel}+0000", "%Y-%m-%d%z") - daten).total_seconds()
-        # reconvert from Epoch to year
-        year = datetime.datetime.utcfromtimestamp(rel).strftime('%Y')
-        rel = f"<t:{int(rel)}:D> (<t:{int(rel)}:R>)"
-    else:
-        rel = "*TBA*"
-        year = "Unknown year"
-
+    # Process additional links
     pdt = []
-    web = data['website']
-    if web != "":
-        pdt += [{'name': 'Website', 'value': f"{data['website']}"}]
-    mc_url = data['metacritic_url']
-    if mc_url != "":
-        pdt += [{'name': 'Metacritic', 'value': f"{data['metacritic_url']}"}]
-    reddit = data['reddit_url']
-    if reddit != "":
-        if re.match(r'^http(s)?://(www.)?reddit.com/r/(\w+)', reddit):
+    if data.website:
+        pdt.append({"name": "Website", "value": data.website})
+    if data.metacritic_url:
+        pdt.append({"name": "Metacritic", "value": data.metacritic_url})
+    if data.reddit_url:
+        reddit = data.reddit_url
+        if re.match(r"^http(s)?://(www.)?reddit.com/r/(\w+)", reddit):
             subreddit = reddit
-        elif re.match(r'r/(\w+)', reddit):
+        elif re.match(r"r/(\w+)", reddit):
             subreddit = f"https://reddit.com/{reddit}"
-        elif re.match(r'^(\w+)', reddit):
+        elif re.match(r"^(\w+)", reddit):
             subreddit = f"https://reddit.com/r/{reddit}"
-        pdt += [{'name': 'Reddit', 'value': f"{subreddit}"}]
+        pdt.append({"name": "Reddit", "value": subreddit})
 
-    if len(pdt) > 0:
-        pdta = []
-        for p in pdt:
-            pdta += [f"[{p['name']}](<{p['value']}>)"]
-        pdta = ", ".join(pdta)
-        pdta = "\n**External Sites**\n" + pdta
-    else:
-        pdta = ""
+    # Create button components
+    components = [
+        Button(style=ButtonStyle.URL, label=p["name"], url=p["value"]) for p in pdt
+    ]
 
-    bg = data['background_image']
-
-    embed = interactions.Embed(
-        author=interactions.EmbedAuthor(
+    # Create the embed
+    embed = Embed(
+        author=EmbedAuthor(
             name="RAWG Game",
-            url=f"https://rawg.io/",
-            icon_url="https://pbs.twimg.com/profile_images/951372339199045632/-JTt60iX_400x400.jpg"
+            url="https://rawg.io/",
+            icon_url="https://pbs.twimg.com/profile_images/951372339199045632/-JTt60iX_400x400.jpg",
         ),
-        title=ent,
+        title=data.name,
         url=f"https://rawg.io/games/{id}",
-        description=f"""*{rte}, {year}, ⭐ {scr}/5 (Metacritic: {mc_scr})*
-
-> {cyno}
-{pdta}
-""",
+        description=f"*{rte}, {year}, ⭐ {scr}/5 (Metacritic: {mc_scr})*\n\n> {cyno}",
         color=0x1F1F1F,
         fields=[
-            interactions.EmbedField(
-                name="English Title",
-                value=ent,
-                inline=True
-            ),
-            interactions.EmbedField(
-                name="Native Title",
-                value=nat,
-                inline=True
-            ),
-            interactions.EmbedField(
-                name="Synonyms",
-                value=syns,
-                inline=False
-            ),
-            interactions.EmbedField(
-                name="Genres and Tags",
-                value=tgs,
-                inline=False
-            ),
-            interactions.EmbedField(
-                name="Platforms",
-                value=pfs,
-                inline=False
-            ),
-            interactions.EmbedField(
-                name="Developers",
-                value=devs,
-                inline=True
-            ),
-            interactions.EmbedField(
-                name="Publishers",
-                value=pubs,
-                inline=True
-            ),
-            interactions.EmbedField(
-                name="Release Date",
-                value=rel,
-                inline=True
-            ),
+            EmbedField(name="English Title", value=data.name, inline=True),
+            EmbedField(name="Native Title", value=data.name_original, inline=True),
+            EmbedField(name="Synonyms", value=syns_text, inline=False),
+            EmbedField(name="Genres and Tags", value=tgs_text, inline=False),
+            EmbedField(name="Platforms", value=pfs_text, inline=False),
+            EmbedField(name="Developers", value=devs_text, inline=True),
+            EmbedField(name="Publishers", value=pubs_text, inline=True),
+            EmbedField(name="Release Date", value=rel, inline=True),
         ],
-        image=interactions.EmbedImageStruct(
-            url=bg
-        )
     )
-    return embed
+    embed.set_image(url=data.background_image)
+    return [embed, components]
 
 
-async def rawgSubmit(ctx, slug: str):
+async def rawg_submit(ctx: SlashContext | ComponentContext, slug: str) -> None:
+    """
+    Submit a query to the RAWG API and return the result as an embed.
+
+    Args:
+        ctx (SlashContext | ComponentContext): The context of the command.
+        slug (str): The slug of the game to search for.
+
+    Raises:
+        ProviderHttpError: If the API returns an error.
+
+    Returns:
+        None
+    """
+    buttons = []
+    l_ = fetch_language_data(code="en_US")
     try:
-        gameData = await getRawgData(slug=slug)
-        dcEm = await generateRawg(data=gameData)
-    except Exception as e:
-        dcEm = exceptionsToEmbed(returnException(e))
+        async with RawgApi() as api:
+            game_data = await api.get_data(slug)
+        embed, button_2 = await generate_rawg(data=game_data)
+        buttons.extend(button_2)
+    except ProviderHttpError as e:
+        status = e.status_code
+        message = e.message
 
-    await ctx.send("", embeds=dcEm)
+        embed = platform_exception_embed(
+            description="AniList API is currently unavailable, please try again later.",
+            error=f"HTTP Error {status}\n{message}",
+            lang_dict=l_,
+            error_type=PlatformErrType.SYSTEM,
+        )
+
+    await ctx.send(content=f"{ctx.author.mention}", embed=embed, components=buttons)
