@@ -17,20 +17,12 @@ on `interactions.py` versioning, where name on bracket is the name of the
 release branch:
 
 <!-- markdownlint-disable MD013 MD034 -->
-| Version |      Support Status       | Notes                                                    |
-| ------: | :-----------------------: | :------------------------------------------------------- |
-|   5.5.1 |    :white_check_mark:     | Current release candidate (ipy/5.0.0)                    |
-|   5.5.0 |    :white_check_mark:     | Pin `discord_typings` to `0.5.1` if you use this version |
-|   5.4.0 |            :x:            | Deprecated temporarily due to Discord image proxy bug    |
-|   5.3.1 |            :x:            | Deprecated temporarily due to Discord image proxy bug    |
-|   5.3.0 |            :x:            | Deprecated temporarily due to Discord image proxy bug    |
-|   5.2.0 |            :x:            | Deprecated temporarily due to Discord image proxy bug    |
-|   5.1.0 |            :x:            | Deprecated temporarily due to Discord image proxy bug    |
-|   5.0.1 |            :x:            | Deprecated temporarily due to Discord image proxy bug    |
-|   5.0.0 |            :x:            | Deprecated temporarily due to Discord image proxy bug    |
-|   4.4.0 |            :x:            | Unsupported                                              |
-|   4.3.4 | :white_check_mark: :lock: | Current stable version, maintained for bug fixes (main)  |
-| < 4.3.4 |            :x:            | Bot has not been developed yet                           |
+| Version |   Support Status   | Notes                                                    |
+| ------: | :----------------: | :------------------------------------------------------- |
+|   5.5.1 | :white_check_mark: | Current release version                                  |
+|   5.5.0 | :white_check_mark: | Pin `discord_typings` to `0.5.1` if you use this version |
+| < 5.4.0 |         :x:        | Deprecated temporarily due to Discord image proxy bug    |
+| < 4.4.0 |         :x:        | Unsupported, bot requires Python 3.10 or higher          |
 <!-- markdownlint-enable MD013 -->
 
 Please note that the current rolling release (version 5.5.0) is under heavy
