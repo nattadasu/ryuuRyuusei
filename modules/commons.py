@@ -321,29 +321,7 @@ def generate_trailer(data: dict | AniListTrailerStruct, is_mal: bool = False) ->
     return button
 
 
-async def get_parent_nsfw_status(snowflake: int) -> bool:
-    """
-    Get the age restriction status of a channel's parent if the command was invoked in a thread or forum.
-
-    Args:
-        snowflake (int): The ID of the channel.
-
-    Returns:
-        bool: The age restriction status of the channel's parent, or False if the channel does not have a parent or
-              the parent's age restriction status could not be determined.
-
-    Example:
-        >>> result = await get_parent_nsfw_status(123456789)
-        >>> print(result)
-        True
-    """
-    bot_http = AutoShardedClient(token=BOT_TOKEN).http
-    guild = await bot_http.get_channel(channel_id=snowflake)
-    # close the connection
-    return guild.get("nsfw", False)
-
-
-async def get_nsfw_status(context: ComponentContext | SlashContext) -> bool:
+async def get_nsfw_status(context: ComponentContext | SlashContext) -> bool | None:
     """
     Check if a channel is NSFW or not
 
@@ -355,8 +333,7 @@ async def get_nsfw_status(context: ComponentContext | SlashContext) -> bool:
     """
     channel = context.channel
     if channel.type in (11, 12):
-        prId = channel.parent_id
-        nsfwBool = await get_parent_nsfw_status(prId)
+        nsfwBool = channel.parent_channel.nsfw
     else:
         nsfwBool = channel.nsfw
     return nsfwBool

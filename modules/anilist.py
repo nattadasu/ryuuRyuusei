@@ -249,17 +249,17 @@ async def generate_anilist(
     chapters = f"{alm.chapters}" if alm.chapters else "*??*"
     volumes = f"{alm.volumes}" if alm.volumes else "*??*"
 
-    # grab score distribution
-    average_score = alm.averageScore if alm.averageScore else 0
-    if average_score is None:
-        average_score = 0
+    average_score = alm.averageScore
     score_distribution = alm.stats["scoreDistribution"]
+    total_score = 0
     people_voted = 0
-    for score in score_distribution:
-        average_score += score["score"] * score["amount"]
-        people_voted += score["amount"]
-    if alm.averageScore in [None, 0]:
-        average_score = round(average_score / people_voted, 2)
+
+    for item in score_distribution:
+        total_score += item["score"] * item["amount"]
+        people_voted += item["amount"]
+
+    if average_score in [None, 0]:
+        average_score = round(total_score / people_voted)
 
     if (people_voted is None) or (people_voted == 0):
         people_voted = "0 person voted"
