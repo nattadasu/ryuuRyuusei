@@ -159,7 +159,7 @@ class Profile(ipy.Extension):
         user_id = user_data.mal_id
         birthday = user_data.birthday
         location = user_data.location
-        if location not in ["", None] and type(location) == str:
+        if location not in ["", None] and isinstance(location, str):
             location_url = (
                 f"https://www.openstreetmap.org/search?query={quote(location)}"
             )

@@ -183,7 +183,7 @@ async def rawg_submit(ctx: SlashContext | ComponentContext, slug: str) -> None:
 
         embed = platform_exception_embed(
             description="AniList API is currently unavailable, please try again later.",
-            err_msg=f"HTTP Error {status}\n{message}",
+            error=f"HTTP Error {status}\n{message}",
             lang_dict=l_,
             error_type=PlatformErrType.SYSTEM,
         )

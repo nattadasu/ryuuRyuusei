@@ -354,7 +354,7 @@ async def get_nsfw_status(context: ComponentContext | SlashContext) -> bool:
         bool: The age restriction status of the channel, or False if the channel does not have a parent or the parent's age restriction status could not be determined.
     """
     channel = context.channel
-    if channel.type == 11 or channel.type == 12:
+    if channel.type in (11, 12):
         prId = channel.parent_id
         nsfwBool = await get_parent_nsfw_status(prId)
     else:

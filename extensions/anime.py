@@ -129,7 +129,7 @@ class Anime(ipy.Extension):
             )
             await asyncio.sleep(60)
             await send.edit(components=[])
-        except Exception as e:
+        except Exception as _:
             l_: dict[str, str] = l_["strings"]["anime"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             embed = ipy.Embed(

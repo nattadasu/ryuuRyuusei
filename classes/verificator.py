@@ -55,7 +55,8 @@ class Verificator:
     async def __aexit__(self, exc_type, exc_value, traceback):
         """Exit the class"""
 
-    def _generate_identifier(self) -> str:
+    @staticmethod
+    def _generate_identifier() -> str:
         """
         Generate a new identifier
 

@@ -49,7 +49,7 @@ async def search_al_anime(title: str) -> list[dict[str, Any]]:
 
     # Loop through each item in the AniList response
     for item in data:
-        # Extract the relevant fields and format them
+        # Extract the relevant fields and format_str them
         formatted_item = {
             "node": {
                 "id": item["idMal"],
@@ -62,7 +62,7 @@ async def search_al_anime(title: str) -> list[dict[str, Any]]:
                     "year": item["startDate"]["year"],
                     "season": item["season"].lower() if item["season"] else None,
                 },
-                "media_type": item["format"].lower() if item["format"] else None,
+                "media_type": item["format_str"].lower() if item["format_str"] else None,
             }
         }
         # Append the formatted data to the list
@@ -77,7 +77,7 @@ def bypass_anilist_nsfw_tag(alm: AniListMediaStruct) -> bool:
     # get the genres
     tgs: list[str] = []
     if alm.genres is not None:
-        tgs += [g for g in alm.genres]
+        tgs += list(alm.genres)
     if alm.tags is not None:
         tgs += [t.name for t in alm.tags]
 
@@ -97,7 +97,6 @@ async def generate_anilist(
     Returns:
         list[Embed, list[Button]]: The embed and the buttons
     """
-
     notice = MESSAGE_WARN_CONTENTS if is_nsfw is None else ""
 
     async with AniList() as anilist:
@@ -116,7 +115,6 @@ async def generate_anilist(
     romaji = alm.title.romaji
     native = alm.title.native
     synonyms = alm.synonyms
-    """Synonyms"""
     english = alm.title.english or next(
         (
             sys
@@ -127,11 +125,9 @@ async def generate_anilist(
         ),
         romaji,
     )
-    """English title"""
     if native is None:
         native = "*None*"
     english_note = english != alm.title.english
-    """Whether the English title is different from the original English title"""
 
     original_titles = [romaji, native, english]
     synonyms = [
@@ -140,7 +136,6 @@ async def generate_anilist(
     synonyms = sorted(set(synonyms), key=str.casefold)
     synonyms_len = len(synonyms)
     syns = ""
-    """Synonyms, formatted"""
 
     if synonyms_len > 8:
         syns_arr = synonyms[:8]
@@ -203,7 +198,7 @@ async def generate_anilist(
     for tag in alm.tags:
         if tag is None:
             continue
-        elif tag.name not in banned_tags:
+        if tag.name not in banned_tags:
             if tag.isMediaSpoiler:
                 tgs.append(f"||{tag.name}||")
             else:
@@ -231,11 +226,11 @@ async def generate_anilist(
     # lowercase the format
     match format_raw:
         case "ONE_SHOT":
-            format = "One-shot"
+            format_str = "One-shot"
         case None:
-            format = "*Unknown*"
+            format_str = "*Unknown*"
         case _:
-            format = format_raw.capitalize()
+            format_str = format_raw.capitalize()
 
     status_raw: Literal[
         "FINISHED", "RELEASING", "NOT_YET_RELEASED", "CANCELLED", "HIATUS"
@@ -259,7 +254,10 @@ async def generate_anilist(
     score_distribution = alm.stats["scoreDistribution"]
     people_voted = 0
     for score in score_distribution:
-        people_voted += people_voted + score["amount"]
+        average_score += score["score"] * score["amount"]
+        people_voted += score["amount"]
+    if alm.averageScore in [None, 0]:
+        average_score = round(average_score / people_voted, 2)
 
     if (people_voted is None) or (people_voted == 0):
         people_voted = "0 person voted"
@@ -315,7 +313,7 @@ async def generate_anilist(
         ),
         title=romaji if romaji else native,
         url=media_pg,
-        description=f"""*`{media_id}`*, {format}, {year}, ⭐ {average_score}/100, by {people_voted}
+        description=f"""*`{media_id}`*, {format_str}, {year}, ⭐ {average_score}/100, by {people_voted}
 
 > {desc_done}""",
         color=hex_color,
@@ -416,7 +414,7 @@ async def anilist_submit(ctx: SlashContext | ComponentContext, media_id: int) ->
 
         embed = platform_exception_embed(
             description="AniList API is currently unavailable, please try again later.",
-            err_msg=f"HTTP Error {status}\n{message}",
+            error=f"HTTP Error {status}\n{message}",
             lang_dict=l_,
             error_type=PlatformErrType.SYSTEM,
         )

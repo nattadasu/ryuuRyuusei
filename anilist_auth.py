@@ -1,4 +1,4 @@
-"""
+r"""
 # AniList Auth
 
 This script contains the functions for authenticating with AniList.
@@ -51,6 +51,7 @@ async def get_auth_code():
 
 
 async def fetch_access_token(auth_code: str):
+    """Fetch the access token from AniList."""
     token_endpoint = "https://anilist.co/api/v2/oauth/token"
     client_id_param = f"client_id={ANILIST_CLIENT_ID}"
     client_secret_param = f"client_secret={ANILIST_CLIENT_SECRET}"
@@ -66,15 +67,19 @@ async def fetch_access_token(auth_code: str):
         f"{token_endpoint}?{client_id_param}&{client_secret_param}&{redirect_uri_param}"
     )
     headers = {"Accept": "application/json"}
-    async with aiohttp.ClientSession() as session:
-        async with session.post(token_uri, json=json_req, headers=headers) as response:
-            token = await response.json()
-            now = int(datetime.now(tz=timezone.utc).timestamp())
-            token["expires_in"] += now
-            return token
+    async with aiohttp.ClientSession() as session, session.post(
+        token_uri,
+        json=json_req,
+        headers=headers
+    ) as response:
+        token = await response.json()
+        now = int(datetime.now(tz=timezone.utc).timestamp())
+        token["expires_in"] += now
+        return token
 
 
 async def main():
+    """Main function."""
     await get_auth_code()
     auth_code = input("Please input the code from the AniList website: ")
     token = await fetch_access_token(auth_code)

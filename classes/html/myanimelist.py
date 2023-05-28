@@ -60,10 +60,8 @@ class HtmlMyAnimeList:
             JikanUserStruct: User information
         """
         async with self.session.get(self.base_url + f"profile/{username}") as resp:
-            if resp.status == 404:
-                raise defineJikanException(404, "User not found")
             if resp.status != 200:
-                raise ProviderHttpError(resp.status, resp.reason)
+                raise ProviderHttpError(resp.reason, resp.status)
             html = await resp.text()
         soup = BeautifulSoup(html, "html5lib")
         report_link = soup.find("a", {"class": "header-right mt4 mr0"}).get("href")

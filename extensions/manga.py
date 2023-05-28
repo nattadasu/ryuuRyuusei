@@ -58,7 +58,7 @@ class Manga(ipy.Extension):
             for res in results:
                 media_id = res["id"]
                 format_raw: str | None = res["format"]
-                format = (
+                format_str = (
                     format_raw.capitalize().replace("_", "-")
                     if format_raw
                     else "Unknown format"
@@ -90,7 +90,7 @@ class Manga(ipy.Extension):
                 f.append(
                     ipy.EmbedField(
                         name=md_title,
-                        value=f"{md_native_title}{is_adult}{format}, {status}, {year}",
+                        value=f"{md_native_title}{is_adult}{format_str}, {status}, {year}",
                         inline=False,
                     )
                 )
@@ -130,7 +130,7 @@ class Manga(ipy.Extension):
             )
             asyncio.sleep(60)
             await send.edit(components=[])
-        except Exception as e:
+        except Exception as _:
             l_: dict[str, str] = l_["strings"]["manga"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             embed = ipy.Embed(
