@@ -4,7 +4,7 @@ import interactions as ipy
 
 from classes.rawg import RawgApi
 from modules.rawg import rawg_submit
-from modules.commons import generate_search_embed
+from modules.commons import generate_search_embed, sanitize_markdown
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
 
@@ -52,14 +52,18 @@ class Games(ipy.Extension):
             f = []
             for r in results:
                 rhel = r["released"]
+                title = r["name"]
+                title = sanitize_markdown(title)
+                if len(title) >= 256:
+                    title = title[:253] + "..."
                 f += [
                     ipy.EmbedField(
-                        name=r["name"], value=f"*Released on: {rhel}*", inline=False
+                        name=title, value=f"*Released on: {rhel}*", inline=False
                     )
                 ]
                 so += [
                     ipy.StringSelectOption(
-                        label=r["name"],
+                        label=title[:77] + "..." if len(title) >= 80 else title,
                         value=r["slug"],
                         description=f"Released: {rhel}",
                     )

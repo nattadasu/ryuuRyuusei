@@ -81,7 +81,7 @@ class Anime(ipy.Extension):
                     or l_["commons"]["year"]["unknown"]
                 )
                 title: str = a["node"]["title"]
-                if len(title) > 256:
+                if len(title) >= 256:
                     title = title[:253] + "..."
                 mdTitle: str = sanitize_markdown(title)
                 alt = a["node"]["alternative_titles"]

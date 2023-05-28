@@ -77,7 +77,7 @@ class Manga(ipy.Extension):
                 else:
                     year = str(year)
                 title = res["title"]["romaji"]
-                if len(title) > 256:
+                if len(title) >= 256:
                     title = title[:253] + "..."
                 md_title = sanitize_markdown(title)
                 native_title = res["title"]["native"]
