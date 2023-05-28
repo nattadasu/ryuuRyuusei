@@ -147,7 +147,7 @@ class UrbanDictionary:
         ) as resp:
             if resp.status != 200:
                 raise ProviderHttpError(
-                    f"Urban Dictionary unable to get random definition",
+                    "Urban Dictionary unable to get random definition",
                     resp.status,
                 )
             data = await resp.json()

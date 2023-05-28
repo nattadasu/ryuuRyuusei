@@ -197,7 +197,7 @@ class ServerSettings(ipy.Extension):
             ),
             ipy.EmbedField(
                 name="2. Go to profile settings",
-                value=f"Once user signed in, ask user to open profile settings. [Click here to go to profile settings](https://myanimelist.net/editprofile.php).",
+                value="Once user signed in, ask user to open profile settings. [Click here to go to profile settings](https://myanimelist.net/editprofile.php).",
             ),
             ipy.EmbedField(
                 name='3. Scroll down to "My Details" and find "Location"',
