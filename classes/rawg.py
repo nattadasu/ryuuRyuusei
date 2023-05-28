@@ -358,7 +358,8 @@ class RawgApi:
                     metascore=x["metascore"],
                     url=x["url"],
                     platform=MetacriticPlatformData(**x["platform"]),
-                ) for x in data["metacritic_platforms"]
+                )
+                for x in data["metacritic_platforms"]
             ]
         if data.get("released", None):
             rel = f'{data["released"]}T00:00:00+0000'
@@ -367,24 +368,30 @@ class RawgApi:
             upd = f"{data['updated']}+0000"
             data["updated"] = datetime.strptime(upd, "%Y-%m-%dT%H:%M:%S%z")
         if data.get("ratings", None):
-            data["ratings"] = [
-                Ratings(**x) for x in data["ratings"]
-            ]
+            data["ratings"] = [Ratings(**x) for x in data["ratings"]]
         if data.get("added_by_status", None):
             data["added_by_status"] = AddedByStatus(**data["added_by_status"])
         if data.get("playtime", None):
             data["playtime"] = timedelta(hours=data["playtime"])
         if data.get("parent_platforms", None):
             data["parent_platforms"] = [
-                ParentPlatform(PlatformData(**x["platform"])) for x in data["parent_platforms"]
+                ParentPlatform(PlatformData(**x["platform"]))
+                for x in data["parent_platforms"]
             ]
         if data.get("platforms", None):
             data["platforms"] = [
                 Platforms(
                     platform=PlatformData(**x["platform"]),
-                    released_at=datetime.strptime(f'{x["released_at"]}T00:00:00+0000', "%Y-%m-%dT%H:%M:%S%z") if x["released_at"] else None,
-                    requirements=Requirements(**x["requirements"]) if x["requirements"] else None,
-                ) for x in data["platforms"]
+                    released_at=datetime.strptime(
+                        f'{x["released_at"]}T00:00:00+0000', "%Y-%m-%dT%H:%M:%S%z"
+                    )
+                    if x["released_at"]
+                    else None,
+                    requirements=Requirements(**x["requirements"])
+                    if x["requirements"]
+                    else None,
+                )
+                for x in data["platforms"]
             ]
         if data.get("stores", None):
             data["stores"] = [
@@ -392,31 +399,23 @@ class RawgApi:
                     store=StoreData(**x["store"]),
                     url=x["url"],
                     id=x["id"],
-                ) for x in data["stores"]
+                )
+                for x in data["stores"]
             ]
         if data.get("developers", None):
-            data["developers"] = [
-                StudioData(**x) for x in data["developers"]
-            ]
+            data["developers"] = [StudioData(**x) for x in data["developers"]]
         if data.get("publishers", None):
-            data["publishers"] = [
-                StudioData(**x) for x in data["publishers"]
-            ]
+            data["publishers"] = [StudioData(**x) for x in data["publishers"]]
         if data.get("genres", None):
-            data["genres"] = [
-                GenreData(**x) for x in data["genres"]
-            ]
+            data["genres"] = [GenreData(**x) for x in data["genres"]]
         if data.get("tags", None):
-            data["tags"] = [
-                TagData(**x) for x in data["tags"]
-            ]
+            data["tags"] = [TagData(**x) for x in data["tags"]]
         if data.get("esrb_rating", None):
             data["esrb_rating"] = EsrbRating(**data["esrb_rating"])
         if data.get("description_raw", None):
             data["description_raw"] = data["description_raw"].replace("<br>", "\n")
 
         return RawgGameData(**data)
-
 
     async def search(self, query: str) -> list[dict]:
         """

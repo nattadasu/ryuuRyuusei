@@ -35,7 +35,9 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
     id = data.slug
 
     # Process alternative names
-    syns = sorted(set(data.alternative_names) - {data.name, data.name_original}, key=str.casefold)
+    syns = sorted(
+        set(data.alternative_names) - {data.name, data.name_original}, key=str.casefold
+    )
     syns = syns[:8] if len(syns) > 8 else syns
     syns_text = ", ".join(syns) if syns else "*None*"
     if len(syns) < len(data.alternative_names):
@@ -85,12 +87,18 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
         else:
             cyno = trim_synopsis(descs[0])
 
-        if cyno.endswith("...") or (synl >= 150 and len(descs) > 2) or (synl >= 1000 and len(descs) > 1):
+        if (
+            cyno.endswith("...")
+            or (synl >= 150 and len(descs) > 2)
+            or (synl >= 1000 and len(descs) > 1)
+        ):
             cyno += desc_attr
 
     # Process genres and tags
     tgs = sorted(set(g.name.title() for g in data.genres + data.tags), key=str.casefold)
-    tgs_text = ", ".join(tgs[:20]) if len(tgs) > 20 else ", ".join(tgs) if tgs else "*None*"
+    tgs_text = (
+        ", ".join(tgs[:20]) if len(tgs) > 20 else ", ".join(tgs) if tgs else "*None*"
+    )
     if len(tgs) > 20:
         lefties = len(tgs) - 20
         tgs_text += f", *and {lefties} more*"
@@ -104,26 +112,22 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
     # Process additional links
     pdt = []
     if data.website:
-        pdt.append({'name': 'Website', 'value': data.website})
+        pdt.append({"name": "Website", "value": data.website})
     if data.metacritic_url:
-        pdt.append({'name': 'Metacritic', 'value': data.metacritic_url})
+        pdt.append({"name": "Metacritic", "value": data.metacritic_url})
     if data.reddit_url:
         reddit = data.reddit_url
-        if re.match(r'^http(s)?://(www.)?reddit.com/r/(\w+)', reddit):
+        if re.match(r"^http(s)?://(www.)?reddit.com/r/(\w+)", reddit):
             subreddit = reddit
-        elif re.match(r'r/(\w+)', reddit):
+        elif re.match(r"r/(\w+)", reddit):
             subreddit = f"https://reddit.com/{reddit}"
-        elif re.match(r'^(\w+)', reddit):
+        elif re.match(r"^(\w+)", reddit):
             subreddit = f"https://reddit.com/r/{reddit}"
-        pdt.append({'name': 'Reddit', 'value': subreddit})
+        pdt.append({"name": "Reddit", "value": subreddit})
 
     # Create button components
     components = [
-        Button(
-            style=ButtonStyle.URL,
-            label=p['name'],
-            url=p['value']
-        ) for p in pdt
+        Button(style=ButtonStyle.URL, label=p["name"], url=p["value"]) for p in pdt
     ]
 
     # Create the embed
@@ -131,7 +135,7 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
         author=EmbedAuthor(
             name="RAWG Game",
             url="https://rawg.io/",
-            icon_url="https://pbs.twimg.com/profile_images/951372339199045632/-JTt60iX_400x400.jpg"
+            icon_url="https://pbs.twimg.com/profile_images/951372339199045632/-JTt60iX_400x400.jpg",
         ),
         title=data.name,
         url=f"https://rawg.io/games/{id}",
@@ -150,6 +154,7 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
     )
     embed.set_image(url=data.background_image)
     return [embed, components]
+
 
 async def rawg_submit(ctx: SlashContext | ComponentContext, slug: str) -> None:
     """
@@ -183,9 +188,4 @@ async def rawg_submit(ctx: SlashContext | ComponentContext, slug: str) -> None:
             error_type=PlatformErrType.SYSTEM,
         )
 
-    await ctx.send(
-        content=f"{ctx.author.mention}",
-        embed=embed,
-        components=buttons
-    )
-
+    await ctx.send(content=f"{ctx.author.mention}", embed=embed, components=buttons)
