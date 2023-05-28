@@ -2,10 +2,10 @@
 <!-- omit in toc -->
 # Ryuuzaki Ryuusei Privacy Policy
 
-|                  |                |
-| ---------------- | -------------- |
-| **Effective**    | June 16, 2023 |
-| **Last Updated** | May 27, 2023 |
+|                  |              |
+| ---------------- | ------------ |
+| **Effective**    | June 4, 2023 |
+| **Last Updated** | May 28, 2023 |
 
 Greetings, and welcome to Ryuuzaki Ryuusei's Privacy Policy. Through this
 document, we aim to provide you with an explanation of how your personal
@@ -28,10 +28,14 @@ yourself:
 
 - **We collect personal information tied about you**, with your consent, the
   following data:
+  - [AniList][al] (optional): username, user ID
   - [Discord][discord]: username, discriminator, user snowflake ID, joined date,
     guild/server ID of registration, server name, date of registration, user
     referral (if any)
+  - [Last.FM][lastfm] (optional): username
   - [MyAnimeList][mal]: username, user ID, joined date
+  - [Shikimori][shiki] (optional): username, user ID
+  - User's settings (optional): language
 - **We share limited personal information about you and/or other**, required for
   the bot to function as expected, with the following services:
   > **Warning**
@@ -45,15 +49,27 @@ yourself:
   > For more information, you can visit the privacy policies of the
   > questioned services. You also have the right to opt-out of these services by
   > deleting your data from these services.
-  - [MyAnimeList][mal] (via [Jikan][jikan]): MyAnimeList Username
+  - [Discord][discord]: Message Author Identifier
   - [Last.FM][lastfm]: Last.FM Username
   - [MAL-Heatmap][malh]: MyAnimeList Username
-  - [Discord][discord]: Message Author Identifier
+  - [MyAnimeList][mal] (via [Jikan][jikan]): MyAnimeList Username
+  - [PronounDB][pdb]: Message Author Identifier
+  - [Shikimori][shiki]: Shikimori Username
 - **We do not collect, store, or use any logs of messages sent by system about
   you under any circumstances**. Logging of messages only occurs when you
   invoked general commands (such as `/help`, `/anime`, `/manga`, etc.) and
   during the bot's development process. Maintenance will announced in the Bot
   status channel in Support Server and Bot Activity.
+- **We share aggregated data to 3rd parties**. We may share aggregated data to
+  third parties for the purpose of improving our services and statistics. This
+  data is not personally identifiable and is used for statistical purposes only.
+- **We stores cache in our system for limited time**. This cache is used to
+  improve the performance of the bot and to reduce the load on the third party
+  services. The cache is stored for a limited time and is automatically deleted
+  after a certain period of time.
+- **You have rights to modify, rectify, delete, or restrict processing of your
+  data**. You can also request to stop processing your data on your server.
+  Please refer to [User Rights](#user-rights) section for more information.
 
 <!-- omit in toc -->
 ## Table of Contents
@@ -76,6 +92,7 @@ yourself:
   - [Discord: Global](#discord-global)
   - [PronounDB](#pronoundb)
   - [Shikimori: Global](#shikimori-global)
+- [Aggregated Data Sharing](#aggregated-data-sharing)
 - [Data Caching](#data-caching)
 - [Data Logging](#data-logging)
 - [Access to User Data](#access-to-user-data)
@@ -298,6 +315,18 @@ the result when invoking `/profile shikimori` command.
 Shikimori's username can be used else during platform linking to your registered
 account on the bot to only obtain user ID.
 
+## Aggregated Data Sharing
+
+Ryuuzaki Ryuusei may share aggregated data with third parties for statistical
+purposes, but no personal information will be included in the aggregated data.
+
+Following is the list of third parties that Ryuuzaki Ryuusei may share
+aggregated data with:
+
+| Platform        | Data Shared                | Purpose           |
+| --------------- | -------------------------- | ----------------- |
+| [Top.gg][topgg] | Server Count, Shards Count | Public statistics |
+
 ## Data Caching
 
 Ryuuzaki Ryuusei stores information for the purpose of caching for limited time,
@@ -313,8 +342,8 @@ API:
 |                 Platform | Retention Period                                    |
 | -----------------------: | :-------------------------------------------------- |
 |                  AniList | 1 day                                               |
-|    AniList: User Profile | 12 hours                                            |
 |      AniList: NSFW Check | 1 week                                              |
+|    AniList: User Profile | 12 hours                                            |
 |                 AnimeAPI | 1 day                                               |
 |                    Jikan | 1 day                                               |
 |      Jikan: User Profile | 12 hours on Ryuuzaki Ryuusei, 1 day on Jikan Server |
@@ -503,4 +532,5 @@ Data Controller.
 [shiki]: https://shikimori.me
 [simkl]: https://simkl.com
 [tmdb]: https://www.themoviedb.org
+[topgg]: https://top.gg
 [trakt]: https://trakt.tv
