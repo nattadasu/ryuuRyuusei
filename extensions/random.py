@@ -26,7 +26,7 @@ class Random(ipy.Extension):
 
     @random.subcommand(
         sub_cmd_name="8ball",
-        sub_cmd_description="Get a random answer to your question",
+        sub_cmd_description="Get a random answer to your question, powered by random.org",
         options=[
             ipy.SlashCommandOption(
                 name="question",
@@ -105,6 +105,7 @@ class Random(ipy.Extension):
             color=0x1F1F1F,
         )
         embed.set_thumbnail(url=emoji_url)
+        embed.set_footer(text="Please do not take this seriously, it's for fun purposes only")
         await ctx.send(embed=embed)
 
 
