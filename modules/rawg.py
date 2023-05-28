@@ -44,7 +44,7 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
         syns_text += f", *and {len(data.alternative_names) - len(syns)} more*"
 
     # Process platforms
-    pfs = sorted(set(pf.platform.name for pf in data.platforms), key=str.casefold)
+    pfs = sorted({pf.platform.name for pf in data.platforms}, key=str.casefold)
     pfs_text = ", ".join(pfs)
 
     # Process ratings
@@ -55,11 +55,11 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
     rte = data.esrb_rating.name if data.esrb_rating else "Unknown Rating"
 
     # Process developers
-    devs = sorted(set(d.name for d in data.developers), key=str.casefold)
+    devs = sorted({d.name for d in data.developers}, key=str.casefold)
     devs_text = ", ".join(devs) if devs else "*None*"
 
     # Process publishers
-    pubs = sorted(set(p.name for p in data.publishers), key=str.casefold)
+    pubs = sorted({p.name for p in data.publishers}, key=str.casefold)
     pubs_text = ", ".join(pubs) if pubs else "*None*"
 
     # Process game description
@@ -95,7 +95,7 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
             cyno += desc_attr
 
     # Process genres and tags
-    tgs = sorted(set(g.name.title() for g in data.genres + data.tags), key=str.casefold)
+    tgs = sorted({g.name.title() for g in data.genres + data.tags}, key=str.casefold)
     tgs_text = (
         ", ".join(tgs[:20]) if len(tgs) > 20 else ", ".join(tgs) if tgs else "*None*"
     )
