@@ -125,6 +125,7 @@ class Movies(ipy.Extension):
         await ctx.defer()
         entry_id: int = int(ctx.values[0])
         await simkl_submit(ctx, entry_id, "movies")
+        await asyncio.sleep(65)
         await ctx.delete(ctx.message_id)
 
     @movies.subcommand(

@@ -113,6 +113,7 @@ class Games(ipy.Extension):
         await ctx.defer()
         entry_id = ctx.values[0]
         await rawg_submit(ctx, entry_id)
+        await asyncio.sleep(65)
         await ctx.delete(ctx.message_id)
 
     @games.subcommand(
