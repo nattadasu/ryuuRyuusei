@@ -45,7 +45,7 @@ from modules.const import (
 )
 
 
-def lookupRandomAnime() -> int:
+def lookup_random_anime() -> int:
     """
     Lookup random anime from MAL
 
@@ -65,7 +65,7 @@ def lookupRandomAnime() -> int:
     return randomAnimeId
 
 
-async def searchMalAnime(title: str) -> dict | list:
+async def search_mal_anime(title: str) -> dict | list:
     """
     Search anime via MyAnimeList API
 
