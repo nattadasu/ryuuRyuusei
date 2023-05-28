@@ -1,352 +1,389 @@
-from modules.commons import *
-from modules.const import *
-from modules.tmdb import *
+from datetime import datetime, timedelta, timezone
+from typing import Dict, Literal
+
+import interactions as ipy
+
+from classes.excepts import MediaIsNsfw, ProviderHttpError
+from classes.tmdb import TheMovieDb
+from classes.simkl import Simkl
+from modules.commons import (
+    trim_synopsis,
+    generate_trailer,
+    get_nsfw_status,
+    platform_exception_embed,
+    PlatformErrType,
+)
+from modules.const import MESSAGE_WARN_CONTENTS
+from modules.i18n import fetch_language_data
+from modules.platforms import Platform, media_id_to_platform
 
 
-async def searchSimklId(title_id: str, platform: str, media_type: str = None) -> int:
-    """Search SIMKL title ID  from other platforms"""
-    url = f'https://api.simkl.com/search/id/?{platform}={title_id}'
-    if media_type is not None:
-        url += f'&type={media_type}'
-    url += f"&client_id={SIMKL_CLIENT_ID}"
-    try:
-        async with aiohttp.ClientSession() as sSession:
-            async with sSession.get(url) as sResp:
-                idFound = await sResp.json()
-                fin = idFound[0]['ids']['simkl']
-            await sSession.close()
-            return fin
-    except:
-        return 0
+def create_simkl_embed(
+    data: Dict[str, any],
+    media_type: Literal["tv", "movies"],
+    is_channel_nsfw: bool | None = None,
+    is_media_nsfw: bool | None = None,
+) -> list[ipy.Embed, list[ipy.Button]]:
+    """
+    Generate embed for Simkl API
 
+    Args:
+        data (Dict[str, any]): Simkl API data
+        media_type (Literal['tv', 'movies']): Media type
+        is_chnnel_nsfw (bool, optional): Whether the channel is NSFW, defaults to None
+        is_media_nsfw (bool, optional): Whether the media is NSFW, defaults to None
 
-async def getSimklID(simkl_id: int, media_type: str) -> dict:
-    """Get external IDs provided by SIMKL"""
-    try:
-        if simkl_id == 0:
-            raise Exception('Simkl ID is 0')
-        else:
-            async with aiohttp.ClientSession() as gSession:
-                async with gSession.get(f'https://api.simkl.com/{media_type}/{simkl_id}?client_id={SIMKL_CLIENT_ID}&extended=full') as gResp:
-                    animeFound = await gResp.json()
-                    data = animeFound['ids']
-                    # Null safe result, if any of the key is not found, it will be replaced with None
-                    data = {
-                        "title": animeFound.get('title', None),
-                        "simkl": data.get('simkl', None),
-                        "slug": data.get('slug', None),
-                        "poster": animeFound.get('poster', None),
-                        "fanart": animeFound.get('fanart', None),
-                        "aniType": animeFound.get('anime_type', None),
-                        "type": animeFound.get('type', None),
-                        "allcin": data.get('allcin', None),
-                        "anfo": data.get('anfo', None),
-                        "ann": data.get('ann', None),
-                        "imdb": data.get('imdb', None),
-                        "mal": data.get('mal', None),
-                        "offjp": data.get('offjp', None),
-                        "tmdb": data.get('tmdb', None),
-                        "tvdb": data.get('tvdb', None),
-                        "tvdbslug": data.get('tvdbslug', None),
-                        "wikien": data.get('wikien', None),
-                        "wikijp": data.get('wikijp', None),
-                    }
-                await gSession.close()
-                return data
-    except:
-        return simkl0rels
+    Returns:
+        list[Embed, list[Button]]: The embed and the buttons
+    """
+    notice = MESSAGE_WARN_CONTENTS if is_channel_nsfw is None else ""
 
+    if is_media_nsfw is True and is_channel_nsfw is False:
+        raise MediaIsNsfw(notice)
 
-async def searchSimkl(query: str, mediaType: str = 'tv') -> dict:
-    """Search TV/Movie on SIMKL"""
-    query = urlparse.quote(query)
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://api.simkl.com/search/{mediaType}?q={query}&client_id={SIMKL_CLIENT_ID}&page=1&limit=5') as resp:
-            if resp.status != 200:
-                raise Exception(f"SIMKL API returned {resp.status}")
-            simklRes = await resp.json()
-        await session.close()
-        if len(simklRes) == 0:
-            raise Exception('**No results found!**')
-        return simklRes
+    media_id = str(data["ids"]["simkl"])
+    title = data.get("title", None)
+    synonyms = data.get("alt_titles", None)
+    status: str | None = data.get("status", None)
+    match status:
+        case None:
+            status = ""
+        case "tba":
+            status = ", To Be Announced"
+        case _:
+            status = f", {status.capitalize()}"
+    score: dict[str, dict[str, int | float]] | None = data.get("ratings", None)
+    certification = data.get("certification", None)
+    country = data.get("country", None)
+    network = data.get("network", None)
+    runtime = data.get("runtime", None)
 
-
-async def getSimklData(id: int, mediaType: str = 'tv') -> dict:
-    """Get information of a title in SIMKL"""
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'https://api.simkl.com/{mediaType}/{id}?client_id={SIMKL_CLIENT_ID}&extended=full') as resp:
-            if resp.status != 200:
-                raise Exception(f"SIMKL API returned {resp.status}")
-            simklRes = await resp.json()
-        await session.close()
-        return simklRes
-
-
-async def generateSimkl(data: dict, mediaType: str = "tv", isNsfw: bool = False, mediaNsfw: bool = False) -> interactions.Embed:
-    """Generate embed from SIMKL data"""
-    if isNsfw is None:
-        msgForThread = warnThreadCW
+    # Process synonyms
+    if synonyms is None:
+        synonyms = "*None*"
     else:
-        msgForThread = ''
+        synonyms = [x["name"] for x in synonyms if x["name"] != title]
+        synonyms = sorted(set(synonyms), key=str.casefold)
+        len_synonyms = len(synonyms)
 
-    if isNsfw is False and mediaNsfw is True:
-        raise Exception(
-            f'{EMOJI_FORBIDDEN} **NSFW content is not allowed!**\nOnly NSFW channels are allowed to search NSFW content.{msgForThread}')
+        if len_synonyms > 8:
+            synonyms = synonyms[:8]
+            count_syn = len_synonyms - 8
+            if count_syn > 0:
+                synonyms.append(f"*and {count_syn} more*")
+            synonyms = ", ".join(synonyms)
+        elif len_synonyms > 1:
+            synonyms = ", ".join(synonyms)
+        elif len_synonyms == 1:
+            synonyms = synonyms[0]
 
-    id = data['ids']['simkl']
-    ent = data['title']
-    syns = data.get('alt_titles', None)
-    if syns is not None:
-        syns = [x['name'] for x in syns if x['name'] != ent]
-        syns = sorted(set(syns), key=str.casefold)
-        synsl = len(syns)
+    # Process eps
+    episodes = data.get("total_episodes", None)
+    if episodes is None:
+        episodes = "*??*"
 
-        if synsl > 8:
-            syns = syns[:8]
-            syns = ", ".join(syns) + f" and {synsl - 8} more"
-        elif synsl > 1:
-            syns = ", ".join(syns)
-        elif synsl == 1:
-            syns = syns[0]
+    # Process runtime
+    if runtime is not None:
+        runtime = f"({runtime} mins/eps)" if media_type == "tv" else f"{runtime} mins"
     else:
-        syns = "*None*"
-
-    network = data.get('network', None)
-    cert = data['certification']
-
-    eps = data.get('total_episodes', None)
-    if eps in ['', None, 0]:
-        eps = "*??*"
-
-    runtime = data.get('runtime', None)
-    if runtime in ['', None, 0]:
         runtime = ""
-    else:
-        runtime = " (" + str(runtime) + \
-            " mins/ep)" if mediaType == 'tv' else str(runtime) + " mins"
 
-    country = data.get('country', None)
-    if country in ['', None]:
+    # Process country
+    if country is not None:
+        country: str = f"{country.upper()} :flag_{country.lower()}:"
+    else:
         country = "*Unknown*"
-    else:
-        country = country.upper()
 
-    stat = data.get('status', None)
-    if stat == 'tba':
-        stat = ', To Be Announced'
-    elif stat is not None:
-        stat = ", " + stat.title()
-    else:
-        stat = ''
-
-    rate = data.get('ratings', None)
-    if rate not in ['', None, 0]:
-        scr = data['ratings']['simkl']['rating']
-        if scr in ['', None, 0]:
-            scr = "0"
-
-        pvd = data['ratings']['simkl']['votes']
-        if pvd in ['', None, 0]:
-            pvd = "0 person voted"
-        elif pvd == 1:
-            pvd = "1 person voted"
+    # Process start date
+    if media_type == "tv":
+        airing_date = data.get("first_aired", None)
+        if airing_date in ["", None]:
+            airing = "TBA"
+            time_since_release = ""
+            airing_date = None
         else:
-            pvd = f"{pvd:,} people voted"
-    else:
-        scr = "0"
-        pvd = "0 person voted"
-
-    # "first_aired":"2019-11-01T04:00:00Z"
-    if mediaType == 'tv':
-        astn = data.get('first_aired', None)
-        if astn in ['', None]:
-            ast = "TBA"
-            tsa = ""
-            passing = None
+            if airing_date.endswith("Z"):
+                airing_date = airing_date[:-1] + "+00:00"
+            else:
+                airing_date += "T00:00:00+00:00"
+            airing = datetime.strptime(airing_date, "%Y-%m-%dT%H:%M:%S%z")
+            time_since_release = f"(<t:{int(airing.timestamp())}:R>)"
+            airing_date = airing
+            airing = f"<t:{int(airing.timestamp())}:D>"
+    elif media_type == "movies":
+        release_date = data.get("released", None)
+        if release_date in ["", None]:
+            release = "TBA"
+            time_since_release = ""
+            release_date = None
         else:
-            ast = datetime.datetime.strptime(astn, '%Y-%m-%dT%H:%M:%S%z')
-            tsa = "(<t:" + str(int(ast.timestamp())) + ":R>)"
-            passing = ast
-            ast = "<t:" + str(int(ast.timestamp())) + ":D>"
-    elif mediaType == 'movies':
-        astn = data.get('released', None)
-        if astn in ['', None]:
-            ast = "TBA"
-            tsa = ""
-            passing = None
-        else:
-            astn += "T00:00:00+00:00"
-            ast = datetime.datetime.strptime(astn, '%Y-%m-%dT%H:%M:%S%z')
-            tsa = "(<t:" + str(int(ast.timestamp())) + ":R>)"
-            passing = ast
-            ast = "<t:" + str(int(ast.timestamp())) + ":D>"
+            release_date += "T00:00:00+00:00"
+            release = datetime.strptime(release_date, "%Y-%m-%dT%H:%M:%S%z")
+            time_since_release = f"(<t:{int(release.timestamp())}:R>)"
+            release_date = release
+            release = f"<t:{int(release.timestamp())}:D>"
 
-    year = data.get('year', None)
+    year = data.get("year", None)
 
-    if eps != "*??*" and passing is not None and stat == ", Ended":
-        # roughly calculate the end date by determining the number of episodes released
-        # per week and then adding that to the first aired date
-        # this is not accurate but it's better than nothing
-        aen = passing + datetime.timedelta(weeks=eps)
-        aen = "<t:" + str(int(aen.timestamp())) + ":D>"
-    elif stat == ", Airing":
-        aen = "TBA"
-    elif stat == ", To Be Announced":
-        aen = "TBA"
+    # Process end date
+    if episodes != "*??*" and airing_date is not None and status == ", Ended":
+        end_date = airing_date + timedelta(weeks=episodes)
+        end_date = f"<t:{int(end_date.timestamp())}:D>\\*"
+    elif status == ", Airing":
+        end_date = "TBA"
+    elif status == ", To Be Announced":
+        end_date = "TBA"
     else:
-        aen = "*Unknown*"
+        end_date = "*Unknown*"
 
-    if tsa not in ['', None]:
-        tsa = " " + tsa
-    else:
-        tsa = ""
+    if time_since_release not in ["", None]:
+        time_since_release = " " + time_since_release
 
-    if mediaType == 'tv':
-        if ast == "TBA" and aen == "TBA":
+    if media_type == "tv":
+        if airing == "TBA" and end_date == "TBA":
             date = "TBA"
         else:
-            date = f"{ast} - {aen}{tsa}"
-    elif mediaType == 'movies':
-        date = f"{ast}{tsa}"
+            date = f"{airing} - {end_date}{time_since_release}"
+    elif media_type == "movies":
+        date = f"{release}{time_since_release}"
 
-    cyno = data.get('overview', None)
-    if cyno in [None, '']:
-        cyno = "*No description provided*"
+    # Process description
+    description = data.get("overview", None)
+    if not description:
+        description = "*No description provided*"
     else:
-        cyno = cyno.replace("\r", "")
-        cyno = cyno.split('\n')
-        cynl = len(cyno)
-        cynoin = cyno[0]
-        cynmo = f"\n> \n> [Read more on SIMKL](https://simkl.com/{mediaType}/{id})"
+        description = description.replace("\r", "")
+        description = description.split("\n")
+        description_length = len(description)
+        first_line = description[0]
+        more_link = (
+            f"\n> \n> [Read more on SIMKL](https://simkl.com/{media_type}/{media_id})"
+        )
 
-        if len(str(cynoin)) <= 150:
-            daff = cynoin
-            if cynl >= 2:
-                for i in range(2, cynl + 1):
-                    if (len(str(cyno[i])) > 0) or (cyno[i] != ""):
-                        cynoAdd = cyno[i]
-                        cynoAdd = sanitizeMarkdown(cynoAdd)
-                        break
-                cyno = sanitizeMarkdown(daff)
-                cyno += '\n> \n> '
-                cyno += trimCyno(cynoAdd)
-            else:
-                cyno = sanitizeMarkdown(daff)
-        elif len(str(cynoin)) >= 1000:
-            cyno = trimCyno(cynoin)
+        if len(first_line) >= 1000:
+            trimmed_description = trim_synopsis(first_line)
+        elif len(first_line) <= 150:
+            trimmed_description = first_line
+            if description_length > 1:
+                trimmed_description += f"\n> \n> "
+                for line in description[1:]:
+                    if line not in ("", None):
+                        trimmed_description += trim_synopsis(line)
         else:
-            cyno = cynoin
+            trimmed_description = first_line
 
-        if (cyno[-3:] == "...") or ((len(str(cynoin)) >= 150) and (cynl > 3)) or ((len(str(cynoin)) >= 1000) and (cynl > 1)):
-            cyno += cynmo
+        if (
+            trimmed_description[-3:] == "..."
+            or (description_length >= 150 and len(description) > 3)
+            or (description_length >= 1000 and len(description) > 1)
+        ):
+            trimmed_description += more_link
 
-    tgs = data.get('genres', None)
-    if (len(tgs) == 0) or tgs is None:
-        tgs = "*None*"
-    elif len(tgs) > 20:
-        tgss = sorted(set(tgs[:20]), key=str.casefold)
-        tgs = ', '.join(tgss)
-        tgs += f", and {len(tgs) - 20} more"
+        description = trimmed_description
+
+    votes = None
+    if score is not None:
+        simkl_score: dict[str, int | float] = score["simkl"]
+        score = simkl_score.get("rating", None)
+        votes = simkl_score.get("votes", None)
+    if votes is None:
+        votes = 0
+
+    # Process genres
+    genres = data.get("genres", [])
+    if len(genres) == 0:
+        genres = "*None*"
+    elif len(genres) > 20:
+        sorted_genres = sorted(set(genres[:20]), key=str.casefold)
+        remaining_genres = len(genres[20:])
+        genres = ", ".join(sorted_genres)
+        if remaining_genres > 0:
+            genres += f", and {remaining_genres} more"
     else:
-        tgss = sorted(set(tgs), key=str.casefold)
-        tgs = ', '.join(tgss)
+        sorted_genres = sorted(set(genres), key=str.casefold)
+        genres = ", ".join(sorted_genres)
 
-    poster = data.get('poster', None)
-    fanart = data.get('fanart', None)
+    # Process poster and fanart
+    poster = data.get("poster", None)
+    fanart = data.get("fanart", None)
 
-    if poster is not None:
-        poster = interactions.EmbedImageStruct(
-            url=f"https://simkl.in/posters/{poster}_m.webp"
-        )
-    else:
-        poster = None
-    if fanart is not None:
-        fanart = interactions.EmbedImageStruct(
-            url=f"https://simkl.in/fanart/{fanart}_w.webp"
-        )
-    else:
-        fanart = None
+    embed = ipy.Embed(
+        author=ipy.EmbedAuthor(
+            name=f"SIMKL {'TV' if media_type == 'tv' else 'Movie'}",
+            url="https://simkl.com",
+            icon_url="https://media.discordapp.net/attachments/1078005713349115964/1094570318967865424/ico_square_1536x1536.png",
+        ),
+        title=title,
+        url=f"https://simkl.com/{media_type}/{media_id}",
+        description=f"""*`{media_id}`, {'TV' if media_type =='tv' else 'Movies'}{status}, {year}, ⭐ {score}/10 by {votes} {'people' if votes >= 2 else 'person'}*
 
-    finfields = [
-        interactions.EmbedField(
-            name="Synonyms",
-            value=syns,
-            inline=False
-        ),
-        interactions.EmbedField(
-            name="Genres",
-            value=tgs,
-            inline=False
-        ),
-    ]
-    if mediaType == 'tv':
-        finfields.append(
-            interactions.EmbedField(
-                name="Network",
-                value=network if network is not None else "*None*",
-                inline=True
-            )
-        )
-    finfields += [
-        interactions.EmbedField(
-            name="Certification",
-            value=cert if cert is not None else "*None*",
-            inline=True
-        ),
-        interactions.EmbedField(
-            name="Country",
-            value=country,
-            inline=True
-        ),
-        interactions.EmbedField(
-            name="Episodes and Duration" if mediaType == 'tv' else "Duration",
-            value=f"{eps}{runtime}" if mediaType == 'tv' else f"{runtime}",
-            inline=True
-        ),
-        interactions.EmbedField(
-            name=f"Airing Date" if mediaType == 'tv' else "Release Date",
-            value=date,
-            inline=True
-        )
-    ]
-
-    embed = interactions.Embed(
-        author=interactions.EmbedAuthor(
-            name=f"SIMKL {'TV' if mediaType == 'tv' else 'Movie'}",
-            url=f"https://simkl.com",
-            icon_url="https://media.discordapp.net/attachments/1078005713349115964/1094570318967865424/ico_square_1536x1536.png"
-        ),
-        title=ent,
-        url=f"https://simkl.com/{mediaType}/{id}",
-        description=f"""*`{id}`, {mediaType.title()}{stat}, {year}, ⭐ {scr}/10 by {pvd}*
-
-> {cyno}""",
+> {description}""",
         color=0x0B0F10,
-        fields=finfields,
-        image=fanart,
-        thumbnail=poster
+        timestamp=datetime.now(tz=timezone.utc),
     )
 
-    return embed
+    if poster is not None:
+        embed.set_thumbnail(url=f"https://simkl.in/posters/{poster}_m.webp")
+    if fanart is not None:
+        embed.set_image(url=f"https://simkl.in/fanart/{fanart}_w.webp")
 
+    embed.add_fields(
+        ipy.EmbedField(name="Synonyms", value=synonyms or "*None*", inline=False),
+        ipy.EmbedField(name="Genres", value=genres, inline=False),
+    )
+    if media_type == "tv":
+        embed.add_field(name="Network", value=network or "*None*", inline=True)
+    embed.add_fields(
+        ipy.EmbedField(
+            name="Certification", value=certification or "*None*", inline=True
+        ),
+        ipy.EmbedField(name="Country", value=country, inline=True),
+        ipy.EmbedField(
+            name="Episodes and Duration" if media_type == "tv" else "Duration",
+            value=f"{episodes} {runtime}" if media_type == "tv" else f"{runtime}",
+            inline=True,
+        ),
+        ipy.EmbedField(
+            name=f"Airing Date" if media_type == "tv" else "Release Date",
+            value=date,
+            inline=True,
+        ),
+    )
 
-async def simklSubmit(ctx, simkl_id, media: str = 'tv'):
-    trailer = None
-    try:
-        data: dict = await getSimklData(id=simkl_id, mediaType=media)
-        nsfw_bool = await getNsfwStatus(channel=ctx.channel)
+    if end_date.endswith("\\*"):
+        embed.set_footer(
+            text="* This is estimated end date (as SIMKL didn't provide end date well), please take the info with a pinch of salt"
+        )
+
+    buttons = []
+
+    if data.get("trailers", None) is not None:
         try:
-            tmdbNsfw = await tmdb_getNsfwStatus(id=data['ids']['tmdb_id'], mediaType=media)
-        except KeyError:
-            tmdbNsfw = False
-        dcEm = await generateSimkl(data=data, mediaType=media, isNsfw=nsfw_bool, mediaNsfw=tmdbNsfw)
-        if data.get('trailers', None) is not None:
-            try:
-                trailer = generateTrailer(
-                    data=data['trailers'][0], isSimkl=True)
-            except KeyError:
-                trailer = None
-    except Exception as e:
-        dcEm = exceptionsToEmbed(returnException(e))
+            trailer = generate_trailer(data["trailers"][0], is_mal=False)
+        except IndexError:
+            trailer = None
 
-    await ctx.send(embeds=dcEm, components=trailer)
+        if trailer is not None:
+            buttons.append(trailer)
+
+    ids = data.get("ids", {})
+
+    platforms = [
+        {
+            "name": "imdb",
+            "url": ids.get("imdb", None),
+        },
+        {
+            "name": "tmdb",
+            "url": f"{'tv' if media_type == 'tv' else 'movie'}/{ids.get('tmdb', '')}"
+            if ids.get("tmdb", None)
+            else None,
+        },
+        {
+            "name": "tvdbslug",
+            "url": f"https://www.thetvdb.com/{'series' if media_type == 'tv' else 'movies'}/{ids.get('tvdb', '')}"
+            if ids.get("tvdb", None)
+            else None,
+        },
+        {
+            "name": "tvdb",
+            "url": f"{'show' if media_type == 'tv' else 'movie'}/{ids.get('tvdb', '')}"
+            if ids.get("tvdb", None)
+            else None,
+        },
+    ]
+    for platform in platforms:
+        if platform["url"] is not None:
+            platform_name = platform["name"]
+            if platform_name == "tvdb":
+                platform_name = "tvtime"
+            if platform_name == "tvdbslug":
+                platform_name = "tvdb"
+            pf = media_id_to_platform(platform["url"], Platform(platform_name))
+        else:
+            continue
+        pfn = {
+            "imdb": "IMDb",
+            "tmdb": "tmdb",
+            "tvdb": "tvdb",
+            "tvtime": "tvTime",
+        }
+        buttons.append(
+            ipy.Button(
+                style=ipy.ButtonStyle.LINK,
+                label=pf["pf"],
+                url=pf["uid"],
+                emoji=ipy.PartialEmoji(id=pf["emoid"], name=pfn[platform_name]),
+            )
+        )
+
+    return [embed, buttons]
+
+
+async def simkl_submit(
+    ctx: ipy.SlashContext | ipy.ComponentContext,
+    media_id: int | str,
+    media_type: Literal["tv", "movies"] = "tv",
+) -> None:
+    """
+    Smbit a query to SIMKL and send the result to the channel
+
+    Args:
+        ctx (ipy.SlashContext | ipy.ComponentContext): The context of the command
+        media_id (int | str): The ID of the media
+        media_type (Literal['tv', 'movies'], optional): The type of the media. Defaults to 'tv'.
+    """
+    buttons = []
+    l_ = fetch_language_data(code="en_US")
+    try:
+        async with Simkl() as simkl:
+            if media_type == "tv":
+                data: dict = await simkl.get_show(f"{media_id}")
+            else:
+                data: dict = await simkl.get_movie(f"{media_id}")
+
+        tmdb_id = data.get("ids", {}).get("tmdb", None)
+        if tmdb_id is not None:
+            try:
+                async with TheMovieDb() as tmdb:
+                    media_nsfw: bool = await tmdb.get_nsfw_status(
+                        tmdb_id,
+                        tmdb.MediaType.TV
+                        if media_type == "tv"
+                        else tmdb.MediaType.MOVIE,
+                    )
+            except ProviderHttpError:
+                media_nsfw = False
+        else:
+            media_nsfw = False
+
+        channel_nsfw = await get_nsfw_status(ctx)
+        embed, button_2 = create_simkl_embed(
+            data=data,
+            media_type=media_type,
+            is_channel_nsfw=channel_nsfw,
+            is_media_nsfw=media_nsfw,
+        )
+        buttons.append(button_2)
+
+    except MediaIsNsfw as e:
+        notice = e.arg[0] if e.args else ""
+        embed = platform_exception_embed(
+            description="This media is NSFW, please invoke the same query on NSFW enabled channel.",
+            error="Media is NSFW\n" + notice,
+            lang_dict=l_,
+            error_type=PlatformErrType.NSFW,
+        )
+
+    except ProviderHttpError as e:
+        status = e.status_code
+        message = e.message
+
+        embed = platform_exception_embed(
+            description="SIMKL API is currently unavailable, please try again later.",
+            error=f"HTTP Error {status}\n{message}",
+            lang_dict=l_,
+            error_type=PlatformErrType.SYSTEM,
+        )
+
+    await ctx.send(content=f"<@{ctx.author.id}>", embed=embed, components=buttons)

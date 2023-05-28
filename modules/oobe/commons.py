@@ -1,90 +1,120 @@
-import json
 import os
 import platform
-import time
-import re
-
-import pandas as pd
-import requests as r
-import subprocess as sub
+import sys
 
 
-# check current OS
-def currentOS() -> str:
-    """Return current OS"""
+def current_os() -> str:
+    """
+    Return the name of the current operating system.
+
+    This function uses the 'platform.system()' method to determine the name of the current operating system.
+
+    Returns:
+        str: The name of the current operating system.
+
+    Example:
+        >>> current_os()
+        'Windows'
+    """
     return platform.system()
 
 
-def pyBinPath() -> str:
-    """Return python binary path"""
+class UnsupportedOS(Exception):
+    """Unsupported operating system."""
+
+
+class UnsupportedVersion(Exception):
+    """Unsupported version of Python."""
+
+    def __init__(self, message: str, version: str):
+        super().__init__(message)
+        self.version = version
+
+
+def py_bin_path() -> str:
+    """
+    Return the path of the Python binary.
+
+    This function checks the version of Python installed and returns the path to the binary for the latest installed version
+    that is >= 3.10.
+
+    Returns:
+        str: The path of the Python binary.
+
+    Raises:
+        Exception: If Python version is too old.
+
+    Example:
+        >>> py_bin_path()
+        '/usr/local/bin/python3'
+    """
     if os.getenv("PYTHON_BINARY"):
-        # eh, just return the env var if it exists
+        # return the env var if it exists
         return os.getenv("PYTHON_BINARY")
-    def askPython(shellOutput: str) -> bool:
-        """Directly ask Python what version it is"""
-        so = shellOutput.split(" ")
-        v = so[1].split(".")
-        # return python if version >= 3.9
-        if (int(v[0]) >= 3) and (int(v[1]) >= 9):
-            return True
-        else:
-            return False
-    if currentOS() == "Windows":
-        try:
-            py = sub.check_output("python --version", shell=True).decode("utf-8")
-            if askPython(py):
-                return "python"
-            else:
-                raise sub.CalledProcessError()
-        except sub.CalledProcessError:
-            paths = sub.check_output("where python", shell=True).decode("utf-8")
-            paths = paths.replace('\r','').split("\n")
-            # reverse the list, so we can get the up to date python version
-            paths.reverse()
-            # if index 0 is '', drop it
-            if paths[0] == "":
-                paths = paths[1:]
-            for path in paths:
-                p = path.split("\\")
-                # Check if version is >= 3.9
-                if int(p[-2].replace("Python", "")) >= 39:
-                    return path
-            else:
-                return "python"
-    else:
-        try:
-            py3 = sub.check_output("python3 --version", shell=True).decode("utf-8")
-            if askPython(py3):
-                return "python3"
-            else:
-                raise sub.CalledProcessError()
-        except sub.CalledProcessError:
-            py = sub.check_output("python --version", shell=True).decode("utf-8")
-            if askPython(py):
-                return "python"
-            else:
-                raise Exception("Python version is too old")
+
+    # get current python version with sys.version_info
+    py_version = sys.version_info
+    # if python version is >= 3.10, return the path to the binary
+    if py_version >= (3, 10):
+        return sys.executable
+    # if python version is < 3.10, raise an exception
+    raise UnsupportedVersion(version=sys.version, message="Python version is too old.")
 
 
-pf = pyBinPath()
+pf = py_bin_path()
 
 
 # check if termux
-def checkTermux() -> bool:
-    """Check if the script is running on Termux"""
-    if currentOS() == "Linux":
-        if os.path.exists("/data/data/com.termux/files/usr/bin"):
-            return True
-        else:
-            return False
-    else:
-        return False
+def check_termux() -> bool:
+    """
+    Check if the script is running on Termux.
+
+    Returns:
+        bool: True if running on Termux, False otherwise.
+    """
+    return current_os() == "Linux" and os.path.exists(
+        "/data/data/com.termux/files/usr/bin"
+    )
 
 
 def prepare_database():
-    """Prepare database.csv file with pre-defined header"""
-    # check if the file database/database.csv exists
-    if not os.path.exists("database/database.csv"):
-        # if not, write new header
-        with open("database/database.csv", "w") as f:
-            f.write("discordId\tdiscordUsername\tdiscordJoined\tmalUsername\tmalId\tmalJoined\tregisteredAt\tregisteredGuild\tregisteredBy")
+    """
+    Prepare the database files for storing user and server information.
+
+    This function checks if the `database/database.csv`, `database/member.csv`, and `database/server.csv` files exist.
+    If not, it creates a new file with the corresponding header.
+
+    Returns:
+        None
+    """
+    database_cells = [
+        "discordId",
+        "discordUsername",
+        "discordJoined",
+        "malUsername",
+        "malId",
+        "malJoined",
+        "registeredAt",
+        "registeredGuildId",
+        "registeredBy",
+        "registeredGuildName",
+        "anilistUsername",
+        "anilistId",
+        "lastfmUsername",
+        "shikimoriId",
+        "shikimoriUsername",
+    ]
+    database_header = "\t".join(database_cells)
+    files = [
+        {
+            "path": "database/database.csv",
+            "header": database_header,
+        },
+        {"path": "database/member.csv", "header": "discordId\tlanguage"},
+        {"path": "database/server.csv", "header": "guildId\tlanguage"},
+    ]
+
+    for file in files:
+        if not os.path.exists(file["path"]):
+            with open(file["path"], "w") as f:
+                f.write(file["header"])
