@@ -123,8 +123,8 @@ class Movies(ipy.Extension):
     @ipy.component_callback("simkl_search_select_movie")
     async def simkl_search_select_movie(self, ctx: ipy.ComponentContext):
         await ctx.defer()
-        entry_id: int = int (ctx.values[0])
-        await simkl_submit(ctx, entry_id, 'movies')
+        entry_id: int = int(ctx.values[0])
+        await simkl_submit(ctx, entry_id, "movies")
         await ctx.delete(ctx.message_id)
 
     @movies.subcommand(
@@ -137,16 +137,13 @@ class Movies(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=True,
             ),
-        ]
+        ],
     )
     async def movie_info(self, ctx: ipy.SlashContext, media_id: str):
         await ctx.defer()
-        await simkl_submit(ctx, media_id, 'movies')
+        await simkl_submit(ctx, media_id, "movies")
 
-    @movies.subcommand(
-        sub_cmd_name="random",
-        sub_cmd_description="Get a random movie"
-    )
+    @movies.subcommand(sub_cmd_name="random", sub_cmd_description="Get a random movie")
     async def movie_random(self, ctx: ipy.SlashContext):
         await ctx.defer()
         send = await ctx.send(
@@ -161,10 +158,8 @@ class Movies(ipy.Extension):
         )
         try:
             async with Simkl() as simkl:
-                rand = await simkl.get_random_title(
-                    media_type=SimklMediaTypes.MOVIE
-                )
-                rand_id = rand['simkl_id']
+                rand = await simkl.get_random_title(media_type=SimklMediaTypes.MOVIE)
+                rand_id = rand["simkl_id"]
         except ProviderHttpError:
             await send.edit(
                 embed=ipy.Embed(
@@ -185,11 +180,7 @@ class Movies(ipy.Extension):
                 ),
             )
         )
-        await simkl_submit(
-            ctx=ctx,
-            media_id=rand_id,
-            media_type='movies'
-        )
+        await simkl_submit(ctx=ctx, media_id=rand_id, media_type="movies")
 
 
 def setup(bot: ipy.Client | ipy.AutoShardedClient):

@@ -123,8 +123,8 @@ class TvShow(ipy.Extension):
     @ipy.component_callback("simkl_search_select_tv")
     async def simkl_search_select_tv(self, ctx: ipy.ComponentContext):
         await ctx.defer()
-        entry_id: int = int (ctx.values[0])
-        await simkl_submit(ctx, entry_id, 'tv')
+        entry_id: int = int(ctx.values[0])
+        await simkl_submit(ctx, entry_id, "tv")
         await ctx.delete(ctx.message_id)
 
     @tv.subcommand(
@@ -137,16 +137,13 @@ class TvShow(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=True,
             ),
-        ]
+        ],
     )
     async def tv_info(self, ctx: ipy.SlashContext, media_id: str):
         await ctx.defer()
         await simkl_submit(ctx, media_id)
 
-    @tv.subcommand(
-        sub_cmd_name="random",
-        sub_cmd_description="Get a random TV show"
-    )
+    @tv.subcommand(sub_cmd_name="random", sub_cmd_description="Get a random TV show")
     async def tv_random(self, ctx: ipy.SlashContext):
         await ctx.defer()
         send = await ctx.send(
@@ -161,10 +158,8 @@ class TvShow(ipy.Extension):
         )
         try:
             async with Simkl() as simkl:
-                rand = await simkl.get_random_title(
-                    media_type=SimklMediaTypes.TV
-                )
-                rand_id = rand['simkl_id']
+                rand = await simkl.get_random_title(media_type=SimklMediaTypes.TV)
+                rand_id = rand["simkl_id"]
         except ProviderHttpError:
             await send.edit(
                 embed=ipy.Embed(
@@ -185,11 +180,7 @@ class TvShow(ipy.Extension):
                 ),
             )
         )
-        await simkl_submit(
-            ctx=ctx,
-            media_id=rand_id,
-            media_type='tv'
-        )
+        await simkl_submit(ctx=ctx, media_id=rand_id, media_type="tv")
 
 
 def setup(bot: ipy.Client | ipy.AutoShardedClient):
