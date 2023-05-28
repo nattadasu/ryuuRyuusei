@@ -3,7 +3,7 @@ from interactions import (
     Client,
     Extension,
     SlashCommand,
-    SlashContext
+    SlashContext,
 )
 
 from classes.i18n import LanguageDict
@@ -17,7 +17,6 @@ class Nekomimi(Extension):
 
     base = SlashCommand(name="nekomimi", description="Get a character in cat ears art")
     group = base.group(name="random", description="Get random image")
-
 
     @group.subcommand(
         sub_cmd_name="boy",

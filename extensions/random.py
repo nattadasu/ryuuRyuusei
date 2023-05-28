@@ -7,7 +7,7 @@ from modules.const import (
     EMOJI_ATTENTIVE,
     EMOJI_DOUBTING,
     EMOJI_SUCCESS,
-    EMOJI_UNEXPECTED_ERROR
+    EMOJI_UNEXPECTED_ERROR,
 )
 
 
@@ -34,7 +34,7 @@ class Random(ipy.Extension):
                 required=True,
                 type=ipy.OptionType.STRING,
             ),
-        ]
+        ],
     )
     async def random_8ball(self, ctx: ipy.SlashContext, question: str):
         await ctx.defer()
@@ -105,9 +105,10 @@ class Random(ipy.Extension):
             color=0x1F1F1F,
         )
         embed.set_thumbnail(url=emoji_url)
-        embed.set_footer(text="Please do not take this seriously, it's for fun purposes only")
+        embed.set_footer(
+            text="Please do not take this seriously, it's for fun purposes only"
+        )
         await ctx.send(embed=embed)
-
 
     @random.subcommand(
         sub_cmd_name="number",
