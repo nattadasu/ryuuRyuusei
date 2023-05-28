@@ -89,7 +89,7 @@ def sanitize_markdown(text: str) -> str:
     """
     replacements = {
         "\\": "\\\\",
-        "\r": " ", # remove carriage returns
+        "\r": " ",  # remove carriage returns
         "_": "\\_",
         "(": "\\(",
         ")": "\\)",

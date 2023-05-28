@@ -14,7 +14,7 @@ from modules.const import (
     EMOJI_UNEXPECTED_ERROR,
     EMOJI_USER_ERROR,
     VERIFICATION_SERVER,
-    VERIFIED_ROLE
+    VERIFIED_ROLE,
 )
 from modules.i18n import search_language, set_default_language
 
@@ -156,7 +156,6 @@ class ServerSettings(ipy.Extension):
         embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
-
     @serversettings.subcommand(
         group_name="member",
         group_description="Manage member settings",
@@ -206,9 +205,7 @@ class ServerSettings(ipy.Extension):
             ),
         ]
 
-        overwrite_prompt = (
-            "4. Copy the following text and ask user to overwrite/paste it into the Location field"
-        )
+        overwrite_prompt = "4. Copy the following text and ask user to overwrite/paste it into the Location field"
 
         with Verificator() as verify:
             # check if user still have pending verification
@@ -267,7 +264,9 @@ class ServerSettings(ipy.Extension):
             ),
         ],
     )
-    async def serversettings_member_verify(self, ctx: ipy.ComponentContext, user: ipy.Member | ipy.User):
+    async def serversettings_member_verify(
+        self, ctx: ipy.ComponentContext, user: ipy.Member | ipy.User
+    ):
         await ctx.defer(ephemeral=True)
         checker = await self._check_if_registered(ctx, user)
         if checker is True:
@@ -329,9 +328,11 @@ class ServerSettings(ipy.Extension):
                 required=True,
                 type=ipy.OptionType.USER,
             )
-        ]
+        ],
     )
-    async def serversettings_member_verify_club(self, ctx: ipy.SlashContext, user: ipy.Member | ipy.User):
+    async def serversettings_member_verify_club(
+        self, ctx: ipy.SlashContext, user: ipy.Member | ipy.User
+    ):
         await ctx.defer(ephemeral=True)
         if int(ctx.guild.id) != int(VERIFICATION_SERVER):
             embed = self.generate_error_embed(
@@ -358,7 +359,8 @@ class ServerSettings(ipy.Extension):
         # check if verified role exists
         if status is True and str(VERIFIED_ROLE) not in user_roles:
             await ctx.member.add_role(
-                VERIFIED_ROLE, reason=f"User verified via slash command by {ctx.author.username}#{ctx.author.discriminator} ({ctx.author.id})"
+                VERIFIED_ROLE,
+                reason=f"User verified via slash command by {ctx.author.username}#{ctx.author.discriminator} ({ctx.author.id})",
             )
             embed = self.generate_success_embed(
                 header="Success!",
