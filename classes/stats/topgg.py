@@ -5,7 +5,7 @@ A lite wrapper for the top.gg API.
 """
 
 import aiohttp
-from classes.excepts import ProviderHttpError, ProviderTypeError
+from classes.excepts import ProviderHttpError
 from modules.const import TOPGG_API_TOKEN, BOT_CLIENT_ID
 
 
@@ -67,13 +67,6 @@ class TopGG:
         elif shard_id is not None and shard_count is not None:
             body["shard_id"] = shard_id
             body["shard_count"] = shard_count
-        # both shard_id and shard_count dependent each other,
-        # raise ProviderTypeException if it missing one of them
-        elif shard_id is None or shard_count is None:
-            raise ProviderTypeError(
-                "Both shard_id and shard_count must be provided if one of them is provided",
-                ["shard_id", "shard_count"],
-            )
         async with self.session.post(
             f"{self.base_url}/bots/{self.bot_id}/stats",
             json=body,
