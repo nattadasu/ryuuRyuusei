@@ -1,4 +1,5 @@
 import csv
+import re
 from datetime import datetime as dtime
 from datetime import timezone as tz
 from time import perf_counter as pc
@@ -10,6 +11,7 @@ from modules.const import (
     AUTHOR_USERNAME,
     BOT_CLIENT_ID,
     BOT_SUPPORT_SERVER,
+    EMOJI_SUCCESS,
     USER_AGENT,
     database,
     gittyHash,
@@ -152,10 +154,9 @@ class CommonCommands(ipy.Extension):
             color=0x996422,
             fields=fields,
             footer=ipy.EmbedFooter(text=l_["pong"]["footer"]),
-            thumbnail=ipy.EmbedAttachment(
-                url="https://cdn.discordapp.com/attachments/1078005713349115964/1095771964783734874/main.png"
-            ),
         )
+        emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", EMOJI_SUCCESS)
+        embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
         await send.edit(
             embed=embed,
         )
