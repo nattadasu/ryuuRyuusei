@@ -77,7 +77,9 @@ class BotTasker(Extension):
                 await top.post_bot_stats(
                     guild_count=server_count,
                 )
-            print(f"[Tsk] [Stats] Poll to Top.gg was completed with {server_count} servers")
+            print(
+                f"[Tsk] [Stats] Poll to Top.gg was completed with {server_count} servers"
+            )
         except ProviderHttpError as e:
             print(f"[Tsk] [Stats] Failed to poll to Top.gg: {e}")
 
