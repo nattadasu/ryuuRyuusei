@@ -506,7 +506,7 @@ async def mal_submit(ctx: SlashContext | ComponentContext, ani_id: int) -> None:
             ani_id, is_nsfw=nsfw_bool, anilist_data=alData, anime_api=aniApi
         )
         trailer.extend(buttons)  # type: ignore
-        await ctx.send(embeds=dcEm, components=trailer)  # type: ignore
+        await ctx.send(content=f"{ctx.author.mention}", embeds=dcEm, components=trailer)  # type: ignore
 
     except MediaIsNsfw as e:
         await ctx.send(f"**{e}**\n")
@@ -516,4 +516,4 @@ async def mal_submit(ctx: SlashContext | ComponentContext, ani_id: int) -> None:
             description="We are unable to get the anime information from MyAnimeList via Jikan",
             error=f"{e}",
         )
-        await ctx.send("", embed=embed)
+        await ctx.send(embed=embed)
