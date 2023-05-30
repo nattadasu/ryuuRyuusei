@@ -261,10 +261,10 @@ class UserDatabase:
             data2 = row2.to_dict(orient="records")[0]
             data2.pop("discordId")
             data2 = {f"settings_{key}": value for key, value in data2.items()}
-            data['has_user_settings'] = True
+            data["has_user_settings"] = True
             data.update(data2)
         except IndexError:
-            data['has_user_settings'] = False
+            data["has_user_settings"] = False
         for key, value in data.items():
             if value.isdigit():
                 data[key] = int(value)
