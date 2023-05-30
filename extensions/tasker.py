@@ -74,15 +74,17 @@ class BotTasker(Extension):
         error_logs_folder = "errors"
         self._delete_old_files(error_logs_folder, 172800)
 
-    @Task.create(IntervalTrigger(minutes=5))
+    @Task.create(IntervalTrigger(minutes=30))
     async def poll_stats(self) -> None:
         """Poll bot statistic to 3rd party listing sites"""
         server_count = len(self.bot.guilds)
+        shard_count = self.bot.total_shards
         try:
             print("[Tsk] [Stats] Polling Top.gg")
             async with TopGG() as top:
                 await top.post_bot_stats(
                     guild_count=server_count,
+                    shard_count=shard_count,
                 )
             print(
                 f"[Tsk] [Stats] Poll to Top.gg was completed with {server_count} servers"

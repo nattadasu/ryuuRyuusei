@@ -64,8 +64,9 @@ class TopGG:
         }
         if shards:
             body["shards"] = shards
-        elif shard_id is not None and shard_count is not None:
+        if shard_id:
             body["shard_id"] = shard_id
+        if shard_count:
             body["shard_count"] = shard_count
         async with self.session.post(
             f"{self.base_url}/bots/{self.bot_id}/stats",
