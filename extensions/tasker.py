@@ -12,6 +12,7 @@ class BotTasker(Extension):
         """Initialize the tasks"""
         self.bot = bot
         self.delete_cache.start()
+        self.delete_error_logs.start()
         self.poll_stats.start()
 
     @Task.create(IntervalTrigger(minutes=10))
@@ -67,6 +68,13 @@ class BotTasker(Extension):
                 duration = durations
                 self._delete_old_files(folder_path, duration)
 
+
+    @Task.create(IntervalTrigger(hours=1))
+    async def delete_error_logs(self) -> None:
+        """Automatically delete error logs stored in the error_logs folder"""
+        error_logs_folder = "errors"
+        self._delete_old_files(error_logs_folder, 172800)
+
     @Task.create(IntervalTrigger(minutes=5))
     async def poll_stats(self) -> None:
         """Poll bot statistic to 3rd party listing sites"""
@@ -99,12 +107,17 @@ class BotTasker(Extension):
 
         for root, _, files in os.walk(folder_path):
             for file_name in files:
+                file_path = os.path.join(root, file_name)
+                modification_time = os.path.getmtime(file_path)
                 if file_name.endswith(".json"):
-                    file_path = os.path.join(root, file_name)
-                    modification_time = os.path.getmtime(file_path)
                     if current_time - modification_time > duration:
                         print(f"[Tsk] [Utils] Deleting cache {file_path}")
                         os.remove(file_path)
+                elif file_name.endswith(".txt"):
+                    if current_time - modification_time > duration:
+                        print(f"[Tsk] [Utils] Deleting error log {file_path}")
+                        os.remove(file_path)
+
 
 
 def setup(bot: Client | AutoShardedClient) -> None:

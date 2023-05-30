@@ -1,14 +1,15 @@
 .env
-jikan4snek_cache
-database/**
-cache/**
+cache/
+database/
+errors/
+i18n/_index.yaml
+i18n/**.json
+!cache/.gitkeep
 !database/.gitkeep
 !database/README.md
-!cache/.gitkeep
-jikanpy/
-i18n/**.json
-i18n/_index.yaml
-**.old.py
+!errors/.gitkeep
+*.old.py
+modules/old/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

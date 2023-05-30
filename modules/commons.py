@@ -5,28 +5,28 @@ This module contains the common functions used by the other modules.
 """
 
 import re
-from datetime import timedelta
+import traceback
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from re import sub as rSub
 from uuid import uuid4 as id4
 
 from interactions import (
-    AutoShardedClient,
     Button,
     ButtonStyle,
     ComponentContext,
     Embed,
     EmbedAuthor,
     EmbedField,
+    Member,
     PartialEmoji,
     SlashContext,
+    User,
 )
 
 from classes.anilist import AniListTrailerStruct
 from classes.i18n import LanguageDict
-from modules.const import BOT_TOKEN, EMOJI_FORBIDDEN
-from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
-from modules.const import EMOJI_USER_ERROR, LANGUAGE_CODE
+from modules.const import EMOJI_FORBIDDEN, EMOJI_USER_ERROR, LANGUAGE_CODE, EMOJI_UNEXPECTED_ERROR as EUNER
 from modules.i18n import fetch_language_data
 
 deflang = fetch_language_data(LANGUAGE_CODE, use_raw=True)
@@ -413,3 +413,34 @@ def platform_exception_embed(
     dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return dcEm
+
+
+def save_traceback_to_file(
+    command: str,
+    author: Member | User,
+    error: Exception,
+) -> bool:
+    """
+    Save traceback to a file.
+
+    Args:
+        command (str): Command name
+        error (Exception): Error object
+
+    Returns:
+        bool: True if success, False if failed
+    """
+    if not isinstance(error, Exception):
+        return False
+    error_type = type(error).__name__
+    error_str = str(error)
+    error_traceback = "".join(
+        traceback.format_exception(type(error), error, error.__traceback__)
+    )
+    with open(
+        f"errors/{command}_{author.id}_{datetime.now(tz=timezone.utc).strftime('%Y-%m-%d_%H-%M-%S')}.txt",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(f"{error_type}: {error_str}\n\n{error_traceback}")
+    return True
