@@ -254,13 +254,17 @@ class UserDatabase:
                 f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error"
             )
         data = row.to_dict(orient="records")[0]
-        df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
-        df2.fillna("", inplace=True)
-        row2 = df2[df2["discordId"] == str(discord_id)]
-        data2 = row2.to_dict(orient="records")[0]
-        data2.pop("discordId")
-        data2 = {f"settings_{key}": value for key, value in data2.items()}
-        data.update(data2)
+        try:
+            df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
+            df2.fillna("", inplace=True)
+            row2 = df2[df2["discordId"] == str(discord_id)]
+            data2 = row2.to_dict(orient="records")[0]
+            data2.pop("discordId")
+            data2 = {f"settings_{key}": value for key, value in data2.items()}
+            data['has_user_settings'] = True
+            data.update(data2)
+        except IndexError:
+            data['has_user_settings'] = False
         for key, value in data.items():
             if value.isdigit():
                 data[key] = int(value)
