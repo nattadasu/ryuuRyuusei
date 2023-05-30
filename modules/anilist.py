@@ -49,7 +49,9 @@ async def search_al_anime(title: str) -> list[dict[str, Any]]:
 
     # Loop through each item in the AniList response
     for item in data:
-        # Extract the relevant fields and format_str them
+        if item["idMal"] in ["", "0", 0, None]:
+            continue
+        # Extract the relevant fields and format them
         formatted_item = {
             "node": {
                 "id": item["idMal"],
@@ -62,8 +64,8 @@ async def search_al_anime(title: str) -> list[dict[str, Any]]:
                     "year": item["startDate"]["year"],
                     "season": item["season"].lower() if item["season"] else None,
                 },
-                "media_type": item["format_str"].lower()
-                if item["format_str"]
+                "media_type": item["format"].lower()
+                if item["format"]
                 else None,
             }
         }
