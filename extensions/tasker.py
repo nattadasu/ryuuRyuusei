@@ -47,6 +47,9 @@ class BotTasker(Extension):
         cache_folder = "cache"
 
         for cache_provider, durations in known_caches.items():
+            # to avoid errors, create the folder if it doesn't exist
+            if not os.path.exists(cache_folder):
+                os.makedirs(cache_folder)
             if isinstance(durations, dict):
                 # Base folder
                 base_folder = os.path.join(cache_folder, cache_provider)
