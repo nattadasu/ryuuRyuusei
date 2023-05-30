@@ -64,9 +64,7 @@ async def search_al_anime(title: str) -> list[dict[str, Any]]:
                     "year": item["startDate"]["year"],
                     "season": item["season"].lower() if item["season"] else None,
                 },
-                "media_type": item["format"].lower()
-                if item["format"]
-                else None,
+                "media_type": item["format"].lower() if item["format"] else None,
             }
         }
         # Append the formatted data to the list
