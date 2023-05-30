@@ -4,7 +4,7 @@
 
 |                  |                |
 | ---------------- | -------------- |
-| **Last Updated** | March 31, 2023 |
+| **Last Updated** | May 30, 2023 |
 
 Greetings, and welcome to Ryuuzaki Ryuusei's Terms of Servive. These Terms of
 Service ("Terms") govern your access to and use of the Ryuuzaki Ryuusei Discord
@@ -213,14 +213,15 @@ or held by Natsu Tadama.
 
 We are committed to protecting the privacy of your personal data and complying
 with applicable data protection laws, including the European Union's General
-Data Protection Regulation ("GDPR") and the California Consumer Privacy Act
-("CCPA"). Any personal data you provide to us will be processed in accordance
-with our Privacy Policy, which is available on a separate document named
-["PRIVACY.md" in our GitHub repository][pp]. By accessing or using Ryuuzaki
-Ryuusei, you acknowledge that you have read and understood our Privacy Policy,
-and you consent to the collection, processing, and use of your personal data in
-accordance with its terms. If you do not agree to the terms of our Privacy
- Policy, you should not access or use Ryuuzaki Ryuusei.
+Data Protection Regulation ("GDPR"), the California Consumer Privacy Act ("CCPA"),
+and Indonesian Personal Data Protection Law ("UU PDP"). Any personal data you
+provide to us will be processed in accordance with our Privacy Policy, which is
+available on a separate document named ["PRIVACY.md" in our GitHub repository][pp].
+By accessing or using Ryuuzaki Ryuusei, you acknowledge that you have read and
+understood our Privacy Policy, and you consent to the collection, processing,
+and use of your personal data in accordance with its terms. If you do not agree
+to the terms of our Privacy Policy, you should not access or use Ryuuzaki
+Ryuusei.
 
 We collect, process, and use your personal data solely for the purpose of
 providing you with the services of Ryuuzaki Ryuusei. We do not use your personal
@@ -247,6 +248,28 @@ with the CCPA. This includes, among other things, the following rights:
 * The right to know what personal information we have collected about you;
 * The right to request that we delete your personal information;
 * The right to opt-out of the sale of your personal information.
+
+If you are a resident of Indonesia, we process your personal data in accordance
+with the UU PDP. This includes, among other things, the following rights:
+
+* The right to receive information about the clarity of identity, legal basis,
+  purpose, and utilization of personal data, as well as the accountability of
+  the requesting party.
+* The right to withdraw consent for the processing of personal data concerning
+  oneself.
+* The right to object to decisions based solely on automated processing with
+  significant legal consequences.
+* The right to receive and use personal data concerning oneself in a commonly
+  used format.
+
+By default, as a user, you are entitled to rights under the Indonesian Personal
+Data Protection Law (UU PDP), the California Consumer Privacy Act (CCPA), and
+the General Data Protection Regulation (GDPR). These rights are globally
+applicable, ensuring that individuals have the necessary protections and can
+exercise their rights regarding personal data, irrespective of their residency
+or geographical location. It is our commitment to adhere to these laws and
+provide you with the necessary safeguards and control over your personal data in
+accordance with the UU PDP, CCPA, and GDPR.
 
 If you have any questions or concerns about how we handle your personal data,
 please refer to our Privacy Policy or contact the Data Controller as identified
