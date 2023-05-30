@@ -26,7 +26,12 @@ from interactions import (
 
 from classes.anilist import AniListTrailerStruct
 from classes.i18n import LanguageDict
-from modules.const import EMOJI_FORBIDDEN, EMOJI_USER_ERROR, LANGUAGE_CODE, EMOJI_UNEXPECTED_ERROR as EUNER
+from modules.const import (
+    EMOJI_FORBIDDEN,
+    EMOJI_USER_ERROR,
+    LANGUAGE_CODE,
+    EMOJI_UNEXPECTED_ERROR as EUNER,
+)
 from modules.i18n import fetch_language_data
 
 deflang = fetch_language_data(LANGUAGE_CODE, use_raw=True)

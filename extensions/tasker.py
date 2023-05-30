@@ -68,7 +68,6 @@ class BotTasker(Extension):
                 duration = durations
                 self._delete_old_files(folder_path, duration)
 
-
     @Task.create(IntervalTrigger(hours=1))
     async def delete_error_logs(self) -> None:
         """Automatically delete error logs stored in the error_logs folder"""
@@ -117,7 +116,6 @@ class BotTasker(Extension):
                     if current_time - modification_time > duration:
                         print(f"[Tsk] [Utils] Deleting error log {file_path}")
                         os.remove(file_path)
-
 
 
 def setup(bot: Client | AutoShardedClient) -> None:
