@@ -133,7 +133,8 @@ class ServerSettings(ipy.Extension):
             description=message,
             color=0xFF0000,
         )
-        embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+        embed.set_thumbnail(
+            url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
     @staticmethod
@@ -156,7 +157,8 @@ class ServerSettings(ipy.Extension):
             description=message,
             color=0x00FF00,
         )
-        embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+        embed.set_thumbnail(
+            url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
     @member.subcommand(
@@ -219,7 +221,8 @@ class ServerSettings(ipy.Extension):
                         value=f"```\n{is_pending.uuid}\n```**Note:** Verification code expires <t:{remaining_time}:R>.",
                     )
                 )
-                epoch = datetime.fromtimestamp(is_pending.epoch_time, tz=timezone.utc)
+                epoch = datetime.fromtimestamp(
+                    is_pending.epoch_time, tz=timezone.utc)
             else:
                 generate = verify.save_user_uuid(user.id, mal_username)
                 remaining_time = generate.epoch_time + 43200
@@ -229,7 +232,8 @@ class ServerSettings(ipy.Extension):
                         value=f"```\n{generate.uuid}\n```**Note:** Verification code expires <t:{remaining_time}:R>.",
                     )
                 )
-                epoch = datetime.fromtimestamp(generate.epoch_time, tz=timezone.utc)
+                epoch = datetime.fromtimestamp(
+                    generate.epoch_time, tz=timezone.utc)
 
         fields += [
             ipy.EmbedField(

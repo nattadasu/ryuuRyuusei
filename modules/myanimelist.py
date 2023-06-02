@@ -213,7 +213,8 @@ async def generate_mal(
     malPost = jJpg.large_image_url or jJpg.image_url
     malBg = ""
 
-    poster = next((img for img in (alPost, smkPost, ktsPost, malPost) if img), None)
+    poster = next(
+        (img for img in (alPost, smkPost, ktsPost, malPost) if img), None)
     postNote = (
         "AniList"
         if alPost
@@ -223,7 +224,8 @@ async def generate_mal(
         if ktsPost
         else "MyAnimeList"
     )
-    background = next((img for img in (alBg, smkBg, ktsBg, malBg) if img), None)
+    background = next(
+        (img for img in (alBg, smkBg, ktsBg, malBg) if img), None)
     bgNote = (
         "AniList" if alBg else "SIMKL" if smkBg else "Kitsu" if ktsBg else "MyAnimeList"
     )
@@ -361,7 +363,6 @@ async def generate_mal(
         else:
             ent = rot
 
-
     english_note = False
     if (ent is None) or (ent == ""):
         # for each s in syns, check if the s is in ASCII using regex
@@ -444,7 +445,11 @@ async def generate_mal(
 """,
         color=0x2E51A2,
         fields=[
-            EmbedField(name=f"English Title{'*' if english_note else ''}", value=ent, inline=True),
+            EmbedField(
+                name=f"English Title{'*' if english_note else ''}",
+                value=ent,
+                inline=True,
+            ),
             EmbedField(name="Native Title", value=nat, inline=True),
             EmbedField(name="Synonyms", value=syns),
             EmbedField(name="Genres and Themes", value=tgs),

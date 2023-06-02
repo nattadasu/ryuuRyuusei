@@ -19,7 +19,7 @@ class Games(ipy.Extension):
             cooldown_bucket=ipy.Buckets.CHANNEL,
             rate=1,
             interval=10,
-        )
+        ),
     )
 
     @games.subcommand(
@@ -66,7 +66,8 @@ class Games(ipy.Extension):
                 ]
                 so += [
                     ipy.StringSelectOption(
-                        label=title[:77] + "..." if len(title) >= 80 else title,
+                        label=title[:77] +
+                        "..." if len(title) >= 80 else title,
                         value=r["slug"],
                         description=f"Released: {rhel}",
                     )

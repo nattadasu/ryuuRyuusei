@@ -55,7 +55,8 @@ class DataControl(ipy.Extension):
             description=message,
             color=0xFF0000,
         )
-        embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+        embed.set_thumbnail(
+            url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
     @staticmethod
@@ -78,7 +79,8 @@ class DataControl(ipy.Extension):
             description=message,
             color=0x00FF00,
         )
-        embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+        embed.set_thumbnail(
+            url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
     async def _check_if_registered(
@@ -165,7 +167,8 @@ class DataControl(ipy.Extension):
                         value=f"```\n{is_pending.uuid}\n```**Note:** Your verification code expires <t:{remaining_time}:R>.",
                     )
                 )
-                epoch = datetime.fromtimestamp(is_pending.epoch_time, tz=timezone.utc)
+                epoch = datetime.fromtimestamp(
+                    is_pending.epoch_time, tz=timezone.utc)
             else:
                 generate = verify.save_user_uuid(ctx.author.id, mal_username)
                 remaining_time = generate.epoch_time + 43200
@@ -175,7 +178,8 @@ class DataControl(ipy.Extension):
                         value=f"```\n{generate.uuid}\n```**Note:** Your verification code expires <t:{remaining_time}:R>.",
                     )
                 )
-                epoch = datetime.fromtimestamp(generate.epoch_time, tz=timezone.utc)
+                epoch = datetime.fromtimestamp(
+                    generate.epoch_time, tz=timezone.utc)
 
         fields += [
             ipy.EmbedField(
@@ -563,7 +567,8 @@ user_data: UserData = {user_data}
         )
 
         await ctx.send(
-            embed=embed, file=ipy.File(f"{fn}", file_name=f"{fn}".replace("cache/", ""))
+            embed=embed, file=ipy.File(
+                f"{fn}", file_name=f"{fn}".replace("cache/", ""))
         )
 
         # Delete the file

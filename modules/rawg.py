@@ -95,9 +95,11 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
             cyno += desc_attr
 
     # Process genres and tags
-    tgs = sorted({g.name.title() for g in data.genres + data.tags}, key=str.casefold)
+    tgs = sorted({g.name.title()
+                 for g in data.genres + data.tags}, key=str.casefold)
     tgs_text = (
-        ", ".join(tgs[:20]) if len(tgs) > 20 else ", ".join(tgs) if tgs else "*None*"
+        ", ".join(tgs[:20]) if len(tgs) > 20 else ", ".join(
+            tgs) if tgs else "*None*"
     )
     if len(tgs) > 20:
         lefties = len(tgs) - 20
@@ -144,7 +146,8 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
         color=0x1F1F1F,
         fields=[
             EmbedField(name="English Title", value=data.name, inline=True),
-            EmbedField(name="Native Title", value=data.name_original, inline=True),
+            EmbedField(name="Native Title",
+                       value=data.name_original, inline=True),
             EmbedField(name="Synonyms", value=syns_text, inline=False),
             EmbedField(name="Genres and Tags", value=tgs_text, inline=False),
             EmbedField(name="Platforms", value=pfs_text, inline=False),

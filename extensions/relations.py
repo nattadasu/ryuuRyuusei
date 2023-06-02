@@ -25,7 +25,7 @@ class ExtenalSitesRelations(ipy.Extension):
             cooldown_bucket=ipy.Buckets.CHANNEL,
             rate=1,
             interval=30,
-        )
+        ),
     )
 
     @staticmethod
@@ -101,22 +101,28 @@ class ExtenalSitesRelations(ipy.Extension):
                 choices=[
                     ipy.SlashCommandChoice(name="aniDB", value="anidb"),
                     ipy.SlashCommandChoice(name="AniList", value="anilist"),
-                    ipy.SlashCommandChoice(name="Anime-Planet", value="animeplanet"),
+                    ipy.SlashCommandChoice(
+                        name="Anime-Planet", value="animeplanet"),
                     ipy.SlashCommandChoice(name="Annict", value="annict"),
                     ipy.SlashCommandChoice(name="IMDb", value="imdb"),
                     ipy.SlashCommandChoice(name="Kaize", value="kaize"),
                     ipy.SlashCommandChoice(name="Kitsu", value="kitsu"),
-                    ipy.SlashCommandChoice(name="LiveChart", value="livechart"),
-                    ipy.SlashCommandChoice(name="MyAnimeList", value="myanimelist"),
+                    ipy.SlashCommandChoice(
+                        name="LiveChart", value="livechart"),
+                    ipy.SlashCommandChoice(
+                        name="MyAnimeList", value="myanimelist"),
                     ipy.SlashCommandChoice(name="Notify.moe", value="notify"),
-                    ipy.SlashCommandChoice(name="Otak Otaku", value="otakotaku"),
-                    ipy.SlashCommandChoice(name="Shikimori", value="shikimori"),
+                    ipy.SlashCommandChoice(
+                        name="Otak Otaku", value="otakotaku"),
+                    ipy.SlashCommandChoice(
+                        name="Shikimori", value="shikimori"),
                     ipy.SlashCommandChoice(name="Shoboi", value="shoboi"),
                     ipy.SlashCommandChoice(
                         name="Silver Yasha: DB Tontonan Indonesia", value="silveryasha"
                     ),
                     ipy.SlashCommandChoice(name="SIMKL", value="simkl"),
-                    ipy.SlashCommandChoice(name="The Movie Database", value="tmdb"),
+                    ipy.SlashCommandChoice(
+                        name="The Movie Database", value="tmdb"),
                     ipy.SlashCommandChoice(name="The TVDB", value="tvdb"),
                     ipy.SlashCommandChoice(
                         name="Trakt (requires <type>/<slug>/seasons/<season>)",

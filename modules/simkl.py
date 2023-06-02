@@ -52,7 +52,8 @@ def create_simkl_embed(
             status = ", To Be Announced"
         case _:
             status = f", {status.capitalize()}"
-    scores: dict[str, dict[str, int | float]] | None = data.get("ratings", None)
+    scores: dict[str, dict[str, int | float]
+                 ] | None = data.get("ratings", None)
     certification = data.get("certification", None)
     country = data.get("country", None)
     network = data.get("network", None)
@@ -226,7 +227,8 @@ def create_simkl_embed(
         embed.set_image(url=f"https://simkl.in/fanart/{fanart}_w.webp")
 
     embed.add_fields(
-        ipy.EmbedField(name="Synonyms", value=synonyms or "*None*", inline=False),
+        ipy.EmbedField(name="Synonyms",
+                       value=synonyms or "*None*", inline=False),
         ipy.EmbedField(name="Genres", value=genres, inline=False),
     )
     if media_type == "tv":
@@ -311,7 +313,8 @@ def create_simkl_embed(
                 style=ipy.ButtonStyle.LINK,
                 label=pf["pf"],
                 url=pf["uid"],
-                emoji=ipy.PartialEmoji(id=pf["emoid"], name=pfn[platform_name]),
+                emoji=ipy.PartialEmoji(
+                    id=pf["emoid"], name=pfn[platform_name]),
             )
         )
 

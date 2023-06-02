@@ -23,7 +23,9 @@ class BotEvents(ipy.Extension):
                 description=f"Try again <t:{int(remaining)}:R>",
                 color=0xFF0000,
             )
-            embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.webp")
+            embed.set_thumbnail(
+                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.webp"
+            )
             await event.ctx.send(embed=embed, ephemeral=True)
         else:
             await self.bot.on_command_error(self.bot, event)

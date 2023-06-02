@@ -158,7 +158,8 @@ class CommonCommands(ipy.Extension):
             footer=ipy.EmbedFooter(text=l_["pong"]["footer"]),
         )
         emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", EMOJI_SUCCESS)
-        embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
+        embed.set_thumbnail(
+            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
         await send.edit(
             embed=embed,
         )
@@ -196,7 +197,11 @@ class CommonCommands(ipy.Extension):
             url=BOT_SUPPORT_SERVER,
             style=ipy.ButtonStyle.URL,
         )
-        await ctx.send(embed=dcEm, components=[ipy.ActionRow(invButton, serverButton)], ephemeral=True)
+        await ctx.send(
+            embed=dcEm,
+            components=[ipy.ActionRow(invButton, serverButton)],
+            ephemeral=True,
+        )
 
     @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
     @ipy.slash_command(

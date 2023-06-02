@@ -21,7 +21,7 @@ class Anime(ipy.Extension):
             cooldown_bucket=ipy.Buckets.CHANNEL,
             rate=1,
             interval=10,
-        )
+        ),
     )
 
     @anime.subcommand(
@@ -40,7 +40,8 @@ class Anime(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(name="AniList (Default)", value="anilist"),
+                    ipy.SlashCommandChoice(
+                        name="AniList (Default)", value="anilist"),
                     ipy.SlashCommandChoice(name="MyAnimeList", value="mal"),
                 ],
             ),
@@ -50,7 +51,7 @@ class Anime(ipy.Extension):
         self,
         ctx: ipy.SlashContext,
         query: str,
-        provider: Literal["anilist", "mal"] = "anilist"
+        provider: Literal["anilist", "mal"] = "anilist",
     ):
         await ctx.defer()
         ul: str = read_user_language(ctx)
@@ -75,7 +76,8 @@ class Anime(ipy.Extension):
             so: list[ipy.StringSelectOption] = []
             for a in res:
                 if a["node"]["start_season"] is None:
-                    a["node"]["start_season"] = {"season": "Unknown", "year": "Year"}
+                    a["node"]["start_season"] = {
+                        "season": "Unknown", "year": "Year"}
                 media_type: str = l_["commons"]["media_formats"].get(
                     a["node"]["media_type"].lower(),
                     l_["commons"]["unknown"],
@@ -93,7 +95,8 @@ class Anime(ipy.Extension):
                 mdTitle: str = sanitize_markdown(title)
                 alt = a["node"]["alternative_titles"]
                 native: str = (
-                    sanitize_markdown(alt["ja"]) + "\n" if alt and alt["ja"] else ""
+                    sanitize_markdown(alt["ja"]) +
+                    "\n" if alt and alt["ja"] else ""
                 )
                 f.append(
                     ipy.EmbedField(

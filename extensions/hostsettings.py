@@ -22,8 +22,7 @@ class HostSettings(ipy.Extension):
     )
 
     member = hostsettings.group(
-        name="member",
-        description="Manage member settings, for self-hosted bot only"
+        name="member", description="Manage member settings, for self-hosted bot only"
     )
 
     @member.subcommand(

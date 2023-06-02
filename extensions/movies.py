@@ -21,7 +21,7 @@ class Movies(ipy.Extension):
             cooldown_bucket=ipy.Buckets.CHANNEL,
             rate=1,
             interval=10,
-        )
+        ),
     )
 
     @movies.subcommand(

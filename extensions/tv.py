@@ -21,7 +21,7 @@ class TvShow(ipy.Extension):
             cooldown_bucket=ipy.Buckets.CHANNEL,
             rate=1,
             interval=10,
-        )
+        ),
     )
 
     @tv.subcommand(
