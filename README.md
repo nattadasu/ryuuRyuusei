@@ -249,8 +249,14 @@ If you have any questions, feel free to join the
 - `/seversettings member verify` - Verify memeber's MAL account after receiving
   verification code from either `/serversettings member register` or `/register`
   command, used when user can't invoke `/register`
-- `/serversettings member verify_club` - Verify member's MAL account to the
-  server that hosts the bot, used when user can't invoke `/verify`
+
+#### Host/Admin Settings
+
+> These commands are only available for bot host staff in current configured
+> server.
+
+- `/hostsettings member verify` - Verify member's MAL account to the server that
+  hosts the bot, used when user can't invoke `/verify`
 
 ### Randomization Commands
 

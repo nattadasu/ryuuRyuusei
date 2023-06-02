@@ -13,8 +13,6 @@ from modules.const import (
     EMOJI_SUCCESS,
     EMOJI_UNEXPECTED_ERROR,
     EMOJI_USER_ERROR,
-    VERIFICATION_SERVER,
-    VERIFIED_ROLE,
 )
 from modules.i18n import search_language, set_default_language
 
@@ -27,7 +25,7 @@ class ServerSettings(ipy.Extension):
 
     @ipy.slash_command(
         name="serversettings",
-        description="Change the bot settings",
+        description="Change the bot settings server-wide",
         default_member_permissions=ipy.Permissions.ADMINISTRATOR,
         dm_permission=False,
     )
@@ -315,65 +313,6 @@ class ServerSettings(ipy.Extension):
         await ctx.send(embed=embed)
         file_path = os.path.join(directory, path)
         os.remove(file_path)
-
-    @serversettings.subcommand(
-        group_name="member",
-        group_description="Manage member settings",
-        sub_cmd_name="verify_club",
-        sub_cmd_description="Verify a user in the club",
-        options=[
-            ipy.SlashCommandOption(
-                name="user",
-                description="User to verify",
-                required=True,
-                type=ipy.OptionType.USER,
-            )
-        ],
-    )
-    async def serversettings_member_verify_club(
-        self, ctx: ipy.SlashContext, user: ipy.Member | ipy.User
-    ):
-        await ctx.defer(ephemeral=True)
-        if int(ctx.guild.id) != int(VERIFICATION_SERVER):
-            embed = self.generate_error_embed(
-                header="Error!",
-                message=f"This command can only be used in the server that hosted this bot ({VERIFICATION_SERVER})!",
-                is_user_error=False,
-            )
-            await ctx.send(embed=embed)
-            return
-        async with UserDatabase() as ud:
-            is_registered = await ud.check_if_registered(user.id)
-            if is_registered is False:
-                embed = self.generate_error_embed(
-                    header="Error!",
-                    message="User is not registered!",
-                    is_user_error=True,
-                )
-                await ctx.send(embed=embed)
-                return
-            status = await ud.verify_user(ctx.author.id)
-
-        user_roles = [str(role.id) for role in ctx.author.roles]
-
-        # check if verified role exists
-        if status is True and str(VERIFIED_ROLE) not in user_roles:
-            await ctx.member.add_role(
-                VERIFIED_ROLE,
-                reason=f"User verified via slash command by {ctx.author.username}#{ctx.author.discriminator} ({ctx.author.id})",
-            )
-            embed = self.generate_success_embed(
-                header="Success!",
-                message="User have been verified!",
-            )
-        elif status is True and str(VERIFIED_ROLE) in user_roles:
-            embed = self.generate_error_embed(
-                header="Error!",
-                message="User is already verified!",
-                is_user_error=True,
-            )
-
-        await ctx.send(embed=embed)
 
 
 def setup(bot):
