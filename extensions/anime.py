@@ -1,4 +1,5 @@
 import asyncio
+from typing import Literal
 
 import interactions as ipy
 
@@ -13,12 +14,7 @@ from classes.i18n import LanguageDict
 class Anime(ipy.Extension):
     """Anime commands"""
 
-    @ipy.slash_command(
-        name="anime",
-        description="Get anime information from MyAnimeList",
-    )
-    async def anime(self, ctx: ipy.SlashContext):
-        pass
+    anime = ipy.SlashCommand(name="anime", description="Get anime information from MyAnimeList via Jikan and AniList")
 
     @anime.subcommand(
         sub_cmd_name="search",
@@ -43,7 +39,10 @@ class Anime(ipy.Extension):
         ],
     )
     async def anime_search(
-        self, ctx: ipy.SlashContext, query: str, provider: str = "anilist"
+        self,
+        ctx: ipy.SlashContext,
+        query: str,
+        provider: Literal["anilist", "mal"] = "anilist"
     ):
         await ctx.defer()
         ul: str = read_user_language(ctx)

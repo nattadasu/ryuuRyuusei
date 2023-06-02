@@ -8,15 +8,16 @@ from modules.i18n import paginate_language, search_language, set_default_languag
 class UserSettings(ipy.Extension):
     """User Settings commands"""
 
-    def __init__(self, bot: ipy.AutoShardedClient):
-        self.bot = bot
-
-    @ipy.slash_command(
+    usersettings = ipy.SlashCommand(
         name="usersettings",
         description="Change the bot settings",
+        dm_permission=True,
     )
-    async def usersettings(self, ctx: ipy.InteractionContext):
-        pass
+
+    language = usersettings.group(
+        name="language",
+        description="Change the bot language",
+    )
 
     @usersettings.subcommand(
         group_name="language",

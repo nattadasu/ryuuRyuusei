@@ -18,17 +18,10 @@ from modules.platforms import (
 class ExtenalSitesRelations(ipy.Extension):
     """Extension class for /relations"""
 
-    def __init__(self, bot: ipy.AutoShardedClient):
-        """Initialize the extension class"""
-        self.bot = bot
-        """The bot client"""
-
-    @ipy.slash_command(
+    relations = ipy.SlashCommand(
         name="relations",
         description="Get external links relations of a title from one of the supported sites",
     )
-    async def relations(self, ctx: ipy.SlashContext):
-        pass
 
     @staticmethod
     async def search_simkl_id(

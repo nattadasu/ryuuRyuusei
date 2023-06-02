@@ -20,30 +20,35 @@ from modules.i18n import search_language, set_default_language
 class ServerSettings(ipy.Extension):
     """Server Settings commands"""
 
-    def __init__(self, bot: ipy.AutoShardedClient):
-        self.bot = bot
-
-    @ipy.slash_command(
+    serversettings = ipy.SlashCommand(
         name="serversettings",
         description="Change the bot settings server-wide",
         default_member_permissions=ipy.Permissions.ADMINISTRATOR,
         dm_permission=False,
     )
-    async def serversettings(self, ctx: ipy.InteractionContext):
-        pass
 
-    @serversettings.subcommand(
-        group_name="language",
-        group_description="Change the bot language",
+    language = serversettings.group(
+        name="language",
+        description="Change the bot language for this server",
+    )
+
+    member = serversettings.group(
+        name="member",
+        description="Manage member settings on this server",
+    )
+
+    @language.subcommand(
         sub_cmd_name="set",
         sub_cmd_description="Set the bot language for this server",
-    )
-    @ipy.slash_option(
-        name="lang",
-        description="Language name",
-        required=True,
-        opt_type=ipy.OptionType.STRING,
-        autocomplete=True,
+        options=[
+            ipy.SlashCommandOption(
+                name="lang",
+                description="Language name",
+                required=True,
+                type=ipy.OptionType.STRING,
+                autocomplete=True,
+            ),
+        ],
     )
     async def serversettings_language_set(self, ctx: ipy.InteractionContext, lang: str):
         try:
@@ -154,9 +159,7 @@ class ServerSettings(ipy.Extension):
         embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
-    @serversettings.subcommand(
-        group_name="member",
-        group_description="Manage member settings",
+    @member.subcommand(
         sub_cmd_name="register",
         sub_cmd_description="Assist member in registering",
         options=[
@@ -248,9 +251,7 @@ class ServerSettings(ipy.Extension):
 
         await ctx.send(embed=embed)
 
-    @serversettings.subcommand(
-        group_name="member",
-        group_description="Manage member settings",
+    @member.subcommand(
         sub_cmd_name="verify",
         sub_cmd_description="Verify member registration",
         options=[

@@ -25,15 +25,10 @@ from modules.commons import PlatformErrType, platform_exception_embed
 class Profile(ipy.Extension):
     """Profile commands"""
 
-    def __init__(self, bot: ipy.AutoShardedClient):
-        self.bot = bot
-
-    @ipy.slash_command(
+    profile = ipy.SlashCommand(
         name="profile",
-        description="Get your profile information",
+        description="Get your profile information from various platforms",
     )
-    async def profile(self, ctx: ipy.SlashContext):
-        pass
 
     @profile.subcommand(
         sub_cmd_name="discord",

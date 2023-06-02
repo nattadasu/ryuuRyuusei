@@ -14,12 +14,10 @@ from modules.i18n import fetch_language_data, read_user_language
 class Movies(ipy.Extension):
     """Movies commands"""
 
-    @ipy.slash_command(
+    movies = ipy.SlashCommand(
         name="movies",
-        description="Get movie information from SIMKL",
+        description="Get movie information from SIMKL"
     )
-    async def movies(self, ctx: ipy.SlashContext):
-        pass
 
     @movies.subcommand(
         sub_cmd_name="search",

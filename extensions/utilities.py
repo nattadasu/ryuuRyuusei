@@ -19,15 +19,7 @@ from modules.i18n import fetch_language_data, read_user_language
 class Utilities(ipy.Extension):
     """Utilities commands"""
 
-    def __init__(self, bot: ipy.AutoShardedClient):
-        self.bot = bot
-
-    @ipy.slash_command(
-        name="utilities",
-        description="Get some utilities you might need",
-    )
-    async def utilities(self, ctx: ipy.SlashContext):
-        pass
+    utilities = ipy.SlashCommand(name="utilities", description="Get some utilities you might need")
 
     @utilities.subcommand(
         sub_cmd_name="math",

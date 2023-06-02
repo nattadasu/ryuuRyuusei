@@ -449,10 +449,10 @@ To complete your registration, please follow the instructions below:""",
                 name="file_format",
                 description="File format to export to",
                 type=ipy.OptionType.STRING,
-                required=True,
+                required=False,
                 choices=[
                     ipy.SlashCommandChoice(
-                        name="JSON",
+                        name="JSON (Default)",
                         value="json",
                     ),
                     ipy.SlashCommandChoice(
@@ -472,7 +472,9 @@ To complete your registration, please follow the instructions below:""",
         ],
     )
     async def export_data(
-        self, ctx: ipy.SlashContext, file_format: Literal["json", "csv", "yaml"]
+        self,
+        ctx: ipy.SlashContext,
+        file_format: Literal["json", "csv", "yaml", "py"] = "json",
     ):
         await ctx.defer(ephemeral=True)
         async with UserDatabase() as ud:

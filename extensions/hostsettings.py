@@ -8,10 +8,10 @@ from modules.const import (
 )
 
 
-class ServerSettings(ipy.Extension):
-    """Server Settings commands"""
+class HostSettings(ipy.Extension):
+    """Host Settings commands"""
 
-    @ipy.slash_command(
+    hostsettings = ipy.SlashCommand(
         name="hostsettings",
         description="Change the bot settings, for self-hosted bot only",
         scopes=[
@@ -20,12 +20,13 @@ class ServerSettings(ipy.Extension):
         ],
         dm_permission=False,
     )
-    async def hostsettings(self, ctx: ipy.InteractionContext):
-        pass
 
-    @hostsettings.subcommand(
-        group_name="member",
-        group_description="Manage member settings, for self-hosted bot only",
+    member = hostsettings.group(
+        name="member",
+        description="Manage member settings, for self-hosted bot only"
+    )
+
+    @member.subcommand(
         sub_cmd_name="verify",
         sub_cmd_description="Verify a user in the club",
         options=[
@@ -84,4 +85,4 @@ class ServerSettings(ipy.Extension):
 
 
 def setup(bot):
-    ServerSettings(bot)
+    HostSettings(bot)

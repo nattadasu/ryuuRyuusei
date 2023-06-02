@@ -9,9 +9,6 @@ from modules.i18n import fetch_language_data, read_user_language
 class WhoAmI(ipy.Extension):
     """Extension class for /whoami"""
 
-    def __init__(self, bot: ipy.AutoShardedClient):
-        self.bot = bot
-
     @ipy.slash_command(name="whoami", description="Interactively read your data")
     async def whoami(self, ctx: ipy.SlashContext):
         await ctx.defer(ephemeral=True)

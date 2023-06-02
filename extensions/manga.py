@@ -14,12 +14,7 @@ from modules.i18n import fetch_language_data, read_user_language
 class Manga(ipy.Extension):
     """Manga commands"""
 
-    @ipy.slash_command(
-        name="manga",
-        description="Get manga information from AniList",
-    )
-    async def manga(self, ctx: ipy.SlashContext):
-        pass
+    manga = ipy.SlashCommand(name="manga", description="Get manga information from AniList")
 
     @manga.subcommand(
         sub_cmd_name="search",

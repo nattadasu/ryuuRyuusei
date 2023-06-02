@@ -12,12 +12,7 @@ from modules.i18n import fetch_language_data, read_user_language
 class Games(ipy.Extension):
     """Games commands"""
 
-    @ipy.slash_command(
-        name="games",
-        description="Get games information from RAWG",
-    )
-    async def games(self, ctx: ipy.SlashContext):
-        pass
+    games = ipy.SlashCommand(name="games", description="Get games information from RAWG")
 
     @games.subcommand(
         sub_cmd_name="search",

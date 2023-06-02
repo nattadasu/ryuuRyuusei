@@ -14,12 +14,10 @@ from modules.i18n import fetch_language_data, read_user_language
 class TvShow(ipy.Extension):
     """TV commands"""
 
-    @ipy.slash_command(
+    tv = ipy.SlashCommand(
         name="tv",
         description="Get TV show information from SIMKL",
     )
-    async def tv(self, ctx: ipy.SlashContext):
-        pass
 
     @tv.subcommand(
         sub_cmd_name="search",
