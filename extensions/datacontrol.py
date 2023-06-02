@@ -2,7 +2,6 @@ import json
 import os
 import re
 from datetime import datetime, timezone
-from time import time
 from typing import Literal
 
 import interactions as ipy
@@ -28,10 +27,6 @@ from modules.const import (
 
 class DataControl(ipy.Extension):
     """Extension class for everything related to user data"""
-
-    def __init__(self, bot: ipy.AutoShardedClient):
-        self.bot = bot
-        self.check_for_expired_verification_codes.start()
 
     @staticmethod
     def generate_error_embed(
@@ -259,30 +254,6 @@ To complete your registration, please follow the instructions below:""",
         await ctx.send(embed=embed)
         file_path = os.path.join(directory, path)
         os.remove(file_path)
-
-    @ipy.Task.create(ipy.IntervalTrigger(hours=1))
-    # skipcq: PYL-W0613
-    async def check_for_expired_verification_codes(self) -> None:
-        """Check for expired verification codes every hour."""
-        directory = "cache/verify/"
-        badge = "[Tsk] [/register]"
-        files = [file for file in os.listdir(directory) if file.endswith(".json")]
-
-        if not files:
-            print(f"{badge} No verification codes found.")
-            return
-
-        for file in files:
-            file_path = os.path.join(directory, file)
-            with open(file_path, "r") as f:
-                data = json.load(f)
-            if data["timestamp"] < time():
-                print(f"{badge} Removing {file}")
-                os.remove(file_path)
-            else:
-                print(f"{badge} Skipping {file}")
-
-        print(f"{badge} Done checking for expired verification codes.")
 
     @ipy.slash_command(
         name="platform",
