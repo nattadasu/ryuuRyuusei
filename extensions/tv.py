@@ -17,6 +17,11 @@ class TvShow(ipy.Extension):
     tv = ipy.SlashCommand(
         name="tv",
         description="Get TV show information from SIMKL",
+        cooldown=ipy.Cooldown(
+            cooldown_bucket=ipy.Buckets.CHANNEL,
+            rate=1,
+            interval=10,
+        )
     )
 
     @tv.subcommand(

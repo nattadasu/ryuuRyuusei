@@ -20,6 +20,7 @@ from interactions.ext.paginators import Paginator
 class Help(ipy.Extension):
     """Help command"""
 
+    @ipy.cooldown(ipy.Buckets.USER, 1, 10)
     @ipy.slash_command(name="help", description="Get a list of all available commands")
     async def help(self, ctx: ipy.SlashContext) -> None:
         """Get a list of all available commands."""
@@ -59,7 +60,7 @@ class Help(ipy.Extension):
                 )
             )
 
-        paginator = Paginator.create_from_embeds(self.bot, *help_list, timeout=30)
+        paginator = Paginator.create_from_embeds(self.bot, *help_list, timeout=60)
         await paginator.send(ctx)
 
 

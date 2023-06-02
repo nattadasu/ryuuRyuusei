@@ -28,6 +28,11 @@ class Profile(ipy.Extension):
     profile = ipy.SlashCommand(
         name="profile",
         description="Get your profile information from various platforms",
+        cooldown=ipy.Cooldown(
+            cooldown_bucket=ipy.Buckets.USER,
+            rate=1,
+            interval=5,
+        )
     )
 
     @profile.subcommand(

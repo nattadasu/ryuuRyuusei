@@ -16,7 +16,12 @@ class Movies(ipy.Extension):
 
     movies = ipy.SlashCommand(
         name="movies",
-        description="Get movie information from SIMKL"
+        description="Get movie information from SIMKL",
+        cooldown=ipy.Cooldown(
+            cooldown_bucket=ipy.Buckets.CHANNEL,
+            rate=1,
+            interval=10,
+        )
     )
 
     @movies.subcommand(

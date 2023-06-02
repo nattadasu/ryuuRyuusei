@@ -1,6 +1,8 @@
 from interactions import (
     AutoShardedClient,
+    Buckets,
     Client,
+    Cooldown,
     Extension,
     SlashCommand,
     SlashContext,
@@ -15,7 +17,15 @@ from modules.nekomimidb import submit_nekomimi
 class Nekomimi(Extension):
     """NekomimiDB commands"""
 
-    base = SlashCommand(name="nekomimi", description="Get a character in cat ears art")
+    base = SlashCommand(
+        name="nekomimi",
+        description="Get a character in cat ears art",
+        cooldown=Cooldown(
+            cooldown_bucket=Buckets.USER,
+            rate=1,
+            interval=3,
+        )
+    )
     group = base.group(name="random", description="Get random image")
 
     @group.subcommand(

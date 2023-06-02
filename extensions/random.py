@@ -14,7 +14,15 @@ from modules.const import (
 class Random(ipy.Extension):
     """Random commands"""
 
-    random = ipy.SlashCommand(name="random", description="Get a random stuff")
+    random = ipy.SlashCommand(
+        name="random",
+        description="Get a random stuff",
+        cooldown=ipy.Cooldown(
+            cooldown_bucket=ipy.Buckets.CHANNEL,
+            rate=1,
+            interval=5,
+        )
+    )
 
     @random.subcommand(
         sub_cmd_name="8ball",

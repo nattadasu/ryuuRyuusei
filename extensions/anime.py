@@ -14,7 +14,15 @@ from classes.i18n import LanguageDict
 class Anime(ipy.Extension):
     """Anime commands"""
 
-    anime = ipy.SlashCommand(name="anime", description="Get anime information from MyAnimeList via Jikan and AniList")
+    anime = ipy.SlashCommand(
+        name="anime",
+        description="Get anime information from MyAnimeList via Jikan and AniList",
+        cooldown=ipy.Cooldown(
+            cooldown_bucket=ipy.Buckets.CHANNEL,
+            rate=1,
+            interval=10,
+        )
+    )
 
     @anime.subcommand(
         sub_cmd_name="search",

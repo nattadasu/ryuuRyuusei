@@ -105,6 +105,7 @@ class DataControl(ipy.Extension):
                 return True
             return False
 
+    @ipy.cooldown(ipy.Buckets.USER, 1, 60)
     @ipy.slash_command(
         name="register",
         description="Register yourself to the database",
@@ -255,6 +256,7 @@ To complete your registration, please follow the instructions below:""",
         file_path = os.path.join(directory, path)
         os.remove(file_path)
 
+    @ipy.cooldown(ipy.Buckets.USER, 1, 5)
     @ipy.slash_command(
         name="platform",
         description="Platform linking utility",
@@ -344,6 +346,7 @@ To complete your registration, please follow the instructions below:""",
             )
             await ctx.send(embed=embed)
 
+    @ipy.cooldown(ipy.Buckets.USER, 1, 5)
     @ipy.slash_command(
         name="platform",
         description="Platform linking utility",
@@ -416,6 +419,7 @@ To complete your registration, please follow the instructions below:""",
             )
             await ctx.send(embed=embed)
 
+    @ipy.cooldown(ipy.Buckets.USER, 1, 60)
     @ipy.slash_command(
         name="unregister",
         description="Unregister from the bot",
@@ -439,6 +443,7 @@ To complete your registration, please follow the instructions below:""",
         )
         await ctx.send(embed=embed)
 
+    @ipy.cooldown(ipy.Buckets.USER, 1, 3600)
     @ipy.slash_command(
         name="export",
         description="Export data utility",
@@ -564,6 +569,7 @@ user_data: UserData = {user_data}
         # Delete the file
         os.remove(f"{fn}")
 
+    @ipy.cooldown(ipy.Buckets.USER, 1, 10)
     @ipy.slash_command(
         name="verify",
         description="Verify your account",

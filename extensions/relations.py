@@ -21,6 +21,11 @@ class ExtenalSitesRelations(ipy.Extension):
     relations = ipy.SlashCommand(
         name="relations",
         description="Get external links relations of a title from one of the supported sites",
+        cooldown=ipy.Cooldown(
+            cooldown_bucket=ipy.Buckets.CHANNEL,
+            rate=1,
+            interval=30,
+        )
     )
 
     @staticmethod

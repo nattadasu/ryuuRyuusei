@@ -12,7 +12,15 @@ from modules.i18n import fetch_language_data, read_user_language
 class Games(ipy.Extension):
     """Games commands"""
 
-    games = ipy.SlashCommand(name="games", description="Get games information from RAWG")
+    games = ipy.SlashCommand(
+        name="games",
+        description="Get games information from RAWG",
+        cooldown=ipy.Cooldown(
+            cooldown_bucket=ipy.Buckets.CHANNEL,
+            rate=1,
+            interval=10,
+        )
+    )
 
     @games.subcommand(
         sub_cmd_name="search",

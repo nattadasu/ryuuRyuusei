@@ -12,6 +12,11 @@ class UserSettings(ipy.Extension):
         name="usersettings",
         description="Change the bot settings",
         dm_permission=True,
+        cooldown=ipy.Cooldown(
+            cooldown_bucket=ipy.Buckets.USER,
+            rate=1,
+            interval=5,
+        )
     )
 
     language = usersettings.group(

@@ -36,6 +36,7 @@ class CommonCommands(ipy.Extension):
         self.bot = bot
         self.now = now
 
+    @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
     @ipy.slash_command(name="about", description="Get information about the bot")
     async def about(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
@@ -86,6 +87,7 @@ class CommonCommands(ipy.Extension):
         embed.set_footer(text="To get uptime and other info, use /ping")
         await ctx.send(embed=embed)
 
+    @ipy.cooldown(ipy.Buckets.GUILD, 1, 5)
     @ipy.slash_command(name="ping", description="Ping the bot")
     async def ping(self, ctx: ipy.SlashContext):
         start = pc()
@@ -161,6 +163,7 @@ class CommonCommands(ipy.Extension):
             embed=embed,
         )
 
+    @ipy.cooldown(ipy.Buckets.USER, 1, 60)
     @ipy.slash_command(name="invite", description="Get the bot invite link")
     async def invite(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
@@ -193,8 +196,9 @@ class CommonCommands(ipy.Extension):
             url=BOT_SUPPORT_SERVER,
             style=ipy.ButtonStyle.URL,
         )
-        await ctx.send(embed=dcEm, components=[ipy.ActionRow(invButton, serverButton)])
+        await ctx.send(embed=dcEm, components=[ipy.ActionRow(invButton, serverButton)], ephemeral=True)
 
+    @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
     @ipy.slash_command(
         name="privacy", description="Get the bot's tl;dr version of privacy policy"
     )
@@ -213,6 +217,7 @@ class CommonCommands(ipy.Extension):
         )
         await ctx.send(embed=em, components=[ipy.ActionRow(butt)])
 
+    @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
     @ipy.slash_command(
         name="support", description="Give (financial) support to the bot"
     )

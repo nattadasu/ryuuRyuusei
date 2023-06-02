@@ -19,7 +19,15 @@ from modules.i18n import fetch_language_data, read_user_language
 class Utilities(ipy.Extension):
     """Utilities commands"""
 
-    utilities = ipy.SlashCommand(name="utilities", description="Get some utilities you might need")
+    utilities = ipy.SlashCommand(
+        name="utilities",
+        description="Get some utilities you might need",
+        cooldown=ipy.Cooldown(
+            cooldown_bucket=ipy.Buckets.CHANNEL,
+            rate=1,
+            interval=10,
+        )
+    )
 
     @utilities.subcommand(
         sub_cmd_name="math",
