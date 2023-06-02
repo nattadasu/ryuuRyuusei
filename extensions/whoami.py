@@ -126,7 +126,8 @@ class WhoAmI(ipy.Extension):
         linked_platforms_embed.set_thumbnail(
             url="https://3.bp.blogspot.com/-qlSGpgl64rI/Wqih4jf-CuI/AAAAAAABK20/aoPMsqSqO_EEXE4d39WUqSc0nbwTGoV-wCLcBGAs/s0/mark_chain_kusari.png"
         )
-        embeds = [discord_embed, database_embed, mal_embed, linked_platforms_embed]
+        embeds = [discord_embed, database_embed,
+                  mal_embed, linked_platforms_embed]
 
         await ctx.send(embeds=embeds)
 

@@ -21,7 +21,7 @@ class Manga(ipy.Extension):
             cooldown_bucket=ipy.Buckets.CHANNEL,
             rate=1,
             interval=10,
-        )
+        ),
     )
 
     @manga.subcommand(
@@ -99,7 +99,8 @@ class Manga(ipy.Extension):
                 )
                 so.append(
                     ipy.StringSelectOption(
-                        label=md_title[:77] + "..." if len(md_title) > 77 else md_title,
+                        label=md_title[:77] +
+                        "..." if len(md_title) > 77 else md_title,
                         value=str(media_id),
                         description=f"{format_str}, {status}, {year}",
                     )

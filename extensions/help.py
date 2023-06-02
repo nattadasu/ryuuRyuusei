@@ -29,7 +29,8 @@ class Help(ipy.Extension):
     async def help(self, ctx: ipy.SlashContext) -> None:
         """Get a list of all available commands."""
         help_list = []
-        commands = sorted(self.bot.application_commands, key=lambda x: str(x.name))
+        commands = sorted(self.bot.application_commands,
+                          key=lambda x: str(x.name))
 
         commands = [
             command
@@ -38,14 +39,12 @@ class Help(ipy.Extension):
         ]
 
         owners = [
-            f"* {owner.username} ({owner.mention})"
-            for owner in self.bot.owners
-        ]
+            f"* {owner.username} ({owner.mention})" for owner in self.bot.owners]
         owners = "\n".join(owners)
 
         for i in range(0, len(commands), 9):
             listed = []
-            for command in commands[i : i + 9]:
+            for command in commands[i: i + 9]:
                 if type(command) is not ipy.SlashCommand:
                     continue
                 cmd_name = f"/{command.name}"
@@ -62,10 +61,7 @@ class Help(ipy.Extension):
                 description = sanitize_markdown(f"{description}")
                 listed.append(
                     ipy.EmbedField(
-                        name=f"{name}",
-                        value=f"{description}",
-                        inline=True
-                    )
+                        name=f"{name}", value=f"{description}", inline=True)
                 )
 
             help_list.append(
@@ -76,13 +72,15 @@ Bot Owners:
 {owners}
 *To see more info about bot, use `/about` command*""",
                     color=0x7CB7D3,
-                    thumbnail=ipy.EmbedAttachment(url=self.bot.user.avatar.url),
+                    thumbnail=ipy.EmbedAttachment(
+                        url=self.bot.user.avatar.url),
                     fields=listed,
                     timestamp=datetime.now(timezone.utc),
                 )
             )
 
-        paginator = Paginator.create_from_embeds(self.bot, *help_list, timeout=60)
+        paginator = Paginator.create_from_embeds(
+            self.bot, *help_list, timeout=60)
         await paginator.send(ctx)
 
 

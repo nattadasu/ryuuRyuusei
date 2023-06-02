@@ -21,7 +21,7 @@ class Random(ipy.Extension):
             cooldown_bucket=ipy.Buckets.CHANNEL,
             rate=1,
             interval=5,
-        )
+        ),
     )
 
     @random.subcommand(
@@ -48,8 +48,10 @@ class Random(ipy.Extension):
                 color=0xFF0000,
             )
             embed.set_footer(text="Please try again later")
-            emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", EMOJI_UNEXPECTED_ERROR)
-            embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
+            emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>",
+                           r"\1", EMOJI_UNEXPECTED_ERROR)
+            embed.set_thumbnail(
+                url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
             await ctx.send(embed=embed)
             return
 

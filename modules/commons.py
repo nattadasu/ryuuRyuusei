@@ -196,12 +196,14 @@ def generate_search_embed(
         case 2:
             count = l_["quantities"][f"{mediaType}"]["two"]
         case _:
-            count = l_["quantities"][f"{mediaType}"]["many"].format(count=len(results))
+            count = l_["quantities"][f"{mediaType}"]["many"].format(
+                count=len(results))
     dcEm = Embed(
         author=EmbedAuthor(name=platform, url=homepage, icon_url=icon),
         color=color,
         title=title,
-        description=l_["commons"]["search"]["result"].format(COUNT=count, QUERY=query),
+        description=l_["commons"]["search"]["result"].format(
+            COUNT=count, QUERY=query),
         fields=results,  # type: ignore
     )
     dcEm.set_thumbnail(url=icon)
@@ -248,7 +250,8 @@ def generate_utils_except_embed(
             ),
         ],  # type: ignore
     )
-    dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
+    dcEm.set_thumbnail(
+        url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return dcEm
 
@@ -288,7 +291,8 @@ def generate_commons_except_embed(
             )  # type: ignore
         ],
     )
-    dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
+    dcEm.set_thumbnail(
+        url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return dcEm
 
@@ -342,7 +346,6 @@ async def get_nsfw_status(context: ComponentContext | SlashContext) -> bool | No
     else:
         nsfwBool = channel.nsfw
     return nsfwBool
-
 
 
 def pluralize(x):
@@ -437,7 +440,8 @@ def platform_exception_embed(
             EmbedField(name=l_["commons"]["reason"], value=error, inline=False)
         ],  # type: ignore
     )
-    dcEm.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
+    dcEm.set_thumbnail(
+        url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return dcEm
 

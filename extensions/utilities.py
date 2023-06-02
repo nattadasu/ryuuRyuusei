@@ -26,7 +26,7 @@ class Utilities(ipy.Extension):
             cooldown_bucket=ipy.Buckets.CHANNEL,
             rate=1,
             interval=10,
-        )
+        ),
     )
 
     @utilities.subcommand(
@@ -119,10 +119,12 @@ class Utilities(ipy.Extension):
                     color=0x996422,
                     fields=[
                         ipy.EmbedField(
-                            name=l_["base64"]["string"], value=strVal, inline=False
+                            name=l_[
+                                "base64"]["string"], value=strVal, inline=False
                         ),
                         ipy.EmbedField(
-                            name=l_["commons"]["result"], value=resVal, inline=False
+                            name=l_[
+                                "commons"]["result"], value=resVal, inline=False
                         ),
                     ],
                 )
@@ -220,7 +222,8 @@ class Utilities(ipy.Extension):
                     value=f"```css\n{res.cmyk.value}\n```",
                     inline=True,
                 ),
-                ipy.EmbedField(name="DEC", value=f"```py\n{col}\n```", inline=True),
+                ipy.EmbedField(
+                    name="DEC", value=f"```py\n{col}\n```", inline=True),
             ]
             embed = ipy.Embed(
                 title=l_["commons"]["result"],
@@ -259,7 +262,8 @@ class Utilities(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(name="Low (~7%, default)", value="L"),
+                    ipy.SlashCommandChoice(
+                        name="Low (~7%, default)", value="L"),
                     ipy.SlashCommandChoice(name="Medium (~15%)", value="M"),
                     ipy.SlashCommandChoice(name="Quality (~25%)", value="Q"),
                     ipy.SlashCommandChoice(name="High (~30%)", value="H"),
@@ -294,7 +298,8 @@ class Utilities(ipy.Extension):
                 ],
                 footer=ipy.EmbedFooter(text=l_["qrcode"]["powered"]),
             )
-            embed.set_image(url=f"https://api.qrserver.com/v1/create-qr-code/?{params}")
+            embed.set_image(
+                url=f"https://api.qrserver.com/v1/create-qr-code/?{params}")
             await ctx.send(
                 embed=embed,
             )
@@ -324,7 +329,8 @@ class Utilities(ipy.Extension):
     async def utilities_snowflake(self, ctx: ipy.SlashContext, snowflake: str):
         """Convert a Discord Snowflake to a timestamp"""
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["utilities"]["snowflake"]
+        l_: LanguageDict = fetch_language_data(
+            ul)["strings"]["utilities"]["snowflake"]
         tmsp = int(snowflake_to_datetime(int(snowflake)))
         await ctx.send(
             embed=ipy.Embed(
@@ -340,7 +346,8 @@ class Utilities(ipy.Extension):
                     ipy.EmbedField(
                         name=l_["timestamp"], value=f"```py\n{tmsp}\n```", inline=False
                     ),
-                    ipy.EmbedField(name=l_["date"], value=f"<t:{tmsp}:D>", inline=True),
+                    ipy.EmbedField(name=l_["date"],
+                                   value=f"<t:{tmsp}:D>", inline=True),
                     ipy.EmbedField(
                         name=l_["full_date"], value=f"<t:{tmsp}:F>", inline=True
                     ),
@@ -419,7 +426,8 @@ class Utilities(ipy.Extension):
             embed.set_thumbnail(
                 url=f"https://www.isitdownrightnow.com/screenshot/{lt}/{domain}.jpg"
             )
-            embed.set_image(url=f"https://www.isitdownrightnow.com/data/{domain}.png")
+            embed.set_image(
+                url=f"https://www.isitdownrightnow.com/data/{domain}.png")
 
             await ctx.send(embed=embed)
 
@@ -439,7 +447,8 @@ class Utilities(ipy.Extension):
                 required=False,
                 type=ipy.OptionType.STRING,
                 choices=[
-                    ipy.SlashCommandChoice(name="Discord Profile", value="user"),
+                    ipy.SlashCommandChoice(
+                        name="Discord Profile", value="user"),
                     ipy.SlashCommandChoice(name="Usrbg", value="usrbg"),
                 ],
             ),
@@ -509,8 +518,10 @@ class Utilities(ipy.Extension):
                 required=False,
                 type=ipy.OptionType.STRING,
                 choices=[
-                    ipy.SlashCommandChoice(name="Discord Profile", value="user"),
-                    ipy.SlashCommandChoice(name="Server Profile", value="server"),
+                    ipy.SlashCommandChoice(
+                        name="Discord Profile", value="user"),
+                    ipy.SlashCommandChoice(
+                        name="Server Profile", value="server"),
                 ],
             ),
         ],

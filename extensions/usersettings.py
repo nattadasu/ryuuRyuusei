@@ -16,7 +16,7 @@ class UserSettings(ipy.Extension):
             cooldown_bucket=ipy.Buckets.USER,
             rate=1,
             interval=5,
-        )
+        ),
     )
 
     language = usersettings.group(

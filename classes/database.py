@@ -218,7 +218,8 @@ class UserDatabase:
             discord_username=data["discordUsername"],
             mal_id=int(data["malId"]),
             mal_username=data["malUsername"],
-            mal_joined=datetime.fromtimestamp(int(data["malJoined"]), tz=timezone.utc),
+            mal_joined=datetime.fromtimestamp(
+                int(data["malJoined"]), tz=timezone.utc),
             anilist_id=data["anilistId"] if data["anilistId"] else None,
             anilist_username=data["anilistUsername"]
             if data["anilistUsername"]
@@ -230,7 +231,8 @@ class UserDatabase:
             registered_guild_id=Snowflake(data["registeredGuildId"]),
             registered_guild_name=data["registeredGuildName"],
             registered_by=Snowflake(data["registeredBy"]),
-            shikimori_id=id(data["shikimoriId"]) if data["shikimoriId"] else None,
+            shikimori_id=id(data["shikimoriId"]
+                            ) if data["shikimoriId"] else None,
             shikimori_username=data["shikimoriUsername"]
             if data["shikimoriUsername"]
             else None,

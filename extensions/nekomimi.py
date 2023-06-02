@@ -24,7 +24,7 @@ class Nekomimi(Extension):
             cooldown_bucket=Buckets.USER,
             rate=1,
             interval=3,
-        )
+        ),
     )
     group = base.group(name="random", description="Get random image")
 
@@ -34,7 +34,8 @@ class Nekomimi(Extension):
     )
     async def nekomimi_random_boy(self, ctx: SlashContext):
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["random"]["nekomimi"]
+        l_: LanguageDict = fetch_language_data(
+            ul)["strings"]["random"]["nekomimi"]
         await submit_nekomimi(ctx=ctx, gender=NekomimiGender.BOY, lang=l_)
 
     @group.subcommand(
@@ -43,7 +44,8 @@ class Nekomimi(Extension):
     )
     async def nekomimi_random_girl(self, ctx: SlashContext):
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["random"]["nekomimi"]
+        l_: LanguageDict = fetch_language_data(
+            ul)["strings"]["random"]["nekomimi"]
         await submit_nekomimi(ctx=ctx, gender=NekomimiGender.GIRL, lang=l_)
 
     @group.subcommand(
@@ -52,7 +54,8 @@ class Nekomimi(Extension):
     )
     async def nekomimi_random_any(self, ctx: SlashContext):
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["random"]["nekomimi"]
+        l_: LanguageDict = fetch_language_data(
+            ul)["strings"]["random"]["nekomimi"]
         await submit_nekomimi(ctx=ctx, lang=l_)
 
 
