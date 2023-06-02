@@ -134,7 +134,8 @@ class Profile(ipy.Extension):
 
         if mal_username is None:
             embed = platform_exception_embed(
-                description=f"<@!{user.id}> haven't registered the MyAnimeList account to the bot yet!\nUse `/register` to register",
+                description=f"""{user.mention} haven't registered the MyAnimeList account to the bot yet!
+Use `/register` to register, or use `/profile myanimelist mal_username:<username>` to get the profile information of a user without registering their account to the bot""",
                 error_type=PlatformErrType.USER,
                 lang_dict=l_,
                 error="User hasn't registered their MAL account yet",
@@ -433,7 +434,8 @@ class Profile(ipy.Extension):
 
             if lfm_username is None:
                 embed = platform_exception_embed(
-                    description=f"<@!{user.id}> haven't linked the Last.fm account to the bot yet!\nUse `/platform link` to link",
+                    description=f"""{user.mention} haven't linked the Last.fm account to the bot yet!
+Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>` to get the profile information directly""",
                     error_type=PlatformErrType.USER,
                     lang_dict=l_,
                     error="User hasn't link their account yet",
@@ -449,7 +451,7 @@ class Profile(ipy.Extension):
                 )
         except ProviderHttpError as e:
             embed = generate_commons_except_embed(
-                description=e.message,
+                description="Last.fm API is currently unavailable, please try again later",
                 error=e,
                 lang_dict=l_,
             )
@@ -590,7 +592,8 @@ Total scrobbles: {profile.playcount:,}
 
             if anilist_username is None:
                 embed = platform_exception_embed(
-                    description=f"<@!{user.id}> haven't linked the AniList account to the bot yet!\nUse `/platform link` to link",
+                    description=f"""{user.mention} haven't linked the AniList account to the bot yet!
+Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_username>` to get the profile information directly""",
                     error_type=PlatformErrType.USER,
                     lang_dict=l_,
                     error="User hasn't link their account yet",
@@ -603,7 +606,7 @@ Total scrobbles: {profile.playcount:,}
                 user_data: AniListUserStruct = await al.user(anilist_username)
         except ProviderHttpError as e:
             embed = platform_exception_embed(
-                description=e.message,
+                description="AniList API returned an error",
                 error=f"{e}",
                 lang_dict=l_,
                 error_type=PlatformErrType.SYSTEM,
@@ -916,7 +919,8 @@ Total scrobbles: {profile.playcount:,}
 
             if shikimori_username is None:
                 embed = platform_exception_embed(
-                    description=f"<@!{user.id}> haven't linked Shikimori account to the bot yet!\nUse `/platform link` to link",
+                    description=f"""{user.mention} haven't linked the Shikimori account to the bot yet!
+Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimori_username>` to get the profile information directly""",
                     error_type=PlatformErrType.USER,
                     lang_dict=l_,
                     error="User hasn't link their account yet",
