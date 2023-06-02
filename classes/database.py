@@ -266,6 +266,7 @@ class UserDatabase:
         except IndexError:
             data["has_user_settings"] = False
         for key, value in data.items():
+            value = str(value)
             if value.isdigit():
                 data[key] = int(value)
             elif value.lower() == "true":
