@@ -18,6 +18,7 @@ class BotTasker(Extension):
     @Task.create(IntervalTrigger(minutes=10))
     async def delete_cache(self) -> None:
         """Automatically delete caches stored in the cache folder saved as JSON"""
+        print("[Tsk] [Cache] Deleting old cache files, if any")
         half_day = 43200
         a_day = half_day * 2
         two_and_a_half_days = a_day * 2 + half_day
@@ -70,6 +71,7 @@ class BotTasker(Extension):
                 folder_path = os.path.join(cache_folder, cache_provider)
                 duration = durations
                 self._delete_old_files(folder_path, duration)
+        print("[Tsk] [Cache] Finished deleting old cache files")
 
     @Task.create(IntervalTrigger(hours=1))
     async def delete_error_logs(self) -> None:
