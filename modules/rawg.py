@@ -101,7 +101,8 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
     )
     if len(tgs) > 20:
         lefties = len(tgs) - 20
-        tgs_text += f", *and {lefties} more*"
+        if lefties >= 1:
+            tgs_text += f", *and {lefties} more*"
 
     # Process release date
     rel = "Unknown year"

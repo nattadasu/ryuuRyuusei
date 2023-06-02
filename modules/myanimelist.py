@@ -242,7 +242,10 @@ async def generate_mal(
     tgs.extend(g.name for g in j.genres)
     tgs.extend(g.name for g in j.themes)
     tgs.extend(g.name for g in j.demographics)
-    tgs.extend(f"||{g.name}||" for g in j.explicit_genres)
+    content_warning = False
+    tgs.extend(f"{g.name} **!**" for g in j.explicit_genres)
+    if len(j.explicit_genres) > 0:
+        content_warning = True
 
     ssonn = j.season
     daten = datetime(1970, 1, 1, tzinfo=timezone.utc)
@@ -358,6 +361,8 @@ async def generate_mal(
         else:
             ent = rot
 
+
+    english_note = False
     if (ent is None) or (ent == ""):
         # for each s in syns, check if the s is in ASCII using regex
         # if it is, then set ent to s
@@ -369,11 +374,7 @@ async def generate_mal(
                 break
         else:
             ent = rot
-        enChkMark = "\\*"
-        chkMsg = "\n* Data might be inaccurate due to bot rules/config, please check source for more information."
-    else:
-        enChkMark = ""
-        chkMsg = ""
+        english_note = True
 
     # Format synonyms list
     ogt = [rot, nat, ent]
@@ -410,8 +411,17 @@ async def generate_mal(
     # Format score
     scr = j.score if j.score else "0"
 
-    # Add check message to note
-    note += chkMsg
+    if english_note:
+        footnote = "\n* Data might be inaccurate due to bot rules/config, please check source for more information."
+    else:
+        footnote = ""
+
+    if content_warning:
+        content_warning_note = '\n* Some tags marked with "!" are NSFW.'
+    else:
+        content_warning_note = ""
+
+    note = f"{content_warning_note}{footnote}"
 
     if str(eps) in ["1", "0", None]:
         episodeField = EmbedField(name="Duration", value=f"{dur}", inline=True)
@@ -434,7 +444,7 @@ async def generate_mal(
 """,
         color=0x2E51A2,
         fields=[
-            EmbedField(name=f"English Title{enChkMark}", value=ent, inline=True),
+            EmbedField(name=f"English Title{'*' if english_note else ''}", value=ent, inline=True),
             EmbedField(name="Native Title", value=nat, inline=True),
             EmbedField(name="Synonyms", value=syns),
             EmbedField(name="Genres and Themes", value=tgs),

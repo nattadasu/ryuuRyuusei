@@ -195,10 +195,9 @@ def create_simkl_embed(
         genres = "*None*"
     elif len(genres) > 20:
         sorted_genres = sorted(set(genres[:20]), key=str.casefold)
-        remaining_genres = len(genres[20:])
         genres = ", ".join(sorted_genres)
-        if remaining_genres > 0:
-            genres += f", and {remaining_genres} more"
+        if (len(genres) - 20) >= 1:
+            genres += f", and {len(genres - 20)} more"
     else:
         sorted_genres = sorted(set(genres), key=str.casefold)
         genres = ", ".join(sorted_genres)

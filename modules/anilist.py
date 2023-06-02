@@ -219,7 +219,9 @@ async def generate_anilist(
         tags_formatted = "*None*"
     elif len(tgs) > 20:
         sorted_tgs = sorted(set(tgs[:20]), key=str.casefold)
-        tags_formatted = ", ".join(sorted_tgs) + f", *and {len(sorted_tgs) - 20} more*"
+        tags_formatted = ", ".join(sorted_tgs)
+        if (len(tgs) - 20) >= 1:
+            tags_formatted += f", *and {len(tgs) - 20} more*"
     else:
         sorted_tgs = sorted(set(tgs), key=str.casefold)
         tags_formatted = ", ".join(sorted_tgs)
