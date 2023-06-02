@@ -344,6 +344,21 @@ async def get_nsfw_status(context: ComponentContext | SlashContext) -> bool | No
     return nsfwBool
 
 
+
+def pluralize(x):
+    """
+    Add an "s" to the end of a word if the number is greater than 1.
+    Will be dropped once i18n is implemented.
+
+    Args:
+        x (int): The number to check.
+
+    Returns:
+        str: An "s" if the number is greater than 1, otherwise an empty string.
+    """
+    return "s" if x > 1 else ""
+
+
 def convert_float_to_time(day_float: float) -> str:
     """
     Convert a float representing a number of days to a string representing the number of days, hours, and minutes.
@@ -361,14 +376,21 @@ def convert_float_to_time(day_float: float) -> str:
     delta = timedelta(seconds=total_seconds)
 
     # Extract months, days, hours, and minutes from the timedelta object
-    months = delta.days // 30
+    years = delta.days // 365
+    months = (delta.days // 30) % 12
     days = delta.days % 30
     hours = (delta.seconds // 3600) % 24
     minutes = (delta.seconds // 60) % 60
-    months = f"{months} months, " if months else ""
 
-    # Format the result string
-    result = f"{months}{days} days, {hours} hours, {minutes} minutes"
+    words = [
+        f"{years} year{pluralize(years)}" if years else "",
+        f"{months} month{pluralize(months)}" if months else "",
+        f"{days} day{pluralize(days)}" if days else "",
+        f"{hours} hour{pluralize(hours)}" if hours else "",
+        f"{minutes} minute{pluralize(minutes)}",
+    ]
+
+    result = ", ".join(filter(None, words))
 
     return result
 
