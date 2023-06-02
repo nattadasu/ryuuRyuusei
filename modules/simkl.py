@@ -52,7 +52,7 @@ def create_simkl_embed(
             status = ", To Be Announced"
         case _:
             status = f", {status.capitalize()}"
-    score: dict[str, dict[str, int | float]] | None = data.get("ratings", None)
+    scores: dict[str, dict[str, int | float]] | None = data.get("ratings", None)
     certification = data.get("certification", None)
     country = data.get("country", None)
     network = data.get("network", None)
@@ -181,13 +181,12 @@ def create_simkl_embed(
 
         description = trimmed_description
 
-    votes = None
-    if score is not None:
-        simkl_score: dict[str, int | float] = score["simkl"]
-        score = simkl_score.get("rating", None)
-        votes = simkl_score.get("votes", None)
-    if votes is None:
-        votes = 0
+    score = 0
+    votes = 0
+    if scores is not None:
+        simkl_score: dict[str, int | float] = scores["simkl"]
+        score = simkl_score.get("rating", 0)
+        votes = simkl_score.get("votes", 0)
 
     # Process genres
     genres = data.get("genres", [])
@@ -214,7 +213,7 @@ def create_simkl_embed(
         ),
         title=title,
         url=f"https://simkl.com/{media_type}/{media_id}",
-        description=f"""*`{media_id}`, {'TV' if media_type =='tv' else 'Movies'}{status}, {year}, ⭐ {score}/10 by {votes} {'people' if votes >= 2 else 'person'}*
+        description=f"""*`{media_id}`, {'TV' if media_type =='tv' else 'Movies'}{status}, {year}, ⭐ {score}/10 by {votes:,} {'people' if votes >= 2 else 'person'}*
 
 > {description}""",
         color=0x0B0F10,

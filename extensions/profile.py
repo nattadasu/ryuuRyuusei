@@ -245,10 +245,10 @@ class Profile(ipy.Extension):
                     ipy.EmbedField(name="🚁 Gender", value=gender, inline=True),
                     ipy.EmbedField(name="📍 Location", value=location, inline=True),
                 )
-            anime_value_str = f"""* Total: {anime.total_entries}
+            anime_value_str = f"""* Total: {anime.total_entries:,}
 * Mean Score: ⭐ {anime.mean_score}/10
 * Days Watched: {anime_float}
-* Episodes Watched: {anime.episodes_watched}"""
+* Episodes Watched: {anime.episodes_watched:,}"""
             embed.add_field(
                 name="🎞️ Anime List Summary",
                 value=anime_value_str,
@@ -257,11 +257,11 @@ class Profile(ipy.Extension):
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Anime Statuses",
-                    value=f"""👀 Currently Watching: {anime.watching}
-✅ Completed: {anime.completed}
-⏰ Planned: {anime.plan_to_watch}
-⏸️ On Hold: {anime.on_hold}
-🗑️ Dropped: {anime.dropped}""",
+                    value=f"""👀 Currently Watching: {anime.watching:,}
+✅ Completed: {anime.completed:,}
+⏰ Planned: {anime.plan_to_watch:,}
+⏸️ On Hold: {anime.on_hold:,}
+🗑️ Dropped: {anime.dropped:,}""",
                     inline=True,
                 )
                 ani_favs = user_data.favorites.anime
@@ -281,11 +281,11 @@ class Profile(ipy.Extension):
                     value=ani_fav_list if ani_fav_list not in ["", None] else "Unset",
                     inline=True,
                 )
-            manga_value_str = f"""* Total: {manga.total_entries}
+            manga_value_str = f"""* Total: {manga.total_entries:,}
 * Mean Score: ⭐ {manga.mean_score}/10
 * Days Read, Estimated: {manga_float}
-* Chapters Read: {manga.chapters_read}
-* Volumes Read: {manga.volumes_read}"""
+* Chapters Read: {manga.chapters_read:,}
+* Volumes Read: {manga.volumes_read:,}"""
             embed.add_field(
                 name="📔 Manga List Summary",
                 value=manga_value_str,
@@ -294,11 +294,11 @@ class Profile(ipy.Extension):
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Manga Statuses",
-                    value=f"""👀 Currently Reading: {manga.reading}
-✅ Completed: {manga.completed}
-⏰ Planned: {manga.plan_to_read}
-⏸️ On Hold: {manga.on_hold}
-🗑️ Dropped: {manga.dropped}""",
+                    value=f"""👀 Currently Reading: {manga.reading:,}
+✅ Completed: {manga.completed:,}
+⏰ Planned: {manga.plan_to_read:,}
+⏸️ On Hold: {manga.on_hold:,}
+🗑️ Dropped: {manga.dropped:,}""",
                     inline=True,
                 )
                 man_favs = user_data.favorites.manga
@@ -330,21 +330,21 @@ class Profile(ipy.Extension):
                 ),
                 ipy.EmbedField(
                     name="Anime List Summary",
-                    value=f"""* Total: {anime.total_entries}
+                    value=f"""* Total: {anime.total_entries:,}
 * Mean Score: ⭐ {anime.mean_score}/10
 * Days Watched: {anime_float}
-* Episodes Watched: {anime.episodes_watched}
-👀 {anime.watching} | ✅ {anime.completed} | ⏰ {anime.plan_to_watch} | ⏸️ {anime.on_hold} | 🗑️ {anime.dropped}""",
+* Episodes Watched: {anime.episodes_watched:,}
+👀 {anime.watching:,} | ✅ {anime.completed:,} | ⏰ {anime.plan_to_watch:,} | ⏸️ {anime.on_hold:,} | 🗑️ {anime.dropped:,}""",
                     inline=True,
                 ),
                 ipy.EmbedField(
                     name="Manga List Summary",
-                    value=f"""* Total: {manga.total_entries}
+                    value=f"""* Total: {manga.total_entries:,}
 * Mean Score: ⭐ {manga.mean_score}/10
 * Days Read, Estimated: {manga_float}
-* Chapters Read: {manga.chapters_read}
-* Volumes Read: {manga.volumes_read}
-👀 {manga.reading} | ✅ {manga.completed} | ⏰ {manga.plan_to_read} | ⏸️ {manga.on_hold} | 🗑️ {manga.dropped}""",
+* Chapters Read: {manga.chapters_read:,}
+* Volumes Read: {manga.volumes_read:,}
+👀 {manga.reading:,} | ✅ {manga.completed:,} | ⏰ {manga.plan_to_read:,} | ⏸️ {manga.on_hold:,} | 🗑️ {manga.dropped:,}""",
                     inline=True,
                 ),
             )
@@ -483,8 +483,8 @@ class Profile(ipy.Extension):
             url=profile.url,
             color=0xF71414,
             description=f"""{icShine}{realName}Account created:  <t:{profile.registered.epoch}:D> (<t:{profile.registered.epoch}:R>)
-Total scrobbles: {profile.playcount}
-🧑‍🎤 {profile.artist_count} 💿 {profile.album_count} 🎶 {profile.track_count}""",
+Total scrobbles: {profile.playcount:,}
+🧑‍🎤 {profile.artist_count:,} 💿 {profile.album_count:,} 🎶 {profile.track_count:,}""",
             fields=fields,
         )
         embed.set_thumbnail(url=img)
@@ -653,6 +653,7 @@ Total scrobbles: {profile.playcount}
                     anime_paused = status.count
                 case _:
                     continue
+        anime_total = (anime_completed + anime_current + anime_dropped + anime_paused + anime_planning)
         manga_current = 0
         manga_planning = 0
         manga_completed = 0
@@ -677,6 +678,7 @@ Total scrobbles: {profile.playcount}
                     manga_paused = status.count
                 case _:
                     continue
+        manga_total = (manga_completed + manga_current + manga_dropped + manga_paused + manga_planning)
         embed_author = ipy.EmbedAuthor(
             name="AniList Profile",
             url="https://anilist.co",
@@ -734,10 +736,10 @@ Total scrobbles: {profile.playcount}
                     inline=True,
                 ),
             )
-            anime_value_str = f"""* Total: {anime_completed + anime_current + anime_dropped + anime_paused + anime_planning}
+            anime_value_str = f"""* Total: {anime_total:,}
 * Mean Score: ⭐ {anime_mean_score}/100
 * Days Watched: {anime_float}
-* Episodes Watched: {anime_episodes_watched}"""
+* Episodes Watched: {anime_episodes_watched:,}"""
             embed.add_field(
                 name="🎞️ Anime List Summary",
                 value=anime_value_str,
@@ -746,11 +748,11 @@ Total scrobbles: {profile.playcount}
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Anime Statuses",
-                    value=f"""👀 Currently Watching: {anime_current}
-✅ Completed: {anime_completed}
-⏰ Planned: {anime_planning}
-⏸️ On Hold: {anime_paused}
-🗑️ Dropped: {anime_dropped}""",
+                    value=f"""👀 Currently Watching: {anime_current:,}
+✅ Completed: {anime_completed:,}
+⏰ Planned: {anime_planning:,}
+⏸️ On Hold: {anime_paused:,}
+🗑️ Dropped: {anime_dropped:,}""",
                     inline=True,
                 )
                 ani_favs = user_data.favourites.anime.nodes
@@ -767,11 +769,11 @@ Total scrobbles: {profile.playcount}
                     value=ani_fav_list if ani_fav_list else "Unset",
                     inline=True,
                 )
-            manga_value_str = f"""* Total: {manga_completed + manga_current + manga_dropped + manga_paused + manga_planning}
+            manga_value_str = f"""* Total: {manga_total}
 * Mean Score: ⭐ {manga_mean_score}/100
 * Days Read, Estimated: {manga_float}
-* Chapters Read: {manga_chapters_read}
-* Volumes Read: {manga_volumes_read}"""
+* Chapters Read: {manga_chapters_read:,}
+* Volumes Read: {manga_volumes_read:,}"""
             embed.add_field(
                 name="📔 Manga List Summary",
                 value=manga_value_str,
@@ -780,11 +782,11 @@ Total scrobbles: {profile.playcount}
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Manga Statuses",
-                    value=f"""👀 Currently Reading: {manga_current}
-✅ Completed: {manga_completed}
-⏰ Planned: {manga_planning}
-⏸️ On Hold: {manga_paused}
-🗑️ Dropped: {manga_dropped}""",
+                    value=f"""👀 Currently Reading: {manga_current:,}
+✅ Completed: {manga_completed:,}
+⏰ Planned: {manga_planning:,}
+⏸️ On Hold: {manga_paused:,}
+🗑️ Dropped: {manga_dropped:,}""",
                     inline=True,
                 )
                 manga_favs = user_data.favourites.manga.nodes
@@ -812,21 +814,21 @@ Total scrobbles: {profile.playcount}
                 ),
                 ipy.EmbedField(
                     name="Anime List Summary",
-                    value=f"""* Total: {anime_completed + anime_current + anime_dropped + anime_paused + anime_planning}
+                    value=f"""* Total: {anime_total:,}
 * Mean Score: ⭐ {anime_mean_score}/100
 * Days Watched: {anime_float}
-* Episodes Watched: {anime_episodes_watched}
-👀 {anime_current} | ✅ {anime_completed} | ⏰ {anime_planning} | ⏸️ {anime_paused} | 🗑️ {anime_dropped}""",
+* Episodes Watched: {anime_episodes_watched:,}
+👀 {anime_current:,} | ✅ {anime_completed:,} | ⏰ {anime_planning:,} | ⏸️ {anime_paused:,} | 🗑️ {anime_dropped:,}""",
                     inline=True,
                 ),
                 ipy.EmbedField(
                     name="Manga List Summary",
-                    value=f"""* Total: {manga_completed + manga_current + manga_dropped + manga_paused + manga_planning}
+                    value=f"""* Total: {manga_total:,}
 * Mean Score: ⭐ {manga_mean_score}/100
 * Days Read, Estimated: {manga_float}
-* Chapters Read: {manga_chapters_read}
-* Volumes Read: {manga_volumes_read}
-👀 {manga_current} | ✅ {manga_completed} | ⏰ {manga_planning} | ⏸️ {manga_paused} | 🗑️ {manga_dropped}""",
+* Chapters Read: {manga_chapters_read:,}
+* Volumes Read: {manga_volumes_read:,}
+👀 {manga_current:,} | ✅ {manga_completed:,} | ⏰ {manga_planning:,} | ⏸️ {manga_paused:,} | 🗑️ {manga_dropped:,}""",
                     inline=True,
                 ),
             )
@@ -1057,9 +1059,9 @@ Total scrobbles: {profile.playcount}
                 ipy.EmbedField(name="🎂 Age", value=age_str, inline=True),
                 ipy.EmbedField(name="🚁 Gender", value=gender_str, inline=True),
             )
-            anime_value_str = f"""* Total: {anime_total}
+            anime_value_str = f"""* Total: {anime_total:,}
 * Mean Score: ⭐ {anime_mean_score}/10"""
-            manga_value_str = f"""* Total: {manga_total}
+            manga_value_str = f"""* Total: {manga_total:,}
 * Mean Score: ⭐ {manga_mean_score}/10"""
             embed.add_field(
                 name="🎞️ Anime List Summary",
@@ -1069,12 +1071,12 @@ Total scrobbles: {profile.playcount}
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Anime Statuses",
-                    value=f"""👀 Currently Watching: {anime_current}
-🔁 Repeating: {anime_repeating}
-✅ Completed: {anime_completed}
-⏰ Planned: {anime_planning}
-⏸️ On Hold: {anime_paused}
-🗑️ Dropped: {anime_dropped}""",
+                    value=f"""👀 Currently Watching: {anime_current:,}
+🔁 Repeating: {anime_repeating:,}
+✅ Completed: {anime_completed:,}
+⏰ Planned: {anime_planning:,}
+⏸️ On Hold: {anime_paused:,}
+🗑️ Dropped: {anime_dropped:,}""",
                     inline=True,
                 )
                 ani_favs = user_data.favourites.animes
@@ -1098,12 +1100,12 @@ Total scrobbles: {profile.playcount}
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Manga Statuses",
-                    value=f"""👀 Currently Reading: {manga_current}
-🔁 Repeating: {manga_repeating}
-✅ Completed: {manga_completed}
-⏰ Planned: {manga_planning}
-⏸️ On Hold: {manga_paused}
-🗑️ Dropped: {manga_dropped}""",
+                    value=f"""👀 Currently Reading: {manga_current:,}
+🔁 Repeating: {manga_repeating:,}
+✅ Completed: {manga_completed:,}
+⏰ Planned: {manga_planning:,}
+⏸️ On Hold: {manga_paused:,}
+🗑️ Dropped: {manga_dropped:,}""",
                     inline=True,
                 )
                 man_favs = user_data.favourites.mangas
@@ -1130,16 +1132,16 @@ Total scrobbles: {profile.playcount}
                 ),
                 ipy.EmbedField(
                     name="Anime List Summary",
-                    value=f"""* Total: {anime_total}
+                    value=f"""* Total: {anime_total:,}
 * Mean Score: ⭐ {anime_mean_score}/10
-👀 {anime_current} | 🔁 {anime_repeating} | ✅ {anime_completed} | ⏰ {anime_planning} | ⏸️ {anime_paused} | 🗑️ {anime_dropped}""",
+👀 {anime_current:,} | 🔁 {anime_repeating:,} | ✅ {anime_completed:,} | ⏰ {anime_planning:,} | ⏸️ {anime_paused:,} | 🗑️ {anime_dropped:,}""",
                     inline=True,
                 ),
                 ipy.EmbedField(
                     name="Manga List Summary",
                     value=f"""* Total: {manga_total}
 * Mean Score: ⭐ {manga_mean_score}/10
-👀 {manga_current} | 🔁 {manga_repeating} | ✅ {manga_completed} | ⏰ {manga_planning} | ⏸️ {manga_paused} | 🗑️ {manga_dropped}""",
+👀 {manga_current:,} | 🔁 {manga_repeating:,} | ✅ {manga_completed:,} | ⏰ {manga_planning:,} | ⏸️ {manga_paused:,} | 🗑️ {manga_dropped:,}""",
                     inline=True,
                 ),
             )
