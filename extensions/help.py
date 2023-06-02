@@ -20,15 +20,17 @@ from interactions.ext.paginators import Paginator
 class Help(ipy.Extension):
     """Help command"""
 
-    def __init__(self, bot: ipy.AutoShardedClient) -> None:
-        """Initialize the extension."""
-        self.bot = bot
-
     @ipy.slash_command(name="help", description="Get a list of all available commands")
     async def help(self, ctx: ipy.SlashContext) -> None:
         """Get a list of all available commands."""
         help_list = []
         commands = sorted(self.bot.application_commands, key=lambda x: str(x.name))
+
+        commands = [
+            command
+            for command in commands
+            if command.scopes in ([0], [ctx.author.id], [ctx.guild.id])
+        ]
 
         for i in range(0, len(commands), 10):
             listed = []
