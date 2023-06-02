@@ -13,8 +13,12 @@ Notable changes:
 * Removed unassigned variables
 """
 
+from datetime import datetime, timezone
+
 import interactions as ipy
 from interactions.ext.paginators import Paginator
+
+from modules.commons import sanitize_markdown
 
 
 class Help(ipy.Extension):
@@ -33,9 +37,15 @@ class Help(ipy.Extension):
             if command.scopes in ([0], [ctx.author.id], [ctx.guild.id])
         ]
 
-        for i in range(0, len(commands), 10):
+        owners = [
+            f"* {owner.username} ({owner.mention})"
+            for owner in self.bot.owners
+        ]
+        owners = "\n".join(owners)
+
+        for i in range(0, len(commands), 9):
             listed = []
-            for command in commands[i : i + 10]:
+            for command in commands[i : i + 9]:
                 if type(command) is not ipy.SlashCommand:
                     continue
                 cmd_name = f"/{command.name}"
@@ -43,20 +53,32 @@ class Help(ipy.Extension):
                 sub_cmd_name = (
                     f" {command.sub_cmd_name}" if command.sub_cmd_name else ""
                 )
-                name = f"{cmd_name}{group_name}{sub_cmd_name}"
+                name = f"`{cmd_name}{group_name}{sub_cmd_name}`"
                 description = (
                     command.sub_cmd_description
                     if command.sub_cmd_name
                     else command.description
                 )
-                listed.append(ipy.EmbedField(name=f"{name}", value=f"{description}"))
+                description = sanitize_markdown(f"{description}")
+                listed.append(
+                    ipy.EmbedField(
+                        name=f"{name}",
+                        value=f"{description}",
+                        inline=True
+                    )
+                )
 
             help_list.append(
                 ipy.Embed(
                     title="List of available commands.",
+                    description=f"""Total commands: {(len(commands)):,}
+Bot Owners:
+{owners}
+*To see more info about bot, use `/about` command*""",
                     color=0x7CB7D3,
                     thumbnail=ipy.EmbedAttachment(url=self.bot.user.avatar.url),
                     fields=listed,
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
 
