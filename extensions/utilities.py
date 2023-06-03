@@ -120,7 +120,7 @@ class Utilities(ipy.Extension):
                     fields=[
                         ipy.EmbedField(
                             name=l_[
-                                "base64"]["string"], value=strVal, inline=False
+                                "commons"]["string"], value=strVal, inline=False
                         ),
                         ipy.EmbedField(
                             name=l_[
