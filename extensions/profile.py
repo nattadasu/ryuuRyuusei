@@ -491,8 +491,8 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
             url=profile.url,
             color=0xF71414,
             description=f"""{icShine}{realName}Account created:  <t:{profile.registered.epoch}:D> (<t:{profile.registered.epoch}:R>)
-Total scrobbles: {profile.playcount:,}
-🧑‍🎤 {profile.artist_count:,} 💿 {profile.album_count:,} 🎶 {profile.track_count:,}""",
+Total scrobbles: {int(profile.playcount):,}
+🧑‍🎤 {int(profile.artist_count):,} 💿 {int(profile.album_count):,} 🎶 {int(profile.track_count):,}""",
             fields=fields,
         )
         embed.set_thumbnail(url=img)
