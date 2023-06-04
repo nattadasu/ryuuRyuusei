@@ -669,9 +669,15 @@ class AniList:
         ) as response:
             if response.status == 200:
                 data = await response.json()
+                user_data = data["data"]["User"]
                 if not return_id:
-                    self.write_data_to_cache(data["data"]["User"], cache_file_path)
-                formatted_data = self._user_dict_to_dataclass(data["data"]["User"])
+                    self.write_data_to_cache(user_data, cache_file_path)
+                    formatted_data = self._user_dict_to_dataclass(user_data)
+                else:
+                    formatted_data = AniListUserStruct(
+                        id=user_data["id"],
+                        name=username,
+                    )
                 return formatted_data
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
