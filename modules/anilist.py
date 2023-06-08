@@ -156,8 +156,7 @@ async def generate_anilist(
         desc_done = html.unescape(description)
         desc_done = sanitize_markdown(desc_done)
         desc_done = (
-            desc_done.replace("\\<", "<").replace(
-                "\\>", ">").replace("\\/", "/")
+            desc_done.replace("\\<", "<").replace("\\>", ">").replace("\\/", "/")
         )
         desc_done = convert_html_to_markdown(desc_done)
         descs = desc_done.split("\n")

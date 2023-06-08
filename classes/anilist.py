@@ -416,12 +416,13 @@ class AniList:
             errors: list = data.get("errors", None)
             if errors is not None:
                 err_strings: str = "\n".join(
-                    [f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}" for err in errors]
+                    [
+                        f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
+                        for err in errors
+                    ]
                 )
                 raise ProviderHttpError(err_strings, response.status)
-            self.write_data_to_cache(
-                data["data"]["Media"]["isAdult"], cache_file_path
-            )
+            self.write_data_to_cache(data["data"]["Media"]["isAdult"], cache_file_path)
             return data["data"]["Media"]["isAdult"]
 
     async def anime(self, media_id: int) -> AniListMediaStruct:
@@ -504,7 +505,10 @@ class AniList:
             errors: list = data.get("errors", None)
             if errors is not None:
                 err_strings: str = "\n".join(
-                    [f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}" for err in errors]
+                    [
+                        f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
+                        for err in errors
+                    ]
                 )
                 raise ProviderHttpError(err_strings, response.status)
             self.write_data_to_cache(data["data"]["Media"], cache_file_path)
@@ -587,7 +591,10 @@ class AniList:
             errors: list = data.get("errors", None)
             if errors is not None:
                 err_strings: str = "\n".join(
-                    [f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}" for err in errors]
+                    [
+                        f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
+                        for err in errors
+                    ]
                 )
                 raise ProviderHttpError(err_strings, response.status)
             self.write_data_to_cache(data["data"]["Media"], cache_file_path)
@@ -692,7 +699,10 @@ class AniList:
             errors: list = data.get("errors", None)
             if errors is not None:
                 err_strings: str = "\n".join(
-                    [f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}" for err in errors]
+                    [
+                        f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
+                        for err in errors
+                    ]
                 )
                 raise ProviderHttpError(err_strings, response.status)
             user_data = data["data"]["User"]
@@ -766,7 +776,10 @@ class AniList:
             errors: list = data.get("errors", None)
             if errors is not None:
                 err_strings: str = "\n".join(
-                    [f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}" for err in errors]
+                    [
+                        f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
+                        for err in errors
+                    ]
                 )
                 raise ProviderHttpError(err_strings, response.status)
             return data["data"]["Page"]["results"]
