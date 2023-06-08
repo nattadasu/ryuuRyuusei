@@ -887,19 +887,22 @@ class JikanApi:
             return self.user_dict_to_dataclass(cached_file)
 
         retries = 0
+        res = {}
         while retries < 3:
             try:
                 async with self.session.get(
                     f"{self.base_url}/users/{username}/full"
                 ) as resp:
-                    if resp.status in [200, 304]:
-                        res = await resp.json()
-                        res: dict = res["data"]
-                    else:
-                        raise Exception(await resp.json())
+                    res = await resp.json()
+                    status_code = res.get("status", 200)
+                    if status_code != 200:
+                        raise JikanException(
+                            res.get("message", "Unknown error"), status_code
+                        )
+                    res: dict = res["data"]
                 self.write_data_to_cache(res, cache_file_path)
                 return self.user_dict_to_dataclass(res)
-            except Exception as e:
+            except JikanException as e:
                 retries += 1
                 if retries == 3:
                     errcode: int = e.status_code if hasattr(e, "status_code") else 418
