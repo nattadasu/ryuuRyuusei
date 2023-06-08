@@ -615,7 +615,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
         except ProviderHttpError as e:
             embed = platform_exception_embed(
                 description="AniList API returned an error",
-                error=f"{e}",
+                error=f"{e.message}",
                 lang_dict=l_,
                 error_type=PlatformErrType.SYSTEM,
             )

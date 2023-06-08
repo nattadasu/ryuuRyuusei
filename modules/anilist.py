@@ -414,12 +414,11 @@ async def anilist_submit(ctx: SlashContext | ComponentContext, media_id: int) ->
             error_type=PlatformErrType.NSFW,
         )
     except ProviderHttpError as e:
-        status = e.status_code
         message = e.message
 
         embed = platform_exception_embed(
             description="AniList API is currently unavailable, please try again later.",
-            error=f"HTTP Error {status}\n{message}",
+            error=f"{message}",
             lang_dict=l_,
             error_type=PlatformErrType.SYSTEM,
         )
