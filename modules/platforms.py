@@ -326,9 +326,12 @@ def media_id_to_platform(
         raise ValueError(f"Invalid platform: {platform}")
 
 
-def platforms_to_fields(currPlatform: str, **k) -> list[EmbedField]:
+def platforms_to_fields(
+        currPlatform: str,
+        **k: str | None
+    ) -> list[EmbedField]:
     """Convert a platform to a dictionary of fields"""
-    relsEm = []
+    relsEm: list[dict[str, dict[str, str | bool]]] = []
 
     platform_mappings = {
         "allcin": "allcin",
@@ -360,26 +363,29 @@ def platforms_to_fields(currPlatform: str, **k) -> list[EmbedField]:
                 pin = media_id_to_platform(value, platform_mappings[platform])
                 if platform == "tvdb":
                     value = str(value).removeprefix("https://www.thetvdb.com/")
-                relsEm.append(
-                    EmbedField(
-                        name=f"<:{platform_mappings[platform]}:{pin['emoid']}> {pin['pf']}",
-                        value=f"[{value}](<{pin['uid']}>)",
-                        inline=True,
-                    )
-                )
+                relsEm.append({
+                    "name": f"<:{platform_mappings[platform]}:{pin['emoid']}> {pin['pf']}",
+                    "value": f"[{value}](<{pin['uid']}>)",
+                    "inline": True,
+                })
         except KeyError:
             continue
 
     if k["tvdb"] is not None and k["is_slug"] is False and k["tvtyp"] == "series":
-        tvtime = k["tvdb"].split("=")
-        media_id = tvtime[1]
+        tvtime = k["tvdb"].split("/")
+        # get the last part of the url
+        media_id = tvtime[-1]
         pin = media_id_to_platform(media_id=media_id, platform="tvtime")
-        relsEm.append(
-            EmbedField(
-                name=f"<:tvTime:{pin['emoid']}> {pin['pf']}",
-                value=f"[{k['tvdb']}](<{pin['uid']}>)",
-                inline=True,
-            )
-        )
+        relsEm.append({
+            "name": f"<:tvTime:{pin['emoid']}> {pin['pf']}",
+            "value": f"[{k['tvdb']}](<{pin['uid']}>)",
+            "inline": True,
+        })
 
-    return relsEm
+    # sort the list by platform name
+    relsEm = sorted(relsEm, key=lambda k: k["name"])
+
+    # convert the list of dicts to a list of EmbedFields
+    result = [EmbedField(**x) for x in relsEm]
+
+    return result

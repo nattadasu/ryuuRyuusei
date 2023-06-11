@@ -71,6 +71,8 @@ class SimklRelations:
     """TheTVDb ID"""
     tvdbslug: str | None = None
     """TheTVDb slug"""
+    tvdbmslug: str | None = None
+    """TheTVDb movie slug"""
     wikien: str | int | None = None
     """English Wikipedia ID"""
     wikijp: str | int | None = None
@@ -316,7 +318,7 @@ class Simkl:
             )
         params[f"{provider}"] = media_id
         async with self.session.get(
-            f"{self.base_url}/search/media_id", params=params
+            f"{self.base_url}/search/id", params=params
         ) as response:
             if response.status == 200:
                 data = await response.json()
@@ -570,6 +572,7 @@ class Simkl:
                 tmdb=cached_data["tmdb"],
                 tvdb=cached_data["tvdb"],
                 tvdbslug=cached_data["tvdbslug"],
+                tvdbmslug=cached_data["tvdbmslug"],
                 wikien=cached_data["wikien"],
                 wikijp=cached_data["wikijp"],
             )
@@ -638,6 +641,7 @@ class Simkl:
             simkl=mids["simkl"],
             tmdb=mids["tmdb"],
             tvdb=mids["tvdb"],
+            tvdbmslug=mids["tvdbmslug"],
             tvdbslug=mids["tvdbslug"],
             wikien=mids["wikien"],
             wikijp=mids["wikijp"],
