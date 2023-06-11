@@ -424,15 +424,20 @@ class ExtenalSitesRelations(ipy.Extension):
         else:
             tvtyp = "series"
             tmtyp = "tv"
-        is_slug = False
 
         if isinstance(trakt_id, int):
             trakt_id = f"{trakt_type}/{trakt_id}"
 
+        if simkl_dat.tvdb is not None:
+            tvtime_id = f"{'show' if tvtyp == 'series' else 'movie'}/{simkl_dat.tvdb}"
+        elif trakt_data.ids.tvdb is not None:
+            tvtime_id = f"{'show' if tvtyp == 'series' else 'movie'}/{trakt_data.ids.tvdb}"
+        else:
+            tvtime_id = None
+
         if trakt_season is not None:
             if simkl_dat.tvdbslug is not None:
                 tvdb_id = f"https://www.thetvdb.com/{tvtyp}/{simkl_dat.tvdbslug}/seasons/official/{trakt_season}"
-                is_slug = True
             elif simkl_dat.tvdb is not None or trakt_data.ids.tvdb is not None:
                 if simkl_dat.tvdb is not None:
                     tvdb_id = (
@@ -445,7 +450,6 @@ class ExtenalSitesRelations(ipy.Extension):
         else:
             if simkl_dat.tvdbslug is not None:
                 tvdb_id = f"https://www.thetvdb.com/{tvtyp}/{simkl_dat.tvdbslug}"
-                is_slug = True
             elif simkl_dat.tvdb is not None or trakt_data.ids.tvdb is not None:
                 if simkl_dat.tvdb is not None:
                     tvdb_id = (
@@ -479,9 +483,9 @@ class ExtenalSitesRelations(ipy.Extension):
             simklType=simkl_dat.type,
             trakt=trakt_id,
             tvdb=tvdb_id,
+            tvtime=tvtime_id,
             tmdb=tmdb_id,
             tvtyp=tvtyp,
-            is_slug=is_slug,
         )
 
         col = get_platform_color(platform)
