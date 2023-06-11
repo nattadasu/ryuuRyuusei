@@ -326,10 +326,7 @@ def media_id_to_platform(
         raise ValueError(f"Invalid platform: {platform}")
 
 
-def platforms_to_fields(
-        currPlatform: str,
-        **k: str | None
-    ) -> list[EmbedField]:
+def platforms_to_fields(currPlatform: str, **k: str | None) -> list[EmbedField]:
     """Convert a platform to a dictionary of fields"""
     relsEm: list[dict[str, dict[str, str | bool]]] = []
 
@@ -363,11 +360,13 @@ def platforms_to_fields(
                 pin = media_id_to_platform(value, platform_mappings[platform])
                 if platform == "tvdb":
                     value = str(value).removeprefix("https://www.thetvdb.com/")
-                relsEm.append({
-                    "name": f"<:{platform_mappings[platform]}:{pin['emoid']}> {pin['pf']}",
-                    "value": f"[{value}](<{pin['uid']}>)",
-                    "inline": True,
-                })
+                relsEm.append(
+                    {
+                        "name": f"<:{platform_mappings[platform]}:{pin['emoid']}> {pin['pf']}",
+                        "value": f"[{value}](<{pin['uid']}>)",
+                        "inline": True,
+                    }
+                )
         except KeyError:
             continue
 
@@ -376,11 +375,13 @@ def platforms_to_fields(
         # get the last part of the url
         media_id = tvtime[-1]
         pin = media_id_to_platform(media_id=media_id, platform="tvtime")
-        relsEm.append({
-            "name": f"<:tvTime:{pin['emoid']}> {pin['pf']}",
-            "value": f"[{k['tvdb']}](<{pin['uid']}>)",
-            "inline": True,
-        })
+        relsEm.append(
+            {
+                "name": f"<:tvTime:{pin['emoid']}> {pin['pf']}",
+                "value": f"[{k['tvdb']}](<{pin['uid']}>)",
+                "inline": True,
+            }
+        )
 
     # sort the list by platform name
     relsEm = sorted(relsEm, key=lambda k: k["name"])

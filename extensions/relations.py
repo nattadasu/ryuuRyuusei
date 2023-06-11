@@ -17,6 +17,7 @@ from modules.platforms import (
 
 from modules.const import EMOJI_UNEXPECTED_ERROR
 
+
 class ExtenalSitesRelations(ipy.Extension):
     """Extension class for /relations"""
 
@@ -45,7 +46,9 @@ class ExtenalSitesRelations(ipy.Extension):
             media_type (Simkl.TmdbMediaTypes | None, optional): The media type if it's TMDB. Defaults to None.
         """
         async with Simkl() as simkl:
-            entry: list[dict] | None = await simkl.search_by_id(provider, media_id, media_type=media_type)
+            entry: list[dict] | None = await simkl.search_by_id(
+                provider, media_id, media_type=media_type
+            )
             if not entry:
                 raise SimklTypeError(
                     "Could not find any entry with the given ID",
@@ -332,7 +335,13 @@ class ExtenalSitesRelations(ipy.Extension):
                     platform=AnimeApi.AnimeApiPlatforms(platform),
                 )
 
-        if platform not in ["simkl", "trakt", "tmdb", "tvdb", "imdb",]:
+        if platform not in [
+            "simkl",
+            "trakt",
+            "tmdb",
+            "tvdb",
+            "imdb",
+        ]:
             pfm = (
                 anime_api.myanimelist
                 if anime_api.myanimelist
@@ -396,9 +405,7 @@ class ExtenalSitesRelations(ipy.Extension):
                     )
                 trakt_type = trakt_data.type
                 trakt_data = (
-                    trakt_data.show
-                    if trakt_data.type == "show"
-                    else trakt_data.movie
+                    trakt_data.show if trakt_data.type == "show" else trakt_data.movie
                 )
                 trakt_id = trakt_data.ids.trakt
             except ProviderHttpError as eht:
@@ -428,7 +435,9 @@ class ExtenalSitesRelations(ipy.Extension):
                 is_slug = True
             elif simkl_dat.tvdb is not None or trakt_data.ids.tvdb is not None:
                 if simkl_dat.tvdb is not None:
-                    tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{simkl_dat.tvdb}"
+                    tvdb_id = (
+                        f"https://www.thetvdb.com/deferrer/{tvtyp}/{simkl_dat.tvdb}"
+                    )
                 elif trakt_data.ids.tvdb is not None:
                     tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{trakt_data.ids.tvdb}"
             if tmdb_id is not None:
@@ -439,7 +448,9 @@ class ExtenalSitesRelations(ipy.Extension):
                 is_slug = True
             elif simkl_dat.tvdb is not None or trakt_data.ids.tvdb is not None:
                 if simkl_dat.tvdb is not None:
-                    tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{simkl_dat.tvdb}"
+                    tvdb_id = (
+                        f"https://www.thetvdb.com/deferrer/{tvtyp}/{simkl_dat.tvdb}"
+                    )
                 elif trakt_data.ids.tvdb is not None:
                     tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{trakt_data.ids.tvdb}"
             if tmdb_id is not None:
@@ -534,7 +545,8 @@ class ExtenalSitesRelations(ipy.Extension):
                 color=0xFF0000,
                 timestamp=datetime.utcnow(),
             )
-            emoji_error = re.search(r"\<(a?)\:(\w+)\:(\d+)\>", EMOJI_UNEXPECTED_ERROR)
+            emoji_error = re.search(
+                r"\<(a?)\:(\w+)\:(\d+)\>", EMOJI_UNEXPECTED_ERROR)
             if emoji_error:
                 emoji_error = emoji_error.group(2)
                 dcEm.set_thumbnail(

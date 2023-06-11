@@ -253,7 +253,8 @@ class Simkl:
 
     async def __aenter__(self):
         """Enter the async context manager"""
-        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
+        self.session = aiohttp.ClientSession(
+            headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -356,7 +357,8 @@ class Simkl:
             params["extended"] = "full"
         params["page"] = page
         params["limit"] = limit
-        media_type = media_type.value if isinstance(media_type, Enum) else media_type
+        media_type = media_type.value if isinstance(
+            media_type, Enum) else media_type
         async with self.session.get(
             f"{self.base_url}/search/{media_type}", params=params
         ) as response:
@@ -544,7 +546,8 @@ class Simkl:
         """
         if isinstance(media_type, SimklMediaTypes):
             media_type = media_type.value
-        cache_file_path = self.get_cache_file_path(f"ids/{media_type}/{media_id}.json")
+        cache_file_path = self.get_cache_file_path(
+            f"ids/{media_type}/{media_id}.json")
         cached_data = self.read_cached_data(cache_file_path)
         if cached_data is not None:
             cached_data = SimklRelations(

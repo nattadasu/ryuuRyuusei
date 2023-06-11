@@ -109,7 +109,8 @@ async def generate_discord_profile_embed(
         else:
             nick = sanitize_markdown(data.username)
             nick += " (" + lp["commons"]["default"] + ")"
-        joined = datetime.strptime(servData["joined_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
+        joined = datetime.strptime(
+            servData["joined_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
         joined = int(joined.timestamp())
         joined = f"<t:{joined}:R>"
         if servData["premium_since"]:  # type: ignore
