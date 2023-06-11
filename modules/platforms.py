@@ -370,15 +370,13 @@ def platforms_to_fields(currPlatform: str, **k: str | None) -> list[EmbedField]:
         except KeyError:
             continue
 
-    if k["tvdb"] is not None and k["is_slug"] is False and k["tvtyp"] == "series":
-        tvtime = k["tvdb"].split("/")
-        # get the last part of the url
-        media_id = tvtime[-1]
+    if k["tvtime"] is not None:
+        media_id = k["tvtime"]
         pin = media_id_to_platform(media_id=media_id, platform="tvtime")
         relsEm.append(
             {
                 "name": f"<:tvTime:{pin['emoid']}> {pin['pf']}",
-                "value": f"[{k['tvdb']}](<{pin['uid']}>)",
+                "value": f"[{media_id}](<{pin['uid']}>)",
                 "inline": True,
             }
         )
