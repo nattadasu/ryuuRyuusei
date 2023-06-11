@@ -155,7 +155,6 @@ class CommonCommands(ipy.Extension):
             description=l_["pong"]["text"],
             color=0x996422,
             fields=fields,
-            footer=ipy.EmbedFooter(text=l_["pong"]["footer"]),
         )
         emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", EMOJI_SUCCESS)
         embed.set_thumbnail(
