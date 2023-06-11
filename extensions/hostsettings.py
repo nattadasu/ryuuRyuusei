@@ -6,6 +6,7 @@ from modules.const import (
     VERIFICATION_SERVER,
     VERIFIED_ROLE,
 )
+from modules.discord import format_username
 
 
 class HostSettings(ipy.Extension):
@@ -67,7 +68,7 @@ class HostSettings(ipy.Extension):
         if status is True and str(VERIFIED_ROLE) not in user_roles:
             await ctx.member.add_role(
                 VERIFIED_ROLE,
-                reason=f"User verified via slash command by {ctx.author.username}#{ctx.author.discriminator} ({ctx.author.id})",
+                reason=f"User verified via slash command by {format_username(ctx.author)} ({ctx.author.id})",
             )
             embed = self.generate_success_embed(
                 header="Success!",

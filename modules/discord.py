@@ -7,6 +7,24 @@ from classes.pronoundb import PronounDB, Pronouns
 from modules.commons import sanitize_markdown
 
 
+def format_username(
+    user: ipy.User | ipy.Member,
+) -> str:
+    """
+    Format a username
+
+    Args:
+        user (ipy.User | ipy.Member): The user
+
+    Returns:
+        str: The formatted username
+    """
+    username = sanitize_markdown(user.username)
+    if user.discriminator not in ["0", None]:
+        username += "#" + str(user.discriminator)
+    return username
+
+
 async def generate_discord_profile_embed(
     bot: ipy.AutoShardedClient | ipy.Client,
     ctx: ipy.SlashContext,
@@ -55,7 +73,7 @@ async def generate_discord_profile_embed(
         ),
         ipy.EmbedField(
             name=lp["commons"]["username"],
-            value=sanitize_markdown(data.username + "#" + str(data.discriminator)),
+            value=format_username(data),
             inline=True,
         ),
         ipy.EmbedField(
