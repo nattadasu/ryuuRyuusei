@@ -1,18 +1,21 @@
 import interactions as ipy
 
 from classes.animeapi import AnimeApi, AnimeApiAnime
-from classes.trakt import Trakt
+from classes.trakt import Trakt, TraktMediaStruct, TraktIdsStruct
 from classes.simkl import Simkl, SimklRelations, SimklMediaTypes
 from classes.excepts import ProviderHttpError, SimklTypeError
 from classes.kitsu import Kitsu
 from typing import Literal
 import re
+from datetime import datetime
 
 from modules.platforms import (
     platforms_to_fields,
     media_id_to_platform,
     get_platform_color,
 )
+
+from modules.const import EMOJI_UNEXPECTED_ERROR
 
 
 class ExtenalSitesRelations(ipy.Extension):
@@ -43,8 +46,10 @@ class ExtenalSitesRelations(ipy.Extension):
             media_type (Simkl.TmdbMediaTypes | None, optional): The media type if it's TMDB. Defaults to None.
         """
         async with Simkl() as simkl:
-            entry = await simkl.search_by_id(provider, media_id, media_type=media_type)
-            if entry is None:
+            entry: list[dict] | None = await simkl.search_by_id(
+                provider, media_id, media_type=media_type
+            )
+            if not entry:
                 raise SimklTypeError(
                     "Could not find any entry with the given ID",
                     expected_type=list[dict],
@@ -64,7 +69,7 @@ class ExtenalSitesRelations(ipy.Extension):
         """
         async with Simkl() as simkl:
             return await simkl.get_title_ids(
-                id=simkl_id, media_type=SimklMediaTypes.ANIME
+                media_id=simkl_id, media_type=SimklMediaTypes.ANIME
             )
 
     @staticmethod
@@ -170,7 +175,6 @@ class ExtenalSitesRelations(ipy.Extension):
         ],
         media_type: Literal["show", "movie"] | None = None,
     ) -> None:
-        simkl_id = 0
         imdb_id = None
         mal_id = None
         tmdb_id = None
@@ -179,32 +183,39 @@ class ExtenalSitesRelations(ipy.Extension):
         trakt_season = None
         trakt_type = None
         simkl_dat = SimklRelations()
+        trakt_data = TraktMediaStruct("", 0, TraktIdsStruct(0, ""))
 
         if (platform == "shikimori") and (not re.match(r"^\d+$", media_id)):
             media_id = re.search(r"^\d+", media_id).group(0)
             anime_api = await self.get_anime_api_relation(
                 media_id=f"{media_id}", platform=AnimeApi.AnimeApiPlatforms.SHIKIMORI
             )
-            simkl_id = await self.search_simkl_id(
-                Simkl.Provider.MYANIMELIST, media_id, media_type=media_type
-            )
-            simkl_id = simkl_id["ids"]["simkl"]
-            simkl_dat = await self.get_simkl_title_ids(simkl_id)
         elif platform == "simkl":
-            simkl_dat = await self.get_simkl_title_ids(media_id)
-            simkl_id = media_id
-            mal_id = simkl_dat.mal
-            anime_api = (
-                await self.get_anime_api_relation(
-                    f"{mal_id}", AnimeApi.AnimeApiPlatforms.MAL
+            try:
+                simkl_dat = await self.get_simkl_title_ids(media_id)
+                simkl_id = media_id
+                mal_id = simkl_dat.mal
+                anime_api = (
+                    await self.get_anime_api_relation(
+                        f"{mal_id}", AnimeApi.AnimeApiPlatforms.MAL
+                    )
+                    if mal_id
+                    else AnimeApiAnime()
                 )
-                if mal_id
-                else AnimeApiAnime()
-            )
+            except ProviderHttpError as phe:
+                await ctx.send(
+                    f"❌ We couldn't find the title with the ID `{media_id}` on SIMKL! Error: `{phe}`"
+                )
+                return
         elif platform in ["tmdb", "tvdb", "imdb"]:
             try:
                 if platform == "tmdb":
                     media_id = media_id.split("/")[0]
+                if platform == "tmdb" and not media_type:
+                    await ctx.send(
+                        "❌ The media type is required for TMDB! Please use the `media_type` option to specify it!"
+                    )
+                    return
                 simkl_id = await self.search_simkl_id(
                     Simkl.Provider(platform), media_id, media_type=media_type
                 )
@@ -220,7 +231,12 @@ class ExtenalSitesRelations(ipy.Extension):
                 )
             except SimklTypeError:
                 await ctx.send(
-                    f"❌ The media type is required for {platform}! Please use the `media_type` option to specify it!"
+                    f"❌ We can't find the {platform.upper()} ID on SIMKL! It's possible that the show is not on SIMKL or that the ID is invalid!"
+                )
+                return
+            except ProviderHttpError as phe:
+                await ctx.send(
+                    f"❌ We can't connect to SIMKL to get data from {platform.upper()} ID! Please try again later!\nReason: `{phe}`"
                 )
                 return
         elif platform == "trakt":
@@ -239,6 +255,7 @@ class ExtenalSitesRelations(ipy.Extension):
                     await ctx.send(
                         "❌ The Trakt ID is invalid! Please use the format `<type>/<slug>/[seasons/<season>]`!"
                     )
+                    return
                 async with Trakt() as api:
                     trakt_data = await api.get_title_data(
                         media_id=trakt_id,
@@ -274,11 +291,14 @@ class ExtenalSitesRelations(ipy.Extension):
                 elif tvdb_id:
                     pfm = Simkl.Provider.TVDB
                     search_id = tvdb_id
-                simkl_id = await self.search_simkl_id(
-                    pfm, search_id, media_type=tmdb_media_type
-                )
-                simkl_id = simkl_id["ids"]["simkl"]
-                simkl_dat = await self.get_simkl_title_ids(simkl_id)
+                try:
+                    simkl_id = await self.search_simkl_id(
+                        pfm, search_id, media_type=tmdb_media_type
+                    )
+                    simkl_id = simkl_id["ids"]["simkl"]
+                    simkl_dat = await self.get_simkl_title_ids(simkl_id)
+                except SimklTypeError:
+                    simkl_id = None
             except ProviderHttpError as eht:
                 await ctx.send(
                     f"❌ We can't connect to Trakt right now! Please try again later! Reason: {eht.message}"
@@ -286,12 +306,18 @@ class ExtenalSitesRelations(ipy.Extension):
                 return
         elif platform == "kitsu":
             if not re.match(r"^\d+$", media_id):
-                async with Kitsu() as api:
-                    kitsu_data = await api.resolve_slug(
-                        slug=media_id,
-                        media_type=api.MediaType.ANIME,
+                try:
+                    async with Kitsu() as api:
+                        kitsu_data = await api.resolve_slug(
+                            slug=media_id,
+                            media_type=api.MediaType.ANIME,
+                        )
+                        media_id = kitsu_data["data"][0]["id"]
+                except ProviderHttpError as phe:
+                    await ctx.send(
+                        f"❌ We unable to resolve the slug `{media_id}` to a Kitsu ID! Error: `{phe}`"
                     )
-                    media_id = kitsu_data["data"][0]["id"]
+                    return
             anime_api = await self.get_anime_api_relation(
                 f"{media_id}", AnimeApi.AnimeApiPlatforms.KITSU
             )
@@ -299,7 +325,7 @@ class ExtenalSitesRelations(ipy.Extension):
             anime_api = await self.get_anime_api_relation(
                 media_id, AnimeApi.AnimeApiPlatforms.KAIZE
             )
-            if anime_api.myanimelist is None:
+            if anime_api.kaize is None:
                 await ctx.send("❌ AnimeAPI can't find correlations for Kaize!")
                 return
         else:
@@ -309,7 +335,13 @@ class ExtenalSitesRelations(ipy.Extension):
                     platform=AnimeApi.AnimeApiPlatforms(platform),
                 )
 
-        if platform not in ["simkl", "trakt", "tmdb", "tvdb", "imdb"]:
+        if platform not in [
+            "simkl",
+            "trakt",
+            "tmdb",
+            "tvdb",
+            "imdb",
+        ]:
             pfm = (
                 anime_api.myanimelist
                 if anime_api.myanimelist
@@ -318,14 +350,22 @@ class ExtenalSitesRelations(ipy.Extension):
                 else None
             )
             if pfm:
-                simkl_id = await self.search_simkl_id(
-                    media_id=pfm,
-                    provider=Simkl.Provider.MYANIMELIST
-                    if anime_api.myanimelist
-                    else Simkl.Provider.ANIDB,
-                )
-                simkl_id = simkl_id["ids"]["simkl"]
-                simkl_dat = await self.get_simkl_title_ids(simkl_id)
+                try:
+                    simkl_id = await self.search_simkl_id(
+                        media_id=pfm,
+                        provider=Simkl.Provider.MYANIMELIST
+                        if anime_api.myanimelist
+                        else Simkl.Provider.ANIDB,
+                    )
+                    simkl_id = simkl_id["ids"]["simkl"]
+                    simkl_dat = await self.get_simkl_title_ids(simkl_id)
+                except SimklTypeError:
+                    simkl_id = None
+                    simkl_dat = SimklRelations()
+
+        # add fallbacks
+        if simkl_dat.tvdbslug is None and simkl_dat.tvdbmslug is not None:
+            simkl_dat.tvdbslug = simkl_dat.tvdbmslug
 
         if tmdb_id is None:
             tmdb_id = simkl_dat.tmdb if platform != "tmdb" else media_id
@@ -364,45 +404,61 @@ class ExtenalSitesRelations(ipy.Extension):
                         media_type=trakt.MediaType(media_type_),
                     )
                 trakt_type = trakt_data.type
-                trakt_id = (
-                    trakt_data.show.ids.trakt
-                    if trakt_data.type == "show"
-                    else trakt_data.movie.ids.trakt
+                trakt_data = (
+                    trakt_data.show if trakt_data.type == "show" else trakt_data.movie
                 )
+                trakt_id = trakt_data.ids.trakt
             except ProviderHttpError as eht:
-                await ctx.send(
-                    f"❌ We can't connect to Trakt right now! Please try again later! Reason: {eht.message}"
-                )
-                return
+                # silence error
+                pass
 
-        try:
-            if trakt_id is not None or (
-                simkl_dat.anitype == "tv" if simkl_dat.anitype is not None else False
-            ):
-                tvtyp = "series"
-                tmtyp = "tv"
-            else:
-                tvtyp = "movies"
-                tmtyp = "movie"
-        except BaseException:
+        if simkl_dat.anitype is not None:
+            tvtyp = "series" if simkl_dat.anitype == "tv" else "movies"
+            tmtyp = "tv" if simkl_dat.anitype == "tv" else "movie"
+        elif simkl_dat.type is not None:
+            tvtyp = "series" if simkl_dat.type == "show" else "movies"
+            tmtyp = "tv" if simkl_dat.type == "show" else "movie"
+        elif trakt_type is not None:
+            tvtyp = "series" if trakt_type == "show" else "movies"
+            tmtyp = "tv" if trakt_type == "show" else "movie"
+        else:
             tvtyp = "series"
             tmtyp = "tv"
-        is_slug = False
+
+        if isinstance(trakt_id, int):
+            trakt_id = f"{trakt_type}/{trakt_id}"
+
+        if simkl_dat.tvdb is not None:
+            tvtime_id = f"{'show' if tvtyp == 'series' else 'movie'}/{simkl_dat.tvdb}"
+        elif trakt_data.ids.tvdb is not None:
+            tvtime_id = f"{'show' if tvtyp == 'series' else 'movie'}/{trakt_data.ids.tvdb}"
+        else:
+            tvtime_id = None
 
         if trakt_season is not None:
-            if simkl_dat.tvdb is not None:
-                tvdb_id = f"https://www.thetvdb.com/?tab={tvtyp}&id={simkl_dat.tvdb}"
-            elif simkl_dat.tvdbslug is not None:
+            if simkl_dat.tvdbslug is not None:
                 tvdb_id = f"https://www.thetvdb.com/{tvtyp}/{simkl_dat.tvdbslug}/seasons/official/{trakt_season}"
-                is_slug = True
-            tmdb_id = f"{tmtyp}/{tmdb_id}/season/{trakt_season}"
+            elif simkl_dat.tvdb is not None or trakt_data.ids.tvdb is not None:
+                if simkl_dat.tvdb is not None:
+                    tvdb_id = (
+                        f"https://www.thetvdb.com/deferrer/{tvtyp}/{simkl_dat.tvdb}"
+                    )
+                elif trakt_data.ids.tvdb is not None:
+                    tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{trakt_data.ids.tvdb}"
+            if tmdb_id is not None:
+                tmdb_id = f"{tmtyp}/{tmdb_id}/season/{trakt_season}"
         else:
-            if simkl_dat.tvdb is not None:
-                tvdb_id = f"https://www.thetvdb.com/?tab={tvtyp}&id={simkl_dat.tvdb}"
-            elif simkl_dat.tvdbslug is not None:
+            if simkl_dat.tvdbslug is not None:
                 tvdb_id = f"https://www.thetvdb.com/{tvtyp}/{simkl_dat.tvdbslug}"
-                is_slug = True
-            tmdb_id = f"{tmtyp}/{tmdb_id}"
+            elif simkl_dat.tvdb is not None or trakt_data.ids.tvdb is not None:
+                if simkl_dat.tvdb is not None:
+                    tvdb_id = (
+                        f"https://www.thetvdb.com/deferrer/{tvtyp}/{simkl_dat.tvdb}"
+                    )
+                elif trakt_data.ids.tvdb is not None:
+                    tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{trakt_data.ids.tvdb}"
+            if tmdb_id is not None:
+                tmdb_id = f"{tmtyp}/{tmdb_id}"
 
         relsEm = platforms_to_fields(
             currPlatform=platform,
@@ -424,24 +480,23 @@ class ExtenalSitesRelations(ipy.Extension):
             shoboi=anime_api.shoboi,
             silveryasha=anime_api.silveryasha,
             simkl=simkl_id,
-            simklType=simkl_dat.type,
+            simkl_type=simkl_dat.type,
             trakt=trakt_id,
             tvdb=tvdb_id,
+            tvtime=tvtime_id,
             tmdb=tmdb_id,
             tvtyp=tvtyp,
-            is_slug=is_slug,
         )
 
-        tvdb_id = None
         col = get_platform_color(platform)
         poster = None
         postsrc = None
 
         if platform == "tvdb":
-            if re.match(r"^\d+$", id):
-                tvdb_id = f"https://www.thetvdb.com/?tab={tvtyp}&id={id}"
+            if re.match(r"^\d+$", media_id):
+                tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{media_id}"
             else:
-                tvdb_id = f"https://www.thetvdb.com/{tvtyp}/{id}"
+                tvdb_id = f"https://www.thetvdb.com/{tvtyp}/{media_id}"
         elif platform == "trakt":
             media_id = f"{trakt_type}/{trakt_id}"
         elif platform == "tmdb":
@@ -457,20 +512,20 @@ class ExtenalSitesRelations(ipy.Extension):
         if simkl_dat.poster is not None:
             poster = f"https://simkl.in/posters/{simkl_dat.poster}_m.webp"
             postsrc = "SIMKL"
-        elif anime_api.kitsu is not None:
-            poster = f"https://media.kitsu.io/anime/poster_images/{anime_api.kitsu}/large.jpg"
-            postsrc = "Kitsu"
         elif anime_api.notify is not None:
             poster = (
                 f"https://media.notify.moe/images/anime/original/{anime_api.notify}.jpg"
             )
             postsrc = "Notify.moe"
+        elif anime_api.kitsu is not None:
+            poster = f"https://media.kitsu.io/anime/poster_images/{anime_api.kitsu}/large.jpg"
+            postsrc = "Kitsu"
 
         postsrc = f" Poster from {postsrc}" if postsrc else ""
 
         uAu = "/".join(uid.split("/")[:3])
 
-        if title is not None:
+        if len(relsEm) > 0:
             dcEm = ipy.Embed(
                 author=ipy.EmbedAuthor(
                     name=f"Looking external site relations from {pf}",
@@ -488,9 +543,19 @@ class ExtenalSitesRelations(ipy.Extension):
             )
             dcEm.set_thumbnail(url=poster)
         else:
-            raise Exception(
-                f"No relations found on {pf} with the following URL: <{uid}>!\nEither the anime is not in the database, or you have entered the wrong ID."
+            dcEm = ipy.Embed(
+                title="Whoops!",
+                description=f"No relations found on {pf} with the following URL: <{uid}>!\nEither the anime is not in the database, or you have entered the wrong ID.",
+                color=0xFF0000,
+                timestamp=datetime.utcnow(),
             )
+            emoji_error = re.search(
+                r"\<(a?)\:(\w+)\:(\d+)\>", EMOJI_UNEXPECTED_ERROR)
+            if emoji_error:
+                emoji_error = emoji_error.group(2)
+                dcEm.set_thumbnail(
+                    url=f"https://cdn.discordapp.com/emojis/{emoji_error}.png?v=1"
+                )
 
         await ctx.send(embed=dcEm)
 

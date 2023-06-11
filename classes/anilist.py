@@ -414,14 +414,20 @@ class AniList:
     }}
 }}"""
         async with self.session.post(self.base_url, json={"query": query}) as response:
-            if response.status == 200:
-                data = await response.json()
-                self.write_data_to_cache(
-                    data["data"]["Media"]["isAdult"], cache_file_path
+            try:
+                data: dict = await response.json()
+            except Exception as e:
+                raise ProviderHttpError(str(e), response.status)
+            errors: list = data.get("errors", None)
+            if errors is not None:
+                err_strings: str = "\n".join(
+                    [f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}" for err in errors]
                 )
-                return data["data"]["Media"]["isAdult"]
-            error_message = await response.text()
-            raise ProviderHttpError(error_message, response.status)
+                raise ProviderHttpError(err_strings, response.status)
+            self.write_data_to_cache(
+                data["data"]["Media"]["isAdult"], cache_file_path
+            )
+            return data["data"]["Media"]["isAdult"]
 
     async def anime(self, media_id: int) -> AniListMediaStruct:
         """
@@ -496,13 +502,18 @@ class AniList:
         async with self.session.post(
             self.base_url, json={"query": gqlquery}
         ) as response:
-            if response.status == 200:
-                data = await response.json()
-                self.write_data_to_cache(
-                    data["data"]["Media"], cache_file_path)
-                return self._media_dict_to_dataclass(data["data"]["Media"])
-            error_message = await response.text()
-            raise ProviderHttpError(error_message, response.status)
+            try:
+                data: dict = await response.json()
+            except Exception as e:
+                raise ProviderHttpError(str(e), response.status)
+            errors: list = data.get("errors", None)
+            if errors is not None:
+                err_strings: str = "\n".join(
+                    [f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}" for err in errors]
+                )
+                raise ProviderHttpError(err_strings, response.status)
+            self.write_data_to_cache(data["data"]["Media"], cache_file_path)
+            return self._media_dict_to_dataclass(data["data"]["Media"])
 
     async def manga(self, media_id: int) -> AniListMediaStruct:
         """
@@ -574,13 +585,18 @@ class AniList:
         async with self.session.post(
             self.base_url, json={"query": gqlquery}
         ) as response:
-            if response.status == 200:
-                data = await response.json()
-                self.write_data_to_cache(
-                    data["data"]["Media"], cache_file_path)
-                return self._media_dict_to_dataclass(data["data"]["Media"])
-            error_message = await response.text()
-            raise ProviderHttpError(error_message, response.status)
+            try:
+                data: dict = await response.json()
+            except Exception as e:
+                raise ProviderHttpError(str(e), response.status)
+            errors: list = data.get("errors", None)
+            if errors is not None:
+                err_strings: str = "\n".join(
+                    [f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}" for err in errors]
+                )
+                raise ProviderHttpError(err_strings, response.status)
+            self.write_data_to_cache(data["data"]["Media"], cache_file_path)
+            return self._media_dict_to_dataclass(data["data"]["Media"])
 
     async def user(self, username: str, return_id: bool = False) -> AniListUserStruct:
         """
@@ -674,20 +690,26 @@ class AniList:
         async with self.session.post(
             self.base_url, json={"query": gqlquery}
         ) as response:
-            if response.status == 200:
-                data = await response.json()
-                user_data = data["data"]["User"]
-                if not return_id:
-                    self.write_data_to_cache(user_data, cache_file_path)
-                    formatted_data = self._user_dict_to_dataclass(user_data)
-                else:
-                    formatted_data = AniListUserStruct(
-                        id=user_data["id"],
-                        name=username,
-                    )
-                return formatted_data
-            error_message = await response.text()
-            raise ProviderHttpError(error_message, response.status)
+            try:
+                data: dict = await response.json()
+            except Exception as e:
+                raise ProviderHttpError(str(e), response.status)
+            errors: list = data.get("errors", None)
+            if errors is not None:
+                err_strings: str = "\n".join(
+                    [f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}" for err in errors]
+                )
+                raise ProviderHttpError(err_strings, response.status)
+            user_data = data["data"]["User"]
+            if not return_id:
+                self.write_data_to_cache(user_data, cache_file_path)
+                formatted_data = self._user_dict_to_dataclass(user_data)
+            else:
+                formatted_data = AniListUserStruct(
+                    id=user_data["id"],
+                    name=username,
+                )
+            return formatted_data
 
     async def search_media(
         self,
@@ -743,11 +765,17 @@ class AniList:
         async with self.session.post(
             self.base_url, json={"query": gqlquery, "variables": variables}
         ) as response:
-            if response.status == 200:
-                data = await response.json()
-                return data["data"]["Page"]["results"]
-            error_message = await response.text()
-            raise ProviderHttpError(error_message, response.status)
+            try:
+                data: dict = await response.json()
+            except Exception as e:
+                raise ProviderHttpError(str(e), response.status)
+            errors: list = data.get("errors", None)
+            if errors is not None:
+                err_strings: str = "\n".join(
+                    [f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}" for err in errors]
+                )
+                raise ProviderHttpError(err_strings, response.status)
+            return data["data"]["Page"]["results"]
 
     def get_cache_file_path(self, cache_file_name: str) -> str:
         """

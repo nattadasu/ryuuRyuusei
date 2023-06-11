@@ -23,6 +23,7 @@ from modules.const import (
     VERIFICATION_SERVER,
     VERIFIED_ROLE,
 )
+from modules.discord import format_username
 
 
 class DataControl(ipy.Extension):
@@ -240,7 +241,7 @@ To complete your registration, please follow the instructions below:""",
             await ud.save_to_database(
                 UserDatabaseClass(
                     discord_id=ctx.author.id,
-                    discord_username=ctx.author.username,
+                    discord_username=format_username(ctx.author),
                     mal_id=mal_id,
                     mal_username=mal_username,
                     mal_joined=mal_joined,
@@ -310,8 +311,8 @@ To complete your registration, please follow the instructions below:""",
         try:
             if platform == "anilist":
                 async with AniList() as anilist:
-                    user_id = await anilist.user(username, return_id=True)
-                    user_id = user_id["id"]
+                    user_data = await anilist.user(username, return_id=True)
+                    user_id = user_data.id
                 async with UserDatabase() as ud:
                     await ud.update_user(
                         ctx.author.id, row="anilistId", modified_input=user_id
@@ -328,8 +329,8 @@ To complete your registration, please follow the instructions below:""",
                     )
             elif platform == "shikimori":
                 async with Shikimori() as shikimori:
-                    user_id = await shikimori.get_user(username)
-                    user_id = user_id.id
+                    user_data = await shikimori.get_user(username)
+                    user_id = user_data.id
                 async with UserDatabase() as ud:
                     await ud.update_user(
                         ctx.author.id, row="shikimoriId", modified_input=user_id
@@ -345,7 +346,18 @@ To complete your registration, please follow the instructions below:""",
         except ProviderHttpError as e:
             embed = self.generate_error_embed(
                 header="Error!",
-                message=e.message,
+                message=(
+                    "User can't be found"
+                    if e.status_code == 404
+                    else "Unable to fetch information from platform's server"
+                ),
+                is_user_error=False,
+            )
+            await ctx.send(embed=embed)
+        except Exception as e:
+            embed = self.generate_error_embed(
+                header="Error!",
+                message=f"Something went wrong: {e}",
                 is_user_error=False,
             )
             await ctx.send(embed=embed)
