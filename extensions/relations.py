@@ -431,7 +431,9 @@ class ExtenalSitesRelations(ipy.Extension):
         if simkl_dat.tvdb is not None:
             tvtime_id = f"{'show' if tvtyp == 'series' else 'movie'}/{simkl_dat.tvdb}"
         elif trakt_data.ids.tvdb is not None:
-            tvtime_id = f"{'show' if tvtyp == 'series' else 'movie'}/{trakt_data.ids.tvdb}"
+            tvtime_id = (
+                f"{'show' if tvtyp == 'series' else 'movie'}/{trakt_data.ids.tvdb}"
+            )
         else:
             tvtime_id = None
 
