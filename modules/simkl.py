@@ -226,14 +226,12 @@ def create_simkl_embed(
     if fanart is not None:
         embed.set_image(url=f"https://simkl.in/fanart/{fanart}_w.webp")
 
-    embed.add_field(name="Synonyms",
-                    value=synonyms or "*None*", inline=False)
+    embed.add_field(name="Synonyms", value=synonyms or "*None*", inline=False)
     embed.add_field(name="Genres", value=genres, inline=False)
     if media_type == "tv":
         embed.add_field(name="Network", value=network or "*None*", inline=True)
-    embed.add_field(
-        name="Certification", value=certification or "*None*", inline=True
-    )
+    embed.add_field(name="Certification",
+                    value=certification or "*None*", inline=True)
     embed.add_field(name="Country", value=country, inline=True)
     embed.add_field(
         name="Episodes and Duration" if media_type == "tv" else "Duration",
