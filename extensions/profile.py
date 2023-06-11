@@ -96,7 +96,8 @@ class Profile(ipy.Extension):
                         value="minimal",
                     ),
                     ipy.SlashCommandChoice(name="Classic", value="old"),
-                    ipy.SlashCommandChoice(name="Highly Detailed", value="new"),
+                    ipy.SlashCommandChoice(
+                        name="Highly Detailed", value="new"),
                 ],
             ),
         ],
@@ -167,7 +168,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             location = f"[{location}]({location_url})"
         else:
             location = "Unset"
-        gender = user_data.gender if user_data.gender not in ["", None] else "Unset"
+        gender = user_data.gender if user_data.gender not in [
+            "", None] else "Unset"
         anime = user_data.statistics.anime
         manga = user_data.statistics.manga
         anime_float = convert_float_to_time(anime.days_watched)
@@ -244,7 +246,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             if embed_layout == "new":
                 embed.add_fields(
                     ipy.EmbedField(name="🚁 Gender", value=gender, inline=True),
-                    ipy.EmbedField(name="📍 Location", value=location, inline=True),
+                    ipy.EmbedField(name="📍 Location",
+                                   value=location, inline=True),
                 )
             anime_value_str = f"""* Total: {anime.total_entries:,}
 * Mean Score: ⭐ {anime.mean_score}/10
@@ -279,7 +282,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                         ani_fav_list += f"{index+1}. [{anime.title}]({anime.url})\n"
                 embed.add_field(
                     name="🌟 Top 5 Favorite Anime",
-                    value=ani_fav_list if ani_fav_list not in ["", None] else "Unset",
+                    value=ani_fav_list if ani_fav_list not in [
+                        "", None] else "Unset",
                     inline=True,
                 )
             manga_value_str = f"""* Total: {manga.total_entries:,}
@@ -315,7 +319,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                         man_fav_list += f"{index+1}. [{manga.title}]({manga.url})\n"
                 embed.add_field(
                     name="🌟 Top 5 Favorite Manga",
-                    value=man_fav_list if man_fav_list not in ["", None] else "Unset",
+                    value=man_fav_list if man_fav_list not in [
+                        "", None] else "Unset",
                     inline=True,
                 )
         else:
@@ -363,7 +368,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                     url=f"https://mal-badges.com/users/{username}",
                 ),
             ]
-            embed.set_image(url=f"https://malheatmap.com/users/{username}/signature")
+            embed.set_image(
+                url=f"https://malheatmap.com/users/{username}/signature")
             embed.set_footer(
                 text="Powered by Jikan API for data and MAL Heatmap for Activity Heatmap. Data can be inacurrate as Jikan and Ryuusei cache your profile up to a day"
             )
@@ -549,9 +555,11 @@ Total scrobbles: {int(profile.playcount):,}
                 required=False,
                 choices=[
                     ipy.SlashCommandChoice(name="Card", value="card"),
-                    ipy.SlashCommandChoice(name="Minimal (default)", value="minimal"),
+                    ipy.SlashCommandChoice(
+                        name="Minimal (default)", value="minimal"),
                     ipy.SlashCommandChoice(name="Classic", value="old"),
-                    ipy.SlashCommandChoice(name="Highly Detailed", value="new"),
+                    ipy.SlashCommandChoice(
+                        name="Highly Detailed", value="new"),
                 ],
             ),
         ],
@@ -888,9 +896,11 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(name="Minimal (default)", value="minimal"),
+                    ipy.SlashCommandChoice(
+                        name="Minimal (default)", value="minimal"),
                     ipy.SlashCommandChoice(name="Classic", value="old"),
-                    ipy.SlashCommandChoice(name="Highly Detailed", value="new"),
+                    ipy.SlashCommandChoice(
+                        name="Highly Detailed", value="new"),
                 ],
             ),
         ],
@@ -1105,7 +1115,8 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
                         ani_favs_str += f"{index + 1}. [{fav.name}](https://shikimori.me/animes/{fav.id})\n"
                 embed.add_field(
                     name="🌟 Top 5 Favorite Anime",
-                    value=ani_favs_str if ani_favs_str not in ["", None] else "Unset",
+                    value=ani_favs_str if ani_favs_str not in [
+                        "", None] else "Unset",
                     inline=True,
                 )
             embed.add_field(
@@ -1134,7 +1145,8 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
                         man_favs_str += f"{index + 1}. [{fav.name}](https://shikimori.me/animes/{fav.id})\n"
                 embed.add_field(
                     name="🌟 Top 5 Favorite Manga",
-                    value=man_favs_str if man_favs_str not in ["", None] else "Unset",
+                    value=man_favs_str if man_favs_str not in [
+                        "", None] else "Unset",
                     inline=True,
                 )
         else:
