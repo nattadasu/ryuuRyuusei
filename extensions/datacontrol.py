@@ -23,6 +23,7 @@ from modules.const import (
     VERIFICATION_SERVER,
     VERIFIED_ROLE,
 )
+from modules.discord import format_username
 
 
 class DataControl(ipy.Extension):
@@ -240,7 +241,7 @@ To complete your registration, please follow the instructions below:""",
             await ud.save_to_database(
                 UserDatabaseClass(
                     discord_id=ctx.author.id,
-                    discord_username=ctx.author.username,
+                    discord_username=format_username(ctx.author),
                     mal_id=mal_id,
                     mal_username=mal_username,
                     mal_joined=mal_joined,

@@ -226,28 +226,24 @@ def create_simkl_embed(
     if fanart is not None:
         embed.set_image(url=f"https://simkl.in/fanart/{fanart}_w.webp")
 
-    embed.add_fields(
-        ipy.EmbedField(name="Synonyms",
-                       value=synonyms or "*None*", inline=False),
-        ipy.EmbedField(name="Genres", value=genres, inline=False),
-    )
+    embed.add_field(name="Synonyms",
+                    value=synonyms or "*None*", inline=False)
+    embed.add_field(name="Genres", value=genres, inline=False)
     if media_type == "tv":
         embed.add_field(name="Network", value=network or "*None*", inline=True)
-    embed.add_fields(
-        ipy.EmbedField(
-            name="Certification", value=certification or "*None*", inline=True
-        ),
-        ipy.EmbedField(name="Country", value=country, inline=True),
-        ipy.EmbedField(
-            name="Episodes and Duration" if media_type == "tv" else "Duration",
-            value=f"{episodes} {runtime}" if media_type == "tv" else f"{runtime}",
-            inline=True,
-        ),
-        ipy.EmbedField(
-            name=f"Airing Date" if media_type == "tv" else "Release Date",
-            value=date,
-            inline=True,
-        ),
+    embed.add_field(
+        name="Certification", value=certification or "*None*", inline=True
+    )
+    embed.add_field(name="Country", value=country, inline=True)
+    embed.add_field(
+        name="Episodes and Duration" if media_type == "tv" else "Duration",
+        value=f"{episodes} {runtime}" if media_type == "tv" else f"{runtime}",
+        inline=True,
+    )
+    embed.add_field(
+        name=f"Airing Date" if media_type == "tv" else "Release Date",
+        value=date,
+        inline=True,
     )
 
     if end_date.endswith("\\*"):
@@ -281,22 +277,33 @@ def create_simkl_embed(
         },
         {
             "name": "tvdbslug",
-            "url": f"https://www.thetvdb.com/{'series' if media_type == 'tv' else 'movies'}/{ids.get('tvdb', '')}"
-            if ids.get("tvdb", None)
+            "url": f"https://www.thetvdb.com/series/{ids.get('tvdbslug', '')}"
+            if ids.get("tvdbslug", None)
+            else f"https://www.thetvdb.com/movies/{ids.get('tvdbmslug', '')}"
+            if ids.get("tvdbslug", None)
             else None,
         },
         {
             "name": "tvdb",
+            "url": f"https://www.thetvdb.com/deferrer/{'series' if media_type == 'tv' else 'movies'}/{ids.get('tvdbslug', '')}"
+            if ids.get("tvdb", None)
+            else None,
+        },
+        {
+            "name": "tvtime",
             "url": f"{'show' if media_type == 'tv' else 'movie'}/{ids.get('tvdb', '')}"
             if ids.get("tvdb", None)
             else None,
         },
     ]
+    # if tvdbslug's url is not available, use tvdb's url instead
+    if platforms[2]["url"] is not None:
+        del platforms[3]
+    elif platforms[3]["url"] is not None:
+        del platforms[2]
     for platform in platforms:
         if platform["url"] is not None:
             platform_name = platform["name"]
-            if platform_name == "tvdb":
-                platform_name = "tvtime"
             if platform_name == "tvdbslug":
                 platform_name = "tvdb"
             pf = media_id_to_platform(platform["url"], Platform(platform_name))

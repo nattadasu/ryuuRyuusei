@@ -291,22 +291,27 @@ class AniList:
     @staticmethod
     def _media_dict_to_dataclass(data: dict):
         """Format returned dictionary from AniList to its proper dataclass"""
-        data["title"] = AniListTitleStruct(**data["title"]) if data["title"] else None
+        data["title"] = AniListTitleStruct(
+            **data["title"]) if data["title"] else None
         if data.get("startDate", None):
             data["startDate"] = (
-                AniListDateStruct(**data["startDate"]) if data["startDate"] else None
+                AniListDateStruct(**data["startDate"]
+                                  ) if data["startDate"] else None
             )
         if data.get("endDate", None):
             data["endDate"] = (
-                AniListDateStruct(**data["endDate"]) if data["endDate"] else None
+                AniListDateStruct(
+                    **data["endDate"]) if data["endDate"] else None
             )
         if data.get("coverImage", None):
             data["coverImage"] = (
-                AniListImageStruct(**data["coverImage"]) if data["coverImage"] else None
+                AniListImageStruct(
+                    **data["coverImage"]) if data["coverImage"] else None
             )
         if data.get("trailer", None):
             data["trailer"] = (
-                AniListTrailerStruct(**data["trailer"]) if data["trailer"] else None
+                AniListTrailerStruct(
+                    **data["trailer"]) if data["trailer"] else None
             )
         if data.get("tags", None):
             data["tags"] = [AniListTagsStruct(**tag) for tag in data["tags"]]
@@ -422,7 +427,8 @@ class AniList:
                     ]
                 )
                 raise ProviderHttpError(err_strings, response.status)
-            self.write_data_to_cache(data["data"]["Media"]["isAdult"], cache_file_path)
+            self.write_data_to_cache(
+                data["data"]["Media"]["isAdult"], cache_file_path)
             return data["data"]["Media"]["isAdult"]
 
     async def anime(self, media_id: int) -> AniListMediaStruct:
@@ -738,7 +744,8 @@ class AniList:
             list[dict]: The search results
         """
         if limit > 10:
-            raise ProviderTypeError("limit must be less than or equal to 10", "int")
+            raise ProviderTypeError(
+                "limit must be less than or equal to 10", "int")
         if isinstance(media_type, self.MediaType):
             media_type = media_type.value
         gqlquery = """query ($search: String, $mediaType: MediaType, $limit: Int) {

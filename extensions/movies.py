@@ -167,7 +167,7 @@ class Movies(ipy.Extension):
         except ProviderHttpError:
             await send.edit(
                 embed=ipy.Embed(
-                    title="Random Manga",
+                    title="Random Movie",
                     description="We couldn't find any manga. Please try again.",
                     color=0xFF0000,
                 )

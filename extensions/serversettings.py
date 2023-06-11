@@ -14,6 +14,7 @@ from modules.const import (
     EMOJI_UNEXPECTED_ERROR,
     EMOJI_USER_ERROR,
 )
+from modules.discord import format_username
 from modules.i18n import search_language, set_default_language
 
 
@@ -299,7 +300,7 @@ class ServerSettings(ipy.Extension):
             await ud.save_to_database(
                 UserDatabaseClass(
                     discord_id=user.id,
-                    discord_username=user.username,
+                    discord_username=format_username(user),
                     mal_id=mal_id,
                     mal_username=mal_username,
                     mal_joined=mal_joined,
