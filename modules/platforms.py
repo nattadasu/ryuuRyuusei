@@ -357,7 +357,7 @@ def platforms_to_fields(currPlatform: str, **k: str | None) -> list[EmbedField]:
     for platform, value in k.items():
         try:
             if value is not None and currPlatform != platform:
-                pin = media_id_to_platform(value, platform_mappings[platform])
+                pin = media_id_to_platform(value, platform_mappings[platform], simkl_type=k["simkl_type"])
                 if platform == "tvdb":
                     value = str(value).removeprefix("https://www.thetvdb.com/")
                 relsEm.append(

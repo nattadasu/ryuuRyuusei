@@ -480,7 +480,7 @@ class ExtenalSitesRelations(ipy.Extension):
             shoboi=anime_api.shoboi,
             silveryasha=anime_api.silveryasha,
             simkl=simkl_id,
-            simklType=simkl_dat.type,
+            simkl_type=simkl_dat.type,
             trakt=trakt_id,
             tvdb=tvdb_id,
             tvtime=tvtime_id,
