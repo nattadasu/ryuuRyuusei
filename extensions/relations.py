@@ -440,25 +440,20 @@ class ExtenalSitesRelations(ipy.Extension):
         if trakt_season is not None:
             if simkl_dat.tvdbslug is not None:
                 tvdb_id = f"https://www.thetvdb.com/{tvtyp}/{simkl_dat.tvdbslug}/seasons/official/{trakt_season}"
-            elif simkl_dat.tvdb is not None or trakt_data.ids.tvdb is not None:
-                if simkl_dat.tvdb is not None:
-                    tvdb_id = (
-                        f"https://www.thetvdb.com/deferrer/{tvtyp}/{simkl_dat.tvdb}"
-                    )
-                elif trakt_data.ids.tvdb is not None:
-                    tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{trakt_data.ids.tvdb}"
+            elif simkl_dat.tvdb is not None:
+                tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{simkl_dat.tvdb}"
+            elif trakt_data.ids.tvdb is not None:
+                tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{trakt_data.ids.tvdb}"
+
             if tmdb_id is not None:
                 tmdb_id = f"{tmtyp}/{tmdb_id}/season/{trakt_season}"
         else:
             if simkl_dat.tvdbslug is not None:
                 tvdb_id = f"https://www.thetvdb.com/{tvtyp}/{simkl_dat.tvdbslug}"
-            elif simkl_dat.tvdb is not None or trakt_data.ids.tvdb is not None:
-                if simkl_dat.tvdb is not None:
-                    tvdb_id = (
-                        f"https://www.thetvdb.com/deferrer/{tvtyp}/{simkl_dat.tvdb}"
-                    )
-                elif trakt_data.ids.tvdb is not None:
-                    tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{trakt_data.ids.tvdb}"
+            elif simkl_dat.tvdb is not None:
+                tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{simkl_dat.tvdb}"
+            elif trakt_data.ids.tvdb is not None:
+                tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{trakt_data.ids.tvdb}"
             if tmdb_id is not None:
                 tmdb_id = f"{tmtyp}/{tmdb_id}"
 
