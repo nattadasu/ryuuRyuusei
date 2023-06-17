@@ -29,7 +29,7 @@ class AniListCog(ipy.Extension):
     )
 
     @anilist_head.subcommand(
-        sub_cmd_name="anilist",
+        sub_cmd_name="profile",
         sub_cmd_description="Get your AniList profile information",
         options=[
             ipy.SlashCommandOption(
@@ -60,7 +60,7 @@ class AniListCog(ipy.Extension):
             ),
         ],
     )
-    async def profile_anilist(
+    async def anilist_profile(
         self,
         ctx: ipy.SlashContext,
         user: ipy.Member | ipy.User | None = None,

@@ -30,7 +30,7 @@ class ShikimoriCog(ipy.Extension):
     )
 
     @shikimori_head.subcommand(
-        sub_cmd_name="shikimori",
+        sub_cmd_name="profile",
         sub_cmd_description="Get your Shikimori profile information",
         options=[
             ipy.SlashCommandOption(
@@ -60,7 +60,7 @@ class ShikimoriCog(ipy.Extension):
             ),
         ],
     )
-    async def profile_shikimori(
+    async def shikimori_profile(
         self,
         ctx: ipy.SlashContext,
         user: ipy.Member | ipy.User | None = None,
