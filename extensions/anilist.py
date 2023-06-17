@@ -8,12 +8,10 @@ from classes.anilist import AniList, AniListUserStruct
 from classes.database import DatabaseException, UserDatabase, UserDatabaseClass
 from classes.excepts import ProviderHttpError
 from classes.i18n import LanguageDict
-from modules.commons import (
-    convert_float_to_time,
-    sanitize_markdown,
-)
+from modules.commons import (PlatformErrType, convert_float_to_time,
+                             platform_exception_embed, sanitize_markdown)
 from modules.i18n import fetch_language_data, read_user_language
-from modules.commons import PlatformErrType, platform_exception_embed
+
 
 class AniListCog(ipy.Extension):
     """Extension for interacting with AniList"""

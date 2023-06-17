@@ -7,11 +7,8 @@ import interactions as ipy
 from classes.database import DatabaseException, UserDatabase, UserDatabaseClass
 from classes.excepts import ProviderHttpError
 from classes.i18n import LanguageDict
-from classes.shikimori import (
-    Shikimori,
-    ShikimoriUserGender,
-    ShikimoriUserStruct
-)
+from classes.shikimori import (Shikimori, ShikimoriUserGender,
+                               ShikimoriUserStruct)
 from modules.commons import PlatformErrType, platform_exception_embed
 from modules.i18n import fetch_language_data, read_user_language
 

@@ -8,12 +8,8 @@ import interactions as ipy
 from classes.database import DatabaseException, UserDatabase
 from classes.i18n import LanguageDict
 from classes.jikan import JikanApi, JikanException
-from modules.commons import (
-    PlatformErrType,
-    convert_float_to_time,
-    platform_exception_embed,
-    sanitize_markdown,
-)
+from modules.commons import (PlatformErrType, convert_float_to_time,
+                             platform_exception_embed, sanitize_markdown)
 from modules.i18n import fetch_language_data
 
 

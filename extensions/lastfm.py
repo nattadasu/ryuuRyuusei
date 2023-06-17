@@ -4,14 +4,12 @@ import interactions as ipy
 
 from classes.database import DatabaseException, UserDatabase
 from classes.excepts import ProviderHttpError
-from classes.lastfm import LastFM, LastFMTrackStruct, LastFMUserStruct
 from classes.i18n import LanguageDict
-from modules.commons import (
-    generate_commons_except_embed,
-    sanitize_markdown,
-)
+from classes.lastfm import LastFM, LastFMTrackStruct, LastFMUserStruct
+from modules.commons import (PlatformErrType, generate_commons_except_embed,
+                             platform_exception_embed, sanitize_markdown)
 from modules.i18n import fetch_language_data, read_user_language
-from modules.commons import PlatformErrType, platform_exception_embed
+
 
 class LastFmCog(ipy.Extension):
     """Extension for interacting with Last.FM"""
