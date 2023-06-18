@@ -1,5 +1,7 @@
 from typing import Literal
+
 from modules.commons import convert_float_to_time
+
 
 class Length:
     """Class to convert length units"""
@@ -433,10 +435,14 @@ class Time:
         Returns:
             list[float | str]: The converted time and the context of the conversion
         """
-        days_total = value * (Time.conversion_factors[from_unit] / Time.conversion_factors["days"])
+        days_total = value * \
+            (Time.conversion_factors[from_unit] /
+             Time.conversion_factors["days"])
         context = convert_float_to_time(days_total, show_weeks=True)
         if from_unit in Time.conversion_factors and to_unit in Time.conversion_factors:
-            converted_value = value * (Time.conversion_factors[from_unit] / Time.conversion_factors[to_unit])
+            converted_value = value * \
+                (Time.conversion_factors[from_unit] /
+                 Time.conversion_factors[to_unit])
         else:
             converted_value = value  # Conversion between the same units
 
