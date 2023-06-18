@@ -13,7 +13,8 @@ import os
 import shlex
 import subprocess
 
-from modules.oobe.commons import check_termux, current_os, prepare_database, py_bin_path
+from modules.oobe.commons import (check_termux, current_os, prepare_database,
+                                  py_bin_path)
 from modules.oobe.getNekomimi import nk_run
 from modules.oobe.i18nBuild import convert_langs_to_json
 from modules.oobe.malIndexer import mal_run
