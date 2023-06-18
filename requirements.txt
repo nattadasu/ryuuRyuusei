@@ -3,18 +3,21 @@ beautifulsoup4
 dataclassy
 fake-useragent
 fuzzywuzzy
+git+https://github.com/ryuuRyuusei/cutlet-pure@master
 html5lib
-interactions-py==5.5.1
+interactions-py==5.6.0
 langcodes
 language_data
+numpy>=1.22.2 # not directly required, pinned by Snyk to avoid a vulnerability
 pandas
 plusminus
+pykakasi
 python-dotenv
 python-Levenshtein
 pyyaml
 regex
 sentry_sdk
-tzdata
-numpy>=1.22.2 # not directly required, pinned by Snyk to avoid a vulnerability
-validators
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
+tzdata
+unidic-lite
+validators
