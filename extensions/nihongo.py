@@ -1,7 +1,9 @@
+from datetime import datetime, timezone
+
 import cutlet
-import pykakasi
 import interactions as ipy
-from datetime import timezone, datetime
+import pykakasi
+
 from modules.commons import sanitize_markdown
 
 
@@ -17,7 +19,6 @@ class NihongoCog(ipy.Extension):
             interval=10,
         ),
     )
-
 
     @nihongo_head.subcommand(
         sub_cmd_name="romajinize",
