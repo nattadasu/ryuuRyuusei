@@ -11,7 +11,7 @@ This module also contains some mutable variables/constant that are used oftenly 
 
 from os import getenv as ge
 from subprocess import check_output as chout
-from typing import cast, Final
+from typing import Final, cast
 
 from dotenv import load_dotenv as ld
 
@@ -60,7 +60,8 @@ SHIKIMORI_CLIENT_ID: Final[str] = cast(str, ge("SHIKIMORI_CLIENT_ID"))
 """Shikimori client ID"""
 SHIKIMORI_CLIENT_SECRET: Final[str] = cast(str, ge("SHIKIMORI_CLIENT_SECRET"))
 """Shikimori client secret"""
-SHIKIMORI_APPLICATION_NAME: Final[str] = cast(str, ge("SHIKIMORI_APPLICATION_NAME"))
+SHIKIMORI_APPLICATION_NAME: Final[str] = cast(
+    str, ge("SHIKIMORI_APPLICATION_NAME"))
 """Shikimori application name"""
 SIMKL_CLIENT_ID: Final[str] = cast(str, ge("SIMKL_CLIENT_ID"))
 """SIMKL client ID"""
