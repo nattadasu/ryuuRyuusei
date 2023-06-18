@@ -1,11 +1,13 @@
-from classes.converter import Length, Mass, Temperature, Time, Volume
-import interactions as ipy
-from modules.const import EMOJI_UNEXPECTED_ERROR, EMOJI_SUCCESS
 import re
 
+import interactions as ipy
+
+from classes.converter import Length, Mass, Temperature, Time, Volume
+from modules.const import EMOJI_SUCCESS, EMOJI_UNEXPECTED_ERROR
 
 emoji_err = re.sub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_UNEXPECTED_ERROR)
 emoji_success = re.sub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_SUCCESS)
+
 
 def overflow_embed(value: float, from_unit: str, to_unit: str) -> ipy.Embed:
     """Returns an embed for when the result is too large to be displayed"""
@@ -158,7 +160,6 @@ class ConverterCog(ipy.Extension):
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
-
     mass_units: list[ipy.SlashCommandChoice] = [
         ipy.SlashCommandChoice("Centigram (cg)", "centigram"),
         ipy.SlashCommandChoice("Decagram (dag)", "decagram"),
@@ -174,7 +175,6 @@ class ConverterCog(ipy.Extension):
         ipy.SlashCommandChoice("Stone (st)", "stone"),
         ipy.SlashCommandChoice("Ton (t)", "ton"),
     ]
-
 
     @converter_head.subcommand(
         sub_cmd_name="mass",
@@ -213,7 +213,6 @@ class ConverterCog(ipy.Extension):
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
-
     temperature_units: list[ipy.SlashCommandChoice] = [
         ipy.SlashCommandChoice("Celsius (°C)", "celsius"),
         ipy.SlashCommandChoice("Delisle (°De)", "delisle"),
@@ -224,7 +223,6 @@ class ConverterCog(ipy.Extension):
         ipy.SlashCommandChoice("Réaumur (°Ré)", "reaumur"),
         ipy.SlashCommandChoice("Rømer (°Rø)", "romer"),
     ]
-
 
     @converter_head.subcommand(
         sub_cmd_name="temperature",
@@ -263,10 +261,10 @@ class ConverterCog(ipy.Extension):
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
-
     volume_units: list[ipy.SlashCommandChoice] = [
         ipy.SlashCommandChoice("Centiliter (cl)", "centiliter"),
-        ipy.SlashCommandChoice("Milliliter (ml)/Cubic centimeter (cm³)", "milliliter"),
+        ipy.SlashCommandChoice(
+            "Milliliter (ml)/Cubic centimeter (cm³)", "milliliter"),
         ipy.SlashCommandChoice("Deciliter (dl)", "deciliter"),
         ipy.SlashCommandChoice("Liter (l)/Cubic decimeter (dm³)", "liter"),
         ipy.SlashCommandChoice("Hectoliter (hl)", "hectoliter"),
@@ -279,7 +277,6 @@ class ConverterCog(ipy.Extension):
         ipy.SlashCommandChoice("Quart (qt)", "quart"),
         ipy.SlashCommandChoice("Gallon (gal)", "gallon"),
     ]
-
 
     @converter_head.subcommand(
         sub_cmd_name="volume",
@@ -318,7 +315,6 @@ class ConverterCog(ipy.Extension):
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
-
     time_units: list[ipy.SlashCommandChoice] = [
         ipy.SlashCommandChoice("Second (s)", "second"),
         ipy.SlashCommandChoice("Minute (min)", "minute"),
@@ -332,7 +328,6 @@ class ConverterCog(ipy.Extension):
         ipy.SlashCommandChoice("Century (cent)", "century"),
         ipy.SlashCommandChoice("Millennium (mill)", "millennium"),
     ]
-
 
     @converter_head.subcommand(
         sub_cmd_name="time",
