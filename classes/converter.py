@@ -75,6 +75,7 @@ class Length:
             "chain",
             "decameter",
             "decimeter",
+            "earth_radius",
             "fathom",
             "foot",
             "football_field",
@@ -82,6 +83,8 @@ class Length:
             "inch",
             "kilometer",
             "league",
+            "light_second",
+            "lunar_distance",
             "meter",
             "mile",
             "millimeter",
@@ -97,8 +100,8 @@ class Length:
 
         Args:
             value (float): Amount of length to convert
-            from_unit (Literal["banana", "centimeter", "chain", "decameter", "decimeter", "earth_radius", "fathom", "foot", "football_field", "hectometer", "inch", "kilometer", "league", "light_year", "ligth_second", "lunar_distance", "meter", "mile", "millimeter", "myriameter", "nautical_mile", "rod", "thou", "yard"]): Unit to convert the value from
-            to_unit (Literal["banana", "centimeter", "chain", "decameter", "decimeter", "fathom", "foot", "football_field", "hectometer", "inch", "kilometer", "league", "meter", "mile", "millimeter", "myriameter", "nautical_mile", "rod", "thou", "yard"]): Unit to convert the value to
+            from_unit (Literal["astronomical_unit", "banana", "centimeter", "chain", "decameter", "decimeter", "earth_radius", "fathom", "foot", "football_field", "hectometer", "inch", "kilometer", "league", "light_year", "ligth_second", "lunar_distance", "meter", "mile", "millimeter", "myriameter", "nautical_mile", "rod", "thou", "yard"]): Unit to convert from
+            to_unit (Literal["banana", "centimeter", "chain", "decameter", "decimeter", "earth_radius", "fathom", "foot", "football_field", "hectometer", "inch", "kilometer", "league", "light_second", "lunar_distance", "meter", "mile", "millimeter", "myriameter", "nautical_mile", "rod", "thou", "yard"]): Unit to convert to
 
         Returns:
             float: Converted value
@@ -410,7 +413,6 @@ class Time:
         "generations": 630720000,
         "centuries": 3153600000,
         "millennia": 31536000000,
-        "eon": 3153600000000000000,
     }
     """Dictionary of time units and their conversion to seconds"""
 
@@ -418,10 +420,10 @@ class Time:
     def convert(
         value: float,
         from_unit: Literal[
-            "seconds", "minutes", "hours", "days", "weeks", "years", "decades", "generations", "centuries", "millennia", "eon"
+            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "centurie", "millennia"
         ],
         to_unit: Literal[
-            "seconds", "minutes", "hours", "days", "weeks", "years", "decades", "generations", "centuries"
+            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "centuries", "millennia"
         ],
     ) -> list[float | str]:
         """
@@ -429,8 +431,8 @@ class Time:
 
         Args:
             value (float): The value of time to convert
-            from_unit (Literal["seconds", "minutes", "hours", "days", "weeks", "years", "decades", "generations", "centuries", "millenia", "eon"]): The unit to convert from
-            to_unit (Literal["seconds", "minutes", "hours", "days", "weeks", "years", "decades", "generations", "centuries"]): The unit to convert to
+            from_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "centuries", "millennia"]): The unit to convert from
+            to_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "centuries", "millennia"]): The unit to convert to
 
         Returns:
             list[float | str]: The converted time and the context of the conversion
