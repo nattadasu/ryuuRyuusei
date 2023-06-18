@@ -11,27 +11,15 @@ from enum import Enum
 from re import sub as rSub
 from uuid import uuid4 as id4
 
-from interactions import (
-    Button,
-    ButtonStyle,
-    ComponentContext,
-    Embed,
-    EmbedAuthor,
-    EmbedField,
-    Member,
-    PartialEmoji,
-    SlashContext,
-    User,
-)
+from interactions import (Button, ButtonStyle, ComponentContext, Embed,
+                          EmbedAuthor, EmbedField, Member, PartialEmoji,
+                          SlashContext, User)
 
 from classes.anilist import AniListTrailerStruct
 from classes.i18n import LanguageDict
-from modules.const import (
-    EMOJI_FORBIDDEN,
-    EMOJI_USER_ERROR,
-    LANGUAGE_CODE,
-    EMOJI_UNEXPECTED_ERROR as EUNER,
-)
+from modules.const import EMOJI_FORBIDDEN
+from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
+from modules.const import EMOJI_USER_ERROR, LANGUAGE_CODE
 from modules.i18n import fetch_language_data
 
 deflang = fetch_language_data(LANGUAGE_CODE, use_raw=True)
