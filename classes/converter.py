@@ -112,10 +112,14 @@ class Length:
         elif from_unit in Length.metric_units and to_unit in Length.metric_units:
             base_value = value * Length.metric_units[from_unit]
             converted_value = base_value / Length.metric_units[to_unit]
-        else:
+        elif from_unit in Length.imperial_units and to_unit in Length.metric_units:
             total_inches = value * Length.imperial_units[from_unit]
             total_meters = total_inches * Length.inch_to_meter
             converted_value = total_meters / Length.metric_units[to_unit]
+        elif from_unit in Length.metric_units and to_unit in Length.imperial_units:
+            total_meters = value * Length.metric_units[from_unit]
+            total_inches = total_meters / Length.inch_to_meter
+            converted_value = total_inches / Length.imperial_units[to_unit]
 
         return converted_value
 
@@ -303,10 +307,14 @@ class Mass:
         elif from_unit in Mass.metric_units and to_unit in Mass.metric_units:
             base_value = value * Mass.metric_units[from_unit]
             converted_value = base_value / Mass.metric_units[to_unit]
-        else:
+        elif from_unit in Mass.imperial_units and to_unit in Mass.metric_units:
             total_pounds = value * Mass.imperial_units[from_unit]
             total_kilograms = total_pounds * Mass.pound_to_kilogram
             converted_value = total_kilograms / Mass.metric_units[to_unit]
+        elif from_unit in Mass.metric_units and to_unit in Mass.imperial_units:
+            total_kilograms = value * Mass.metric_units[from_unit]
+            total_pounds = total_kilograms / Mass.pound_to_kilogram
+            converted_value = total_pounds / Mass.imperial_units[to_unit]
 
         return converted_value
 
@@ -392,10 +400,14 @@ class Volume:
         elif from_unit in Volume.metric_units and to_unit in Volume.metric_units:
             base_value = value * Volume.metric_units[from_unit]
             converted_value = base_value / Volume.metric_units[to_unit]
-        else:
+        elif from_unit in Volume.imperial_units and to_unit in Volume.metric_units:
             total_teaspoons = value * Volume.imperial_units[from_unit]
             total_milliliters = total_teaspoons * Volume.teaspoon_to_milliliter
             converted_value = total_milliliters / Volume.metric_units[to_unit]
+        elif from_unit in Volume.metric_units and to_unit in Volume.imperial_units:
+            total_milliliters = value * Volume.metric_units[from_unit]
+            total_teaspoons = total_milliliters / Volume.teaspoon_to_milliliter
+            converted_value = total_teaspoons / Volume.imperial_units[to_unit]
 
         return converted_value
 
