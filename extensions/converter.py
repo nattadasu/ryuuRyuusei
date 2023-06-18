@@ -1,9 +1,16 @@
 import re
 
 import interactions as ipy
+import pandas as pd
+from fuzzywuzzy import fuzz
 
 from classes.converter import Length, Mass, Temperature, Time, Volume
+from classes.exchangeratesapi import ExchangeRatesAPI, Accepted_Currencies
+from classes.excepts import ProviderHttpError
 from modules.const import EMOJI_SUCCESS, EMOJI_UNEXPECTED_ERROR
+from modules.commons import platform_exception_embed, PlatformErrType
+from modules.i18n import read_user_language, fetch_language_data
+from datetime import datetime, timezone
 
 emoji_err = re.sub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_UNEXPECTED_ERROR)
 emoji_success = re.sub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_SUCCESS)
@@ -85,6 +92,31 @@ def result_embed(value: float, from_unit: str, to_unit: str, result: int | list[
         )
 
     return embed
+
+
+def search_currency(query: str) -> list[dict[str, str]]:
+    """
+    Search for a currency using fuzzy search
+
+    Args:
+        query (str): The query to search for
+
+    Returns:
+        list[dict[str, str]]: The list of currencies that match the query
+    """
+    currencies = pd.read_csv("database/supported_currencies.tsv", delimiter="\t")
+    results = []
+    for _, currency in currencies.iterrows():
+        code_ratio = fuzz.token_set_ratio(query, currency["Currency Code"])
+        name_ratio = fuzz.token_set_ratio(query, currency["Currency Name"])
+        country_ratio = fuzz.token_set_ratio(query, currency["Country Name"])
+        max_ratio = max(code_ratio, name_ratio, country_ratio)
+        if max_ratio >= 70:  # minimum similarity threshold of 70%
+            results.append({
+                "name": f'{currency["Currency Name"]} ({currency["Country Code"]})',
+                "value": currency["Currency Code"],
+            })
+    return results[:25]
 
 
 class ConverterCog(ipy.Extension):
@@ -368,6 +400,72 @@ class ConverterCog(ipy.Extension):
             return
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
+
+
+    @converter_head.subcommand(
+        sub_cmd_name="currency",
+        sub_cmd_description="Exchange rates for currencies",
+        options=[
+            ipy.SlashCommandOption(
+                name="value",
+                description="The value to convert",
+                type=ipy.OptionType.NUMBER,
+                required=True,
+            ),
+            ipy.SlashCommandOption(
+                name="from_currency",
+                description="The currency to convert from",
+                type=ipy.OptionType.STRING,
+                required=True,
+                autocomplete=True,
+            ),
+            ipy.SlashCommandOption(
+                name="to_currency",
+                description="The currency to convert to",
+                type=ipy.OptionType.STRING,
+                required=True,
+                autocomplete=True,
+            ),
+        ],
+    )
+    async def convert_currency(
+        self,
+        ctx: ipy.SlashContext,
+        value: float,
+        from_currency: Accepted_Currencies,
+        to_currency: Accepted_Currencies,
+    ) -> None:
+        await ctx.defer()
+        lang = read_user_language(ctx)
+        l_ = fetch_language_data(lang)
+        try:
+            async with ExchangeRatesAPI() as api:
+                convert_raw = await api.get_exchange_rate(
+                    from_currency, to_currency, value
+                )
+                # only 2 decimal places
+                convert = round(convert_raw.conversion_result, 3)
+                embed = result_embed(value, from_currency, to_currency, convert)
+                embed.set_footer(
+                    text=f"Powered by ExchangeRate-API, data last fetched on"
+                )
+                embed.timestamp = datetime.fromtimestamp(convert_raw.time_last_update_unix, tz=timezone.utc)
+                await ctx.send(embed=embed)
+        except ProviderHttpError as e:
+            embed = platform_exception_embed(
+                description=f"An error occurred while trying to get exchange rates from ExchangeRate-API.",
+                error=f"{e}",
+                lang_dict=l_,
+                error_type=PlatformErrType.SYSTEM
+            )
+            await ctx.send(embed=embed)
+        return
+
+    @convert_currency.autocomplete(option_name="from_currency")
+    @convert_currency.autocomplete(option_name="to_currency")
+    async def autocomplete_currency(self, ctx: ipy.AutocompleteContext):
+        choices = search_currency(ctx.input_text)
+        await ctx.send(choices=choices)
 
 
 def setup(bot: ipy.Client | ipy.AutoShardedClient):
