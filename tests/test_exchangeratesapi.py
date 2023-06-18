@@ -3,10 +3,13 @@ import sys
 import unittest
 
 try:
-    from classes.exchangeratesapi import ExchangeRatesAPI, PairConversionExchangeRate
+    from classes.exchangeratesapi import (ExchangeRatesAPI,
+                                          PairConversionExchangeRate)
 except ImportError:
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    from classes.exchangeratesapi import ExchangeRatesAPI, PairConversionExchangeRate
+    sys.path.insert(0, os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..")))
+    from classes.exchangeratesapi import (ExchangeRatesAPI,
+                                          PairConversionExchangeRate)
 
 
 class ExchangeRatesAPITest(unittest.IsolatedAsyncioTestCase):
