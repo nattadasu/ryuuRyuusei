@@ -2,10 +2,10 @@
 <!-- omit in toc -->
 # Ryuuzaki Ryuusei Privacy Policy
 
-|                  |              |
-| ---------------- | ------------ |
-| **Effective**    | June 4, 2023 |
-| **Last Updated** | May 30, 2023 |
+|                  |               |
+| ---------------- | ------------- |
+| **Effective**    | June 19, 2023 |
+| **Last Updated** | June 19, 2023 |
 
 Greetings, and welcome to Ryuuzaki Ryuusei's Privacy Policy. Through this
 document, we aim to provide you with an explanation of how your personal
@@ -349,6 +349,7 @@ API:
 |      AniList: NSFW Check | 1 week                                              |
 |    AniList: User Profile | 12 hours                                            |
 |                 AnimeAPI | 1 day                                               |
+|         ExchangeRate-API | 1 day                                               |
 |                    Jikan | 1 day                                               |
 |      Jikan: User Profile | 12 hours on Ryuuzaki Ryuusei, 1 day on Jikan Server |
 |                    Kitsu | 1 day                                               |
