@@ -1,16 +1,16 @@
 import re
+from datetime import datetime, timezone
 
 import interactions as ipy
 import pandas as pd
 from fuzzywuzzy import fuzz
 
 from classes.converter import Length, Mass, Temperature, Time, Volume
-from classes.exchangeratesapi import ExchangeRatesAPI, Accepted_Currencies
 from classes.excepts import ProviderHttpError
+from classes.exchangeratesapi import Accepted_Currencies, ExchangeRatesAPI
+from modules.commons import PlatformErrType, platform_exception_embed
 from modules.const import EMOJI_SUCCESS, EMOJI_UNEXPECTED_ERROR
-from modules.commons import platform_exception_embed, PlatformErrType
-from modules.i18n import read_user_language, fetch_language_data
-from datetime import datetime, timezone
+from modules.i18n import fetch_language_data, read_user_language
 
 emoji_err = re.sub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_UNEXPECTED_ERROR)
 emoji_success = re.sub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_SUCCESS)
@@ -104,7 +104,8 @@ def search_currency(query: str) -> list[dict[str, str]]:
     Returns:
         list[dict[str, str]]: The list of currencies that match the query
     """
-    currencies = pd.read_csv("database/supported_currencies.tsv", delimiter="\t")
+    currencies = pd.read_csv(
+        "database/supported_currencies.tsv", delimiter="\t")
     results = []
     for _, currency in currencies.iterrows():
         code_ratio = fuzz.token_set_ratio(query, currency["Currency Code"])
@@ -401,7 +402,6 @@ class ConverterCog(ipy.Extension):
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
-
     @converter_head.subcommand(
         sub_cmd_name="currency",
         sub_cmd_description="Exchange rates for currencies",
@@ -445,11 +445,13 @@ class ConverterCog(ipy.Extension):
                 )
                 # only 2 decimal places
                 convert = round(convert_raw.conversion_result, 3)
-                embed = result_embed(value, from_currency, to_currency, convert)
+                embed = result_embed(value, from_currency,
+                                     to_currency, convert)
                 embed.set_footer(
                     text=f"Powered by ExchangeRate-API, data last fetched on"
                 )
-                embed.timestamp = datetime.fromtimestamp(convert_raw.time_last_update_unix, tz=timezone.utc)
+                embed.timestamp = datetime.fromtimestamp(
+                    convert_raw.time_last_update_unix, tz=timezone.utc)
                 await ctx.send(embed=embed)
         except ProviderHttpError as e:
             embed = platform_exception_embed(
