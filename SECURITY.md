@@ -17,17 +17,14 @@ on `interactions.py` versioning, where name on bracket is the name of the
 release branch:
 
 <!-- markdownlint-disable MD013 MD034 -->
-| Version |   Support Status   | Notes                                                    |
-| ------: | :----------------: | :------------------------------------------------------- |
-|   5.5.1 | :white_check_mark: | Current release version                                  |
-|   5.5.0 | :white_check_mark: | Pin `discord_typings` to `0.5.1` if you use this version |
-| < 5.4.0 |         :x:        | Deprecated temporarily due to Discord image proxy bug    |
-| < 4.4.0 |         :x:        | Unsupported, bot requires Python 3.10 or higher          |
+| Interactions.py Version |   Support Status   | Notes                                                                        |
+| ----------------------: | :----------------: | :--------------------------------------------------------------------------- |
+|                   5.6.0 | :white_check_mark: | Current release version                                                      |
+|                   5.5.1 | :white_check_mark: |                                                                              |
+|                   5.5.0 | :white_check_mark: | Pin `discord_typings` to `0.5.1` if you use this version                     |
+|                 < 5.4.0 |         :x:        | Deprecated due to Discord image proxy bug, see discord/discord-api-docs#6171 |
+|                 < 4.4.0 |         :x:        | Unsupported, bot requires Python 3.10 or higher                              |
 <!-- markdownlint-enable MD013 -->
-
-Please note that the current rolling release (version 5.5.0) is under heavy
-development and receives high priority for bug fixes, enhancements, and security
-updates.
 
 ## Reporting a Vulnerability
 
@@ -47,7 +44,7 @@ to reproduce the vulnerability and any relevant context.
 ### 2. Email
 
 If you are not comfortable using GitHub or prefer to communicate privately, you
-can contact me directly via email at hello@nattadasu.my.id or nattadasu@proton.com.
+can contact me directly via email at hello@nattadasu.my.id or nattadasu@proton.me.
 When reporting a vulnerability via email, please use the subject line "Ryuuzaki
 Ryuusei Vulnerability Report" to help us prioritize and address the issue promptly.
 Include a clear and concise description of the vulnerability, along with any
@@ -55,7 +52,7 @@ supporting evidence or details that can assist in understanding and resolving
 the issue.
 
 Note that if you sent an email to @nattadasu.my.id domain, we might reply to you
-using @proton.com domain instead. This is due to us unable to send email from
+using @proton.me domain instead. This is due to us unable to send email from
 @nattadasu.my.id domain, but we can receive email just fine (read-only).
 
 ### 3. Discord
