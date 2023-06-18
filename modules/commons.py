@@ -362,12 +362,13 @@ def pluralize(x):
     return "s" if x > 1 else ""
 
 
-def convert_float_to_time(day_float: float) -> str:
+def convert_float_to_time(day_float: float, show_weeks: bool = False) -> str:
     """
     Convert a float representing a number of days to a string representing the number of days, hours, and minutes.
 
     Args:
         day_float (float): The number of days.
+        show_weeks (bool, optional): Whether to show weeks in the output. Defaults to False.
 
     Returns:
         str: A string representing the number of months, days, hours, and minutes.
@@ -378,19 +379,26 @@ def convert_float_to_time(day_float: float) -> str:
     # Create a timedelta object with the total seconds
     delta = timedelta(seconds=total_seconds)
 
-    # Extract months, days, hours, and minutes from the timedelta object
+    # Extract years, months, days, hours, minutes, and seconds from the timedelta object
     years = delta.days // 365
-    months = (delta.days // 30) % 12
-    days = delta.days % 30
-    hours = (delta.seconds // 3600) % 24
-    minutes = (delta.seconds // 60) % 60
+    months = delta.days % 365 // 30
+    if show_weeks:
+        weeks = delta.days % 365 % 30 // 7
+        days = delta.days % 365 % 30 % 7
+    else:
+        days = delta.days % 365 % 30
+    hours = delta.seconds // 3600
+    minutes = delta.seconds // 60 % 60
+    seconds = delta.seconds % 60
 
     words = [
         f"{years} year{pluralize(years)}" if years else "",
         f"{months} month{pluralize(months)}" if months else "",
+        f"{weeks} week{pluralize(weeks)}" if weeks else "",
         f"{days} day{pluralize(days)}" if days else "",
         f"{hours} hour{pluralize(hours)}" if hours else "",
-        f"{minutes} minute{pluralize(minutes)}",
+        f"{minutes} minute{pluralize(minutes)}" if minutes else "",
+        f"{seconds} second{pluralize(seconds)}" if seconds else "",
     ]
 
     result = ", ".join(filter(None, words))
