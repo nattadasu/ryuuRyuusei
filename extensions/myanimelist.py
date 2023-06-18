@@ -28,7 +28,7 @@ class MyAnimeListCog(ipy.Extension):
 
     @myanimelist_head.subcommand(
         sub_cmd_name="profile",
-        description="Get a user's profile",
+        sub_cmd_description="Get a user's profile",
         options=[
             ipy.SlashCommandOption(
                 name="user",
