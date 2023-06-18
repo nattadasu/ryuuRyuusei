@@ -42,6 +42,7 @@ def result_embed(value: float, from_unit: str, to_unit: str, result: int | list[
     to_unit = to_unit.replace("_", " ")
     if str(value).endswith(".0"):
         value = int(value)
+    value = f"{value:,}"
     embed = ipy.Embed(
         title="Result",
         color=0x123388,
@@ -60,6 +61,7 @@ def result_embed(value: float, from_unit: str, to_unit: str, result: int | list[
     if isinstance(result, list):
         if str(result[0]).endswith(".0"):
             result[0] = int(result[0])
+        result[0] = f"{result[0]:,}"
         embed.add_fields(
             ipy.EmbedField(
                 name="Result",
@@ -75,6 +77,7 @@ def result_embed(value: float, from_unit: str, to_unit: str, result: int | list[
     else:
         if str(result).endswith(".0"):
             result = int(result)
+        result = f"{result:,}"
         embed.add_field(
             name="Result",
             value=f"{result} {to_unit}",
