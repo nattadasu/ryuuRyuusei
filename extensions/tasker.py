@@ -1,8 +1,11 @@
-from interactions import AutoShardedClient, Client, Extension, Task, IntervalTrigger
 import os
 import time
-from classes.stats.topgg import TopGG
+
+from interactions import (AutoShardedClient, Client, Extension,
+                          IntervalTrigger, Task)
+
 from classes.excepts import ProviderHttpError
+from classes.stats.topgg import TopGG
 
 
 class BotTasker(Extension):
