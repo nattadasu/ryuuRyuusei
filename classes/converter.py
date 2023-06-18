@@ -403,16 +403,17 @@ class Volume:
 class Time:
     """Class to convert time units"""
     conversion_factors = {
-        "seconds": 1,
-        "minutes": 60,
-        "hours": 3600,
-        "days": 86400,
-        "weeks": 604800,
-        "years": 31536000,
-        "decades": 315360000,
-        "generations": 630720000,
-        "centuries": 3153600000,
-        "millennia": 31536000000,
+        "second": 1,
+        "minute": 60,
+        "hour": 3600,
+        "day": 86400,
+        "week": 604800,
+        "month": 2592000,
+        "year": 31536000,
+        "decade": 315360000,
+        "generation": 630720000,
+        "centurie": 3153600000,
+        "millennium": 31536000000,
     }
     """Dictionary of time units and their conversion to seconds"""
 
@@ -420,10 +421,10 @@ class Time:
     def convert(
         value: float,
         from_unit: Literal[
-            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "centurie", "millennia"
+            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "centurie", "millennium"
         ],
         to_unit: Literal[
-            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "centuries", "millennia"
+            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "centuries", "millennium"
         ],
     ) -> list[float | str]:
         """
@@ -431,15 +432,15 @@ class Time:
 
         Args:
             value (float): The value of time to convert
-            from_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "centuries", "millennia"]): The unit to convert from
-            to_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "centuries", "millennia"]): The unit to convert to
+            from_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "centurie", "millennium"]): The unit to convert from
+            to_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "centurie", "millennium"]): The unit to convert to
 
         Returns:
             list[float | str]: The converted time and the context of the conversion
         """
         days_total = value * \
             (Time.conversion_factors[from_unit] /
-             Time.conversion_factors["days"])
+             Time.conversion_factors["day"])
         context = convert_float_to_time(days_total, show_weeks=True)
         if from_unit in Time.conversion_factors and to_unit in Time.conversion_factors:
             converted_value = value * \
