@@ -114,7 +114,7 @@ def search_currency(query: str) -> list[dict[str, str]]:
         max_ratio = max(code_ratio, name_ratio, country_ratio)
         if max_ratio >= 70:  # minimum similarity threshold of 70%
             results.append({
-                "name": f'{currency["Currency Name"]} ({currency["Country Code"]})',
+                "name": f'{currency["Currency Name"]} ({currency["Currency Code"]})',
                 "value": currency["Currency Code"],
             })
     return results[:25]
