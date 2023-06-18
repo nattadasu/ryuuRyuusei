@@ -134,16 +134,19 @@ If you have any questions, feel free to join the
 
 ## 📣 Available Commands <a name = "commands"></a>
 
-> **Note**
->
-> Any command that has ⌚ as prefix means that the command is not currently
-> available during heavy rewrite. It will be available soon, well... hopefully.
+| Emoji | Legend Description                                                |
+| :---: | :---------------------------------------------------------------- |
+|   ⌚   | Planned and not available yet                                     |
+|   👁️   | Response is only visible to the user who invoked the command      |
+|   🫦   | Content may not be suitable for all age, may require NSFW channel |
+|   👮   | Requires `Administrator` permission                               |
+|   🔐   | Only available for server that hosted the bot                     |
 
 ### Commons Bot Commands
 
 - `/about` - Get information about the bot
 - `/help` - Get a list of all curretly available commands
-- `/invite` - Get the bot's invite link
+- 👁️ `/invite` - Get the bot's invite link
 - `/ping` - Check the bot latency
 - `/privacy` - Get information about the bot's privacy policy
 - `/support` - Support the bot by donating or contributing to the bot's
@@ -153,19 +156,19 @@ If you have any questions, feel free to join the
 
 > Utilize MyAnimeList via Jikan
 
-- `/anime info` - Get information about an anime using direct MyAnimeList ID
-- `/anime random` - Get a random anime from MyAnimeList, powered by
+- 🫦 `/anime info` - Get information about an anime using direct MyAnimeList ID
+- 🫦 `/anime random` - Get a random anime from MyAnimeList, powered by
   [AnimeApi](https://nttds.my.id/discord)
-- `/anime search` - Search for an anime, using AniList's search API
+- 🫦 `/anime search` - Search for an anime, using AniList's search API
 
 ### Manga Commands
 
 > Utilize AniList
 
-- `/manga info` - Get information about a manga using direct AniList ID
-- `/manga random` - Get a random manga from AniList, powered by
+- 🫦 `/manga info` - Get information about a manga using direct AniList ID
+- 🫦 `/manga random` - Get a random manga from AniList, powered by
   [AniBrain](https://anibrain.ai)
-- `/manga search` - Search for a manga
+- 🫦 `/manga search` - Search for a manga
 
 ### Game Commands
 
@@ -178,12 +181,12 @@ If you have any questions, feel free to join the
 
 > Utilize SIMKL for Metadata and TMDB for NSFW check
 
-- `/movie info` - Get information about a movie using direct SIMKL ID
-- `/movie random` - Get a random movie from SIMKL
-- `/movie search` - Search for a movie
-- `/tv info` - Get information about a TV show using direct SIMKL ID
-- `/tv random` - Get a random TV show from SIMKL
-- `/tv search` - Search for a TV show
+- 🫦 `/movie info` - Get information about a movie using direct SIMKL ID
+- 🫦 `/movie random` - Get a random movie from SIMKL
+- 🫦 `/movie search` - Search for a movie
+- 🫦 `/tv info` - Get information about a TV show using direct SIMKL ID
+- 🫦 `/tv random` - Get a random TV show from SIMKL
+- 🫦 `/tv search` - Search for a TV show
 
 ### Music Commands
 
@@ -207,29 +210,43 @@ If you have any questions, feel free to join the
 - ⌚ `/relations music track` - Get external link relation for a track
 - `/relations shows` - Get external link relation for an anime, TV, or movie
 
-### Profile Lookup Commands
+### Platform Specific Commands
 
-> Shows your profile information from supported platforms.
+> Show your profile from other platforms
 
-- `/profile anilist` - Get your AniList profile
-- `/profile discord` - Get your Discord profile
-- `/profile lastfm` - Get your Last.fm profile
-- `/profile myanimelist` - Get your MyAnimeList profile
-- `/profile shikimori` - Get your Shikimori profile
-- `/whoami` - Show stored information and settings about you on the bot
-  graphically and interactively
+#### AniList
+
+- `/anilist profile` - Get your AniList profile
+
+#### Discord
+
+- `/discord profile` - Get your Discord profile
+
+#### Last.fm
+
+- `/lastfm profile` - Get your Last.fm profile
+
+#### MyAnimeList
+
+- `/myanimelist profile` - Get your MyAnimeList profile
+
+#### Shikimori
+
+- `/shikimori profile` - Get your Shikimori profile
 
 ### Data Control
 
-- `/export data` - Export your data from the bot in JSON, CSV, YAML, and
+- 👁️ `/export data` - Export your data from the bot in JSON, CSV, YAML, and
   Python dictionary format
-- `/platform link` - Link your Discord account to other platforms
-- `/platform unlink` - Unlink your Discord account from other platforms
-- `/register` - Register your MAL account to the bot
-- `/unregister` - Unregister your MAL account and drops your settings from the
-  bot
-- `/verify` - Verify your MAL account to the server that host the bot (you may
-  need to join the club first)
+- 👁️ `/platform link` - Link your Discord account to other platforms
+- 👁️ `/platform unlink` - Unlink your Discord account from other platforms
+- 👁️ `/register` - Register your MAL account to the bot
+- 👁️ `/unregister` - Unregister your MAL account and drops your settings from
+  the bot
+- 🔐👁️ `/verify` - Verify your MAL account to the server that host the bot (you
+  may need to join the club first)
+- 👁️ `/whoami` - Show stored information and settings about you on the bot
+  graphically and interactively
 
 ### Settings Commands
 
@@ -237,26 +254,26 @@ If you have any questions, feel free to join the
 
 - `/usersettings language list` - List all available languages for the bot
   response
-- `/usersettings language set` - Set your preferred language for the bot
+- 👁️ `/usersettings language set` - Set your preferred language for the bot
   response
 
 #### Server Settings
 
-- `/serversettings language set` - Set your preferred language for the bot
+- 👮 `/serversettings language set` - Set your preferred language for the bot
   response
-- `/serversettings member register` - Register member's MAL account to the bot,
-  used when user can't invoke `/register`
-- `/seversettings member verify` - Verify memeber's MAL account after receiving
-  verification code from either `/serversettings member register` or `/register`
-  command, used when user can't invoke `/register`
+- 👮 `/serversettings member register` - Register member's MAL account to the
+  bot, used when user can't invoke `/register`
+- 👮 `/seversettings member verify` - Verify memeber's MAL account after
+  receiving verification code from either `/serversettings member register` or
+  `/register` command, used when user can't invoke `/register`
 
 #### Host/Admin Settings
 
 > These commands are only available for bot host staff in current configured
 > server.
 
-- `/hostsettings member verify` - Verify member's MAL account to the server that
-  hosts the bot, used when user can't invoke `/verify`
+- 🔐👮 `/hostsettings member verify` - Verify member's MAL account to the
+  server that hosts the bot, used when user can't invoke `/verify`
 
 ### Randomization Commands
 
@@ -279,6 +296,17 @@ If you have any questions, feel free to join the
 - `/utilities site status` - Check if the site is up or down
 - `/utilities snowflake` - Get a snowflake's information
 
+### Conversion Commands
+
+> Collection of commands that are used to convert something to another thing.
+
+- `/converter currency` - Convert currency from one unit to another
+- `/converter length` - Convert length from one unit to another
+- `/converter mass` - Convert mass from one unit to another
+- `/converter temperature` - Convert temperature from one unit to another
+- `/converter time` - Convert time from one unit to another
+- `/converter volume` - Convert volume from one unit to another
+
 ### Images: Cat Ears (Nekomimi) Commands
 
 > Collection of commands that returns SFW images of characters in cat ears
@@ -289,15 +317,21 @@ If you have any questions, feel free to join the
 - `/nekomimi random boy` - Get a random image of boy character in cat ears.
 - `/nekomimi random girl` - Get a random image of girl character in cat ears.
 
+### Japanese Commands
+
+> Collection of commands that are related to Japanese language.
+
+- `/nihongo romajinize` - Transliterate a Japanese script to Romaji/Latin script
+
 ### Dictionary Commands
 
 > Search a term from known dictionary!
 
 #### Urban Dictionary
 
-- ⌚ `/dictionary urban search` - Search a term from Urban Dictionary
-- ⌚ `/dictionary urban wotd` - Get a word of the day from Urban Dictionary
-- ⌚ `/dictionary urban random` - Get a random word from Urban Dictionary
+- 🫦⌚ `/urban search` - Search a term from Urban Dictionary
+- 🫦⌚ `/urban wotd` - Get a word of the day from Urban Dictionary
+- 🫦⌚ `/urban random` - Get a random word from Urban Dictionary
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
