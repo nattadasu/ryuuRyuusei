@@ -562,7 +562,8 @@ class Data:
         converted_value = Data.convert(value, from_unit, to_unit)
 
         if time_from_unit in Time.conversion_factors and time_to_unit in Time.conversion_factors:
-            converted_value, _ = Time.convert(converted_value, time_from_unit, time_to_unit)
+            converted_value, _ = Time.convert(
+                converted_value, time_from_unit, time_to_unit)
         else:
             raise ValueError("Invalid time units specified.")
 
