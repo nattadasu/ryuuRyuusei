@@ -424,7 +424,7 @@ class Time:
         "year": 31536000,
         "decade": 315360000,
         "generation": 630720000,
-        "centurie": 3153600000,
+        "century": 3153600000,
         "millennium": 31536000000,
     }
     """Dictionary of time units and their conversion to seconds"""
@@ -433,10 +433,10 @@ class Time:
     def convert(
         value: float,
         from_unit: Literal[
-            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "centurie", "millennium"
+            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"
         ],
         to_unit: Literal[
-            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "centuries", "millennium"
+            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"
         ],
     ) -> list[float | str]:
         """
@@ -444,8 +444,8 @@ class Time:
 
         Args:
             value (float): The value of time to convert
-            from_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "centurie", "millennium"]): The unit to convert from
-            to_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "centurie", "millennium"]): The unit to convert to
+            from_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"]): The unit to convert from
+            to_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"]): The unit to convert to
 
         Returns:
             list[float | str]: The converted time and the context of the conversion
@@ -462,3 +462,108 @@ class Time:
             converted_value = value  # Conversion between the same units
 
         return [converted_value, context]
+
+
+class Data:
+    """Class to convert data units"""
+
+    data_units = {
+        "bit": 1,
+        "byte": 8,
+        "kilobit": 1000,
+        "kibibit": 1024,
+        "kilobyte": 8000,
+        "kibibyte": 8192,
+        "megabit": 1e6,
+        "mebibit": 1048576,
+        "megabyte": 8e6,
+        "mebibyte": 8388608,
+        "gigabit": 1e9,
+        "gibibit": 1073741824,
+        "gigabyte": 8e9,
+        "gibibyte": 8589934592,
+        "terabit": 1e12,
+        "tebibit": 1099511627776,
+        "terabyte": 8e12,
+        "tebibyte": 8796093022208,
+        "petabit": 1e15,
+        "pebibit": 1125899906842624,
+        "petabyte": 8e15,
+        "pebibyte": 9007199254740992,
+    }
+    """Dictionary of metric units and their conversion factors"""
+
+    @staticmethod
+    def convert(
+        value: float,
+        from_unit: Literal[
+            "bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte",
+            "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit",
+            "pebibit", "petabyte", "pebibyte"
+        ],
+        to_unit: Literal[
+            "bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte",
+            "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit",
+            "pebibit", "petabyte", "pebibyte"
+        ]
+    ) -> float:
+        """
+        Converts data from one unit to another.
+
+        Args:
+            value (float): The value of data to convert
+            from_unit (Literal["bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte", "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit", "pebibit", "petabyte", "pebibyte"]): The unit to convert from
+            to_unit (Literal["bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte", "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit", "pebibit", "petabyte", "pebibyte"]): The unit to convert to
+
+        Returns:
+            float: The converted data
+        """
+        if from_unit in Data.data_units and to_unit in Data.data_units:
+            base_value = value * Data.data_units[from_unit]
+            converted_value = base_value / Data.data_units[to_unit]
+        else:
+            raise ValueError("Invalid units specified.")
+
+        return converted_value
+
+    @staticmethod
+    def convert_transfer_rate(
+        value: float,
+        from_unit: Literal[
+            "bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte",
+            "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit",
+            "pebibit", "petabyte", "pebibyte"
+        ],
+        to_unit: Literal[
+            "bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte",
+            "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit",
+            "pebibit", "petabyte", "pebibyte"
+        ],
+        time_from_unit: Literal[
+            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"
+        ],
+        time_to_unit: Literal[
+            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"
+        ]
+    ) -> float:
+        """
+        Converts data transfer rate from one unit to another.
+
+        Args:
+            value (float): The value of data transfer rate to convert
+            from_unit (Literal["bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte", "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit", "pebibit", "petabyte", "pebibyte"]): The unit to convert from
+            to_unit (Literal["bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte", "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit", "pebibit", "petabyte", "pebibyte"]): The unit to convert to
+            time_from_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"]): The time unit to convert from
+            time_to_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"]): The time unit to convert to
+
+        Returns:
+            float: The converted data transfer rate
+        """
+        converted_value = Data.convert(value, from_unit, to_unit)
+
+        if time_from_unit in Time.conversion_factors and time_to_unit in Time.conversion_factors:
+            converted_value, _ = Time.convert(converted_value, time_from_unit, time_to_unit)
+        else:
+            raise ValueError("Invalid time units specified.")
+
+        return converted_value
