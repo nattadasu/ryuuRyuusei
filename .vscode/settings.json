@@ -12,7 +12,9 @@
     ]
   },
   "files.associations": {
-    ".coveragerc": "ini"
+    ".coveragerc": "ini",
+    "**.service": "ini",
+    ".env.example": "properties"
   },
   "python.testing.unittestArgs": [
     "-v",

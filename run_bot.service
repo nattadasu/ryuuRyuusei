@@ -1,0 +1,29 @@
+; To use this service, modify necessary fields on .env, run_bot, and this file
+; before running the following commands.
+;
+; Next, copy this file to /etc/systemd/system/run_bot.service as root:
+; sudo cp run_bot.service /etc/systemd/system/run_bot.service
+;
+; Then run the following commands:
+; sudo systemctl enable run_bot.service
+; sudo systemctl start run_bot.service
+;
+; To check the status of your bot, run:
+; systemctl status run_bot.service
+; or
+; journalctl -u run_bot.service
+
+[Unit]
+Description=Run Ryuuzaki Ryuusei
+After=network.target
+
+[Service]
+; Replace user with your username
+User=user
+; Replace /home/user/run_bot with the path to your bot script run_bot
+ExecStart=/home/user/run_bot
+; Systemd will automatically restart your bot if it crashes
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

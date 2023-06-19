@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+
+# To use this script, you need to have a virtual environment set up in
+# ~/ryuuRyuusei/venv and configured .env file in ~/ryuuRyuusei
+#
+# You also need to have the bot cloned into ~/ryuuRyuusei
+# Then, copy this script to ~/, and make it executable with chmod +x run_bot
+
+# Assumes that the bot is in ~/ryuuRyuusei
+cd ~/ryuuRyuusei || exit 1
+source ./venv/bin/activate
+git pull
+pip install -U -r requirements.txt
+pip install -U -r requirements-dev.txt
+python firstRun.py
+python main.py
