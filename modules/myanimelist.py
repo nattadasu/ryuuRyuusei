@@ -11,16 +11,8 @@ from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
 import pandas as pd
-from interactions import (
-    Button,
-    ButtonStyle,
-    ComponentContext,
-    Embed,
-    EmbedAuthor,
-    EmbedField,
-    EmbedFooter,
-    SlashContext,
-)
+from interactions import (Button, ButtonStyle, ComponentContext, Embed,
+                          EmbedAuthor, EmbedField, EmbedFooter, SlashContext)
 
 from classes.anilist import AniList, AniListImageStruct, AniListMediaStruct
 from classes.animeapi import AnimeApi, AnimeApiAnime
@@ -29,20 +21,11 @@ from classes.jikan import JikanApi
 from classes.kitsu import Kitsu
 from classes.myanimelist import MyAnimeList
 from classes.simkl import Simkl
-from modules.commons import (
-    generate_commons_except_embed,
-    generate_trailer,
-    get_nsfw_status,
-    get_random_seed,
-    sanitize_markdown,
-    trim_synopsis,
-)
-from modules.const import (
-    EMOJI_FORBIDDEN,
-    MYANIMELIST_CLIENT_ID,
-    SIMKL_CLIENT_ID,
-    warnThreadCW,
-)
+from modules.commons import (generate_commons_except_embed, generate_trailer,
+                             get_nsfw_status, get_random_seed,
+                             sanitize_markdown, trim_synopsis)
+from modules.const import (EMOJI_FORBIDDEN, MYANIMELIST_CLIENT_ID,
+                           SIMKL_CLIENT_ID, warnThreadCW)
 
 
 def lookup_random_anime() -> int:

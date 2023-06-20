@@ -355,7 +355,7 @@ def convert_float_to_time(
     use_seconds: bool = False,
     show_weeks: bool = False,
     show_milliseconds: bool = False,
-    ) -> str:
+) -> str:
     """
     Convert a float representing a number of days to a string representing the number of days, hours, and minutes.
 

@@ -3,10 +3,10 @@ import asyncio
 import interactions as ipy
 
 from classes.rawg import RawgApi
-from modules.rawg import rawg_submit
 from modules.commons import generate_search_embed, sanitize_markdown
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
+from modules.rawg import rawg_submit
 
 
 class Games(ipy.Extension):

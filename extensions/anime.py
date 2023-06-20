@@ -3,12 +3,13 @@ from typing import Literal
 
 import interactions as ipy
 
+from classes.i18n import LanguageDict
 from modules.anilist import search_al_anime
 from modules.commons import generate_search_embed, sanitize_markdown
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
-from modules.myanimelist import mal_submit, search_mal_anime, lookup_random_anime
-from classes.i18n import LanguageDict
+from modules.myanimelist import (lookup_random_anime, mal_submit,
+                                 search_mal_anime)
 
 
 class Anime(ipy.Extension):

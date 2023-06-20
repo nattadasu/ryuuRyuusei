@@ -4,15 +4,11 @@ from typing import Dict, Literal
 import interactions as ipy
 
 from classes.excepts import MediaIsNsfw, ProviderHttpError
-from classes.tmdb import TheMovieDb
 from classes.simkl import Simkl
-from modules.commons import (
-    trim_synopsis,
-    generate_trailer,
-    get_nsfw_status,
-    platform_exception_embed,
-    PlatformErrType,
-)
+from classes.tmdb import TheMovieDb
+from modules.commons import (PlatformErrType, generate_trailer,
+                             get_nsfw_status, platform_exception_embed,
+                             trim_synopsis)
 from modules.const import MESSAGE_WARN_CONTENTS
 from modules.i18n import fetch_language_data
 from modules.platforms import Platform, media_id_to_platform

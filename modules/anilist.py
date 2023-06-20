@@ -3,29 +3,16 @@ import re
 from datetime import datetime, timezone
 from typing import Any, Literal
 
-from interactions import (
-    Button,
-    ButtonStyle,
-    ComponentContext,
-    Embed,
-    EmbedAuthor,
-    EmbedField,
-    PartialEmoji,
-    SlashContext,
-)
+from interactions import (Button, ButtonStyle, ComponentContext, Embed,
+                          EmbedAuthor, EmbedField, PartialEmoji, SlashContext)
 
 from classes.anilist import AniList, AniListMediaStruct
 from classes.excepts import MediaIsNsfw, ProviderHttpError
-from modules.commons import (
-    convert_html_to_markdown,
-    generate_trailer,
-    get_nsfw_status,
-    platform_exception_embed,
-    PlatformErrType,
-    sanitize_markdown,
-    trim_synopsis,
-)
-from modules.const import banned_tags, MESSAGE_WARN_CONTENTS
+from modules.commons import (PlatformErrType, convert_html_to_markdown,
+                             generate_trailer, get_nsfw_status,
+                             platform_exception_embed, sanitize_markdown,
+                             trim_synopsis)
+from modules.const import MESSAGE_WARN_CONTENTS, banned_tags
 from modules.i18n import fetch_language_data
 
 

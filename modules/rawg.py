@@ -1,23 +1,12 @@
 import re
 
-from interactions import (
-    Button,
-    ButtonStyle,
-    ComponentContext,
-    Embed,
-    EmbedAuthor,
-    EmbedField,
-    SlashContext,
-)
+from interactions import (Button, ButtonStyle, ComponentContext, Embed,
+                          EmbedAuthor, EmbedField, SlashContext)
 
 from classes.excepts import ProviderHttpError
 from classes.rawg import RawgApi, RawgGameData
-from modules.commons import (
-    platform_exception_embed,
-    PlatformErrType,
-    sanitize_markdown,
-    trim_synopsis,
-)
+from modules.commons import (PlatformErrType, platform_exception_embed,
+                             sanitize_markdown, trim_synopsis)
 from modules.i18n import fetch_language_data
 
 
