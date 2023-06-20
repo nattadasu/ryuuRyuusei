@@ -262,7 +262,10 @@ async def generate_anilist(
         people_voted += item["amount"]
 
     if average_score in [None, 0]:
-        average_score = round(total_score / people_voted)
+        try:
+            average_score = round(total_score / people_voted)
+        except ZeroDivisionError:
+            average_score = 0
 
     if (people_voted is None) or (people_voted == 0):
         people_voted = "0 person voted"
