@@ -6,6 +6,7 @@ from modules.commons import convert_float_to_time
 
 evaluate = BAP()
 
+
 class Length:
     """Class to convert length units"""
     imperial_units: dict[str, float] = {
@@ -112,17 +113,21 @@ class Length:
             float: Converted value
         """
         if from_unit in Length.imperial_units and to_unit in Length.imperial_units:
-            base_value = evaluate.evaluate(f"{value} * {Length.imperial_units[from_unit]}")
+            base_value = evaluate.evaluate(
+                f"{value} * {Length.imperial_units[from_unit]}")
             converted_value = base_value / Length.imperial_units[to_unit]
         elif from_unit in Length.metric_units and to_unit in Length.metric_units:
-            base_value = evaluate.evaluate(f"{value} * {Length.metric_units[from_unit]}")
+            base_value = evaluate.evaluate(
+                f"{value} * {Length.metric_units[from_unit]}")
             converted_value = base_value / Length.metric_units[to_unit]
         elif from_unit in Length.imperial_units and to_unit in Length.metric_units:
-            total_inches = evaluate.evaluate(f"{value} * {Length.imperial_units[from_unit]}")
+            total_inches = evaluate.evaluate(
+                f"{value} * {Length.imperial_units[from_unit]}")
             total_meters = total_inches * Length.inch_to_meter
             converted_value = total_meters / Length.metric_units[to_unit]
         elif from_unit in Length.metric_units and to_unit in Length.imperial_units:
-            total_meters = evaluate.evaluate(f"{value} * {Length.metric_units[from_unit]}")
+            total_meters = evaluate.evaluate(
+                f"{value} * {Length.metric_units[from_unit]}")
             total_inches = total_meters / Length.inch_to_meter
             converted_value = total_inches / Length.imperial_units[to_unit]
 
@@ -285,17 +290,21 @@ class Mass:
             float: The converted mass
         """
         if from_unit in Mass.imperial_units and to_unit in Mass.imperial_units:
-            base_value = evaluate.evaluate(f"{value} * {Mass.imperial_units[from_unit]}")
+            base_value = evaluate.evaluate(
+                f"{value} * {Mass.imperial_units[from_unit]}")
             converted_value = base_value / Mass.imperial_units[to_unit]
         elif from_unit in Mass.metric_units and to_unit in Mass.metric_units:
-            base_value = evaluate.evaluate(f"{value} * {Mass.metric_units[from_unit]}")
+            base_value = evaluate.evaluate(
+                f"{value} * {Mass.metric_units[from_unit]}")
             converted_value = base_value / Mass.metric_units[to_unit]
         elif from_unit in Mass.imperial_units and to_unit in Mass.metric_units:
-            total_pounds = evaluate.evaluate(f"{value} * {Mass.imperial_units[from_unit]}")
+            total_pounds = evaluate.evaluate(
+                f"{value} * {Mass.imperial_units[from_unit]}")
             total_kilograms = total_pounds * Mass.pound_to_kilogram
             converted_value = total_kilograms / Mass.metric_units[to_unit]
         elif from_unit in Mass.metric_units and to_unit in Mass.imperial_units:
-            total_kilograms = evaluate.evaluate(f"{value} * {Mass.metric_units[from_unit]}")
+            total_kilograms = evaluate.evaluate(
+                f"{value} * {Mass.metric_units[from_unit]}")
             total_pounds = total_kilograms / Mass.pound_to_kilogram
             converted_value = total_pounds / Mass.imperial_units[to_unit]
 
@@ -366,17 +375,21 @@ class Volume:
             float: The converted volume
         """
         if from_unit in Volume.imperial_units and to_unit in Volume.imperial_units:
-            base_value = evaluate.evaluate(f"{value} * {Volume.imperial_units[from_unit]}")
+            base_value = evaluate.evaluate(
+                f"{value} * {Volume.imperial_units[from_unit]}")
             converted_value = base_value / Volume.imperial_units[to_unit]
         elif from_unit in Volume.metric_units and to_unit in Volume.metric_units:
-            base_value = evaluate.evaluate(f"{value} * {Volume.metric_units[from_unit]}")
+            base_value = evaluate.evaluate(
+                f"{value} * {Volume.metric_units[from_unit]}")
             converted_value = base_value / Volume.metric_units[to_unit]
         elif from_unit in Volume.imperial_units and to_unit in Volume.metric_units:
-            total_teaspoons = evaluate.evaluate(f"{value} * {Volume.imperial_units[from_unit]}")
+            total_teaspoons = evaluate.evaluate(
+                f"{value} * {Volume.imperial_units[from_unit]}")
             total_milliliters = total_teaspoons * Volume.teaspoon_to_milliliter
             converted_value = total_milliliters / Volume.metric_units[to_unit]
         elif from_unit in Volume.metric_units and to_unit in Volume.imperial_units:
-            total_milliliters = evaluate.evaluate(f"{value} * {Volume.metric_units[from_unit]}")
+            total_milliliters = evaluate.evaluate(
+                f"{value} * {Volume.metric_units[from_unit]}")
             total_teaspoons = total_milliliters / Volume.teaspoon_to_milliliter
             converted_value = total_teaspoons / Volume.imperial_units[to_unit]
 
@@ -422,10 +435,12 @@ class Time:
         Returns:
             list[float | str]: The converted time and the context of the conversion
         """
-        days_total = evaluate.evaluate(f"{value} * {(Time.conversion_factors[from_unit] / Time.conversion_factors['day'])}")
+        days_total = evaluate.evaluate(
+            f"{value} * {(Time.conversion_factors[from_unit] / Time.conversion_factors['day'])}")
         context = convert_float_to_time(days_total, show_weeks=True)
         if from_unit in Time.conversion_factors and to_unit in Time.conversion_factors:
-            converted_value = evaluate.evaluate(f"{value} * {(Time.conversion_factors[from_unit] / Time.conversion_factors[to_unit])}")
+            converted_value = evaluate.evaluate(
+                f"{value} * {(Time.conversion_factors[from_unit] / Time.conversion_factors[to_unit])}")
         else:
             converted_value = value  # Conversion between the same units
 
@@ -486,7 +501,8 @@ class Data:
             float: The converted data
         """
         if from_unit in Data.data_units and to_unit in Data.data_units:
-            base_value = evaluate.evaluate(f"{value} * {Data.data_units[from_unit]}")
+            base_value = evaluate.evaluate(
+                f"{value} * {Data.data_units[from_unit]}")
             converted_value = base_value / Data.data_units[to_unit]
         else:
             raise ValueError("Invalid units specified.")
