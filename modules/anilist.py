@@ -426,4 +426,4 @@ async def anilist_submit(ctx: SlashContext | ComponentContext, media_id: int) ->
             error_type=PlatformErrType.SYSTEM,
         )
 
-    await ctx.send(content=f"<@{ctx.author.id}>", embed=embed, components=buttons)
+    await ctx.send(embed=embed, components=buttons)

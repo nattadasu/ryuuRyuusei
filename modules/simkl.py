@@ -392,4 +392,4 @@ async def simkl_submit(
             error_type=PlatformErrType.SYSTEM,
         )
 
-    await ctx.send(content=f"<@{ctx.author.id}>", embed=embed, components=buttons)
+    await ctx.send(embed=embed, components=buttons)

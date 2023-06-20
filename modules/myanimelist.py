@@ -522,7 +522,7 @@ async def mal_submit(ctx: SlashContext | ComponentContext, ani_id: int) -> None:
         )
         trailer.extend(buttons)  # type: ignore
         # type: ignore
-        await ctx.send(content=f"{ctx.author.mention}", embeds=dcEm, components=trailer)
+        await ctx.send(embeds=dcEm, components=trailer)
 
     except MediaIsNsfw as e:
         await ctx.send(f"**{e}**\n")

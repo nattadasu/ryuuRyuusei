@@ -192,4 +192,4 @@ async def rawg_submit(ctx: SlashContext | ComponentContext, slug: str) -> None:
             error_type=PlatformErrType.SYSTEM,
         )
 
-    await ctx.send(content=f"{ctx.author.mention}", embed=embed, components=buttons)
+    await ctx.send(embed=embed, components=buttons)
