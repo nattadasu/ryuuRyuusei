@@ -288,6 +288,8 @@ class RawgGameData(RawgBaseData):
     """User game"""
     reviews_count: int | None = None
     """Reviews count"""
+    community_rating: int | None = None
+    """Community rating"""
     saturated_color: str | None = None
     """Saturated color"""
     dominant_color: str | None = None
