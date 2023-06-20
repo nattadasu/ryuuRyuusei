@@ -111,7 +111,8 @@ class SpotifyApi:
             )
         async with self.session.get(
             f"{self.base_url}/v1/search",
-            params={"q": query, "type": media_type, "limit": limit, "offset": offset},
+            params={"q": query, "type": media_type,
+                    "limit": limit, "offset": offset},
             headers={"Authorization": f"Bearer {self.token}"},
         ) as response:
             if response.status == 200:
