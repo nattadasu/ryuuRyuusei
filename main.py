@@ -10,6 +10,7 @@ import interactions as ipy
 from interactions.client import const as ipy_const
 
 from modules.const import BOT_TOKEN, SENTRY_DSN, USER_AGENT
+from modules.commons import convert_float_to_time
 from modules.oobe.commons import UnsupportedVersion
 
 py_ver = sys.version_info
@@ -126,19 +127,10 @@ def uptime() -> None:
     """
     bot_stop: dtime = dtime.now(tz=tz.utc)
     print("[Bcm] Date: " + bot_stop.strftime("%d/%m/%Y %H:%M:%S"))
-    total_time = bot_stop - bot_run
-    total_time = dtime.strptime(
-        str(total_time),
-        "%H:%M:%S.%f",
-    )
-    # add years to months
-    months = (total_time.month - 1) + ((total_time.year - 1900) * 12)
-    days = total_time.day - 1
-    hours = total_time.hour
-    minutes = total_time.minute
-    seconds = total_time.second
-    milliseconds = total_time.microsecond / 1000
-    total_time = f"{months} months, {days} days, {hours} hours, {minutes} minutes, {seconds} seconds, {milliseconds} milliseconds"
+    differences = bot_stop - bot_run
+    total_seconds = differences.total_seconds()
+    total_time = convert_float_to_time(total_seconds, use_seconds=True,
+                                       show_milliseconds=True)
     print(f"      Uptime: {total_time}")
     return
 

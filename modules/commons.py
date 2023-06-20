@@ -350,19 +350,29 @@ def pluralize(x):
     return "s" if x > 1 else ""
 
 
-def convert_float_to_time(day_float: float, show_weeks: bool = False) -> str:
+def convert_float_to_time(
+    time_float: float | int,
+    use_seconds: bool = False,
+    show_weeks: bool = False,
+    show_milliseconds: bool = False,
+    ) -> str:
     """
     Convert a float representing a number of days to a string representing the number of days, hours, and minutes.
 
     Args:
-        day_float (float): The number of days.
+        time_float (float, int): The number of days.
+        use_seconds (bool, optional): Is the number of days in seconds? If not, it is assumed to be in days. Defaults to False.
         show_weeks (bool, optional): Whether to show weeks in the output. Defaults to False.
+        show_milliseconds (bool, optional): Whether to show milliseconds in the output. Defaults to False.
 
     Returns:
         str: A string representing the number of months, days, hours, and minutes.
     """
-    # Convert day float to total seconds
-    total_seconds = int(day_float * 24 * 60 * 60)
+    if use_seconds:
+        total_seconds = time_float
+    else:
+        # Convert day float to total seconds
+        total_seconds = float(time_float * 24 * 60 * 60)
 
     # Create a timedelta object with the total seconds
     delta = timedelta(seconds=total_seconds)
@@ -374,10 +384,15 @@ def convert_float_to_time(day_float: float, show_weeks: bool = False) -> str:
         weeks = delta.days % 365 % 30 // 7
         days = delta.days % 365 % 30 % 7
     else:
+        weeks = None
         days = delta.days % 365 % 30
     hours = delta.seconds // 3600
     minutes = delta.seconds // 60 % 60
     seconds = delta.seconds % 60
+    if show_milliseconds:
+        milliseconds = delta.microseconds // 1000
+    else:
+        milliseconds = None
 
     words = [
         f"{years} year{pluralize(years)}" if years else "",
@@ -387,6 +402,7 @@ def convert_float_to_time(day_float: float, show_weeks: bool = False) -> str:
         f"{hours} hour{pluralize(hours)}" if hours else "",
         f"{minutes} minute{pluralize(minutes)}" if minutes else "",
         f"{seconds} second{pluralize(seconds)}" if seconds else "",
+        f"{milliseconds} millisecond{pluralize(milliseconds)}" if milliseconds else "",
     ]
 
     result = ", ".join(filter(None, words))
