@@ -311,7 +311,8 @@ class Shikimori:
         if data.get("favourites", None):
             for k, v in data["favourites"].items():
                 data["favourites"][k] = (
-                    [ShikimoriFavoriteStruct(**a) for a in data["favourites"][k]]
+                    [ShikimoriFavoriteStruct(**a)
+                     for a in data["favourites"][k]]
                     if v is not None or len(v) > 0
                     else None
                 )
