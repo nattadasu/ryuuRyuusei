@@ -11,17 +11,12 @@ from json import loads as jlo
 
 import pandas as pd
 from fuzzywuzzy import fuzz
-from interactions import (
-    BaseContext,
-    AutoShardedClient,
-    Embed,
-    EmbedField,
-    InteractionContext,
-)
+from interactions import (AutoShardedClient, BaseContext, Embed, EmbedField,
+                          InteractionContext)
 from interactions.ext.paginators import Paginator
 
-from modules.const import LANGUAGE_CODE
 from classes.i18n import LanguageDict
+from modules.const import LANGUAGE_CODE
 
 
 def fetch_language_data(code: str, use_raw: bool = True) -> LanguageDict:
@@ -89,7 +84,7 @@ async def paginate_language(bot: AutoShardedClient, ctx: InteractionContext) -> 
     pages = []
     for i in range(0, len(langs), 15):
         paged = []
-        for lang in langs[i : i + 15]:
+        for lang in langs[i: i + 15]:
             flag = lang["code"].split("_")[1].lower()
             match flag:
                 case "sp":
@@ -167,7 +162,8 @@ async def set_default_language(
     """
     if isGuild is True:
         if check_lang_exist(code) is False:
-            raise Exception("Language not found, recheck the spelling and try again")
+            raise Exception(
+                "Language not found, recheck the spelling and try again")
         # check if guild is already in database
         try:
             df = pd.read_csv("database/server.csv", sep="\t")
@@ -190,7 +186,8 @@ async def set_default_language(
                 writer.writerow([ctx.guild.id, code])
     else:
         if check_lang_exist(code) is False:
-            raise Exception("Language not found, recheck the spelling and try again")
+            raise Exception(
+                "Language not found, recheck the spelling and try again")
 
         try:
             df = pd.read_csv(
@@ -201,14 +198,14 @@ async def set_default_language(
             )
 
             if df.query(f"discordId == '{str(ctx.author.id)}'").empty:
-                dfa = pd.DataFrame(
-                    [[str(ctx.author.id), code]], columns=["discordId", "language"]
-                )
+                dfa = pd.DataFrame([[str(ctx.author.id), code]], columns=[
+                    "discordId", "language"])
                 dfen = dfa.append(df, ignore_index=True)
                 dfen.to_csv("database/member.csv", sep="\t", index=False)
             else:
                 # if it is, update it
-                df.loc[df["discordId"] == str(ctx.author.id), "language"] = f"{code}"
+                df.loc[df["discordId"] == str(
+                    ctx.author.id), "language"] = f"{code}"
                 df.to_csv("database/member.csv", sep="\t", index=False)
         except BaseException:
             # if the database doesn't exist, create it

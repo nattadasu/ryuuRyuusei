@@ -23,14 +23,13 @@ https://github.com/Animanga-Initiative/animeManga-autoBackup/blob/main/Modules/G
 """
 
 import asyncio
-import aiohttp
 import urllib.parse
-from modules.const import (
-    ANILIST_CLIENT_ID,
-    ANILIST_CLIENT_SECRET,
-    ANILIST_REDIRECT_URI,
-)
 from datetime import datetime, timezone
+
+import aiohttp
+
+from modules.const import (ANILIST_CLIENT_ID, ANILIST_CLIENT_SECRET,
+                           ANILIST_REDIRECT_URI)
 
 
 async def get_auth_code():

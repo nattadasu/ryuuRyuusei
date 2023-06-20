@@ -8,12 +8,8 @@ from emoji import emojize
 from classes.database import UserDatabase, UserDatabaseClass
 from classes.html.myanimelist import HtmlMyAnimeList
 from classes.verificator import Verificator
-from modules.const import (
-    EMOJI_FORBIDDEN,
-    EMOJI_SUCCESS,
-    EMOJI_UNEXPECTED_ERROR,
-    EMOJI_USER_ERROR,
-)
+from modules.const import (EMOJI_FORBIDDEN, EMOJI_SUCCESS,
+                           EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR)
 from modules.discord import format_username
 from modules.i18n import search_language, set_default_language
 
@@ -220,8 +216,7 @@ class ServerSettings(ipy.Extension):
                     ipy.EmbedField(
                         name=overwrite_prompt,
                         value=f"```\n{is_pending.uuid}\n```**Note:** Verification code expires <t:{remaining_time}:R>.",
-                    )
-                )
+                    ))
                 epoch = datetime.fromtimestamp(
                     is_pending.epoch_time, tz=timezone.utc)
             else:
@@ -231,8 +226,7 @@ class ServerSettings(ipy.Extension):
                     ipy.EmbedField(
                         name=overwrite_prompt,
                         value=f"```\n{generate.uuid}\n```**Note:** Verification code expires <t:{remaining_time}:R>.",
-                    )
-                )
+                    ))
                 epoch = datetime.fromtimestamp(
                     generate.epoch_time, tz=timezone.utc)
 

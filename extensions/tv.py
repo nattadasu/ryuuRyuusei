@@ -165,7 +165,8 @@ class TvShow(ipy.Extension):
         await ctx.defer()
         await simkl_submit(ctx, media_id)
 
-    @tv.subcommand(sub_cmd_name="random", sub_cmd_description="Get a random TV show")
+    @tv.subcommand(sub_cmd_name="random",
+                   sub_cmd_description="Get a random TV show")
     async def tv_random(self, ctx: ipy.SlashContext):
         await ctx.defer()
         send = await ctx.send(

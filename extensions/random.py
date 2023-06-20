@@ -3,12 +3,8 @@ import re
 import interactions as ipy
 
 from classes.randomorg import ProviderHttpError, RandomOrg
-from modules.const import (
-    EMOJI_ATTENTIVE,
-    EMOJI_DOUBTING,
-    EMOJI_SUCCESS,
-    EMOJI_UNEXPECTED_ERROR,
-)
+from modules.const import (EMOJI_ATTENTIVE, EMOJI_DOUBTING, EMOJI_SUCCESS,
+                           EMOJI_UNEXPECTED_ERROR)
 
 
 class Random(ipy.Extension):
@@ -108,8 +104,7 @@ class Random(ipy.Extension):
         )
         embed.set_thumbnail(url=emoji_url)
         embed.set_footer(
-            text="Please do not take this seriously, it's for fun purposes only"
-        )
+            text="Please do not take this seriously, it's for fun purposes only")
         await ctx.send(embed=embed)
 
     @random.subcommand(

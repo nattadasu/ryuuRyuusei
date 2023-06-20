@@ -37,9 +37,8 @@ class EsrbRating(RawgBaseData):
         "rating-pending",
     ] | None = None
     """Slug"""
-    name: Literal[
-        "Everyone", "Everyone 10+", "Teen", "Mature", "Adults Only", "Rating Pending"
-    ] | None = None
+    name: Literal["Everyone", "Everyone 10+", "Teen", "Mature",
+                  "Adults Only", "Rating Pending"] | None = None
     """Name"""
 
 
@@ -442,8 +441,8 @@ class RawgApi:
                 rawgRes = await resp.json()
                 return rawgRes["results"]
             raise ProviderHttpError(
-                f"RAWG API returned {resp.status}. Reason: {resp.text()}", resp.status
-            )
+                f"RAWG API returned {resp.status}. Reason: {resp.text()}",
+                resp.status)
 
     async def get_data(self, slug: str) -> RawgGameData:
         """

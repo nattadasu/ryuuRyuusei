@@ -95,8 +95,7 @@ class Manga(ipy.Extension):
                         name=md_title,
                         value=f"{md_native_title}{is_adult}{format_str}, {status}, {year}",
                         inline=False,
-                    )
-                )
+                    ))
                 so.append(
                     ipy.StringSelectOption(
                         label=md_title[:77] +

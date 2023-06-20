@@ -48,12 +48,18 @@ class AniListCog(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(name="Card", value="card"),
                     ipy.SlashCommandChoice(
-                        name="Minimal (default)", value="minimal"),
-                    ipy.SlashCommandChoice(name="Classic", value="old"),
+                            name="Card",
+                            value="card"),
                     ipy.SlashCommandChoice(
-                        name="Highly Detailed", value="new"),
+                        name="Minimal (default)",
+                        value="minimal"),
+                    ipy.SlashCommandChoice(
+                        name="Classic",
+                        value="old"),
+                    ipy.SlashCommandChoice(
+                        name="Highly Detailed",
+                        value="new"),
                 ],
             ),
         ],

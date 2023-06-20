@@ -1,11 +1,7 @@
 import interactions as ipy
 
 from classes.database import UserDatabase
-from modules.const import (
-    AUTHOR_USERID,
-    VERIFICATION_SERVER,
-    VERIFIED_ROLE,
-)
+from modules.const import AUTHOR_USERID, VERIFICATION_SERVER, VERIFIED_ROLE
 from modules.discord import format_username
 
 
@@ -23,8 +19,8 @@ class HostSettings(ipy.Extension):
     )
 
     member = hostsettings.group(
-        name="member", description="Manage member settings, for self-hosted bot only"
-    )
+        name="member",
+        description="Manage member settings, for self-hosted bot only")
 
     @member.subcommand(
         sub_cmd_name="verify",

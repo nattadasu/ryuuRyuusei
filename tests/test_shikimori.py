@@ -5,7 +5,11 @@ import unittest
 try:
     from classes.shikimori import Shikimori, ShikimoriUserStruct
 except ImportError:
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    sys.path.append(
+        os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__),
+                "..")))
     from classes.shikimori import Shikimori, ShikimoriUserStruct
 
 

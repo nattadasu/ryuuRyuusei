@@ -122,7 +122,8 @@ class PronounDB:
             Pronoun: The pronouns of the user
         """
         params = {"platform": platform.value, "id": user_id}
-        cache_file_path = self.get_cache_file_path(f"{platform.value}/{user_id}.json")
+        cache_file_path = self.get_cache_file_path(
+            f"{platform.value}/{user_id}.json")
         cached_file = self.read_cached_data(cache_file_path)
         if cached_file:
             cached_file["pronouns"] = Pronouns(cached_file["pronouns"])

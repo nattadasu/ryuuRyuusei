@@ -43,7 +43,8 @@ def overflow_embed(value: float, from_unit: str, to_unit: str) -> ipy.Embed:
     return embed
 
 
-def result_embed(value: float, from_unit: str, to_unit: str, result: int | list[float | str]) -> ipy.Embed:
+def result_embed(value: float, from_unit: str, to_unit: str,
+                 result: int | list[float | str]) -> ipy.Embed:
     """Returns an embed for when the result is too large to be displayed"""
     from_unit = from_unit.replace("_", " ")
     to_unit = to_unit.replace("_", " ")
@@ -458,8 +459,7 @@ class ConverterCog(ipy.Extension):
                 description=f"An error occurred while trying to get exchange rates from ExchangeRate-API.",
                 error=f"{e}",
                 lang_dict=l_,
-                error_type=PlatformErrType.SYSTEM
-            )
+                error_type=PlatformErrType.SYSTEM)
             await ctx.send(embed=embed)
         return
 

@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 from typing import Literal
+
 import aiohttp
-from modules.const import USER_AGENT
+
 from classes.excepts import ProviderHttpError, ProviderTypeError
+from modules.const import USER_AGENT
 
 platforms = Literal[
     "amazonMusic",
@@ -197,9 +199,8 @@ class Odesli:
         """
         if (not url) and (not platform or not stream_type or not stream_id):
             raise ProviderTypeError(
-                "If url is not supplied, platform, stream_type and stream_id are required",
-                [platform, stream_type, stream_id],
-            )
+                "If url is not supplied, platform, stream_type and stream_id are required", [
+                    platform, stream_type, stream_id], )
 
         params = {
             "url": url,

@@ -1,14 +1,20 @@
 import os
 import sys
 import unittest
+
 from interactions import Snowflake
 
 try:
-    from classes.usrbg import UserBackgroundStruct, UserBackground
+    from classes.usrbg import UserBackground, UserBackgroundStruct
 except ImportError:
     # add the path to the 'modules' directory to the system path
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    from classes.usrbg import UserBackgroundStruct, UserBackground
+    sys.path.insert(
+        0,
+        os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__),
+                "..")))
+    from classes.usrbg import UserBackground, UserBackgroundStruct
 
 
 class UserBackgroundTest(unittest.IsolatedAsyncioTestCase):

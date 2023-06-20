@@ -163,7 +163,8 @@ class Movies(ipy.Extension):
         await ctx.defer()
         await simkl_submit(ctx, media_id, "movies")
 
-    @movies.subcommand(sub_cmd_name="random", sub_cmd_description="Get a random movie")
+    @movies.subcommand(sub_cmd_name="random",
+                       sub_cmd_description="Get a random movie")
     async def movie_random(self, ctx: ipy.SlashContext):
         await ctx.defer()
         send = await ctx.send(

@@ -79,7 +79,8 @@ async def main():
         sp = " " * lpg
         print(f"{pg} Loading core/bot extension: {ext}")
         try:
-            if ext == "interactions.ext.sentry" and SENTRY_DSN not in ["", None]:
+            if ext == "interactions.ext.sentry" and SENTRY_DSN not in [
+                    "", None]:
                 bot.load_extension(ext, token=SENTRY_DSN)
             else:
                 bot.load_extension(ext)

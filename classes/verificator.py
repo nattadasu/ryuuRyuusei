@@ -7,8 +7,8 @@ This class is used to verify user input during registration
 import json
 import os
 import time
-from datetime import datetime, timezone
 from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
 from uuid import uuid4
 
 

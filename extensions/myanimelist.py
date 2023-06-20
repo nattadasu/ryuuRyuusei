@@ -49,12 +49,15 @@ class MyAnimeListCog(ipy.Extension):
                 required=False,
                 choices=[
                     ipy.SlashCommandChoice(
-                        name="Minimal (Default)",
-                        value="minimal",
+                            name="Minimal (Default)",
+                            value="minimal",
                     ),
-                    ipy.SlashCommandChoice(name="Classic", value="old"),
                     ipy.SlashCommandChoice(
-                        name="Highly Detailed", value="new"),
+                        name="Classic",
+                        value="old"),
+                    ipy.SlashCommandChoice(
+                        name="Highly Detailed",
+                        value="new"),
                 ],
             ),
         ],
@@ -182,7 +185,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                 icon_url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png",
             ),
             color=0x2E51A2,
-            timestamp=dtime.now(tz=tz.utc),
+            timestamp=dtime.now(
+                tz=tz.utc),
         )
         embed.set_thumbnail(url=user_data.images.webp.image_url)
 
@@ -328,12 +332,10 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             embed.set_image(
                 url=f"https://malheatmap.com/users/{username}/signature")
             embed.set_footer(
-                text="Powered by Jikan API for data and MAL Heatmap for Activity Heatmap. Data can be inacurrate as Jikan and Ryuusei cache your profile up to a day"
-            )
+                text="Powered by Jikan API for data and MAL Heatmap for Activity Heatmap. Data can be inacurrate as Jikan and Ryuusei cache your profile up to a day")
         else:
             embed.set_footer(
-                text='Powered by Jikan API for data. To expand what data will be shown, modify embed_layout parameter to "old" or "new"'
-            )
+                text='Powered by Jikan API for data. To expand what data will be shown, modify embed_layout parameter to "old" or "new"')
 
         await ctx.send(embed=embed, components=components)
 

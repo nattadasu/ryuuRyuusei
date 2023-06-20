@@ -1,21 +1,17 @@
+import re
+from datetime import datetime
+from typing import Literal
+
 import interactions as ipy
 
 from classes.animeapi import AnimeApi, AnimeApiAnime
-from classes.trakt import Trakt, TraktMediaStruct, TraktIdsStruct
-from classes.simkl import Simkl, SimklRelations, SimklMediaTypes
 from classes.excepts import ProviderHttpError, SimklTypeError
 from classes.kitsu import Kitsu
-from typing import Literal
-import re
-from datetime import datetime
-
-from modules.platforms import (
-    platforms_to_fields,
-    media_id_to_platform,
-    get_platform_color,
-)
-
+from classes.simkl import Simkl, SimklMediaTypes, SimklRelations
+from classes.trakt import Trakt, TraktIdsStruct, TraktMediaStruct
 from modules.const import EMOJI_UNEXPECTED_ERROR
+from modules.platforms import (get_platform_color, media_id_to_platform,
+                               platforms_to_fields)
 
 
 class ExtenalSitesRelations(ipy.Extension):
@@ -404,9 +400,8 @@ class ExtenalSitesRelations(ipy.Extension):
                         media_type=trakt.MediaType(media_type_),
                     )
                 trakt_type = trakt_data.type
-                trakt_data = (
-                    trakt_data.show if trakt_data.type == "show" else trakt_data.movie
-                )
+                trakt_data = (trakt_data.show if trakt_data.type ==
+                              "show" else trakt_data.movie)
                 trakt_id = trakt_data.ids.trakt
             except ProviderHttpError as eht:
                 # silence error
@@ -539,8 +534,7 @@ class ExtenalSitesRelations(ipy.Extension):
                 color=col,
                 fields=relsEm,
                 footer=ipy.EmbedFooter(
-                    text=f"Powered by nattadasu's AnimeAPI, Trakt, and SIMKL.{postsrc}"
-                ),
+                    text=f"Powered by nattadasu's AnimeAPI, Trakt, and SIMKL.{postsrc}"),
             )
             dcEm.set_thumbnail(url=poster)
         else:
@@ -555,8 +549,7 @@ class ExtenalSitesRelations(ipy.Extension):
             if emoji_error:
                 emoji_error = emoji_error.group(2)
                 dcEm.set_thumbnail(
-                    url=f"https://cdn.discordapp.com/emojis/{emoji_error}.png?v=1"
-                )
+                    url=f"https://cdn.discordapp.com/emojis/{emoji_error}.png?v=1")
 
         await ctx.send(embed=dcEm)
 

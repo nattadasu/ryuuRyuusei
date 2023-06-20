@@ -1,8 +1,8 @@
 import os
 import sys
 import unittest
-from datetime import datetime, timezone
 from asyncio import sleep
+from datetime import datetime, timezone
 from typing import Any, Coroutine
 
 from interactions import Snowflake
@@ -11,7 +11,12 @@ try:
     from classes.database import UserDatabase, UserDatabaseClass
 except ImportError:
     # add the path to the 'modules' directory to the system path
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    sys.path.insert(
+        0,
+        os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__),
+                "..")))
     from classes.database import UserDatabase, UserDatabaseClass
 
 

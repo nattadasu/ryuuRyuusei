@@ -54,10 +54,8 @@ class NekomimiDb:
     >>> await ctx.send(embed=embed)
     """
 
-    def __init__(
-        self,
-        gender: NekomimiGender | Literal["boy", "girl", "nb", "both"] | None = None,
-    ):
+    def __init__(self, gender: NekomimiGender |
+                 Literal["boy", "girl", "nb", "both"] | None = None, ):
         """
         Initialize a Nekomimi object
 

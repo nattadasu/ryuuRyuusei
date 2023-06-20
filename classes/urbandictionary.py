@@ -1,8 +1,9 @@
 """# Urban Dictionary Unofficial API Wrapper"""
 
-import aiohttp
 from dataclasses import dataclass
 from datetime import datetime
+
+import aiohttp
 from bs4 import BeautifulSoup
 
 from classes.excepts import ProviderHttpError
@@ -79,11 +80,13 @@ class UrbanDictionary:
                 )
             data = await resp.json()
             if len(data["list"]) == 0:
-                raise ProviderHttpError(f"{term} not found in Urban Dictionary", 404)
+                raise ProviderHttpError(
+                    f"{term} not found in Urban Dictionary", 404)
             listed: list[UrbanDictionaryEntry] = []
             for entry in data["list"]:
                 entry["written_on"].replace("Z", "+00:00")
-                entry["written_on"] = datetime.fromisoformat(entry["written_on"])
+                entry["written_on"] = datetime.fromisoformat(
+                    entry["written_on"])
                 listed += [UrbanDictionaryEntry(**entry)]
 
             return listed
@@ -123,7 +126,8 @@ class UrbanDictionary:
             word = word_element.text.strip()
             definition = await self.lookup_definition(word)
             return definition[0]
-        raise ProviderHttpError("Urban Dictionary unable to fetch word of the day", 404)
+        raise ProviderHttpError(
+            "Urban Dictionary unable to fetch word of the day", 404)
 
     async def get_word_of_the_day(self) -> UrbanDictionaryEntry:
         """

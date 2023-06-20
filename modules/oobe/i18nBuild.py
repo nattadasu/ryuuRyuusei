@@ -1,8 +1,8 @@
 import json as j
-import yaml as y
 import pathlib
 from typing import List
 
+import yaml as y
 from langcodes import Language as lang
 
 
@@ -53,7 +53,8 @@ def index_json_lang() -> None:
                     drip = {
                         "code": code,
                         "name": lang.get(code).language_name(),
-                        "native": lang.get(code).language_name(lang.get(code).language),
+                        "native": lang.get(code).language_name(
+                            lang.get(code).language),
                         "dialect": lang.get(code).territory_name(),
                     }
             indexed.append(drip)
@@ -115,7 +116,8 @@ def convert_langs_to_json() -> None:
                     drip = {
                         "code": code,
                         "name": lang.get(code).language_name(),
-                        "native": lang.get(code).language_name(lang.get(code).language),
+                        "native": lang.get(code).language_name(
+                            lang.get(code).language),
                         "dialect": lang.get(code).territory_name(),
                     }
             data["meta"] = drip

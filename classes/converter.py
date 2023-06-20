@@ -221,7 +221,8 @@ class Temperature:
         Returns:
             float: The converted temperature
         """
-        if from_unit in Temperature.conversions and to_unit in Temperature.conversions[from_unit]:
+        if from_unit in Temperature.conversions and to_unit in Temperature.conversions[
+                from_unit]:
             conversion_fn = Temperature.conversions[from_unit][to_unit]
             return conversion_fn(value)
         raise ValueError("Invalid temperature conversion units")

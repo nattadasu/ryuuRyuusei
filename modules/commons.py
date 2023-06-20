@@ -285,7 +285,9 @@ def generate_commons_except_embed(
     return dcEm
 
 
-def generate_trailer(data: dict | AniListTrailerStruct, is_mal: bool = False) -> Button:
+def generate_trailer(
+        data: dict | AniListTrailerStruct,
+        is_mal: bool = False) -> Button:
     """
     Generate a button for playing the trailer of a given anime.
 
@@ -377,7 +379,8 @@ def convert_float_to_time(
     # Create a timedelta object with the total seconds
     delta = timedelta(seconds=total_seconds)
 
-    # Extract years, months, days, hours, minutes, and seconds from the timedelta object
+    # Extract years, months, days, hours, minutes, and seconds from the
+    # timedelta object
     years = delta.days // 365
     months = delta.days % 365 // 30
     if show_weeks:

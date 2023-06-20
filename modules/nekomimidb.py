@@ -47,8 +47,9 @@ def generate_nekomimi_embed(row: NekomimiDbStruct, lang: dict) -> Embed:
                 inline=True,
             ),
             EmbedField(
-                name=lang["artist"], value=f"[{artist}]({artistUrl})", inline=True
-            ),
+                name=lang["artist"],
+                value=f"[{artist}]({artistUrl})",
+                inline=True),
         ],
     )
     dcEm.set_image(url=img)

@@ -4,23 +4,20 @@ import sys
 import unittest
 
 try:
-    from modules.i18n import (
-        check_lang_exist,
-        fetch_language_data,
-        read_user_language,
-        search_language,
-        set_default_language,
-    )
+    from modules.i18n import (check_lang_exist, fetch_language_data,
+                              read_user_language, search_language,
+                              set_default_language)
 except ImportError:
     # add the path to the 'modules' directory to the system path
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    from modules.i18n import (
-        check_lang_exist,
-        fetch_language_data,
-        read_user_language,
-        search_language,
-        set_default_language,
-    )
+    sys.path.insert(
+        0,
+        os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__),
+                "..")))
+    from modules.i18n import (check_lang_exist, fetch_language_data,
+                              read_user_language, search_language,
+                              set_default_language)
 
 
 class ctx:

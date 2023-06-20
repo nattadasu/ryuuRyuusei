@@ -5,7 +5,12 @@ import unittest
 try:
     from classes.odesli import Odesli, OdesliResponse
 except ImportError:
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    sys.path.insert(
+        0,
+        os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__),
+                "..")))
     from classes.odesli import Odesli, OdesliResponse
 
 

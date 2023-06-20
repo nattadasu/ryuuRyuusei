@@ -1,12 +1,16 @@
 import os
-import unittest
 import sys
+import unittest
 
 try:
-    from classes.pronoundb import PronounDB, PronounData
+    from classes.pronoundb import PronounData, PronounDB
 except ImportError:
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    from classes.pronoundb import PronounDB, PronounData
+    sys.path.append(
+        os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__),
+                "..")))
+    from classes.pronoundb import PronounData, PronounDB
 
 
 class PronounDbTest(unittest.IsolatedAsyncioTestCase):

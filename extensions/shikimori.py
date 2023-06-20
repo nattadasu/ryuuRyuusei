@@ -49,10 +49,14 @@ class ShikimoriCog(ipy.Extension):
                 required=False,
                 choices=[
                     ipy.SlashCommandChoice(
-                        name="Minimal (default)", value="minimal"),
-                    ipy.SlashCommandChoice(name="Classic", value="old"),
+                            name="Minimal (default)",
+                            value="minimal"),
                     ipy.SlashCommandChoice(
-                        name="Highly Detailed", value="new"),
+                        name="Classic",
+                        value="old"),
+                    ipy.SlashCommandChoice(
+                        name="Highly Detailed",
+                        value="new"),
                 ],
             ),
         ],

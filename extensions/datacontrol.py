@@ -15,14 +15,9 @@ from classes.html.myanimelist import HtmlMyAnimeList
 from classes.lastfm import LastFM
 from classes.shikimori import Shikimori
 from classes.verificator import Verificator
-from modules.const import (
-    DECLINED_GDPR,
-    EMOJI_SUCCESS,
-    EMOJI_UNEXPECTED_ERROR,
-    EMOJI_USER_ERROR,
-    VERIFICATION_SERVER,
-    VERIFIED_ROLE,
-)
+from modules.const import (DECLINED_GDPR, EMOJI_SUCCESS,
+                           EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR,
+                           VERIFICATION_SERVER, VERIFIED_ROLE)
 from modules.discord import format_username
 
 
@@ -166,8 +161,7 @@ class DataControl(ipy.Extension):
                     ipy.EmbedField(
                         name=overwrite_prompt,
                         value=f"```\n{is_pending.uuid}\n```**Note:** Your verification code expires <t:{remaining_time}:R>.",
-                    )
-                )
+                    ))
                 epoch = datetime.fromtimestamp(
                     is_pending.epoch_time, tz=timezone.utc)
             else:
@@ -177,8 +171,7 @@ class DataControl(ipy.Extension):
                     ipy.EmbedField(
                         name=overwrite_prompt,
                         value=f"```\n{generate.uuid}\n```**Note:** Your verification code expires <t:{remaining_time}:R>.",
-                    )
-                )
+                    ))
                 epoch = datetime.fromtimestamp(
                     generate.epoch_time, tz=timezone.utc)
 
@@ -521,8 +514,11 @@ To complete your registration, please follow the instructions below:""",
         elif file_format == "csv":
             df = pd.DataFrame([user_data])
             df.to_csv(
-                f"{filename}.csv", index=False, sep="\t", encoding="utf-8", header=True
-            )
+                f"{filename}.csv",
+                index=False,
+                sep="\t",
+                encoding="utf-8",
+                header=True)
         elif file_format == "yaml":
             with open(f"{filename}.yaml", "w") as f:
                 yaml.dump(user_data, f, indent=4)

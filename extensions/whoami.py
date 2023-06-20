@@ -10,7 +10,8 @@ class WhoAmI(ipy.Extension):
     """Extension class for /whoami"""
 
     @ipy.cooldown(ipy.Buckets.USER, 1, 10)
-    @ipy.slash_command(name="whoami", description="Interactively read your data")
+    @ipy.slash_command(name="whoami",
+                       description="Interactively read your data")
     async def whoami(self, ctx: ipy.SlashContext):
         await ctx.defer(ephemeral=True)
         ul = read_user_language(ctx)
@@ -64,8 +65,7 @@ class WhoAmI(ipy.Extension):
             timestamp=resp.registered_at.timestamp(),
         )
         database_embed.set_thumbnail(
-            url="https://3.bp.blogspot.com/-V4IWtEE4mi0/U2sr28tExOI/AAAAAAAAf50/ivdH5uLVwUc/s800/computer_harddisk.png"
-        )
+            url="https://3.bp.blogspot.com/-V4IWtEE4mi0/U2sr28tExOI/AAAAAAAAf50/ivdH5uLVwUc/s800/computer_harddisk.png")
         mal_embed = ipy.Embed(
             title="MyAnimeList Data",
             description="Below is your MyAnimeList data",
@@ -92,8 +92,7 @@ class WhoAmI(ipy.Extension):
             timestamp=resp.mal_joined.timestamp(),
         )
         mal_embed.set_thumbnail(
-            url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png"
-        )
+            url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png")
         linked_platforms_embed = ipy.Embed(
             title="Linked Platforms Data",
             description="Below is your linked platforms data\nTo link a platform, use `/platform link`",
@@ -124,8 +123,7 @@ class WhoAmI(ipy.Extension):
             timestamp=resp.registered_at.timestamp(),
         )
         linked_platforms_embed.set_thumbnail(
-            url="https://3.bp.blogspot.com/-qlSGpgl64rI/Wqih4jf-CuI/AAAAAAABK20/aoPMsqSqO_EEXE4d39WUqSc0nbwTGoV-wCLcBGAs/s0/mark_chain_kusari.png"
-        )
+            url="https://3.bp.blogspot.com/-qlSGpgl64rI/Wqih4jf-CuI/AAAAAAABK20/aoPMsqSqO_EEXE4d39WUqSc0nbwTGoV-wCLcBGAs/s0/mark_chain_kusari.png")
         embeds = [discord_embed, database_embed,
                   mal_embed, linked_platforms_embed]
 

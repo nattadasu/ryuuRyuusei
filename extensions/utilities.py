@@ -1,17 +1,17 @@
 import re
 from base64 import b64decode, b64encode
-from urllib.parse import urlencode as urlenc
 from datetime import datetime, timezone
+from typing import Literal
+from urllib.parse import urlencode as urlenc
 
 import interactions as ipy
-from typing import Literal
 import validators
 from plusminus import BaseArithmeticParser as BAP
 
+from classes.i18n import LanguageDict
 from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
 from classes.thecolorapi import Color, TheColorApi
 from classes.usrbg import UserBackground
-from classes.i18n import LanguageDict
 from modules.commons import generate_utils_except_embed, snowflake_to_datetime
 from modules.i18n import fetch_language_data, read_user_language
 
@@ -172,10 +172,8 @@ class Utilities(ipy.Extension):
         l_: LanguageDict = fetch_language_data(ul)["strings"]["utilities"]
         res: dict = {}
         try:
-            if (
-                color_format == "hex"
-                and re.match(r"^#?(?:[0-9a-fA-F]{3}){1,2}$", color_value) is None
-            ):
+            if (color_format == "hex" and re.match(
+                    r"^#?(?:[0-9a-fA-F]{3}){1,2}$", color_value) is None):
                 raise ValueError("Invalid hex color")
             if color_format == "hex" and re.match(r"^#", color_value) is None:
                 color_value = f"#{color_value}"
@@ -409,23 +407,27 @@ class Utilities(ipy.Extension):
                 title=status.website_name,
                 fields=[
                     ipy.EmbedField(
-                        name="Status", value=status.status_message.title(), inline=True
-                    ),
+                        name="Status",
+                        value=status.status_message.title(),
+                        inline=True),
                     ipy.EmbedField(
-                        name="Response Time", value=status.response_time, inline=True
-                    ),
+                        name="Response Time",
+                        value=status.response_time,
+                        inline=True),
                     ipy.EmbedField(
-                        name="Last Down", value=status.last_down, inline=True
-                    ),
+                        name="Last Down",
+                        value=status.last_down,
+                        inline=True),
                 ],
                 color=0x566A82,
-                footer=ipy.EmbedFooter(text="Powered by IsItDownRightNow"),
-                timestamp=datetime.now(tz=timezone.utc),
+                footer=ipy.EmbedFooter(
+                    text="Powered by IsItDownRightNow"),
+                timestamp=datetime.now(
+                    tz=timezone.utc),
             )
 
             embed.set_thumbnail(
-                url=f"https://www.isitdownrightnow.com/screenshot/{lt}/{domain}.jpg"
-            )
+                url=f"https://www.isitdownrightnow.com/screenshot/{lt}/{domain}.jpg")
             embed.set_image(
                 url=f"https://www.isitdownrightnow.com/data/{domain}.png")
 
@@ -448,8 +450,11 @@ class Utilities(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 choices=[
                     ipy.SlashCommandChoice(
-                        name="Discord Profile", value="user"),
-                    ipy.SlashCommandChoice(name="Usrbg", value="usrbg"),
+                        name="Discord Profile",
+                        value="user"),
+                    ipy.SlashCommandChoice(
+                        name="Usrbg",
+                        value="usrbg"),
                 ],
             ),
         ],
@@ -519,9 +524,11 @@ class Utilities(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 choices=[
                     ipy.SlashCommandChoice(
-                        name="Discord Profile", value="user"),
+                        name="Discord Profile",
+                        value="user"),
                     ipy.SlashCommandChoice(
-                        name="Server Profile", value="server"),
+                        name="Server Profile",
+                        value="server"),
                 ],
             ),
         ],

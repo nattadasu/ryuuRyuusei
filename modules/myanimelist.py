@@ -182,11 +182,17 @@ async def generate_mal(
     smkPost = f"https://simkl.in/posters/{smkPost}_m.webp" if smkPost else None
     smkBg = f"https://simkl.in/fanart/{smkBg}_w.webp" if smkBg else None
 
-    if anime_api.kitsu and ((not alPost and not alBg) or (not smkPost and not smkBg)):
+    if anime_api.kitsu and (
+            (not alPost and not alBg) or (
+            not smkPost and not smkBg)):
         async with Kitsu() as kts:
             kts = await kts.get_anime(anime_api.kitsu)
     else:
-        kts = {"data": {"attributes": {"posterImage": None, "coverImage": None}}}
+        kts = {
+            "data": {
+                "attributes": {
+                    "posterImage": None,
+                    "coverImage": None}}}
 
     ktsPost = kts["data"]["attributes"].get("posterImage")
     ktsPost = ktsPost.get("original") if ktsPost else None

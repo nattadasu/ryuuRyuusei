@@ -8,12 +8,12 @@ import json
 import os
 import time
 from copy import deepcopy
+from dataclasses import asdict, dataclass
 from enum import Enum
 from typing import List, Literal
 from urllib.parse import quote
 
 import aiohttp
-from dataclasses import dataclass, asdict
 
 from classes.excepts import ProviderHttpError, SimklTypeError
 from modules.const import SIMKL_CLIENT_ID, USER_AGENT
@@ -243,8 +243,7 @@ class Simkl:
         self.client_id = client_id
         if client_id is None:
             raise ProviderHttpError(
-                "Unauthorized, please fill Client ID before using this module", 401
-            )
+                "Unauthorized, please fill Client ID before using this module", 401)
         self.base_url = "https://api.simkl.com"
         self.params = {"client_id": self.client_id}
         self.session = None

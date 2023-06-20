@@ -25,7 +25,8 @@ class Help(ipy.Extension):
     """Help command"""
 
     @ipy.cooldown(ipy.Buckets.USER, 1, 10)
-    @ipy.slash_command(name="help", description="Get a list of all available commands")
+    @ipy.slash_command(name="help",
+                       description="Get a list of all available commands")
     async def help(self, ctx: ipy.SlashContext) -> None:
         """Get a list of all available commands."""
         help_list = []
@@ -45,7 +46,7 @@ class Help(ipy.Extension):
         for i in range(0, len(commands), 9):
             listed = []
             for command in commands[i: i + 9]:
-                if type(command) is not ipy.SlashCommand:
+                if not isinstance(command, ipy.SlashCommand):
                     continue
                 cmd_name = f"/{command.name}"
                 group_name = f" {command.group_name}" if command.group_name else ""

@@ -1,12 +1,5 @@
-from interactions import (
-    AutoShardedClient,
-    Buckets,
-    Client,
-    Cooldown,
-    Extension,
-    SlashCommand,
-    SlashContext,
-)
+from interactions import (AutoShardedClient, Buckets, Client, Cooldown,
+                          Extension, SlashCommand, SlashContext)
 
 from classes.i18n import LanguageDict
 from classes.nekomimidb import NekomimiGender

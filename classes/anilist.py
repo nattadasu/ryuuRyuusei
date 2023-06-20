@@ -10,7 +10,8 @@ from typing import Any, Literal
 from aiohttp import ClientSession
 
 from classes.excepts import ProviderHttpError, ProviderTypeError
-from modules.const import USER_AGENT, ANILIST_ACCESS_TOKEN, ANILIST_OAUTH_EXPIRY
+from modules.const import (ANILIST_ACCESS_TOKEN, ANILIST_OAUTH_EXPIRY,
+                           USER_AGENT)
 
 
 @dataclass
@@ -265,7 +266,8 @@ class AniList:
             "Accept": "application/json",
             "User-Agent": USER_AGENT,
         }
-        if int(ANILIST_OAUTH_EXPIRY) > datetime.now(tz=timezone.utc).timestamp():
+        if int(ANILIST_OAUTH_EXPIRY) > datetime.now(
+                tz=timezone.utc).timestamp():
             self.headers["Authorization"] = f"Bearer {self.access_token}"
         else:
             print(

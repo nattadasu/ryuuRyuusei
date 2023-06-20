@@ -240,7 +240,8 @@ class TheColorApi:
 
     async def __aenter__(self):
         """Create a session if class invoked with `with` statement"""
-        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
+        self.session = aiohttp.ClientSession(
+            headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -376,7 +377,8 @@ class TheColorApi:
         Args:
             color_params (dict): Color parameters
         """
-        filename = "-".join([f"{k}_{v}" for k, v in color_params.items()]) + ".json"
+        filename = "-".join([f"{k}_{v}" for k,
+                             v in color_params.items()]) + ".json"
         return os.path.join(self.cache_directory, filename)
 
     def read_cached_data(self, cache_file_path) -> dict | None:

@@ -129,7 +129,7 @@ class ExchangeRatesAPI:
                     data = await resp.json()
                     err_type = self._define_error_message(data["error-type"])
                     raise ProviderHttpError(err_type, resp.status)
-                except:
+                except BaseException:
                     raise ProviderHttpError(resp.text(), resp.status)
             data = await resp.json()
             if data["result"] == "error":

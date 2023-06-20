@@ -7,18 +7,14 @@ Can be easily broken if MAL changes their HTML structure
 """
 
 import re
+from datetime import datetime, timezone
 
 import aiohttp
-from datetime import datetime, timezone
 from bs4 import BeautifulSoup
 
 from classes.excepts import ProviderHttpError
-from classes.jikan import (
-    defineJikanException,
-    JikanImages,
-    JikanImageStruct,
-    JikanUserStruct,
-)
+from classes.jikan import (JikanImages, JikanImageStruct, JikanUserStruct,
+                           defineJikanException)
 from modules.const import USER_AGENT
 
 
@@ -64,7 +60,8 @@ class HtmlMyAnimeList:
                 raise ProviderHttpError(resp.reason, resp.status)
             html = await resp.text()
         soup = BeautifulSoup(html, "html5lib")
-        report_link = soup.find("a", {"class": "header-right mt4 mr0"}).get("href")
+        report_link = soup.find(
+            "a", {"class": "header-right mt4 mr0"}).get("href")
         user_id = re.search(r"id=(\d+)", report_link).group(1)
         image_div = soup.find("div", class_="user-image mb8")
         if image_div:
@@ -77,7 +74,10 @@ class HtmlMyAnimeList:
             image = None
 
         # Extract the relevant information
-        last_online = soup.find("span", class_="user-status-title", text="Last Online")
+        last_online = soup.find(
+            "span",
+            class_="user-status-title",
+            text="Last Online")
         if last_online:
             last_online = last_online.find_next(
                 "span", class_="user-status-data"
@@ -89,11 +89,15 @@ class HtmlMyAnimeList:
 
         gender = soup.find("span", class_="user-status-title", text="Gender")
         if gender:
-            gender = gender.find_next("span", class_="user-status-data").text.strip()
+            gender = gender.find_next(
+                "span", class_="user-status-data").text.strip()
         else:
             gender = None
 
-        birthday = soup.find("span", class_="user-status-title", text="Birthday")
+        birthday = soup.find(
+            "span",
+            class_="user-status-title",
+            text="Birthday")
         if birthday:
             birthday = birthday.find_next(
                 "span", class_="user-status-data"
@@ -107,7 +111,10 @@ class HtmlMyAnimeList:
         else:
             birthday = None
 
-        location = soup.find("span", class_="user-status-title", text="Location")
+        location = soup.find(
+            "span",
+            class_="user-status-title",
+            text="Location")
         if location:
             location = location.find_next(
                 "span", class_="user-status-data"
@@ -117,8 +124,11 @@ class HtmlMyAnimeList:
 
         joined = soup.find("span", class_="user-status-title", text="Joined")
         if joined:
-            joined = joined.find_next("span", class_="user-status-data").text.strip()
-            joined = datetime.strptime(joined, "%b %d, %Y").replace(tzinfo=timezone.utc)
+            joined = joined.find_next(
+                "span", class_="user-status-data").text.strip()
+            joined = datetime.strptime(
+                joined, "%b %d, %Y").replace(
+                tzinfo=timezone.utc)
         else:
             joined = None
 

@@ -214,7 +214,8 @@ def create_simkl_embed(
 
 > {description}""",
         color=0x0B0F10,
-        timestamp=datetime.now(tz=timezone.utc),
+        timestamp=datetime.now(
+            tz=timezone.utc),
     )
 
     if poster is not None:
@@ -242,8 +243,7 @@ def create_simkl_embed(
 
     if end_date.endswith("\\*"):
         embed.set_footer(
-            text="* This is estimated end date (as SIMKL didn't provide end date well), please take the info with a pinch of salt"
-        )
+            text="* This is estimated end date (as SIMKL didn't provide end date well), please take the info with a pinch of salt")
 
     buttons = []
 

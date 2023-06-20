@@ -52,8 +52,7 @@ async def search_al_anime(title: str) -> list[dict[str, Any]]:
                     "season": item["season"].lower() if item["season"] else None,
                 },
                 "media_type": item["format"].lower() if item["format"] else None,
-            }
-        }
+            }}
         # Append the formatted data to the list
         formatted_data.append(formatted_item)
 
@@ -120,8 +119,7 @@ async def generate_anilist(
 
     original_titles = [romaji, native, english]
     synonyms = [
-        val for val in synonyms if val not in original_titles and val is not None
-    ]
+        val for val in synonyms if val not in original_titles and val is not None]
     synonyms = sorted(set(synonyms), key=str.casefold)
     synonyms_len = len(synonyms)
     syns = ""

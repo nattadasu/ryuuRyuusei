@@ -59,11 +59,9 @@ class Games(ipy.Extension):
                 title = sanitize_markdown(title)
                 if len(title) >= 256:
                     title = title[:253] + "..."
-                f += [
-                    ipy.EmbedField(
-                        name=title, value=f"*Released on: {rhel}*", inline=False
-                    )
-                ]
+                f += [ipy.EmbedField(name=title,
+                                     value=f"*Released on: {rhel}*",
+                                     inline=False)]
                 so += [
                     ipy.StringSelectOption(
                         label=title[:77] +

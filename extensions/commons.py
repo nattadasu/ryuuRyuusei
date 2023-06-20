@@ -7,25 +7,21 @@ from time import perf_counter as pc
 import interactions as ipy
 from aiohttp import __version__ as aiohttp_version
 
-from modules.const import (
-    AUTHOR_USERNAME,
-    BOT_CLIENT_ID,
-    BOT_SUPPORT_SERVER,
-    EMOJI_SUCCESS,
-    USER_AGENT,
-    database,
-    gittyHash,
-    gtHsh,
-    ownerUserUrl,
-)
-from modules.i18n import fetch_language_data, read_user_language
 from classes.i18n import LanguageDict
+from modules.const import (AUTHOR_USERNAME, BOT_CLIENT_ID, BOT_SUPPORT_SERVER,
+                           EMOJI_SUCCESS, USER_AGENT, database, gittyHash,
+                           gtHsh, ownerUserUrl)
+from modules.i18n import fetch_language_data, read_user_language
 
 
 class CommonCommands(ipy.Extension):
     """Common commands"""
 
-    def __init__(self, bot: ipy.AutoShardedClient, now: dtime = dtime.now(tz=tz.utc)):
+    def __init__(
+            self,
+            bot: ipy.AutoShardedClient,
+            now: dtime = dtime.now(
+            tz=tz.utc)):
         """
         Initialize the extension
 
@@ -37,7 +33,8 @@ class CommonCommands(ipy.Extension):
         self.now = now
 
     @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
-    @ipy.slash_command(name="about", description="Get information about the bot")
+    @ipy.slash_command(name="about",
+                       description="Get information about the bot")
     async def about(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
         l_: LanguageDict = fetch_language_data(ul)["strings"]["about"]
@@ -145,8 +142,7 @@ class CommonCommands(ipy.Extension):
             ipy.EmbedField(
                 name="📅 " + l_["uptime"]["title"],
                 value=l_["uptime"]["text"].format(
-                    TIMESTAMP=f"<t:{int(self.now.timestamp())}:R>"
-                ),
+                    TIMESTAMP=f"<t:{int(self.now.timestamp())}:R>"),
                 inline=True,
             ),
         ]
@@ -203,9 +199,8 @@ class CommonCommands(ipy.Extension):
         )
 
     @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
-    @ipy.slash_command(
-        name="privacy", description="Get the bot's tl;dr version of privacy policy"
-    )
+    @ipy.slash_command(name="privacy",
+                       description="Get the bot's tl;dr version of privacy policy")
     async def privacy(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
         l_: LanguageDict = fetch_language_data(ul)["strings"]["privacy"]

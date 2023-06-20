@@ -4,16 +4,13 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Literal, Any
+from typing import Any, Literal
 
 import aiohttp
 
 from classes.excepts import ProviderHttpError
-from modules.const import (
-    SHIKIMORI_APPLICATION_NAME,
-    SHIKIMORI_CLIENT_ID,
-    USER_AGENT,
-)
+from modules.const import (SHIKIMORI_APPLICATION_NAME, SHIKIMORI_CLIENT_ID,
+                           USER_AGENT)
 
 
 @dataclass
@@ -267,20 +264,17 @@ class Shikimori:
         data["last_online_at"] = datetime.strptime(
             data["last_online_at"], "%Y-%m-%dT%H:%M:%S.%f%z"
         )
-        data["stats"]["statuses"]["anime"] = [
-            ShikimoriStatsStruct(**a) for a in data["stats"]["statuses"]["anime"]
-        ]
-        data["stats"]["statuses"]["manga"] = [
-            ShikimoriStatsStruct(**a) for a in data["stats"]["statuses"]["manga"]
-        ]
+        data["stats"]["statuses"]["anime"] = [ShikimoriStatsStruct(
+            **a) for a in data["stats"]["statuses"]["anime"]]
+        data["stats"]["statuses"]["manga"] = [ShikimoriStatsStruct(
+            **a) for a in data["stats"]["statuses"]["manga"]]
         data["stats"]["statuses"] = Statuses(**data["stats"]["statuses"])
-        data["stats"]["full_statuses"]["anime"] = [
-            ShikimoriStatsStruct(**a) for a in data["stats"]["full_statuses"]["anime"]
-        ]
-        data["stats"]["full_statuses"]["manga"] = [
-            ShikimoriStatsStruct(**a) for a in data["stats"]["full_statuses"]["manga"]
-        ]
-        data["stats"]["full_statuses"] = Statuses(**data["stats"]["full_statuses"])
+        data["stats"]["full_statuses"]["anime"] = [ShikimoriStatsStruct(
+            **a) for a in data["stats"]["full_statuses"]["anime"]]
+        data["stats"]["full_statuses"]["manga"] = [ShikimoriStatsStruct(
+            **a) for a in data["stats"]["full_statuses"]["manga"]]
+        data["stats"]["full_statuses"] = Statuses(
+            **data["stats"]["full_statuses"])
         data["stats"]["scores"]["anime"] = [
             ShikimoriGroupStruct(**a) for a in data["stats"]["scores"]["anime"]
         ]
@@ -295,9 +289,8 @@ class Shikimori:
             ShikimoriGroupStruct(**a) for a in data["stats"]["types"]["manga"]
         ]
         data["stats"]["types"] = Stats(**data["stats"]["types"])
-        data["stats"]["ratings"]["anime"] = [
-            ShikimoriGroupStruct(**a) for a in data["stats"]["ratings"]["anime"]
-        ]
+        data["stats"]["ratings"]["anime"] = [ShikimoriGroupStruct(
+            **a) for a in data["stats"]["ratings"]["anime"]]
         data["stats"]["ratings"]["manga"] = None
         data["stats"]["ratings"] = Stats(**data["stats"]["ratings"])
         data["stats"]["activity"] = [

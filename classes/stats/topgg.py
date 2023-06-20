@@ -5,14 +5,18 @@ A lite wrapper for the top.gg API.
 """
 
 import aiohttp
+
 from classes.excepts import ProviderHttpError
-from modules.const import TOPGG_API_TOKEN, BOT_CLIENT_ID
+from modules.const import BOT_CLIENT_ID, TOPGG_API_TOKEN
 
 
 class TopGG:
     """# Top.gg API Wrapper"""
 
-    def __init__(self, token: str = TOPGG_API_TOKEN, bot_id: int = BOT_CLIENT_ID):
+    def __init__(
+            self,
+            token: str = TOPGG_API_TOKEN,
+            bot_id: int = BOT_CLIENT_ID):
         """
         ## Top.gg API Wrapper
 

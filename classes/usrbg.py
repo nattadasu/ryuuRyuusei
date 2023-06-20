@@ -1,11 +1,11 @@
+import json
+import os
+import time
 from dataclasses import dataclass
 
 import aiohttp
-import json
-from interactions import Snowflake
-import os
-import time
 from fake_useragent import FakeUserAgent
+from interactions import Snowflake
 
 USER_AGENT = FakeUserAgent(browsers=["chrome", "edge", "opera"]).random
 
@@ -77,7 +77,9 @@ class UserBackground:
             None: If user can't be found
         """
         # Find user
-        user = next((item for item in data if item["uid"] == str(user_id)), None)
+        user = next(
+            (item for item in data if item["uid"] == str(user_id)),
+            None)
         if user is None:
             return None
         # Create datastruct

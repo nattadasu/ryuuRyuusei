@@ -104,8 +104,7 @@ class Anime(ipy.Extension):
                         name=mdTitle,
                         value=f"{native}`{a['node']['id']}`, {media_type}, {season} {year}",
                         inline=False,
-                    )
-                )
+                    ))
                 so.append(
                     ipy.StringSelectOption(
                         label=title[:77] + ("..." if len(title) > 77 else ""),
@@ -146,15 +145,10 @@ class Anime(ipy.Extension):
             l_: dict[str, str] = l_["strings"]["anime"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             embed = ipy.Embed(
-                title=l_["title"],
-                description=l_["text"]
-                .replace(
-                    "MyAnimeList", "AniList" if provider == "anilist" else "MyAnimeList"
-                )
-                .format(QUERY=f"`{query}`"),
-                color=0xFF0000,
-                footer=ipy.EmbedFooter(text=l_["footer"]),
-            )
+                title=l_["title"], description=l_["text"] .replace(
+                    "MyAnimeList", "AniList" if provider == "anilist" else "MyAnimeList") .format(
+                    QUERY=f"`{query}`"), color=0xFF0000, footer=ipy.EmbedFooter(
+                    text=l_["footer"]), )
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
             )

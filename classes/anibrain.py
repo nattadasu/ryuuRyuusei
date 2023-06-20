@@ -5,14 +5,15 @@ Get a random anime/manga using AniList ID
 """
 
 from copy import deepcopy as dcp
+from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
 from time import time
-from typing import List, Dict, Literal
-from classes.excepts import ProviderHttpError
-from dataclasses import dataclass
+from typing import Dict, List, Literal
 
 import aiohttp
-from datetime import datetime
+
+from classes.excepts import ProviderHttpError
 from modules.const import USER_AGENT
 
 today = datetime.now().year

@@ -24,9 +24,8 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
     id = data.slug
 
     # Process alternative names
-    syns = sorted(
-        set(data.alternative_names) - {data.name, data.name_original}, key=str.casefold
-    )
+    syns = sorted(set(data.alternative_names) -
+                  {data.name, data.name_original}, key=str.casefold)
     syns = syns[:8] if len(syns) > 8 else syns
     syns_text = ", ".join(syns) if syns else "*None*"
     if len(syns) < len(data.alternative_names):
@@ -119,8 +118,10 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
 
     # Create button components
     components = [
-        Button(style=ButtonStyle.URL, label=p["name"], url=p["value"]) for p in pdt
-    ]
+        Button(
+            style=ButtonStyle.URL,
+            label=p["name"],
+            url=p["value"]) for p in pdt]
 
     # Create the embed
     embed = Embed(
@@ -134,15 +135,38 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
         description=f"*{rte}, {year}, ⭐ {scr}/5 (Metacritic: {mc_scr})*\n\n> {cyno}",
         color=0x1F1F1F,
         fields=[
-            EmbedField(name="English Title", value=data.name, inline=True),
-            EmbedField(name="Native Title",
-                       value=data.name_original, inline=True),
-            EmbedField(name="Synonyms", value=syns_text, inline=False),
-            EmbedField(name="Genres and Tags", value=tgs_text, inline=False),
-            EmbedField(name="Platforms", value=pfs_text, inline=False),
-            EmbedField(name="Developers", value=devs_text, inline=True),
-            EmbedField(name="Publishers", value=pubs_text, inline=True),
-            EmbedField(name="Release Date", value=rel, inline=True),
+            EmbedField(
+                name="English Title",
+                value=data.name,
+                inline=True),
+            EmbedField(
+                name="Native Title",
+                value=data.name_original,
+                inline=True),
+            EmbedField(
+                name="Synonyms",
+                value=syns_text,
+                inline=False),
+            EmbedField(
+                name="Genres and Tags",
+                value=tgs_text,
+                inline=False),
+            EmbedField(
+                name="Platforms",
+                value=pfs_text,
+                inline=False),
+            EmbedField(
+                name="Developers",
+                value=devs_text,
+                inline=True),
+            EmbedField(
+                name="Publishers",
+                value=pubs_text,
+                inline=True),
+            EmbedField(
+                name="Release Date",
+                value=rel,
+                inline=True),
         ],
     )
     embed.set_image(url=data.background_image)
