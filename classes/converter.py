@@ -1,7 +1,10 @@
 from typing import Literal
 
+from plusminus import BaseArithmeticParser as BAP
+
 from modules.commons import convert_float_to_time
 
+evaluate = BAP()
 
 class Length:
     """Class to convert length units"""
@@ -19,6 +22,7 @@ class Length:
         "football_field": 3_600,
     }
     """Dictionary of imperial units and their conversion to inches"""
+
     metric_units: dict[str, float] = {
         "millimeter": 0.001,
         "centimeter": 0.01,
@@ -36,6 +40,7 @@ class Length:
         "light_year": 9_460_730_472_580_800,
     }
     """Dictionary of metric units and their conversion to meters"""
+
     inch_to_meter = 0.0254
     """Conversion factor from inches to meters"""
 
@@ -107,17 +112,17 @@ class Length:
             float: Converted value
         """
         if from_unit in Length.imperial_units and to_unit in Length.imperial_units:
-            base_value = value * Length.imperial_units[from_unit]
+            base_value = evaluate.evaluate(f"{value} * {Length.imperial_units[from_unit]}")
             converted_value = base_value / Length.imperial_units[to_unit]
         elif from_unit in Length.metric_units and to_unit in Length.metric_units:
-            base_value = value * Length.metric_units[from_unit]
+            base_value = evaluate.evaluate(f"{value} * {Length.metric_units[from_unit]}")
             converted_value = base_value / Length.metric_units[to_unit]
         elif from_unit in Length.imperial_units and to_unit in Length.metric_units:
-            total_inches = value * Length.imperial_units[from_unit]
+            total_inches = evaluate.evaluate(f"{value} * {Length.imperial_units[from_unit]}")
             total_meters = total_inches * Length.inch_to_meter
             converted_value = total_meters / Length.metric_units[to_unit]
         elif from_unit in Length.metric_units and to_unit in Length.imperial_units:
-            total_meters = value * Length.metric_units[from_unit]
+            total_meters = evaluate.evaluate(f"{value} * {Length.metric_units[from_unit]}")
             total_inches = total_meters / Length.inch_to_meter
             converted_value = total_inches / Length.imperial_units[to_unit]
 
@@ -126,7 +131,7 @@ class Length:
 
 class Temperature:
     """Class to convert temperature units"""
-    conversions = {
+    conversions: dict[str, dict[str, float | int]] = {
         "celsius": {
             "kelvin": lambda t: t + 273.15,
             "fahrenheit": lambda t: (t * 9 / 5) + 32,
@@ -184,36 +189,26 @@ class Temperature:
             "newton": lambda t: (33 - t) * 11 / 50
         }
     }
+    """The temperature conversion table"""
+
+    known_units = Literal[
+        "celsius", "kelvin", "fahrenheit", "reaumur", "romer", "newton", "delisle"
+    ]
+    """The known temperature units"""
 
     @staticmethod
     def convert(
         value: float,
-        from_unit: Literal[
-            "celsius",
-            "kelvin",
-            "fahrenheit",
-            "reaumur",
-            "romer",
-            "newton",
-            "delisle"
-        ],
-        to_unit: Literal[
-            "celsius",
-            "kelvin",
-            "fahrenheit",
-            "reaumur",
-            "romer",
-            "newton",
-            "delisle"
-        ],
+        from_unit: known_units,
+        to_unit: known_units,
     ) -> float:
         """
         Converts temperature from one unit to another
 
         Args:
             value (float): The value of temperature to convert
-            from_unit (Literal["celsius", "kelvin", "fahrenheit", "reaumur", "romer", "newton", "delisle"]): The unit to convert from
-            to_unit (Literal["celsius", "kelvin", "fahrenheit", "reaumur", "romer", "newton", "delisle"]): The unit to convert to
+            from_unit (known_units): The unit to convert from
+            to_unit (known_units): The unit to convert to
 
         Raises:
             ValueError: If the units are not valid
@@ -254,65 +249,53 @@ class Mass:
     pound_to_kilogram = 0.453592
     """Conversion factor from pounds to kilograms"""
 
+    known_units = Literal[
+        "centigram",
+        "decagram",
+        "decigram",
+        "gram",
+        "hectogram",
+        "hundredweight",
+        "kilogram",
+        "metric_ton",
+        "milligram",
+        "ounce",
+        "pound",
+        "quarter",
+        "stone",
+        "ton",
+    ]
+    """Literal type of all known weight units"""
+
     @staticmethod
     def convert(
         value: float,
-        from_unit: Literal[
-            "centigram",
-            "decagram",
-            "decigram",
-            "gram",
-            "hectogram",
-            "hundredweight",
-            "kilogram",
-            "metric_ton",
-            "milligram",
-            "ounce",
-            "pound",
-            "quarter",
-            "stone",
-            "ton",
-        ],
-        to_unit: Literal[
-            "centigram",
-            "decagram",
-            "decigram",
-            "gram",
-            "hectogram",
-            "hundredweight",
-            "kilogram",
-            "metric_ton",
-            "milligram",
-            "ounce",
-            "pound",
-            "quarter",
-            "stone",
-            "ton",
-        ],
+        from_unit: known_units,
+        to_unit: known_units,
     ) -> float:
         """
         Converts mass from one unit to another. Imperial units are based on US units.
 
         Args:
             value (float): The value of mass to convert
-            from_unit (Literal["centigram", "decagram", "decigram", "gram", "hectogram", "hundredweight", "kilogram", "metric_ton", "milligram", "ounce", "pound", "quarter", "stone", "ton"]): The unit to convert from
-            to_unit (Literal["centigram", "decagram", "decigram", "gram", "hectogram", "hundredweight", "kilogram", "metric_ton", "milligram", "ounce", "pound", "quarter", "stone", "ton"]): The unit to convert to
+            from_unit (known_units): The unit to convert from
+            to_unit (known_units): The unit to convert to
 
         Returns:
             float: The converted mass
         """
         if from_unit in Mass.imperial_units and to_unit in Mass.imperial_units:
-            base_value = value * Mass.imperial_units[from_unit]
+            base_value = evaluate.evaluate(f"{value} * {Mass.imperial_units[from_unit]}")
             converted_value = base_value / Mass.imperial_units[to_unit]
         elif from_unit in Mass.metric_units and to_unit in Mass.metric_units:
-            base_value = value * Mass.metric_units[from_unit]
+            base_value = evaluate.evaluate(f"{value} * {Mass.metric_units[from_unit]}")
             converted_value = base_value / Mass.metric_units[to_unit]
         elif from_unit in Mass.imperial_units and to_unit in Mass.metric_units:
-            total_pounds = value * Mass.imperial_units[from_unit]
+            total_pounds = evaluate.evaluate(f"{value} * {Mass.imperial_units[from_unit]}")
             total_kilograms = total_pounds * Mass.pound_to_kilogram
             converted_value = total_kilograms / Mass.metric_units[to_unit]
         elif from_unit in Mass.metric_units and to_unit in Mass.imperial_units:
-            total_kilograms = value * Mass.metric_units[from_unit]
+            total_kilograms = evaluate.evaluate(f"{value} * {Mass.metric_units[from_unit]}")
             total_pounds = total_kilograms / Mass.pound_to_kilogram
             converted_value = total_pounds / Mass.imperial_units[to_unit]
 
@@ -347,65 +330,53 @@ class Volume:
     teaspoon_to_milliliter = 4.92892
     """Conversion factor from teaspoons to milliliters"""
 
+    known_units = Literal[
+        "centiliter",
+        "decaliter",
+        "deciliter",
+        "fluid_ounce",
+        "gallon",
+        "gill",
+        "hectoliter",
+        "kiloliter",
+        "liter",
+        "milliliter",
+        "pint",
+        "quart",
+        "tablespoon",
+        "teaspoon",
+    ]
+    """Literal type of all known volume units"""
+
     @staticmethod
     def convert(
         value: float,
-        from_unit: Literal[
-            "centiliter",
-            "decaliter",
-            "deciliter",
-            "fluid_ounce",
-            "gallon",
-            "gill",
-            "hectoliter",
-            "kiloliter",
-            "liter",
-            "milliliter",
-            "pint",
-            "quart",
-            "tablespoon",
-            "teaspoon",
-        ],
-        to_unit: Literal[
-            "centiliter",
-            "decaliter",
-            "deciliter",
-            "fluid_ounce",
-            "gallon",
-            "gill",
-            "hectoliter",
-            "kiloliter",
-            "liter",
-            "milliliter",
-            "pint",
-            "quart",
-            "tablespoon",
-            "teaspoon",
-        ],
+        from_unit: known_units,
+        to_unit: known_units,
     ) -> float:
         """
         Converts volume from one unit to another. Imperial units are based on US customary units.
 
         Args:
             value (float): The value of volume to convert
-            from_unit (Literal["centiliter", "decaliter", "deciliter", "fluid_ounce", "gallon", "gill", "hectoliter", "kiloliter", "liter", "milliliter", "pint", "quart", "tablespoon", "teaspoon"]): The unit to convert from
-            to_unit (Literal["centiliter", "decaliter", "deciliter", "fluid_ounce", "gallon", "gill", "hectoliter", "kiloliter", "liter", "milliliter", "pint", "quart", "tablespoon", "teaspoon"]): The unit to convert to
+            from_unit (known_units): The unit to convert from
+            to_unit (known_units): The unit to convert to
 
         Returns:
             float: The converted volume
         """
         if from_unit in Volume.imperial_units and to_unit in Volume.imperial_units:
-            base_value = value * Volume.imperial_units[from_unit]
+            base_value = evaluate.evaluate(f"{value} * {Volume.imperial_units[from_unit]}")
             converted_value = base_value / Volume.imperial_units[to_unit]
         elif from_unit in Volume.metric_units and to_unit in Volume.metric_units:
-            base_value = value * Volume.metric_units[from_unit]
+            base_value = evaluate.evaluate(f"{value} * {Volume.metric_units[from_unit]}")
             converted_value = base_value / Volume.metric_units[to_unit]
         elif from_unit in Volume.imperial_units and to_unit in Volume.metric_units:
-            total_teaspoons = value * Volume.imperial_units[from_unit]
+            total_teaspoons = evaluate.evaluate(f"{value} * {Volume.imperial_units[from_unit]}")
             total_milliliters = total_teaspoons * Volume.teaspoon_to_milliliter
             converted_value = total_milliliters / Volume.metric_units[to_unit]
         elif from_unit in Volume.metric_units and to_unit in Volume.imperial_units:
-            total_milliliters = value * Volume.metric_units[from_unit]
+            total_milliliters = evaluate.evaluate(f"{value} * {Volume.metric_units[from_unit]}")
             total_teaspoons = total_milliliters / Volume.teaspoon_to_milliliter
             converted_value = total_teaspoons / Volume.imperial_units[to_unit]
 
@@ -429,35 +400,32 @@ class Time:
     }
     """Dictionary of time units and their conversion to seconds"""
 
+    known_units = Literal[
+        "second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"
+    ]
+    """Literal of known time units"""
+
     @staticmethod
     def convert(
         value: float,
-        from_unit: Literal[
-            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"
-        ],
-        to_unit: Literal[
-            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"
-        ],
+        from_unit: known_units,
+        to_unit: known_units,
     ) -> list[float | str]:
         """
         Converts time from one unit to another.
 
         Args:
             value (float): The value of time to convert
-            from_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"]): The unit to convert from
-            to_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"]): The unit to convert to
+            from_unit (known_units): The unit to convert from
+            to_unit (known_units): The unit to convert to
 
         Returns:
             list[float | str]: The converted time and the context of the conversion
         """
-        days_total = value * \
-            (Time.conversion_factors[from_unit] /
-             Time.conversion_factors["day"])
+        days_total = evaluate.evaluate(f"{value} * {(Time.conversion_factors[from_unit] / Time.conversion_factors['day'])}")
         context = convert_float_to_time(days_total, show_weeks=True)
         if from_unit in Time.conversion_factors and to_unit in Time.conversion_factors:
-            converted_value = value * \
-                (Time.conversion_factors[from_unit] /
-                 Time.conversion_factors[to_unit])
+            converted_value = evaluate.evaluate(f"{value} * {(Time.conversion_factors[from_unit] / Time.conversion_factors[to_unit])}")
         else:
             converted_value = value  # Conversion between the same units
 
@@ -493,33 +461,32 @@ class Data:
     }
     """Dictionary of metric units and their conversion factors"""
 
+    known_units = Literal[
+        "bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte",
+        "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit",
+        "pebibit", "petabyte", "pebibyte"
+    ]
+    """Literal of known data units"""
+
     @staticmethod
     def convert(
         value: float,
-        from_unit: Literal[
-            "bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte",
-            "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit",
-            "pebibit", "petabyte", "pebibyte"
-        ],
-        to_unit: Literal[
-            "bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte",
-            "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit",
-            "pebibit", "petabyte", "pebibyte"
-        ]
+        from_unit: known_units,
+        to_unit: known_units
     ) -> float:
         """
         Converts data from one unit to another.
 
         Args:
             value (float): The value of data to convert
-            from_unit (Literal["bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte", "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit", "pebibit", "petabyte", "pebibyte"]): The unit to convert from
-            to_unit (Literal["bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte", "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit", "pebibit", "petabyte", "pebibyte"]): The unit to convert to
+            from_unit (known_units): The unit to convert from
+            to_unit (known_units): The unit to convert to
 
         Returns:
             float: The converted data
         """
         if from_unit in Data.data_units and to_unit in Data.data_units:
-            base_value = value * Data.data_units[from_unit]
+            base_value = evaluate.evaluate(f"{value} * {Data.data_units[from_unit]}")
             converted_value = base_value / Data.data_units[to_unit]
         else:
             raise ValueError("Invalid units specified.")
@@ -529,32 +496,20 @@ class Data:
     @staticmethod
     def convert_transfer_rate(
         value: float,
-        from_unit: Literal[
-            "bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte",
-            "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit",
-            "pebibit", "petabyte", "pebibyte"
-        ],
-        to_unit: Literal[
-            "bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte",
-            "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit",
-            "pebibit", "petabyte", "pebibyte"
-        ],
-        time_from_unit: Literal[
-            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"
-        ],
-        time_to_unit: Literal[
-            "second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"
-        ]
+        from_unit: known_units,
+        to_unit: known_units,
+        time_from_unit: Time.known_units,
+        time_to_unit: Time.known_units,
     ) -> float:
         """
         Converts data transfer rate from one unit to another.
 
         Args:
             value (float): The value of data transfer rate to convert
-            from_unit (Literal["bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte", "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit", "pebibit", "petabyte", "pebibyte"]): The unit to convert from
-            to_unit (Literal["bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte", "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit", "pebibit", "petabyte", "pebibyte"]): The unit to convert to
-            time_from_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"]): The time unit to convert from
-            time_to_unit (Literal["second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"]): The time unit to convert to
+            from_unit (known_units): The unit to convert from
+            to_unit (known_units): The unit to convert to
+            time_from_unit (Time.known_units): The time unit to convert from
+            time_to_unit (Time.known_units): The time unit to convert to
 
         Returns:
             float: The converted data transfer rate
