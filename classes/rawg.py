@@ -4,7 +4,7 @@ import time
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Literal, Any
+from typing import Any, Literal
 
 from aiohttp import ClientSession
 
@@ -415,7 +415,8 @@ class RawgApi:
         if data.get("esrb_rating", None):
             data["esrb_rating"] = EsrbRating(**data["esrb_rating"])
         if data.get("description_raw", None):
-            data["description_raw"] = data["description_raw"].replace("<br>", "\n")
+            data["description_raw"] = data["description_raw"].replace(
+                "<br>", "\n")
 
         return RawgGameData(**data)
 

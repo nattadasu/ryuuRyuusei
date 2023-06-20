@@ -5,10 +5,10 @@ import interactions as ipy
 
 from classes.excepts import ProviderHttpError
 from classes.simkl import Simkl, SimklMediaTypes
-from modules.simkl import simkl_submit
 from modules.commons import generate_search_embed, sanitize_markdown
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
+from modules.simkl import simkl_submit
 
 
 class Movies(ipy.Extension):
