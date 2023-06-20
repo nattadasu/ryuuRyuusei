@@ -83,21 +83,23 @@ class Games(ipy.Extension):
                 icon="https://pbs.twimg.com/profile_images/951372339199045632/-JTt60iX_400x400.jpg",
                 color=0x1F1F1F,
             )
-            components: list[ipy.ActionRow] = [
-                ipy.ActionRow(
-                    ipy.StringSelectMenu(
-                        *so,
-                        placeholder="Choose a game",
-                        custom_id="rawg_games_search",
-                    ),
+            components: list[ipy.ActionRow] = ipy.spread_to_rows(
+                ipy.StringSelectMenu(
+                    *so,
+                    placeholder="Choose a game",
+                    custom_id="rawg_games_search",
                 ),
-            ]
+                ipy.Button(
+                    style=ipy.ButtonStyle.DANGER,
+                    label="Cancel",
+                    custom_id="message_delete",
+                    emoji="🗑️"
+                ),
+            )
             await send.edit(
                 embed=result_embed,
                 components=components,
             )
-            await asyncio.sleep(60)
-            await send.edit(components=[])
         except Exception as _:
             l_: dict[str, str] = l_["strings"]["games"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
@@ -110,15 +112,29 @@ class Games(ipy.Extension):
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
             )
-            await send.edit(embed=embed)
+            await send.edit(
+                embed=embed,
+                components=ipy.Button(
+                    style=ipy.ButtonStyle.DANGER,
+                    label="Delete",
+                    custom_id="message_delete",
+                    emoji="🗑️"
+                ),
+            )
 
     @ipy.component_callback("rawg_games_search")
     async def rawg_games_search(self, ctx: ipy.ComponentContext):
         await ctx.defer()
         entry_id = ctx.values[0]
         await rawg_submit(ctx, entry_id)
-        await asyncio.sleep(65)
-        await ctx.delete(ctx.message_id)
+        # grab "message_delete" button
+        keep_components: list[ipy.ActionRow] = []
+        for action_row in ctx.message.components:
+            for comp in action_row.components:
+                if comp.custom_id == "message_delete":
+                    comp.label = "Delete message"
+                    keep_components.append(action_row)
+        await ctx.message.edit(components=keep_components)
 
     @games.subcommand(
         sub_cmd_name="info",

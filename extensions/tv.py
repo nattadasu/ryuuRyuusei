@@ -94,15 +94,19 @@ class TvShow(ipy.Extension):
                 icon="https://media.discordapp.net/attachments/1078005713349115964/1094570318967865424/ico_square_1536x1536.png",
                 color=0x0B0F10,
             )
-            components: list[ipy.ActionRow] = [
-                ipy.ActionRow(
-                    ipy.StringSelectMenu(
-                        *so,
-                        placeholder="Choose a show",
-                        custom_id="simkl_search_select_tv",
-                    ),
+            components: list[ipy.ActionRow] = ipy.spread_to_rows(
+                ipy.StringSelectMenu(
+                    *so,
+                    placeholder="Choose a show",
+                    custom_id="simkl_search_select_tv",
                 ),
-            ]
+                ipy.Button(
+                    style=ipy.ButtonStyle.DANGER,
+                    label="Cancel",
+                    custom_id="message_delete",
+                    emoji="🗑️"
+                ),
+            )
             await send.edit(
                 embed=result_embed,
                 components=components,
@@ -121,15 +125,29 @@ class TvShow(ipy.Extension):
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
             )
-            await send.edit(embed=embed)
+            await send.edit(
+                embed=embed,
+                components=ipy.Button(
+                    style=ipy.ButtonStyle.DANGER,
+                    label="Delete",
+                    custom_id="message_delete",
+                    emoji="🗑️"
+                ),
+            )
 
     @ipy.component_callback("simkl_search_select_tv")
     async def simkl_search_select_tv(self, ctx: ipy.ComponentContext):
         await ctx.defer()
         entry_id: int = int(ctx.values[0])
         await simkl_submit(ctx, entry_id, "tv")
-        await asyncio.sleep(65)
-        await ctx.delete(ctx.message_id)
+        # grab "message_delete" button
+        keep_components: list[ipy.ActionRow] = []
+        for action_row in ctx.message.components:
+            for comp in action_row.components:
+                if comp.custom_id == "message_delete":
+                    comp.label = "Delete message"
+                    keep_components.append(action_row)
+        await ctx.message.edit(components=keep_components)
 
     @tv.subcommand(
         sub_cmd_name="info",

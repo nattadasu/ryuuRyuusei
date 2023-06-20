@@ -14,7 +14,7 @@ from classes.i18n import LanguageDict
 class Anime(ipy.Extension):
     """Anime commands"""
 
-    anime = ipy.SlashCommand(
+    anime_head = ipy.SlashCommand(
         name="anime",
         description="Get anime information from MyAnimeList via Jikan and AniList",
         cooldown=ipy.Cooldown(
@@ -24,7 +24,7 @@ class Anime(ipy.Extension):
         ),
     )
 
-    @anime.subcommand(
+    @anime_head.subcommand(
         sub_cmd_name="search",
         sub_cmd_description="Search for anime",
         options=[
@@ -56,7 +56,7 @@ class Anime(ipy.Extension):
         await ctx.defer()
         ul: str = read_user_language(ctx)
         l_: LanguageDict = fetch_language_data(ul, use_raw=True)
-        send = await ctx.send(
+        send: ipy.Message = await ctx.send(
             embed=ipy.Embed(
                 title=l_["commons"]["search"]["init_title"],
                 description=l_["commons"]["search"]["init"].format(
@@ -126,19 +126,21 @@ class Anime(ipy.Extension):
                 icon="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png",
                 color=0x2F51A3,
             )
-            components: list[ipy.ActionRow] = [
-                ipy.ActionRow(
-                    ipy.StringSelectMenu(
-                        *so, placeholder="Choose an anime", custom_id="mal_search"
-                    ),
+            components: list[ipy.ActionRow] = ipy.spread_to_rows(
+                ipy.StringSelectMenu(
+                    *so, placeholder="Choose an anime", custom_id="mal_search"
                 ),
-            ]
+                ipy.Button(
+                    style=ipy.ButtonStyle.DANGER,
+                    label="Cancel",
+                    custom_id="message_delete",
+                    emoji="🗑️",
+                ),
+            )
             await send.edit(
                 embed=result,
                 components=components,
             )
-            await asyncio.sleep(60)
-            await send.edit(components=[])
         except Exception as _:
             l_: dict[str, str] = l_["strings"]["anime"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
@@ -155,17 +157,31 @@ class Anime(ipy.Extension):
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
             )
-            await send.edit(embed=embed)
+            await send.edit(
+                embed=embed,
+                components=ipy.Button(
+                    style=ipy.ButtonStyle.DANGER,
+                    label="Delete",
+                    custom_id="message_delete",
+                    emoji="🗑️"
+                ),
+            )
 
     @ipy.component_callback("mal_search")
     async def anime_search_data(self, ctx: ipy.ComponentContext) -> None:
         await ctx.defer()
         ani_id: int = int(ctx.values[0])
         await mal_submit(ctx, ani_id)
-        await asyncio.sleep(65)
-        await ctx.delete(ctx.message_id)
+        # grab "message_delete" button
+        keep_components: list[ipy.ActionRow] = []
+        for action_row in ctx.message.components:
+            for comp in action_row.components:
+                if comp.custom_id == "message_delete":
+                    comp.label = "Delete message"
+                    keep_components.append(action_row)
+        await ctx.message.edit(components=keep_components)
 
-    @anime.subcommand(
+    @anime_head.subcommand(
         sub_cmd_name="info",
         sub_cmd_description="Get anime information",
         options=[
@@ -181,7 +197,7 @@ class Anime(ipy.Extension):
         await ctx.defer()
         await mal_submit(ctx, mal_id)
 
-    @anime.subcommand(
+    @anime_head.subcommand(
         sub_cmd_name="random",
         sub_cmd_description="Get a random anime, powered by AnimeAPI",
     )

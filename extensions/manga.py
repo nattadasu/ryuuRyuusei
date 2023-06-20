@@ -119,21 +119,23 @@ class Manga(ipy.Extension):
                 icon="https://anilist.co/img/icons/android-chrome-192x192.png",
                 color=0x02A9FF,
             )
-            components: list[ipy.ActionRow] = [
-                ipy.ActionRow(
-                    ipy.StringSelectMenu(
-                        *so,
-                        placeholder="Choose a manga",
-                        custom_id="anilist_manga_search",
-                    ),
+            components: list[ipy.ActionRow] = ipy.spread_to_rows(
+                ipy.StringSelectMenu(
+                    *so,
+                    placeholder="Choose a manga",
+                    custom_id="anilist_manga_search",
                 ),
-            ]
+                ipy.Button(
+                    style=ipy.ButtonStyle.DANGER,
+                    label="Cancel",
+                    custom_id="message_delete",
+                    emoji="🗑️"
+                ),
+            )
             await send.edit(
                 embed=result_embed,
                 components=components,
             )
-            await asyncio.sleep(60)
-            await send.edit(components=[])
         except Exception as _:
             l_: dict[str, str] = l_["strings"]["manga"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
@@ -146,15 +148,29 @@ class Manga(ipy.Extension):
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
             )
-            await send.edit(embed=embed)
+            await send.edit(
+                embed=embed,
+                components=ipy.Button(
+                    style=ipy.ButtonStyle.DANGER,
+                    label="Delete",
+                    custom_id="message_delete",
+                    emoji="🗑️"
+                ),
+            )
 
     @ipy.component_callback("anilist_manga_search")
     async def anilist_manga_search(self, ctx: ipy.ComponentContext):
         await ctx.defer()
         entry_id: int = int(ctx.values[0])
         await anilist_submit(ctx, entry_id)
-        await asyncio.sleep(65)
-        await ctx.delete(ctx.message_id)
+        # grab "message_delete" button
+        keep_components: list[ipy.ActionRow] = []
+        for action_row in ctx.message.components:
+            for comp in action_row.components:
+                if comp.custom_id == "message_delete":
+                    comp.label = "Delete message"
+                    keep_components.append(action_row)
+        await ctx.message.edit(components=keep_components)
 
     @manga.subcommand(
         sub_cmd_name="info",

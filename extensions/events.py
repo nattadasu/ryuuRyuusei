@@ -30,6 +30,16 @@ class BotEvents(ipy.Extension):
         else:
             await self.bot.on_command_error(self.bot, event)
 
+    @ipy.component_callback("message_delete")
+    async def message_delete(self, ctx: ipy.ComponentContext):
+        """
+        Delete the message that the button is in
+
+        Args:
+            ctx (ipy.ComponentContext): The context
+        """
+        await ctx.message.delete()
+
 
 def setup(bot):
     BotEvents(bot)
