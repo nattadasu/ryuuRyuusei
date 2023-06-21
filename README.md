@@ -9,6 +9,7 @@
 <h1 align="center">Ryuuzaki Ryuusei</h1><br>
 
 <p align="center"><a href="./LICENSE"><img title="GitHub License" alt="GitHub" src="https://img.shields.io/github/license/nattadasu/ryuuRyuusei?logo=github&style=for-the-badge"></a>
+<img title="Bot Version" alt="Bot Version" src="https://img.shields.io/badge/version-rolling_release-yellow?logo=discord&logoColor=white&style=for-the-badge">
 <img title="Python Version" src="https://img.shields.io/badge/Python-3.10_and_above-blue?logo=python&logoColor=white&style=for-the-badge">
 <a title="interactions.py Version" href="https://pypi.org/project/discord-py-interactions"><img src="https://img.shields.io/badge/interactions--py-5.7.0-blue?logo=python&logoColor=white&style=for-the-badge"></a>
 <a title="Discord Server" href="https://discord.gg/UKvMEZvaXc"><img alt="Discord" src="https://img.shields.io/discord/589128995501637655?color=%235865F2&logo=discord&logoColor=white&style=for-the-badge"></a>
@@ -35,13 +36,13 @@ a Discord bot that can help you look up your profile from Discord without going
 anywhere and search for information about your favorite media titles from
 various sources? If yes, then you should check out Ryuuzaki Ryuusei! 🙌
 
-Ryuuzaki Ryuusei is a Discord bot that uses interactions.py and Python to offer
-a variety of features and commands for Discord users. You can look up your
-profile from Discord, AniList, Shikimori, MyAnimeList, and Last.fm and customize
-your summary for each platform. You can also search for anime, manga, games, TV
-shows, and movies from platforms like MyAnimeList, AniList, SIMKL, Spotify, and
-more. You can also export your data in different formats and enjoy true
-randomness with some commands. 🚀
+Ryuuzaki Ryuusei is a rolling release Discord bot that uses interactions.py and
+Python to offer a variety of features and commands for Discord users. You can
+look up your profile from Discord, AniList, Shikimori, MyAnimeList, and Last.fm
+and customize your summary for each platform. You can also search for anime,
+manga, games, TV shows, and movies from platforms like MyAnimeList, AniList,
+SIMKL, Spotify, and more. You can also export your data in different formats
+and enjoy true randomness with some commands. 🚀
 
 The bot cares about your privacy by not storing any data on its server except
 for essential information. You can also delete your data anytime using the
