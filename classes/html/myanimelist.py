@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 
 from classes.excepts import ProviderHttpError
 from classes.jikan import (JikanImages, JikanImageStruct, JikanUserStruct,
-                           defineJikanException)
+                           )
 from modules.const import USER_AGENT
 
 
