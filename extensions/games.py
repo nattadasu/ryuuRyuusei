@@ -1,4 +1,3 @@
-import asyncio
 
 import interactions as ipy
 
