@@ -13,7 +13,7 @@ from modules.i18n import fetch_language_data, read_user_language
 class Manga(ipy.Extension):
     """Manga commands"""
 
-    manga = ipy.SlashCommand(
+    manga_head = ipy.SlashCommand(
         name="manga",
         description="Get manga information from AniList",
         cooldown=ipy.Cooldown(
@@ -23,7 +23,7 @@ class Manga(ipy.Extension):
         ),
     )
 
-    @manga.subcommand(
+    @manga_head.subcommand(
         sub_cmd_name="search",
         sub_cmd_description="Search for manga",
         options=[
@@ -170,7 +170,7 @@ class Manga(ipy.Extension):
                     keep_components.append(action_row)
         await ctx.message.edit(components=keep_components)
 
-    @manga.subcommand(
+    @manga_head.subcommand(
         sub_cmd_name="info",
         sub_cmd_description="Get manga information",
         options=[
@@ -186,7 +186,7 @@ class Manga(ipy.Extension):
         await ctx.defer()
         await anilist_submit(ctx, anilist_id)
 
-    @manga.subcommand(
+    @manga_head.subcommand(
         sub_cmd_name="random",
         sub_cmd_description="Get a random manga, powered by AniBrain",
         options=[

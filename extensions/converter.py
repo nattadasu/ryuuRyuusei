@@ -449,14 +449,14 @@ class ConverterCog(ipy.Extension):
                 embed = result_embed(value, from_currency,
                                      to_currency, convert)
                 embed.set_footer(
-                    text=f"Powered by ExchangeRate-API, data last fetched on"
+                    text="Powered by ExchangeRate-API, data last fetched on"
                 )
                 embed.timestamp = datetime.fromtimestamp(
                     convert_raw.time_last_update_unix, tz=timezone.utc)
                 await ctx.send(embed=embed)
         except ProviderHttpError as e:
             embed = platform_exception_embed(
-                description=f"An error occurred while trying to get exchange rates from ExchangeRate-API.",
+                description="An error occurred while trying to get exchange rates from ExchangeRate-API.",
                 error=f"{e}",
                 lang_dict=l_,
                 error_type=PlatformErrType.SYSTEM)

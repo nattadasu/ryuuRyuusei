@@ -9,7 +9,7 @@ from modules.i18n import (paginate_language, search_language,
 class UserSettings(ipy.Extension):
     """User Settings commands"""
 
-    usersettings = ipy.SlashCommand(
+    usersettings_head = ipy.SlashCommand(
         name="usersettings",
         description="Change the bot settings",
         dm_permission=True,
@@ -20,12 +20,12 @@ class UserSettings(ipy.Extension):
         ),
     )
 
-    language = usersettings.group(
+    language = usersettings_head.group(
         name="language",
         description="Change the bot language",
     )
 
-    @usersettings.subcommand(
+    @usersettings_head.subcommand(
         group_name="language",
         group_description="Change the bot language",
         sub_cmd_name="list",
@@ -34,7 +34,7 @@ class UserSettings(ipy.Extension):
     async def usersettings_language_list(self, ctx: ipy.InteractionContext):
         await paginate_language(bot=self.bot, ctx=ctx)
 
-    @usersettings.subcommand(
+    @usersettings_head.subcommand(
         group_name="language",
         group_description="Change the bot language",
         sub_cmd_name="set",

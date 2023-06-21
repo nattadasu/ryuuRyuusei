@@ -11,7 +11,7 @@ from modules.rawg import rawg_submit
 class Games(ipy.Extension):
     """Games commands"""
 
-    games = ipy.SlashCommand(
+    games_head = ipy.SlashCommand(
         name="games",
         description="Get games information from RAWG",
         cooldown=ipy.Cooldown(
@@ -21,7 +21,7 @@ class Games(ipy.Extension):
         ),
     )
 
-    @games.subcommand(
+    @games_head.subcommand(
         sub_cmd_name="search",
         sub_cmd_description="Search for games",
         options=[
@@ -133,7 +133,7 @@ class Games(ipy.Extension):
                     keep_components.append(action_row)
         await ctx.message.edit(components=keep_components)
 
-    @games.subcommand(
+    @games_head.subcommand(
         sub_cmd_name="info",
         sub_cmd_description="Get information about a game",
         options=[

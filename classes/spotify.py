@@ -50,9 +50,8 @@ class SpotifyApi:
 
     async def authorize_client(self):
         """Authorize client without requiring user resource access"""
-        self.cache_expiration_time = 3600
         auth = Cache.get_cache_file_path("auth.json")
-        cached = Cache.read_cached_data(auth)
+        cached = Cache.read_cached_data(auth, 3600)
         if cached is not None:
             self.token = cached["access_token"]
         basic = b64.b64encode(

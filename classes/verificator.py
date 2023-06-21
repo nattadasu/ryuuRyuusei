@@ -90,8 +90,8 @@ class Verificator:
         Cache.write_data_to_cache(data.to_dict(), cache_file_path)
         return data
 
+    @staticmethod
     def get_user_uuid(
-        self,
         discord_id: int,
     ) -> VerificatorUser | None:
         """

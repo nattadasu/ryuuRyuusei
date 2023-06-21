@@ -162,7 +162,7 @@ def create_simkl_embed(
         elif len(first_line) <= 150:
             trimmed_description = first_line
             if description_length > 1:
-                trimmed_description += f"\n> \n> "
+                trimmed_description += "\n> \n> "
                 for line in description[1:]:
                     if line not in ("", None):
                         trimmed_description += trim_synopsis(line)
@@ -236,7 +236,7 @@ def create_simkl_embed(
         inline=True,
     )
     embed.add_field(
-        name=f"Airing Date" if media_type == "tv" else "Release Date",
+        name="Airing Date" if media_type == "tv" else "Release Date",
         value=date,
         inline=True,
     )

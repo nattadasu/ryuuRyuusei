@@ -52,6 +52,7 @@ class ExchangeRate:
 @dataclass
 class SingleExchangeRate(ExchangeRate):
     """A dataclass to represent an exchange rate for a single conversion."""
+
     conversion_rates: dict[Accepted_Currencies, float]
     """The conversion rates of the exchange rate."""
 
@@ -59,6 +60,7 @@ class SingleExchangeRate(ExchangeRate):
 @dataclass
 class PairConversionExchangeRate(ExchangeRate):
     """A dataclass to represent an exchange rate for a pair conversion."""
+
     target_code: Accepted_Currencies
     """The target code of the exchange rate."""
     conversion_rate: float
@@ -91,6 +93,15 @@ class ExchangeRatesAPI:
 
     @staticmethod
     def _define_error_message(error_type: str) -> str:
+        """
+        Define the error message from the error type
+
+        Args:
+            error_type (str): The error type
+
+        Returns:
+            str: The error message
+        """
         match error_type:
             case "unsupported-code":
                 return "The currency code is not supported."

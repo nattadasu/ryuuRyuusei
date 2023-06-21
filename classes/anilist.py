@@ -625,9 +625,8 @@ class AniList:
         Returns:
             AniListUserStruct: The user information
         """
-        self.cache_expiration_time = 43200
         cache_file_path = Cache.get_cache_file_path(f"user/{username}.json")
-        cached_data = Cache.read_cached_data(cache_file_path)
+        cached_data = Cache.read_cached_data(cache_file_path, 43200)
         if cached_data is not None and not return_id:
             formatted_data = self._user_dict_to_dataclass(cached_data)
             return formatted_data

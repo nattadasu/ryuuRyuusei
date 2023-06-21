@@ -403,7 +403,7 @@ class ExtenalSitesRelations(ipy.Extension):
                 trakt_data = (trakt_data.show if trakt_data.type ==
                               "show" else trakt_data.movie)
                 trakt_id = trakt_data.ids.trakt
-            except ProviderHttpError as eht:
+            except ProviderHttpError:
                 # silence error
                 pass
 

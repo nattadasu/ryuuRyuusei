@@ -9,6 +9,7 @@ evaluate = BAP()
 
 class Length:
     """Class to convert length units"""
+
     imperial_units: dict[str, float] = {
         "thou": 0.001,
         "inch": 1,
@@ -136,6 +137,7 @@ class Length:
 
 class Temperature:
     """Class to convert temperature units"""
+
     conversions: dict[str, dict[str, float | int]] = {
         "celsius": {
             "kelvin": lambda t: t + 273.15,
@@ -230,6 +232,7 @@ class Temperature:
 
 class Mass:
     """Class to convert mass units"""
+
     imperial_units: dict[str, float] = {
         "ounce": 0.0625,
         "pound": 1,
@@ -314,6 +317,7 @@ class Mass:
 
 class Volume:
     """Class to convert volume units"""
+
     imperial_units: dict[str, float] = {
         "teaspoon": 1,
         "tablespoon": 3,
@@ -399,6 +403,7 @@ class Volume:
 
 class Time:
     """Class to convert time units"""
+
     conversion_factors = {
         "second": 1,
         "minute": 60,

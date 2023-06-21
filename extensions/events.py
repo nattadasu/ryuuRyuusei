@@ -8,6 +8,8 @@ from modules.const import EMOJI_FORBIDDEN
 
 
 class BotEvents(ipy.Extension):
+    """Bot events"""
+
     @ipy.listen(disable_default_listeners=True)
     async def on_command_error(self, event: CommandError):
         """Handle command errors"""
@@ -38,6 +40,8 @@ class BotEvents(ipy.Extension):
         Args:
             ctx (ipy.ComponentContext): The context
         """
+        if ctx.message is None:
+            return
         await ctx.message.delete()
 
 

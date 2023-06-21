@@ -1,4 +1,3 @@
-import os
 import re
 from datetime import datetime, timezone
 
@@ -18,19 +17,19 @@ from modules.i18n import search_language, set_default_language
 class ServerSettings(ipy.Extension):
     """Server Settings commands"""
 
-    serversettings = ipy.SlashCommand(
+    serversettings_head = ipy.SlashCommand(
         name="serversettings",
         description="Change the bot settings server-wide",
         default_member_permissions=ipy.Permissions.ADMINISTRATOR,
         dm_permission=False,
     )
 
-    language = serversettings.group(
+    language = serversettings_head.group(
         name="language",
         description="Change the bot language for this server",
     )
 
-    member = serversettings.group(
+    member = serversettings_head.group(
         name="member",
         description="Manage member settings on this server",
     )

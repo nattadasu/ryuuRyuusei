@@ -10,7 +10,7 @@ from modules.const import (EMOJI_ATTENTIVE, EMOJI_DOUBTING, EMOJI_SUCCESS,
 class Random(ipy.Extension):
     """Random commands"""
 
-    random = ipy.SlashCommand(
+    randomize = ipy.SlashCommand(
         name="random",
         description="Get a random stuff",
         cooldown=ipy.Cooldown(
@@ -20,7 +20,7 @@ class Random(ipy.Extension):
         ),
     )
 
-    @random.subcommand(
+    @randomize.subcommand(
         sub_cmd_name="8ball",
         sub_cmd_description="Get a random answer to your question, powered by random.org",
         options=[
@@ -107,7 +107,7 @@ class Random(ipy.Extension):
             text="Please do not take this seriously, it's for fun purposes only")
         await ctx.send(embed=embed)
 
-    @random.subcommand(
+    @randomize.subcommand(
         sub_cmd_name="number",
         sub_cmd_description="Get a random number",
         options=[
@@ -177,7 +177,7 @@ class Random(ipy.Extension):
             )
         )
 
-    @random.subcommand(
+    @randomize.subcommand(
         sub_cmd_name="string",
         sub_cmd_description="Get a random string",
         options=[

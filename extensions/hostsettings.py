@@ -8,7 +8,7 @@ from modules.discord import format_username
 class HostSettings(ipy.Extension):
     """Host Settings commands"""
 
-    hostsettings = ipy.SlashCommand(
+    hostsettings_head = ipy.SlashCommand(
         name="hostsettings",
         description="Change the bot settings, for self-hosted bot only",
         scopes=[
@@ -18,7 +18,7 @@ class HostSettings(ipy.Extension):
         dm_permission=False,
     )
 
-    member = hostsettings.group(
+    member = hostsettings_head.group(
         name="member",
         description="Manage member settings, for self-hosted bot only")
 

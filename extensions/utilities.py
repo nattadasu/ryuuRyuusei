@@ -19,7 +19,7 @@ from modules.i18n import fetch_language_data, read_user_language
 class Utilities(ipy.Extension):
     """Utilities commands"""
 
-    utilities = ipy.SlashCommand(
+    utilities_head = ipy.SlashCommand(
         name="utilities",
         description="Get some utilities you might need",
         cooldown=ipy.Cooldown(
@@ -29,7 +29,7 @@ class Utilities(ipy.Extension):
         ),
     )
 
-    @utilities.subcommand(
+    @utilities_head.subcommand(
         sub_cmd_name="math",
         sub_cmd_description="Evaluate a (safe) math expression",
         options=[
@@ -75,7 +75,7 @@ class Utilities(ipy.Extension):
                 )
             )
 
-    @utilities.subcommand(
+    @utilities_head.subcommand(
         sub_cmd_name="base64",
         sub_cmd_description="Encode/decode a string to/from base64",
         options=[
@@ -140,7 +140,7 @@ class Utilities(ipy.Extension):
                 )
             )
 
-    @utilities.subcommand(
+    @utilities_head.subcommand(
         sub_cmd_name="color",
         sub_cmd_description="Get information about a color",
         options=[
@@ -244,7 +244,7 @@ class Utilities(ipy.Extension):
                 )
             )
 
-    @utilities.subcommand(
+    @utilities_head.subcommand(
         sub_cmd_name="qrcode",
         sub_cmd_description="Generate a QR code",
         options=[
@@ -312,7 +312,7 @@ class Utilities(ipy.Extension):
                 )
             )
 
-    @utilities.subcommand(
+    @utilities_head.subcommand(
         sub_cmd_name="snowflake",
         sub_cmd_description="Convert a Discord Snowflake to a timestamp",
         options=[
@@ -356,7 +356,7 @@ class Utilities(ipy.Extension):
             )
         )
 
-    @utilities.subcommand(
+    @utilities_head.subcommand(
         group_name="site",
         group_description="Related to websites",
         sub_cmd_name="status",
@@ -433,7 +433,7 @@ class Utilities(ipy.Extension):
 
             await ctx.send(embed=embed)
 
-    @utilities.subcommand(
+    @utilities_head.subcommand(
         sub_cmd_name="banner",
         sub_cmd_description="Fetch user's banner",
         options=[
@@ -507,7 +507,7 @@ class Utilities(ipy.Extension):
             )
             await ctx.send(embed=embed)
 
-    @utilities.subcommand(
+    @utilities_head.subcommand(
         sub_cmd_name="avatar",
         sub_cmd_description="Fetch user's avatar",
         options=[

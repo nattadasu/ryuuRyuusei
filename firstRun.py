@@ -67,7 +67,7 @@ async def first_run(py_bin: str = py_bin_path()):
         print("\033[31mError installing packages, please run frollowing command:")
         command = "pip install -U -r requirements.txt"
         if check_termux():
-            commmand = "MATHLAB=m " + command
+            command = "MATHLAB=m " + command
         print(f"{command}\033[0m")
     print("Preparing the database as database.csv in tabbed format...")
     prepare_database()
