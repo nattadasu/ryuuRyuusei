@@ -1,13 +1,13 @@
 import json
-import os
-import time
 from enum import Enum
 
 import aiohttp
 
+from classes.cache import Caching
 from classes.excepts import ProviderHttpError
 from modules.const import USER_AGENT
 
+Cache = Caching(cache_directory="cache/kitsu", cache_expiration_time=86400)
 
 class Kitsu:
     """Kitsu API wrapper"""
@@ -17,8 +17,6 @@ class Kitsu:
         self.session = None
         self.base_url = "https://kitsu.io/api/edge/"
         self.params = None
-        self.cache_directory = "cache/kitsu"
-        self.cache_time = 86400
 
     async def __aenter__(self):
         """Enter the async context manager"""
@@ -64,9 +62,9 @@ class Kitsu:
         """
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
-        cache_file_path = self.get_cache_path(
+        cache_file_path = Cache.get_cache_path(
             f"{media_type.value}/{anime_id}.json")
-        cached_data = self.read_cache(cache_file_path)
+        cached_data = Cache.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data
         url = f"{self.base_url}{media_type.value}/{anime_id}"
@@ -75,7 +73,7 @@ class Kitsu:
                 raise ProviderHttpError(resp.text(), resp.status)
             jsonText = await resp.text()
             jsonFinal = json.loads(jsonText)
-        self.write_cache(cache_file_path, jsonFinal)
+        Cache.write_cache(cache_file_path, jsonFinal)
         return jsonFinal
 
     async def resolve_slug(
@@ -93,9 +91,9 @@ class Kitsu:
         """
         if isinstance(media_type, str):
             media_type = self.MediaType(media_type)
-        cache_file_path = self.get_cache_path(
+        cache_file_path = Cache.get_cache_path(
             f"{media_type.value}/slug/{slug}.json")
-        cached_data = self.read_cache(cache_file_path)
+        cached_data = Cache.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data
         url = f"{self.base_url}{media_type.value}/?filter[slug]={slug}"
@@ -104,26 +102,5 @@ class Kitsu:
                 raise ProviderHttpError(resp.text(), resp.status)
             jsonText = await resp.text()
             jsonFinal = json.loads(jsonText)
-        self.write_cache(cache_file_path, jsonFinal)
+        Cache.write_cache(cache_file_path, jsonFinal)
         return jsonFinal
-
-    def get_cache_path(self, file_name: str) -> str:
-        """Get the cache path"""
-        return os.path.join(self.cache_directory, file_name)
-
-    def read_cache(self, cache_path: str):
-        """Read the cache"""
-        if os.path.exists(cache_path):
-            with open(cache_path, "r") as f:
-                data = json.load(f)
-                age = time.time() - data["timestamp"]
-                if age < self.cache_time:
-                    return data["data"]
-        return None
-
-    @staticmethod
-    def write_cache(cache_path: str, data):
-        """Write the cache"""
-        os.makedirs(os.path.dirname(cache_path), exist_ok=True)
-        with open(cache_path, "w") as f:
-            json.dump({"timestamp": time.time(), "data": data}, f)

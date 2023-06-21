@@ -1,11 +1,9 @@
-import json
-import os
-import time
 from dataclasses import dataclass
 from typing import Literal
 
 import aiohttp
 
+from classes.cache import Caching
 from classes.excepts import ProviderHttpError
 from modules.const import EXCHANGERATE_API_KEY, USER_AGENT
 
@@ -25,6 +23,8 @@ Accepted_Currencies = Literal[
     "UGX", "USD", "UYU", "UZS", "VES", "VND", "VUV", "WST", "XAF", "XCD", "XDR", "XOF",
     "XPF", "YER", "ZAR", "ZMW", "ZWL"
 ]
+
+Cache = Caching(cache_directory="cache/exchangeratesapi", cache_expiration_time=86400)
 
 
 @dataclass
@@ -74,8 +74,6 @@ class ExchangeRatesAPI:
         self.session = None
         self.api_key = api_key
         self.headers = {"User-Agent": USER_AGENT}
-        self.cache_directory = "cache/exchangeratesapi"
-        self.cache_expiration_time = 86400
 
     async def __aenter__(self) -> "ExchangeRatesAPI":
         """Enter the async context manager"""
@@ -120,8 +118,8 @@ class ExchangeRatesAPI:
             SingleExchangeRate: The exchange rates for the base currency
         """
         async with self.session.get(f"{self.base_url}/{self.api_key}/latest/{base_currency}") as resp:
-            cache_file_path = self.get_cache_file_path(f"{base_currency}.json")
-            cached_data = self.read_cached_data(cache_file_path)
+            cache_file_path = Cache.get_cache_file_path(f"{base_currency}.json")
+            cached_data = Cache.read_cached_data(cache_file_path)
             if cached_data is not None:
                 return SingleExchangeRate(**cached_data)
             if resp.status != 200:
@@ -135,7 +133,7 @@ class ExchangeRatesAPI:
             if data["result"] == "error":
                 err_type = self._define_error_message(data["error-type"])
                 raise ProviderHttpError(err_type, resp.status)
-            self.write_data_to_cache(data, cache_file_path)
+            Cache.write_data_to_cache(data, cache_file_path)
             return SingleExchangeRate(**data)
 
     async def get_exchange_rate(self, base_currency: Accepted_Currencies, target_currency: Accepted_Currencies, amount: float) -> PairConversionExchangeRate:
@@ -173,48 +171,3 @@ class ExchangeRatesAPI:
             conversion_result=amount *
             base_currency_rates.conversion_rates[target_currency],
         )
-
-    def get_cache_file_path(self, cache_file_name: str) -> str:
-        """
-        Get cache file path
-
-        Args:
-            cache_file_name (str): Cache file name
-
-        Returns:
-            str: Cache file path
-        """
-        return os.path.join(self.cache_directory, cache_file_name)
-
-    def read_cached_data(self, cache_file_path: str) -> dict | None:
-        """
-        Read cached data
-
-        Args:
-            cache_file_name (str): Cache file name
-
-        Returns:
-            dict: Cached data
-            None: If cache file does not exist
-        """
-        if os.path.exists(cache_file_path):
-            with open(cache_file_path, "r") as cache_file:
-                cache_data = json.load(cache_file)
-                cache_age = time.time() - cache_data["timestamp"]
-                if cache_age < self.cache_expiration_time:
-                    return cache_data["data"]
-        return None
-
-    @staticmethod
-    def write_data_to_cache(data, cache_file_path: str):
-        """
-        Write data to cache
-
-        Args:
-            data (any): Data to write
-            cache_file_name (str): Cache file name
-        """
-        cache_data = {"timestamp": time.time(), "data": data}
-        os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
-        with open(cache_file_path, "w") as cache_file:
-            json.dump(cache_data, cache_file)

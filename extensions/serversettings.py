@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import interactions as ipy
 from emoji import emojize
 
+from classes.cache import Caching
 from classes.database import UserDatabase, UserDatabaseClass
 from classes.html.myanimelist import HtmlMyAnimeList
 from classes.verificator import Verificator
@@ -185,6 +186,8 @@ class ServerSettings(ipy.Extension):
         await ctx.defer(ephemeral=True)
         checker = await self._check_if_registered(ctx, user)
         if checker is True:
+            await ctx.send(
+                f"{EMOJI_FORBIDDEN} {user.mention} is already registered!")
             return
         fields = [
             ipy.EmbedField(
@@ -209,26 +212,19 @@ class ServerSettings(ipy.Extension):
 
         with Verificator() as verify:
             # check if user still have pending verification
-            is_pending = verify.get_user_uuid(user.id)
-            if is_pending is not None:
-                remaining_time = is_pending.epoch_time + 43200
-                fields.append(
-                    ipy.EmbedField(
-                        name=overwrite_prompt,
-                        value=f"```\n{is_pending.uuid}\n```**Note:** Verification code expires <t:{remaining_time}:R>.",
-                    ))
-                epoch = datetime.fromtimestamp(
-                    is_pending.epoch_time, tz=timezone.utc)
+            verification = verify.get_user_uuid(user.id)
+            if verification is not None:
+                remaining_time = verification.epoch_time + 43200
             else:
-                generate = verify.save_user_uuid(user.id, mal_username)
-                remaining_time = generate.epoch_time + 43200
-                fields.append(
-                    ipy.EmbedField(
-                        name=overwrite_prompt,
-                        value=f"```\n{generate.uuid}\n```**Note:** Verification code expires <t:{remaining_time}:R>.",
-                    ))
-                epoch = datetime.fromtimestamp(
-                    generate.epoch_time, tz=timezone.utc)
+                verification = verify.save_user_uuid(user.id, mal_username)
+                remaining_time = verification.epoch_time + 43200
+            fields.append(
+                ipy.EmbedField(
+                    name=overwrite_prompt,
+                    value=f"```\n{verification.uuid}\n```**Note:** Verification code expires <t:{remaining_time}:R>.",
+                ))
+            epoch = datetime.fromtimestamp(
+                verification.epoch_time, tz=timezone.utc)
 
         fields += [
             ipy.EmbedField(
@@ -308,11 +304,12 @@ class ServerSettings(ipy.Extension):
             header="Success!",
             message=f"{user.mention} have been registered!",
         )
-        directory = "cache/verify"
-        path = f"{ctx.author.id}_{user.id}.json"
+        Cache = Caching("cache/verify", 43200)
+        path = f"{user.id}.json"
+        file_path = Cache.get_cache_path(path)
         await ctx.send(embed=embed)
-        file_path = os.path.join(directory, path)
-        os.remove(file_path)
+        Cache.drop_cache(file_path)
+        return
 
 
 def setup(bot):

@@ -9,6 +9,7 @@ import pandas as pd
 import yaml
 
 from classes.anilist import AniList
+from classes.cache import Caching
 from classes.database import UserDatabase, UserDatabaseClass
 from classes.excepts import ProviderHttpError
 from classes.html.myanimelist import HtmlMyAnimeList
@@ -154,26 +155,20 @@ class DataControl(ipy.Extension):
 
         with Verificator() as verify:
             # check if user still have pending verification
-            is_pending = verify.get_user_uuid(ctx.author.id)
-            if is_pending is not None:
-                remaining_time = is_pending.epoch_time + 43200
-                fields.append(
-                    ipy.EmbedField(
-                        name=overwrite_prompt,
-                        value=f"```\n{is_pending.uuid}\n```**Note:** Your verification code expires <t:{remaining_time}:R>.",
-                    ))
-                epoch = datetime.fromtimestamp(
-                    is_pending.epoch_time, tz=timezone.utc)
+            verification = verify.get_user_uuid(ctx.author.id)
+            if verification is not None:
+                remaining_time = verification.epoch_time + 43200
             else:
-                generate = verify.save_user_uuid(ctx.author.id, mal_username)
-                remaining_time = generate.epoch_time + 43200
-                fields.append(
-                    ipy.EmbedField(
-                        name=overwrite_prompt,
-                        value=f"```\n{generate.uuid}\n```**Note:** Your verification code expires <t:{remaining_time}:R>.",
-                    ))
-                epoch = datetime.fromtimestamp(
-                    generate.epoch_time, tz=timezone.utc)
+                verification = verify.save_user_uuid(ctx.author.id, mal_username)
+                remaining_time = verification.epoch_time + 43200
+            fields.append(
+                ipy.EmbedField(
+                    name=overwrite_prompt,
+                    value=f"```\n{verification.uuid}\n```**Note:** Verification code expires <t:{remaining_time}:R>.",
+                ))
+            epoch = datetime.fromtimestamp(
+                verification.epoch_time, tz=timezone.utc)
+
 
         fields += [
             ipy.EmbedField(
@@ -248,11 +243,12 @@ To complete your registration, please follow the instructions below:""",
             header="Success!",
             message="You have been registered!",
         )
-        directory = "cache/verify/"
+        Cache = Caching("cache/verify", 43200)
         path = f"{ctx.author.id}.json"
+        file_path = Cache.get_cache_path(path)
         await ctx.send(embed=embed)
-        file_path = os.path.join(directory, path)
-        os.remove(file_path)
+        Cache.drop_cache(file_path)
+        return
 
     @ipy.cooldown(ipy.Buckets.USER, 1, 5)
     @ipy.slash_command(

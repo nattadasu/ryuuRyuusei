@@ -5,8 +5,12 @@ from dataclasses import dataclass
 
 import aiohttp
 
+from classes.cache import Caching
 from classes.excepts import ProviderHttpError
 from modules.const import USER_AGENT
+
+
+Cache = Caching("cache/thecolorapi", 604800)
 
 
 @dataclass
@@ -235,8 +239,6 @@ class TheColorApi:
         """Initialize the class"""
         self.base_url = "https://www.thecolorapi.com"
         self.session = None
-        self.cache_directory = "cache/thecolorapi"
-        self.cache_expiration_time = 604800  # 1 week in seconds
 
     async def __aenter__(self):
         """Create a session if class invoked with `with` statement"""
@@ -255,88 +257,23 @@ class TheColorApi:
     @staticmethod
     def dict_to_dataclass(data: dict) -> Color:
         """Convert data dict to dataclass"""
-        return Color(
-            hex=HexValue(
-                value=data["hex"]["value"],
-                clean=data["hex"]["clean"],
-            ),
-            rgb=RGBValue(
-                fraction=RGBFractions(
-                    r=data["rgb"]["fraction"]["r"],
-                    g=data["rgb"]["fraction"]["g"],
-                    b=data["rgb"]["fraction"]["b"],
-                ),
-                r=data["rgb"]["r"],
-                g=data["rgb"]["g"],
-                b=data["rgb"]["b"],
-                value=data["rgb"]["value"],
-            ),
-            hsl=HSLValue(
-                fraction=HSLFractions(
-                    h=data["hsl"]["fraction"]["h"],
-                    s=data["hsl"]["fraction"]["s"],
-                    l=data["hsl"]["fraction"]["l"],
-                ),
-                h=data["hsl"]["h"],
-                s=data["hsl"]["s"],
-                l=data["hsl"]["l"],
-                value=data["hsl"]["value"],
-            ),
-            hsv=HSVValue(
-                fraction=HSVFractions(
-                    h=data["hsv"]["fraction"]["h"],
-                    s=data["hsv"]["fraction"]["s"],
-                    v=data["hsv"]["fraction"]["v"],
-                ),
-                h=data["hsv"]["h"],
-                s=data["hsv"]["s"],
-                v=data["hsv"]["v"],
-                value=data["hsv"]["value"],
-            ),
-            cmyk=CMYKValue(
-                fraction=CMYKFractions(
-                    c=data["cmyk"]["fraction"]["c"],
-                    m=data["cmyk"]["fraction"]["m"],
-                    y=data["cmyk"]["fraction"]["y"],
-                    k=data["cmyk"]["fraction"]["k"],
-                ),
-                c=data["cmyk"]["c"],
-                m=data["cmyk"]["m"],
-                y=data["cmyk"]["y"],
-                k=data["cmyk"]["k"],
-                value=data["cmyk"]["value"],
-            ),
-            XYZ=XYZValue(
-                fraction=XYZFractions(
-                    X=data["XYZ"]["fraction"]["X"],
-                    Y=data["XYZ"]["fraction"]["Y"],
-                    Z=data["XYZ"]["fraction"]["Z"],
-                ),
-                X=data["XYZ"]["X"],
-                Y=data["XYZ"]["Y"],
-                Z=data["XYZ"]["Z"],
-                value=data["XYZ"]["value"],
-            ),
-            name=Metadata(
-                value=data["name"]["value"],
-                closest_named_hex=data["name"]["closest_named_hex"],
-                exact_match_name=data["name"]["exact_match_name"],
-                distance=data["name"]["distance"],
-            ),
-            image=Image(
-                bare=data["image"]["bare"],
-                named=data["image"]["named"],
-            ),
-            contrast=Contrast(
-                value=data["contrast"]["value"],
-            ),
-            _links=Links(
-                self={
-                    "href": data["_links"]["self"]["href"],
-                },
-            ),
-            _embedded=data["_embedded"] if "_embedded" in data else None,
-        )
+        data["rgb"]["fraction"] = RGBFractions(**data["rgb"]["fraction"])
+        data["hsl"]["fraction"] = HSLFractions(**data["hsl"]["fraction"])
+        data["hsv"]["fraction"] = HSVFractions(**data["hsv"]["fraction"])
+        data["cmyk"]["fraction"] = CMYKFractions(**data["cmyk"]["fraction"])
+        data["XYZ"]["fraction"] = XYZFractions(**data["XYZ"]["fraction"])
+        data["hex"] = HexValue(**data["hex"])
+        data["rgb"] = RGBValue(**data["rgb"])
+        data["hsl"] = HSLValue(**data["hsl"])
+        data["hsv"] = HSVValue(**data["hsv"])
+        data["cmyk"] = CMYKValue(**data["cmyk"])
+        data["XYZ"] = XYZValue(**data["XYZ"])
+        data["name"] = Metadata(**data["name"])
+        data["image"] = Image(**data["image"])
+        data["contrast"] = Contrast(**data["contrast"])
+        data["_links"] = Links(**data["_links"])
+
+        return Color(**data)
 
     async def color(self, **color: str) -> Color:
         """
@@ -357,59 +294,18 @@ class TheColorApi:
         Returns:
             dict: Color information
         """
-        cache_file_path = self.get_cache_file_path(color)
-        cached_data = self.read_cached_data(cache_file_path)
+        if color["hex"].startswith("#"):
+            color["hex"] = color["hex"][1:]
+        filename = "-".join([f"{k}_{v}" for k, v in color.items()]) + ".json"
+        cache_file_path = Cache.get_cache_file_path(filename)
+        cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
             return self.dict_to_dataclass(cached_data)
 
         async with self.session.get(f"{self.base_url}/id", params=color) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(data, cache_file_path)
+                Cache.write_data_to_cache(data, cache_file_path)
                 return self.dict_to_dataclass(data)
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
-
-    def get_cache_file_path(self, color_params):
-        """
-        Get the cache file from path
-
-        Args:
-            color_params (dict): Color parameters
-        """
-        filename = "-".join([f"{k}_{v}" for k,
-                             v in color_params.items()]) + ".json"
-        return os.path.join(self.cache_directory, filename)
-
-    def read_cached_data(self, cache_file_path) -> dict | None:
-        """
-        Read cached data from file
-
-        Args:
-            cache_file_path (str): Cache file path
-
-        Returns:
-            dict: Cached data
-            None: If cache file does not exist or cache is expired
-        """
-        if os.path.exists(cache_file_path):
-            with open(cache_file_path, "r") as cache_file:
-                cache_data = json.load(cache_file)
-                cache_age = time.time() - cache_data["timestamp"]
-                if cache_age < self.cache_expiration_time:
-                    return cache_data["data"]
-        return None
-
-    @staticmethod
-    def write_data_to_cache(data, cache_file_path: str):
-        """
-        Write data to cache
-
-        Args:
-            data (any): Data to write to cache
-            cache_file_path (str): Cache file path
-        """
-        cache_data = {"timestamp": time.time(), "data": data}
-        os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
-        with open(cache_file_path, "w") as cache_file:
-            json.dump(cache_data, cache_file)

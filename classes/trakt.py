@@ -1,14 +1,15 @@
 import json
-import os
-import time
 from dataclasses import dataclass
 from enum import Enum
 from typing import Literal
 
 import aiohttp
 
+from classes.cache import Caching
 from classes.excepts import ProviderHttpError, ProviderTypeError
 from modules.const import USER_AGENT, traktHeader
+
+Cache = Caching("cache/trakt", 86400)
 
 
 @dataclass
@@ -171,8 +172,6 @@ class Trakt:
         if headers is None:
             headers = traktHeader
         self.base_url = "https://api.trakt.tv/"
-        self.cache_directory = "cache/trakt"
-        self.cache_time = 86400
         if headers is None:
             self.headers = traktHeader
         else:
@@ -285,11 +284,10 @@ class Trakt:
         """
         if platform == self.Platform.TMDB and not media_type:
             raise ProviderTypeError("TMDB requires a media type", "MediaType")
-        self.cache_time = 2592000
-        cache_file_path = self.get_cache_path(
+        cache_file_path = Cache.get_cache_path(
             f"lookup/{platform.value}/{media_type.value}/{media_id}.json"
         )
-        cached_data = self.read_cache(cache_file_path)
+        cached_data = Cache.read_cache(cache_file_path, 2592000)
         if cached_data is not None:
             ids = self.ids_dict_to_dataclass(cached_data)
             return ids[0]
@@ -303,7 +301,7 @@ class Trakt:
                 raise ProviderHttpError(resp.text(), resp.status)
             jsonText = await resp.text()
             jsonFinal = json.loads(jsonText)
-        self.write_cache(cache_file_path, jsonFinal)
+        Cache.write_cache(cache_file_path, jsonFinal)
         ids = self.ids_dict_to_dataclass(jsonFinal)
         return ids[0]
 
@@ -323,9 +321,9 @@ class Trakt:
         Returns:
             TraktExtendedMovieStruct | TraktExtendedShowStruct: The data of the TV show or movie
         """
-        cache_file_path = self.get_cache_path(
+        cache_file_path = Cache.get_cache_path(
             f"{media_type.value}/{media_id}.json")
-        cached_data = self.read_cache(cache_file_path)
+        cached_data = Cache.read_cache(cache_file_path)
         if cached_data is not None:
             return self.extended_dict_to_dataclass(cached_data, media_type)
         url = f"{self.base_url}{media_type.value}/{media_id}"
@@ -335,48 +333,8 @@ class Trakt:
                 raise ProviderHttpError(resp.text(), resp.status)
             jsonText = await resp.text()
             jsonFinal = json.loads(jsonText)
-        self.write_cache(cache_file_path, jsonFinal)
+        Cache.write_cache(cache_file_path, jsonFinal)
         return self.extended_dict_to_dataclass(jsonFinal, media_type)
-
-    def get_cache_path(self, cache_name: str):
-        """
-        Get the cache path of a cache file
-
-        Args:
-            cache_name (str): The cache file name
-        """
-        return os.path.join(self.cache_directory, cache_name)
-
-    def read_cache(self, cache_path: str):
-        """
-        Read a cache file
-
-        Args:
-            cache_path (str): The cache file path
-
-        Returns:
-            any: The data in the cache file
-        """
-        if os.path.exists(cache_path):
-            with open(cache_path, "r") as f:
-                data = json.load(f)
-                age = time.time() - data["timestamp"]
-                if age < self.cache_time:
-                    return data["data"]
-        return None
-
-    @staticmethod
-    def write_cache(cache_path: str, data):
-        """
-        Write data to a cache file
-
-        Args:
-            cache_path (str): The cache file path
-            data (any): The data to write
-        """
-        os.makedirs(os.path.dirname(cache_path), exist_ok=True)
-        with open(cache_path, "w") as f:
-            json.dump({"timestamp": time.time(), "data": data}, f)
 
 
 __all__ = [

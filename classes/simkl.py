@@ -4,9 +4,6 @@ Simkl API wrapper
 This module is a wrapper for Simkl API, which is used to search for anime, shows, and movies.
 """
 
-import json
-import os
-import time
 from copy import deepcopy
 from dataclasses import asdict, dataclass
 from enum import Enum
@@ -15,8 +12,11 @@ from urllib.parse import quote
 
 import aiohttp
 
+from classes.cache import Caching
 from classes.excepts import ProviderHttpError, SimklTypeError
 from modules.const import SIMKL_CLIENT_ID, USER_AGENT
+
+Cache = Caching("cache/simkl", 86400)
 
 
 @dataclass
@@ -247,8 +247,6 @@ class Simkl:
         self.base_url = "https://api.simkl.com"
         self.params = {"client_id": self.client_id}
         self.session = None
-        self.cache_directory = "cache/simkl"
-        self.cache_expiration_time = 86400  # 1 day in seconds
 
     async def __aenter__(self):
         """Enter the async context manager"""
@@ -381,8 +379,8 @@ class Simkl:
         Returns:
             dict: Response from Simkl API
         """
-        cache_file_path = self.get_cache_file_path(f"show/{media_id}.json")
-        cached_data = self.read_cached_data(cache_file_path)
+        cache_file_path = Cache.get_cache_file_path(f"show/{media_id}.json")
+        cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
         params = deepcopy(self.params)
@@ -392,7 +390,7 @@ class Simkl:
         ) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(data, cache_file_path)
+                Cache.write_data_to_cache(data, cache_file_path)
                 return data
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
@@ -411,8 +409,8 @@ class Simkl:
         Returns:
             dict: Response from Simkl API
         """
-        cache_file_path = self.get_cache_file_path(f"movie/{media_id}.json")
-        cached_data = self.read_cached_data(cache_file_path)
+        cache_file_path = Cache.get_cache_file_path(f"movie/{media_id}.json")
+        cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
         params = deepcopy(self.params)
@@ -422,7 +420,7 @@ class Simkl:
         ) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(data, cache_file_path)
+                Cache.write_data_to_cache(data, cache_file_path)
                 return data
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
@@ -441,8 +439,8 @@ class Simkl:
         Returns:
             dict: Response from Simkl API
         """
-        cache_file_path = self.get_cache_file_path(f"anime/{media_id}.json")
-        cached_data = self.read_cached_data(cache_file_path)
+        cache_file_path = Cache.get_cache_file_path(f"anime/{media_id}.json")
+        cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
         params = deepcopy(self.params)
@@ -452,7 +450,7 @@ class Simkl:
         ) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(data, cache_file_path)
+                Cache.write_data_to_cache(data, cache_file_path)
                 return data
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
@@ -545,9 +543,9 @@ class Simkl:
         """
         if isinstance(media_type, SimklMediaTypes):
             media_type = media_type.value
-        cache_file_path = self.get_cache_file_path(
+        cache_file_path = Cache.get_cache_file_path(
             f"ids/{media_type}/{media_id}.json")
-        cached_data = self.read_cached_data(cache_file_path)
+        cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
             cached_data = SimklRelations(
                 title=cached_data["title"],
@@ -618,7 +616,7 @@ class Simkl:
                 mids["anitype"] = data.get(k, None)
                 continue
             mids[k] = data.get(k, None)
-        self.write_data_to_cache(mids, cache_file_path)
+        Cache.write_data_to_cache(mids, cache_file_path)
         relations = SimklRelations(
             title=mids["title"],
             slug=mids["slug"],
@@ -649,51 +647,6 @@ class Simkl:
             wikijp=mids["wikijp"],
         )
         return relations
-
-    def get_cache_file_path(self, cache_file_name: str) -> str:
-        """
-        Get cache file path
-
-        Args:
-            cache_file_name (str): Cache file name
-
-        Returns:
-            str: Cache file path
-        """
-        return os.path.join(self.cache_directory, cache_file_name)
-
-    def read_cached_data(self, cache_file_path: str) -> dict | None:
-        """
-        Read cached data
-
-        Args:
-            cache_file_name (str): Cache file name
-
-        Returns:
-            dict: Cached data
-            None: If cache file does not exist
-        """
-        if os.path.exists(cache_file_path):
-            with open(cache_file_path, "r") as cache_file:
-                cache_data = json.load(cache_file)
-                cache_age = time.time() - cache_data["timestamp"]
-                if cache_age < self.cache_expiration_time:
-                    return cache_data["data"]
-        return None
-
-    @staticmethod
-    def write_data_to_cache(data, cache_file_path: str):
-        """
-        Write data to cache
-
-        Args:
-            data (any): Data to write to cache
-            cache_file_name (str): Cache file name
-        """
-        cache_data = {"timestamp": time.time(), "data": data}
-        os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
-        with open(cache_file_path, "w") as cache_file:
-            json.dump(cache_data, cache_file)
 
 
 __all__ = ["Simkl"]

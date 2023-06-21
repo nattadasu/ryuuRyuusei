@@ -1,16 +1,16 @@
-import json
-import os
-import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Literal
+from typing import Literal
 
 import aiohttp
 
+from classes.cache import Caching
 from classes.excepts import ProviderHttpError
 from modules.const import (SHIKIMORI_APPLICATION_NAME, SHIKIMORI_CLIENT_ID,
                            USER_AGENT)
+
+Cache = Caching(cache_directory="cache/shikimori", cache_expiration_time=43200)
 
 
 @dataclass
@@ -220,8 +220,6 @@ class Shikimori:
         self.headers = {}
         self.params = {}
         self.session = None
-        self.cache_directory = "cache/shikimori"
-        self.cache_expiration_time = 43200
 
     async def __aenter__(self):
         """Async enter"""
@@ -334,8 +332,8 @@ class Shikimori:
         Returns:
             ShikimoriUserStruct: User information
         """
-        cache_file_path = self.get_cache_file_path(f"user/{user_id}.json")
-        cached_data = self.read_cached_data(cache_file_path)
+        cache_file_path = Cache.get_cache_file_path(f"user/{user_id}.json")
+        cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
             formatted_data = self._user_dict_to_dataclass(cached_data)
             return formatted_data
@@ -352,54 +350,6 @@ class Shikimori:
             favs,
         )
         data["favourites"] = favourites
-        self.write_data_to_cache(data, cache_file_path)
+        Cache.write_data_to_cache(data=data, cache_path=cache_file_path)
         user = self._user_dict_to_dataclass(data)
         return user
-
-    def get_cache_file_path(self, cache_file_name: str) -> str:
-        """
-        Get cache file path
-
-        Args:
-            cache_file_name (str): Cache file name
-
-        Returns:
-            str: Cache file path
-        """
-        return os.path.join(self.cache_directory, cache_file_name)
-
-    def read_cached_data(self, cache_file_path: str) -> Any | None:
-        """
-        Read cached data
-
-        Args:
-            cache_file_name (str): Cache file name
-
-        Returns:
-            dict: Cached data
-            None: If cache file does not exist
-        """
-        if os.path.exists(cache_file_path):
-            with open(cache_file_path, "r") as cache_file:
-                cache_data = json.load(cache_file)
-                cache_age = time.time() - cache_data["timestamp"]
-                if cache_age < self.cache_expiration_time:
-                    return cache_data["data"]
-        return None
-
-    @staticmethod
-    def write_data_to_cache(data, cache_file_path: str) -> None:
-        """
-        Write data to cache
-
-        Args:
-            data (any): Data to cache
-            cache_file_path (str): Cache file path
-
-        Returns:
-            None
-        """
-        cache_data = {"timestamp": time.time(), "data": data}
-        os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
-        with open(cache_file_path, "w") as cache_file:
-            json.dump(cache_data, cache_file, ensure_ascii=False)

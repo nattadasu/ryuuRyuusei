@@ -1,13 +1,14 @@
 import json
-import os
-import time
 from dataclasses import dataclass
 
 import aiohttp
 from fake_useragent import FakeUserAgent
 from interactions import Snowflake
 
+from classes.cache import Caching
+
 USER_AGENT = FakeUserAgent(browsers=["chrome", "edge", "opera"]).random
+Cache = Caching(cache_directory="cache/usrbg", cache_expiration_time=216000)
 
 
 @dataclass
@@ -30,9 +31,6 @@ class UserBackground:
     def __init__(self):
         """Initialize the UserBackground class."""
         self.raw_url = "https://raw.githubusercontent.com/Discord-Custom-Covers/usrbg/master/dist/usrbg.json"
-        self.cache_directory = "cache/usrbg"
-        # cache for 2.5 days in seconds
-        self.cache_expiration_time = 216000
         self.session = None
         self.headers = None
 
@@ -102,53 +100,13 @@ class UserBackground:
             None: If user can't be found
         """
         # Get cache path
-        cache_path = self.get_cache_path("usrbg.json")
+        cache_path = Cache.get_cache_path("usrbg.json")
         # Read cache
-        data = self.read_cache(cache_path)
+        data = Cache.read_cache(cache_path)
         # If cache is expired, fetch from GitHub
         if data is None:
             data = await self._fetch_background()
-            self.write_cache(cache_path, data)
+            Cache.write_cache(cache_path, data)
         # Find user
         user = await self._find_user(user_id, data)
         return user
-
-    def get_cache_path(self, cache_name: str):
-        """
-        Get the cache path of a cache file
-
-        Args:
-            cache_name (str): The cache file name
-        """
-        return os.path.join(self.cache_directory, cache_name)
-
-    def read_cache(self, cache_path: str):
-        """
-        Read a cache file
-
-        Args:
-            cache_path (str): The cache file path
-
-        Returns:
-            any: The data in the cache file
-        """
-        if os.path.exists(cache_path):
-            with open(cache_path, "r") as f:
-                data = json.load(f)
-                age = time.time() - data["timestamp"]
-                if age < self.cache_expiration_time:
-                    return data["data"]
-        return None
-
-    @staticmethod
-    def write_cache(cache_path: str, data):
-        """
-        Write data to a cache file
-
-        Args:
-            cache_path (str): The cache file path
-            data (any): The data to write
-        """
-        os.makedirs(os.path.dirname(cache_path), exist_ok=True)
-        with open(cache_path, "w") as f:
-            json.dump({"timestamp": time.time(), "data": data}, f)

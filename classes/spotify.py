@@ -1,17 +1,16 @@
 """Spotify API Wrapper class"""
 
 import base64 as b64
-import json
-import os
-import time
 from enum import Enum
 from typing import List, Union
 
 import aiohttp
 
+from classes.cache import Caching
 from classes.excepts import ProviderHttpError, ProviderTypeError
 from modules.const import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, USER_AGENT
 
+Cache = Caching("cache/spotify", 1209600)
 
 class SpotifyApi:
     """Spotify Unofficial Class"""
@@ -31,9 +30,6 @@ class SpotifyApi:
         self.client_id = client_id
         self.client_secret = client_secret
         self.base_url = "https://api.spotify.com"
-        self.cache_directory = "cache/spotify"
-        # cache up to 2 weeks in seconds
-        self.cache_expiration_time = 1209600
         self.token = None
         self.session = None
 
@@ -54,8 +50,8 @@ class SpotifyApi:
     async def authorize_client(self):
         """Authorize client without requiring user resource access"""
         self.cache_expiration_time = 3600
-        auth = self.get_cache_file_path("auth.json")
-        cached = self.read_cached_data(auth)
+        auth = Cache.get_cache_file_path("auth.json")
+        cached = Cache.read_cached_data(auth)
         if cached is not None:
             self.token = cached["access_token"]
         basic = b64.b64encode(
@@ -69,7 +65,7 @@ class SpotifyApi:
             if response.status == 200:
                 data = await response.json()
                 self.token = data["access_token"]
-                self.write_data_to_cache(data, auth)
+                Cache.write_data_to_cache(data, auth)
             else:
                 raise ProviderHttpError(response.reason, response.status)
 
@@ -130,8 +126,8 @@ class SpotifyApi:
             dict: Track data
         """
         await self.authorize_client()
-        cache = self.get_cache_file_path(f"tracks/{track_id}.json")
-        cached = self.read_cached_data(cache)
+        cache = Cache.get_cache_file_path(f"tracks/{track_id}.json")
+        cached = Cache.read_cached_data(cache)
         if cached is not None:
             return cached
         async with self.session.get(
@@ -140,7 +136,7 @@ class SpotifyApi:
         ) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(data, cache)
+                Cache.write_data_to_cache(data, cache)
                 return data
             raise ProviderHttpError(response.reason, response.status)
 
@@ -155,8 +151,8 @@ class SpotifyApi:
             dict: Album data
         """
         await self.authorize_client()
-        cache = self.get_cache_file_path(f"albums/{album_id}.json")
-        cached = self.read_cached_data(cache)
+        cache = Cache.get_cache_file_path(f"albums/{album_id}.json")
+        cached = Cache.read_cached_data(cache)
         if cached is not None:
             return cached
         async with self.session.get(
@@ -165,7 +161,7 @@ class SpotifyApi:
         ) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(data, cache)
+                Cache.write_data_to_cache(data, cache)
                 return data
             raise ProviderHttpError(response.reason, response.status)
 
@@ -180,8 +176,8 @@ class SpotifyApi:
             dict: Artist data
         """
         await self.authorize_client()
-        cache = self.get_cache_file_path(f"artists/{artist_id}.json")
-        cached = self.read_cached_data(cache)
+        cache = Cache.get_cache_file_path(f"artists/{artist_id}.json")
+        cached = Cache.read_cached_data(cache)
         if cached is not None:
             return cached
         async with self.session.get(
@@ -190,51 +186,6 @@ class SpotifyApi:
         ) as response:
             if response.status == 200:
                 data = await response.json()
-                self.write_data_to_cache(data, cache)
+                Cache.write_data_to_cache(data, cache)
                 return data
             raise ProviderHttpError(response.reason, response.status)
-
-    def get_cache_file_path(self, cache_file_name: str) -> str:
-        """
-        Get cache file path
-
-        Args:
-            cache_file_name (str): Cache file name
-
-        Returns:
-            str: Cache file path
-        """
-        return os.path.join(self.cache_directory, cache_file_name)
-
-    def read_cached_data(self, cache_file_path: str) -> dict | None:
-        """
-        Read cached data
-
-        Args:
-            cache_file_name (str): Cache file name
-
-        Returns:
-            dict: Cached data
-            None: If cache file does not exist
-        """
-        if os.path.exists(cache_file_path):
-            with open(cache_file_path, "r") as cache_file:
-                cache_data = json.load(cache_file)
-                cache_age = time.time() - cache_data["timestamp"]
-                if cache_age < self.cache_expiration_time:
-                    return cache_data["data"]
-        return None
-
-    @staticmethod
-    def write_data_to_cache(data, cache_file_path: str):
-        """
-        Write data to cache
-
-        Args:
-            data (any): Data to write
-            cache_file_name (str): Cache file name
-        """
-        cache_data = {"timestamp": time.time(), "data": data}
-        os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
-        with open(cache_file_path, "w") as cache_file:
-            json.dump(cache_data, cache_file)

@@ -1,12 +1,12 @@
-import json
-import os
-import time
 from dataclasses import dataclass
 from enum import Enum
 
 import aiohttp
 
+from classes.cache import Caching
 from modules.const import USER_AGENT
+
+Cache = Caching(cache_directory="cache/pronoundb", cache_expiration_time=604800)
 
 
 class Pronouns(Enum):
@@ -80,8 +80,6 @@ class PronounDB:
         """
         self.session = None
         self.headers = {"User-Agent": USER_AGENT}
-        self.cache_directory = "cache/pronoundb"
-        self.cache_expiration_time = 604800
 
     async def __aenter__(self):
         """Enter the async context manager"""
@@ -122,9 +120,9 @@ class PronounDB:
             Pronoun: The pronouns of the user
         """
         params = {"platform": platform.value, "id": user_id}
-        cache_file_path = self.get_cache_file_path(
+        cache_file_path = Cache.get_cache_file_path(
             f"{platform.value}/{user_id}.json")
-        cached_file = self.read_cached_data(cache_file_path)
+        cached_file = Cache.read_cached_data(cache_file_path)
         if cached_file:
             cached_file["pronouns"] = Pronouns(cached_file["pronouns"])
             return PronounData(**cached_file)
@@ -132,7 +130,7 @@ class PronounDB:
             "https://pronoundb.org/api/v1/lookup", params=params
         ) as r:
             data = await r.json()
-            self.write_data_to_cache(data, cache_file_path)
+            Cache.write_data_to_cache(data, cache_file_path)
             data["pronouns"] = Pronouns(data["pronouns"])
             return PronounData(**data)
 
@@ -193,48 +191,3 @@ class PronounDB:
             Pronouns.UNSPECIFIED: "unspecified",
         }
         return pron[pronouns]
-
-    def get_cache_file_path(self, cache_file_name: str) -> str:
-        """
-        Get cache file path
-
-        Args:
-            cache_file_name (str): Cache file name
-
-        Returns:
-            str: Cache file path
-        """
-        return os.path.join(self.cache_directory, cache_file_name)
-
-    def read_cached_data(self, cache_file_path: str) -> dict | None:
-        """
-        Read cached data
-
-        Args:
-            cache_file_name (str): Cache file name
-
-        Returns:
-            dict: Cached data
-            None: If cache file does not exist
-        """
-        if os.path.exists(cache_file_path):
-            with open(cache_file_path, "r") as cache_file:
-                cache_data = json.load(cache_file)
-                cache_age = time.time() - cache_data["timestamp"]
-                if cache_age < self.cache_expiration_time:
-                    return cache_data["data"]
-        return None
-
-    @staticmethod
-    def write_data_to_cache(data, cache_file_path: str):
-        """
-        Write data to cache
-
-        Args:
-            data (any): Data to write
-            cache_file_name (str): Cache file name
-        """
-        cache_data = {"timestamp": time.time(), "data": data}
-        os.makedirs(os.path.dirname(cache_file_path), exist_ok=True)
-        with open(cache_file_path, "w") as cache_file:
-            json.dump(cache_data, cache_file)

@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 
 import json
-import os
-import time
 from typing import Dict
 
 import aiohttp
 import pandas as pd
 
-MAIN_SITE = "https://aniapi.nattadasu.my.id/myanimelist%28%29.json"
+from classes.cache import Caching
 
+MAIN_SITE = "https://aniapi.nattadasu.my.id/myanimelist%28%29.json"
+CACHE_PATH = "cache/"
+FILE_NAME = "mal.json"
+
+Cache = Caching(cache_directory=CACHE_PATH, cache_expiration_time=1209600)
+FILE_PATH = Cache.get_cache_path(FILE_NAME)
 
 async def mal_get_data() -> None:
     """Fetches data from MAIN_SITE and saves it to a JSON file."""
@@ -21,8 +25,7 @@ async def mal_get_data() -> None:
         data = await response.text()
     # save data to json file
     data = json.loads(data)
-    with open("cache/mal.json", "w", encoding="utf8") as f:
-        json.dump(data, f, ensure_ascii=False)
+    Cache.write_cache(FILE_PATH, data)
 
 
 def mal_load_data() -> Dict:
@@ -32,19 +35,14 @@ def mal_load_data() -> Dict:
     Returns:
         dict: Loaded data.
     """
-    with open("cache/mal.json", "r") as f:
-        data = json.load(f)
-    return data
+    return Cache.read_cache(FILE_PATH)
 
 
 async def mal_run() -> None:
     """Fetches MyAnimeList data, processes it, and saves it to a CSV file."""
-    if not os.path.exists("cache/mal.json"):
+    is_valid = Cache.read_cache(FILE_PATH)
+    if is_valid is None:
         await mal_get_data()
-    else:
-        # check if the file is >= 14 days old
-        if os.stat("cache/mal.json").st_mtime < (time.time() - 14 * 86400):
-            await mal_get_data()
     data = mal_load_data()
     df = pd.DataFrame(data)
     # only select title and myAnimeList columns
