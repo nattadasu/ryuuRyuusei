@@ -10,6 +10,7 @@ from modules.const import TMDB_API_KEY, USER_AGENT
 
 Cache = Caching(cache_directory="cache/tmdb", cache_expiration_time=2592000)
 
+
 class TheMovieDb:
     """The Movie DB Wrapper"""
 
@@ -73,7 +74,8 @@ class TheMovieDb:
         if media_type in ["tv", "movie"]:
             url = f"{self.base_url}{media_type}/{media_id}"
         else:
-            raise ProviderTypeError("Invalid mediaType", ["tv", "movie", self.MediaType])
+            raise ProviderTypeError("Invalid mediaType", [
+                                    "tv", "movie", self.MediaType])
         async with self.session.get(url, params=self.params) as resp:
             if resp.status != 200:
                 return False

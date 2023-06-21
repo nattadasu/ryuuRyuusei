@@ -312,7 +312,9 @@ class RawgGameData(RawgBaseData):
     clip: Any = None
     """Clip"""
 
+
 Cache = Caching("cache/rawg", 86400)
+
 
 class RawgApi:
     """RAWG API Wrapper"""

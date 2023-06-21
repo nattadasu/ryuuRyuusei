@@ -117,7 +117,8 @@ class AnimeApi:
                 text = text.replace("Updated on ", "")
                 text = text.replace(" UTC", "+00:00")
                 final = dt.strptime(text, "%m/%d/%Y %H:%M:%S%z").timestamp()
-                Cache.write_data_to_cache({"timestamp": final}, cache_file_path)
+                Cache.write_data_to_cache(
+                    {"timestamp": final}, cache_file_path)
             return dt.fromtimestamp(final)
         except BaseException as e:
             raise Exception(

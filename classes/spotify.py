@@ -12,6 +12,7 @@ from modules.const import SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, USER_AGENT
 
 Cache = Caching("cache/spotify", 1209600)
 
+
 class SpotifyApi:
     """Spotify Unofficial Class"""
 
