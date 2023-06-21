@@ -5,7 +5,7 @@ fake-useragent
 fuzzywuzzy
 git+https://github.com/ryuuRyuusei/cutlet-pure@master
 html5lib
-interactions-py==5.6.0
+interactions-py==5.7.0
 langcodes
 language_data
 pandas
