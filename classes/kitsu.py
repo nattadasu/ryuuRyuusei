@@ -9,6 +9,7 @@ from modules.const import USER_AGENT
 
 Cache = Caching(cache_directory="cache/kitsu", cache_expiration_time=86400)
 
+
 class Kitsu:
     """Kitsu API wrapper"""
 

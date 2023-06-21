@@ -6,7 +6,8 @@ import aiohttp
 from classes.cache import Caching
 from modules.const import USER_AGENT
 
-Cache = Caching(cache_directory="cache/pronoundb", cache_expiration_time=604800)
+Cache = Caching(cache_directory="cache/pronoundb",
+                cache_expiration_time=604800)
 
 
 class Pronouns(Enum):

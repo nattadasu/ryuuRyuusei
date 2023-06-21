@@ -9,7 +9,6 @@ from classes.cache import Caching
 from classes.excepts import ProviderHttpError
 from modules.const import USER_AGENT
 
-
 Cache = Caching("cache/thecolorapi", 604800)
 
 

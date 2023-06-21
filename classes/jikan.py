@@ -11,6 +11,7 @@ from modules.const import USER_AGENT
 
 Cache = Caching(cache_directory="cache/jikan", cache_expiration_time=86400)
 
+
 class JikanException(Exception):
     """Exception for Jikan errors"""
 

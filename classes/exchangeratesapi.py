@@ -24,7 +24,8 @@ Accepted_Currencies = Literal[
     "XPF", "YER", "ZAR", "ZMW", "ZWL"
 ]
 
-Cache = Caching(cache_directory="cache/exchangeratesapi", cache_expiration_time=86400)
+Cache = Caching(cache_directory="cache/exchangeratesapi",
+                cache_expiration_time=86400)
 
 
 @dataclass
@@ -118,7 +119,8 @@ class ExchangeRatesAPI:
             SingleExchangeRate: The exchange rates for the base currency
         """
         async with self.session.get(f"{self.base_url}/{self.api_key}/latest/{base_currency}") as resp:
-            cache_file_path = Cache.get_cache_file_path(f"{base_currency}.json")
+            cache_file_path = Cache.get_cache_file_path(
+                f"{base_currency}.json")
             cached_data = Cache.read_cached_data(cache_file_path)
             if cached_data is not None:
                 return SingleExchangeRate(**cached_data)

@@ -15,6 +15,7 @@ FILE_NAME = "mal.json"
 Cache = Caching(cache_directory=CACHE_PATH, cache_expiration_time=1209600)
 FILE_PATH = Cache.get_cache_path(FILE_NAME)
 
+
 async def mal_get_data() -> None:
     """Fetches data from MAIN_SITE and saves it to a JSON file."""
     async with aiohttp.ClientSession() as session, session.get(MAIN_SITE) as response:

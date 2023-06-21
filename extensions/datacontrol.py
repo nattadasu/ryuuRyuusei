@@ -159,7 +159,8 @@ class DataControl(ipy.Extension):
             if verification is not None:
                 remaining_time = verification.epoch_time + 43200
             else:
-                verification = verify.save_user_uuid(ctx.author.id, mal_username)
+                verification = verify.save_user_uuid(
+                    ctx.author.id, mal_username)
                 remaining_time = verification.epoch_time + 43200
             fields.append(
                 ipy.EmbedField(
@@ -168,7 +169,6 @@ class DataControl(ipy.Extension):
                 ))
             epoch = datetime.fromtimestamp(
                 verification.epoch_time, tz=timezone.utc)
-
 
         fields += [
             ipy.EmbedField(
