@@ -438,7 +438,8 @@ class Time:
         """
         days_total = evaluate.evaluate(
             f"{value} * {(Time.conversion_factors[from_unit] / Time.conversion_factors['day'])}")
-        context = convert_float_to_time(days_total, show_weeks=True)
+        context = convert_float_to_time(days_total, show_weeks=True,
+                                        show_milliseconds=True)
         if from_unit in Time.conversion_factors and to_unit in Time.conversion_factors:
             converted_value = evaluate.evaluate(
                 f"{value} * {(Time.conversion_factors[from_unit] / Time.conversion_factors[to_unit])}")
