@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from typing import Literal
 
 import cutlet
 import interactions as ipy
@@ -17,7 +18,7 @@ class NihongoCog(ipy.Extension):
         cooldown=ipy.Cooldown(
             cooldown_bucket=ipy.Buckets.CHANNEL,
             rate=1,
-            interval=10,
+            interval=60,
         ),
     )
 
@@ -49,6 +50,10 @@ class NihongoCog(ipy.Extension):
                         name="Nihonsiki",
                         value="nihon",
                     ),
+                    ipy.SlashCommandChoice(
+                        name="Passport",
+                        value="passport",
+                    ),
                 ]
             ),
             ipy.SlashCommandOption(
@@ -63,70 +68,113 @@ class NihongoCog(ipy.Extension):
         self,
         ctx: ipy.SlashContext,
         source: str,
-        spelling_type: str = "hepburn",
+        spelling_type: Literal["hepburn", "kunrei", "nihon", "passport"] = "hepburn",
         use_foreign: bool = True,
     ) -> None:
         """Convert kana to romaji"""
         try:
             await ctx.defer()
+
+            send = await ctx.send(
+                embed=ipy.Embed(
+                    title="Kana to Romaji",
+                    description="Converting...\nThis may take a while",
+                    color=0x168821,
+                    timestamp=datetime.now(tz=timezone.utc),
+                )
+            )
+
+            kks = pykakasi.kakasi()
             katsu = cutlet.Cutlet(
-                system=spelling_type,
+                system=spelling_type if spelling_type != "passport" else "hepburn",
                 ensure_ascii=False,
                 use_foreign_spelling=use_foreign,
             )
-            romaji: str = katsu.romaji(
-                text=source,
-                capitalize=True,
-            )
-            kks = pykakasi.kakasi()
             result = kks.convert(source)
-            hira: str = " ".join([item["hira"] for item in result])
-            kata: str = " ".join([item["kana"] for item in result])
+            hira: list[str] = []
+            kata: list[str] = []
+            refined: list[str] = []
+            passport: list[str] = []
+            for token in result:
+                token: dict[str, str]
+                orig_str = token["orig"]
+                hira_str = token["hira"].strip()
+                kana_str = token["kana"].strip()
+                passport_str = token["passport"].strip()
+                hira.append(hira_str)
+                kata.append(kana_str)
+                passport.append(passport_str)
+                if orig_str in [hira_str, kana_str]:
+                    refined.append(orig_str)
+                else:
+                    refined.append(" " + hira_str)
+
+            if spelling_type != "passport":
+                romaji: str = katsu.romaji(
+                    text="".join(refined),
+                    capitalize=True,
+                )
+                splitted = romaji.split(".")
+            else:
+                splitted = " ".join(passport)
+                splitted = splitted.split(".")
+
+            romaji_list = []
+            for token in splitted:
+                token: str = token.strip()
+                romaji_list.append(token.capitalize())
+            romaji = ". ".join(romaji_list)
 
             # Sanitize markdown
             source = sanitize_markdown(source)
             romaji = sanitize_markdown(romaji)
-            hira = sanitize_markdown(hira)
-            kata = sanitize_markdown(kata)
+            hira = sanitize_markdown(" ".join(hira))
+            kata = sanitize_markdown(" ".join(kata))
 
-            await ctx.send(
-                embed=ipy.Embed(
-                    title="Kana to Romaji",
-                    color=0x168821,
-                    fields=[
-                        ipy.EmbedField(
-                            name="Source",
-                            value=source,
-                            inline=False,
-                        ),
-                        ipy.EmbedField(
-                            name="Romaji",
-                            value=romaji,
-                            inline=False,
-                        ),
-                        ipy.EmbedField(
-                            name="Hiragana",
-                            value=hira,
-                            inline=False,
-                        ),
-                        ipy.EmbedField(
-                            name="Katakana",
-                            value=kata,
-                            inline=False,
-                        ),
-                    ],
-                    footer=ipy.EmbedFooter(
-                        text="Powered by Cutlet and PyKakasi, romanization may not be accurate, please use with caution",
-                    ),
-                    timestamp=datetime.now(tz=timezone.utc),
-                )
+            footer = [
+                "Powered by",
+                "Cutlet and" if spelling_type != "passport" else "",
+                "PyKakasi, romanization may not be accurate, please use with",
+                "caution",
+            ]
+
+            footer = " ".join(footer)
+
+            embed=ipy.Embed(
+                title="Kana to Romaji",
+                color=0x168821,
+                fields=[
+                    ipy.EmbedField(name="Source",
+                                   value=source,
+                                   inline=False),
+                    ipy.EmbedField(name="Romaji",
+                                   value=romaji,
+                                   inline=False),
+                    ipy.EmbedField(name="Hiragana",
+                                   value=hira,
+                                   inline=False),
+                    ipy.EmbedField(name="Katakana",
+                                   value=kata,
+                                   inline=False),
+                ],
+                footer=ipy.EmbedFooter(
+                    text=footer.replace("  ", " "),
+                ),
+                timestamp=datetime.now(tz=timezone.utc),
             )
+            await send.edit(embed=embed)
         except Exception as e:
             embed = generate_commons_except_embed(
                 description="Failed to convert Japanese script to romaji",
                 error=e,
             )
-            await ctx.send(embed=embed)
+            embed.add_field(
+                name="Source",
+                # limit to 1024 chars
+                value=source[:1020] + "..." if len(source) >= 1024 else source,
+            )
+            embed.timestamp = datetime.now(tz=timezone.utc)
+            await send.edit(embed=embed)
             save_traceback_to_file("nihongo_romajinize", ctx.author, e)
 
 
