@@ -23,6 +23,13 @@
     "-p",
     "test_*.py"
   ],
+  "python.formatting.autopep8Args": [
+    "--max-line-length",
+    "80",
+    "--in-place",
+    "--aggressive",
+    "--aggressive",
+  ],
   "python.testing.pytestEnabled": false,
   "python.testing.unittestEnabled": true
 }
