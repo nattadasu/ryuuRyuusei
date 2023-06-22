@@ -517,11 +517,11 @@ Full message:```
                               dict) and "report_url" in error_message:
                     em += f" by clicking [this link to directly submit a GitHub Issue]({error_message['report_url']})"
                 else:
-                    em += f"\nFull message:```\n{error_message}\n```"
+                    em += f"\nFull message:\n{error_message}"
             case 503:
                 em = "**I think Jikan is dead, server can't be reached** :/"
             case _:
-                em = f"HTTP error code: {error_code}\n```\n{error_message}\n```"
+                em = f"HTTP error code: {error_code}\n{error_message}"
     except Exception:
         em = "Unknown error. Full traceback:\n" + traceback.format_exc()
 
@@ -900,7 +900,7 @@ class JikanApi:
                 ) as resp:
                     res = await resp.json()
                     status_code = res.get("status", 200)
-                    if status_code != 200:
+                    if status_code != 200 or resp.status not in [200, 304]:
                         raise JikanException(
                             res.get("message", "Unknown error"), status_code
                         )
@@ -961,11 +961,13 @@ class JikanApi:
             async with self.session.get(
                 f"{self.base_url}/anime/{anime_id}/full"
             ) as resp:
-                if resp.status in [200, 304]:
-                    res = await resp.json()
-                    res = res["data"]
-                else:
-                    raise Exception(await resp.text())
+                res = await resp.json()
+                status_code = res.get("status", 200)
+                if status_code != 200 or resp.status not in [200, 304]:
+                    raise JikanException(
+                        res.get("message", "Unknown error"), status_code
+                    )
+                res: dict = res["data"]
             Cache.write_data_to_cache(res, cache_file_path)
             return self.anime_dict_to_dataclass(res)
         except Exception as e:
