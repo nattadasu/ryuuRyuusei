@@ -460,6 +460,32 @@ def platform_exception_embed(
 
     return dcEm
 
+def generate_delete_button(
+    custom_id: str = "message_delete",
+    emoji: PartialEmoji | str | None = "🗑️",
+    style: ButtonStyle = ButtonStyle.DANGER,
+    label: str = "Delete",
+    disabled: bool = False,
+) -> Button:
+    """
+    Generate a delete button.
+
+    Args:
+        custom_id (str, optional): Custom ID of the button. Defaults to "message_delete".
+        emoji (PartialEmoji | str | None, optional): Emoji of the button. Defaults to "🗑️".
+        style (ButtonStyle, optional): Style of the button. Defaults to ButtonStyle.DANGER.
+        label (str, optional): Label of the button. Defaults to "Delete".
+        disabled (bool, optional): Whether the button is disabled. Defaults to False.
+    """
+    button = Button(
+        style=style,
+        label=label,
+        custom_id=custom_id,
+        emoji=emoji,
+        disabled=disabled,
+    )
+    return button
+
 
 def save_traceback_to_file(
     command: str,
