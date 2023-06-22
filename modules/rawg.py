@@ -209,4 +209,3 @@ async def rawg_submit(ctx: SlashContext | ComponentContext, slug: str) -> None:
         )
         await ctx.send(embed=embed)
         save_traceback_to_file("rawg", ctx.author, e)
-

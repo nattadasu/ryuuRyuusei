@@ -11,9 +11,9 @@ from enum import Enum
 from re import sub as rSub
 from uuid import uuid4 as id4
 
-from interactions import (Button, ButtonStyle, ComponentContext, Embed,
-                          EmbedAuthor, EmbedField, Member, PartialEmoji,
-                          SlashContext, User, ClientUser)
+from interactions import (Button, ButtonStyle, ClientUser, ComponentContext,
+                          Embed, EmbedAuthor, EmbedField, Member, PartialEmoji,
+                          SlashContext, User)
 
 from classes.anilist import AniListTrailerStruct
 from classes.i18n import LanguageDict
@@ -466,6 +466,7 @@ def platform_exception_embed(
         url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return dcEm
+
 
 def generate_delete_button(
     custom_id: str = "message_delete",

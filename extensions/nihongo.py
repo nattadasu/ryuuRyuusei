@@ -4,7 +4,8 @@ import cutlet
 import interactions as ipy
 import pykakasi
 
-from modules.commons import sanitize_markdown, save_traceback_to_file, generate_commons_except_embed
+from modules.commons import (generate_commons_except_embed, sanitize_markdown,
+                             save_traceback_to_file)
 
 
 class NihongoCog(ipy.Extension):
@@ -127,6 +128,7 @@ class NihongoCog(ipy.Extension):
             )
             await ctx.send(embed=embed)
             save_traceback_to_file("nihongo_romajinize", ctx.author, e)
+
 
 def setup(bot: ipy.Client | ipy.AutoShardedClient) -> None:
     """Load the extension"""

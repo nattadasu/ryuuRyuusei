@@ -2,7 +2,8 @@
 import interactions as ipy
 
 from classes.rawg import RawgApi
-from modules.commons import generate_search_embed, sanitize_markdown, save_traceback_to_file
+from modules.commons import (generate_search_embed, sanitize_markdown,
+                             save_traceback_to_file)
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
 from modules.rawg import rawg_submit

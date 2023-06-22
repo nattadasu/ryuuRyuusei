@@ -212,7 +212,9 @@ def get_platform_name(pf: str | Platform) -> str:
 
 
 def media_id_to_platform(
-    media_id: str, platform: str | Platform, simkl_type: Union[str, None] = None
+    media_id: str,
+    platform: str | Platform,
+    simkl_type: Union[str, None] = None
 ) -> dict:
     """
     Convert a media ID to a platform-specific ID

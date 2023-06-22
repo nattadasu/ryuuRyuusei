@@ -8,7 +8,8 @@ from fuzzywuzzy import fuzz
 from classes.converter import Length, Mass, Temperature, Time, Volume
 from classes.excepts import ProviderHttpError
 from classes.exchangeratesapi import Accepted_Currencies, ExchangeRatesAPI
-from modules.commons import PlatformErrType, platform_exception_embed, save_traceback_to_file
+from modules.commons import (PlatformErrType, platform_exception_embed,
+                             save_traceback_to_file)
 from modules.const import EMOJI_SUCCESS, EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
 

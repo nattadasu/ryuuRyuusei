@@ -3,9 +3,9 @@ import re
 import interactions as ipy
 
 from classes.randomorg import ProviderHttpError, RandomOrg
+from modules.commons import save_traceback_to_file
 from modules.const import (EMOJI_ATTENTIVE, EMOJI_DOUBTING, EMOJI_SUCCESS,
                            EMOJI_UNEXPECTED_ERROR)
-from modules.commons import save_traceback_to_file
 
 
 class Random(ipy.Extension):

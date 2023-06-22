@@ -393,4 +393,3 @@ async def simkl_submit(
         )
         await ctx.send(embed=embed)
         save_traceback_to_file("simkl", ctx.author, e)
-

@@ -13,6 +13,7 @@ excluded_folders = [
     "venv",
     "__pycache__",
     ".mypycache",
+    ".mypy_cache",
     "build",
     "dist",
     "docs",
@@ -48,8 +49,9 @@ def format_scripts():
 
         for file in files:
             if file.endswith(".py"):
-                print_file(file)
+                # print full path of the file
                 file_path = os.path.join(root, file)
+                print_file(file_path)
 
                 # sort imports in the file
                 isort.file(file_path)
@@ -67,8 +69,8 @@ def format_scripts():
                 )
 
             elif file.endswith(".json"):
-                print_file(file)
                 file_path = os.path.join(root, file)
+                print_file(file_path)
                 with open(file_path, "r+") as f:
                     data = json.load(f)
                     f.seek(0)
@@ -119,15 +121,20 @@ async def main():
     Return:
         None
     """
-    print("Testing API calls found in classes folder")
-    await loop_test()
+    answer_test = input("Do you want to test all API calls? (y/N): ")
+    answer_test = answer_test.lower() == "y"
+    if answer_test:
+        print("Testing API calls found in classes folder")
+        await loop_test()
+    else:
+        print("Alright, I won't test the API calls.")
 
     # ask if user want to format all files
-    answer = input("Do you want to format all files? (y/N): ")
-    answer = answer.lower() == "y"
+    answer_format = input("Do you want to format all files? (y/N): ")
+    answer_format = answer_format.lower() == "y"
 
     # walk through the current directory
-    if answer:
+    if answer_format:
         format_scripts()
     else:
         print("Alright, I won't format the files.")

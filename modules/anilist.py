@@ -417,4 +417,3 @@ async def anilist_submit(ctx: SlashContext | ComponentContext, media_id: int) ->
         )
         await ctx.send(embed=embed)
         save_traceback_to_file("anilist", ctx.author, e)
-

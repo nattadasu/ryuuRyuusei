@@ -9,7 +9,8 @@ from classes.excepts import ProviderHttpError
 from classes.i18n import LanguageDict
 from classes.shikimori import (Shikimori, ShikimoriUserGender,
                                ShikimoriUserStruct)
-from modules.commons import PlatformErrType, platform_exception_embed, save_traceback_to_file
+from modules.commons import (PlatformErrType, platform_exception_embed,
+                             save_traceback_to_file)
 from modules.i18n import fetch_language_data, read_user_language
 
 
