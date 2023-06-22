@@ -465,7 +465,7 @@ def save_traceback_to_file(
     command: str,
     author: Member | User,
     error: Exception,
-) -> bool:
+):
     """
     Save traceback to a file.
 
@@ -473,8 +473,8 @@ def save_traceback_to_file(
         command (str): Command name
         error (Exception): Error object
 
-    Returns:
-        bool: True if success, False if failed
+    Raises:
+        error (Exception): Re-raise the error (for logging purpose)
     """
     if not isinstance(error, Exception):
         return False
@@ -489,4 +489,5 @@ def save_traceback_to_file(
         encoding="utf-8",
     ) as f:
         f.write(f"{error_type}: {error_str}\n\n{error_traceback}")
-    return True
+    # re-raise the error
+    raise error
