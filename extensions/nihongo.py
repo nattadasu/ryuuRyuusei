@@ -68,7 +68,8 @@ class NihongoCog(ipy.Extension):
         self,
         ctx: ipy.SlashContext,
         source: str,
-        spelling_type: Literal["hepburn", "kunrei", "nihon", "passport"] = "hepburn",
+        spelling_type: Literal["hepburn", "kunrei",
+                               "nihon", "passport"] = "hepburn",
         use_foreign: bool = True,
     ) -> None:
         """Convert kana to romaji"""
@@ -140,7 +141,7 @@ class NihongoCog(ipy.Extension):
 
             footer = " ".join(footer)
 
-            embed=ipy.Embed(
+            embed = ipy.Embed(
                 title="Kana to Romaji",
                 color=0x168821,
                 fields=[
