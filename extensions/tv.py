@@ -1,6 +1,3 @@
-import asyncio
-from typing import Literal
-
 import interactions as ipy
 
 from classes.excepts import ProviderHttpError
@@ -112,8 +109,6 @@ class TvShow(ipy.Extension):
                 embed=result_embed,
                 components=components,
             )
-            await asyncio.sleep(60)
-            await send.edit(components=[])
         except Exception as _:
             l_: dict[str, str] = l_["strings"]["tv"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
