@@ -4,7 +4,8 @@ import interactions as ipy
 
 from classes.i18n import LanguageDict
 from modules.anilist import search_al_anime
-from modules.commons import generate_search_embed, sanitize_markdown
+from modules.commons import (generate_search_embed, sanitize_markdown,
+                             save_traceback_to_file)
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
 from modules.myanimelist import (lookup_random_anime, mal_submit,
@@ -160,6 +161,7 @@ class Anime(ipy.Extension):
                     emoji="🗑️"
                 ),
             )
+            save_traceback_to_file("anime_search", ctx.author, _)
 
     @ipy.component_callback("mal_search")
     async def anime_search_data(self, ctx: ipy.ComponentContext) -> None:

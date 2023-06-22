@@ -9,7 +9,8 @@ from classes.database import DatabaseException, UserDatabase
 from classes.i18n import LanguageDict
 from classes.jikan import JikanApi, JikanException
 from modules.commons import (PlatformErrType, convert_float_to_time,
-                             platform_exception_embed, sanitize_markdown)
+                             platform_exception_embed, sanitize_markdown,
+                             save_traceback_to_file)
 from modules.i18n import fetch_language_data
 
 
@@ -115,7 +116,7 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                 error=e.message,
             )
             await ctx.send(embed=embed)
-            return
+            save_traceback_to_file("myanimelist_profile", ctx.author, e)
 
         username = sanitize_markdown(user_data.username)
         user_id = user_data.mal_id

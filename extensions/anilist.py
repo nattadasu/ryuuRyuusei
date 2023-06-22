@@ -9,7 +9,8 @@ from classes.database import DatabaseException, UserDatabase, UserDatabaseClass
 from classes.excepts import ProviderHttpError
 from classes.i18n import LanguageDict
 from modules.commons import (PlatformErrType, convert_float_to_time,
-                             platform_exception_embed, sanitize_markdown)
+                             platform_exception_embed, sanitize_markdown,
+                             save_traceback_to_file)
 from modules.i18n import fetch_language_data, read_user_language
 
 
@@ -120,7 +121,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                 error_type=PlatformErrType.SYSTEM,
             )
             await ctx.send(embed=embed)
-            return
+            save_traceback_to_file("anilist_profile", ctx.author, e)
 
         username = sanitize_markdown(user_data.name)
         user_id = user_data.id

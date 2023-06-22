@@ -2,10 +2,11 @@ import os
 import time
 
 from interactions import (AutoShardedClient, Client, Extension,
-                          IntervalTrigger, Task)
+                          IntervalTrigger, Task, User)
 
 from classes.excepts import ProviderHttpError
 from classes.stats.topgg import TopGG
+from modules.commons import save_traceback_to_file
 
 
 class BotTasker(Extension):
@@ -100,6 +101,7 @@ class BotTasker(Extension):
             )
         except ProviderHttpError as e:
             print(f"[Tsk] [Stats] Failed to poll to Top.gg: {e}")
+            save_traceback_to_file("tasker_topgg", self.bot.user, e)
 
     @staticmethod
     def _delete_old_files(folder_path: str, duration: int) -> None:

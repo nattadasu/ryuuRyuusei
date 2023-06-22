@@ -8,7 +8,7 @@ from fuzzywuzzy import fuzz
 from classes.converter import Length, Mass, Temperature, Time, Volume
 from classes.excepts import ProviderHttpError
 from classes.exchangeratesapi import Accepted_Currencies, ExchangeRatesAPI
-from modules.commons import PlatformErrType, platform_exception_embed
+from modules.commons import PlatformErrType, platform_exception_embed, save_traceback_to_file
 from modules.const import EMOJI_SUCCESS, EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
 
@@ -190,10 +190,10 @@ class ConverterCog(ipy.Extension):
         await ctx.defer()
         try:
             convert = Length.convert(value, from_unit, to_unit)
-        except OverflowError:
+        except OverflowError as e:
             embed = overflow_embed(value, from_unit, to_unit)
             await ctx.send(embed=embed)
-            return
+            save_traceback_to_file("convert_length", ctx.author, e)
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
@@ -243,10 +243,10 @@ class ConverterCog(ipy.Extension):
         await ctx.defer()
         try:
             convert = Mass.convert(value, from_unit, to_unit)
-        except OverflowError:
+        except OverflowError as e:
             embed = overflow_embed(value, from_unit, to_unit)
             await ctx.send(embed=embed)
-            return
+            save_traceback_to_file("convert_mass", ctx.author, e)
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
@@ -291,10 +291,10 @@ class ConverterCog(ipy.Extension):
         await ctx.defer()
         try:
             convert = Temperature.convert(value, from_unit, to_unit)
-        except OverflowError:
+        except OverflowError as e:
             embed = overflow_embed(value, from_unit, to_unit)
             await ctx.send(embed=embed)
-            return
+            save_traceback_to_file("convert_temperature", ctx.author, e)
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
@@ -345,10 +345,10 @@ class ConverterCog(ipy.Extension):
         await ctx.defer()
         try:
             convert = Volume.convert(value, from_unit, to_unit)
-        except OverflowError:
+        except OverflowError as e:
             embed = overflow_embed(value, from_unit, to_unit)
             await ctx.send(embed=embed)
-            return
+            save_traceback_to_file("convert_volume", ctx.author, e)
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
@@ -396,10 +396,10 @@ class ConverterCog(ipy.Extension):
         await ctx.defer()
         try:
             convert = Time.convert(value, from_unit, to_unit)
-        except OverflowError:
+        except OverflowError as e:
             embed = overflow_embed(value, from_unit, to_unit)
             await ctx.send(embed=embed)
-            return
+            save_traceback_to_file("convert_time", ctx.author, e)
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
@@ -461,7 +461,11 @@ class ConverterCog(ipy.Extension):
                 lang_dict=l_,
                 error_type=PlatformErrType.SYSTEM)
             await ctx.send(embed=embed)
-        return
+            save_traceback_to_file("convert_currency", ctx.author, e)
+        except OverflowError as e:
+            embed = overflow_embed(value, from_currency, to_currency)
+            await ctx.send(embed=embed)
+            save_traceback_to_file("convert_length", ctx.author, e)
 
     @convert_currency.autocomplete(option_name="from_currency")
     @convert_currency.autocomplete(option_name="to_currency")

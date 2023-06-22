@@ -5,7 +5,8 @@ import interactions as ipy
 from classes.anibrain import AniBrainAI, AniBrainAiMedia
 from classes.anilist import AniList
 from modules.anilist import anilist_submit
-from modules.commons import generate_search_embed, sanitize_markdown
+from modules.commons import (generate_search_embed, sanitize_markdown,
+                             save_traceback_to_file)
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
 
@@ -155,6 +156,7 @@ class Manga(ipy.Extension):
                     emoji="🗑️"
                 ),
             )
+            save_traceback_to_file("manga_search", ctx.author, _)
 
     @ipy.component_callback("anilist_manga_search")
     async def anilist_manga_search(self, ctx: ipy.ComponentContext):
@@ -229,31 +231,32 @@ class Manga(ipy.Extension):
             )
         )
         media_data = list[AniBrainAiMedia]
-        async with AniBrainAI() as anibrain:
-            countries = [
-                anibrain.CountryOfOrigin.JAPAN,
-                anibrain.CountryOfOrigin.KOREA,
-                anibrain.CountryOfOrigin.CHINA,
-            ]
-            match media_type:
-                case "manga":
-                    media_data = await anibrain.get_manga(
-                        filter_country=countries,
-                    )
-                case "one_shot":
-                    media_data = await anibrain.get_one_shot(
-                        filter_country=countries,
-                    )
-                case "light_novel":
-                    media_data = await anibrain.get_light_novel(
-                        filter_country=countries,
-                    )
-        media_id = int
-        for entry in media_data:
-            if entry.anilistId is not None:
-                media_id = entry.anilistId
-                break
-        else:
+        try:
+            async with AniBrainAI() as anibrain:
+                countries = [
+                    anibrain.CountryOfOrigin.JAPAN,
+                    anibrain.CountryOfOrigin.KOREA,
+                    anibrain.CountryOfOrigin.CHINA,
+                ]
+                match media_type:
+                    case "manga":
+                        media_data = await anibrain.get_manga(
+                            filter_country=countries,
+                        )
+                    case "one_shot":
+                        media_data = await anibrain.get_one_shot(
+                            filter_country=countries,
+                        )
+                    case "light_novel":
+                        media_data = await anibrain.get_light_novel(
+                            filter_country=countries,
+                        )
+            media_id = int
+            for entry in media_data:
+                if entry.anilistId is not None:
+                    media_id = entry.anilistId
+                    break
+        except Exception as _:
             await send.edit(
                 embed=ipy.Embed(
                     title="Random Manga",
@@ -261,7 +264,7 @@ class Manga(ipy.Extension):
                     color=0xFF0000,
                 )
             )
-            return
+            save_traceback_to_file("random_manga", ctx.author, _)
         await send.edit(
             embed=ipy.Embed(
                 title="Random manga",

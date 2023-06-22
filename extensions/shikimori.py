@@ -9,7 +9,7 @@ from classes.excepts import ProviderHttpError
 from classes.i18n import LanguageDict
 from classes.shikimori import (Shikimori, ShikimoriUserGender,
                                ShikimoriUserStruct)
-from modules.commons import PlatformErrType, platform_exception_embed
+from modules.commons import PlatformErrType, platform_exception_embed, save_traceback_to_file
 from modules.i18n import fetch_language_data, read_user_language
 
 
@@ -120,7 +120,7 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
                 error="Error while getting user data",
             )
             await ctx.send(embed=embed)
-            return
+            save_traceback_to_file("shikimori_profile", ctx.author, e)
 
         username = user_data.nickname
         user_id = user_data.id

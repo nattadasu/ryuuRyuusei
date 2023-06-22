@@ -4,7 +4,8 @@ import interactions as ipy
 
 from classes.excepts import ProviderHttpError
 from classes.simkl import Simkl, SimklMediaTypes
-from modules.commons import generate_search_embed, sanitize_markdown
+from modules.commons import (generate_search_embed, sanitize_markdown,
+                             save_traceback_to_file)
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
 from modules.simkl import simkl_submit
@@ -131,6 +132,7 @@ class Movies(ipy.Extension):
                     emoji="🗑️"
                 ),
             )
+            save_traceback_to_file("movies_search", ctx.author, _)
 
     @ipy.component_callback("simkl_search_select_movie")
     async def simkl_search_select_movie(self, ctx: ipy.ComponentContext):
@@ -180,15 +182,15 @@ class Movies(ipy.Extension):
             async with Simkl() as simkl:
                 rand = await simkl.get_random_title(media_type=SimklMediaTypes.MOVIE)
                 rand_id = rand["simkl_id"]
-        except ProviderHttpError:
+        except ProviderHttpError as _:
             await send.edit(
                 embed=ipy.Embed(
                     title="Random Movie",
-                    description="We couldn't find any manga. Please try again.",
+                    description="We couldn't find any movies. Please try again.",
                     color=0xFF0000,
                 )
             )
-            return
+            save_traceback_to_file("movies_random", ctx.author, _)
 
         await send.edit(
             embed=ipy.Embed(

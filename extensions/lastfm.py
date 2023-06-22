@@ -7,7 +7,8 @@ from classes.excepts import ProviderHttpError
 from classes.i18n import LanguageDict
 from classes.lastfm import LastFM, LastFMTrackStruct, LastFMUserStruct
 from modules.commons import (PlatformErrType, generate_commons_except_embed,
-                             platform_exception_embed, sanitize_markdown)
+                             platform_exception_embed, sanitize_markdown,
+                             save_traceback_to_file)
 from modules.i18n import fetch_language_data, read_user_language
 
 
@@ -91,7 +92,6 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
                     error="User hasn't link their account yet",
                 )
                 await ctx.send(embed=embed)
-                return
 
         try:
             async with LastFM() as lfm:
@@ -106,7 +106,7 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
                 lang_dict=l_,
             )
             await ctx.send(embed=embed)
-            return
+            save_traceback_to_file("lastfm_profile", ctx.author, e)
 
         fields = [
             ipy.EmbedField(

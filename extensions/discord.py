@@ -1,7 +1,8 @@
 import interactions as ipy
 
 from classes.i18n import LanguageDict
-from modules.commons import generate_commons_except_embed
+from modules.commons import (generate_commons_except_embed,
+                             save_traceback_to_file)
 from modules.discord import generate_discord_profile_embed
 from modules.i18n import fetch_language_data, read_user_language
 
@@ -31,7 +32,7 @@ class DiscordCog(ipy.Extension):
             )
         ],
     )
-    async def discord_discord(
+    async def discord_profile(
         self, ctx: ipy.SlashContext, user: ipy.User | ipy.Member | None = None
     ):
         await ctx.defer()
@@ -52,6 +53,7 @@ class DiscordCog(ipy.Extension):
                 lang_dict=l_,
             )
             await ctx.send(embed=embed)
+            save_traceback_to_file("discord_profile", ctx.author, e)
 
 
 def setup(bot: ipy.Client | ipy.AutoShardedClient):

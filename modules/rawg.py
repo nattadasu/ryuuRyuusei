@@ -6,7 +6,8 @@ from interactions import (Button, ButtonStyle, ComponentContext, Embed,
 from classes.excepts import ProviderHttpError
 from classes.rawg import RawgApi, RawgGameData
 from modules.commons import (PlatformErrType, platform_exception_embed,
-                             sanitize_markdown, trim_synopsis)
+                             sanitize_markdown, save_traceback_to_file,
+                             trim_synopsis)
 from modules.i18n import fetch_language_data
 
 
@@ -194,6 +195,8 @@ async def rawg_submit(ctx: SlashContext | ComponentContext, slug: str) -> None:
             game_data = await api.get_data(slug)
         embed, button_2 = await generate_rawg(data=game_data)
         buttons.extend(button_2)
+        await ctx.send(embed=embed, components=buttons)
+        return
     except ProviderHttpError as e:
         status = e.status_code
         message = e.message
@@ -204,5 +207,6 @@ async def rawg_submit(ctx: SlashContext | ComponentContext, slug: str) -> None:
             lang_dict=l_,
             error_type=PlatformErrType.SYSTEM,
         )
+        await ctx.send(embed=embed)
+        save_traceback_to_file("rawg", ctx.author, e)
 
-    await ctx.send(embed=embed, components=buttons)

@@ -8,7 +8,7 @@ from classes.simkl import Simkl
 from classes.tmdb import TheMovieDb
 from modules.commons import (PlatformErrType, generate_trailer,
                              get_nsfw_status, platform_exception_embed,
-                             trim_synopsis)
+                             save_traceback_to_file, trim_synopsis)
 from modules.const import MESSAGE_WARN_CONTENTS
 from modules.i18n import fetch_language_data
 from modules.platforms import Platform, media_id_to_platform
@@ -367,6 +367,8 @@ async def simkl_submit(
             is_media_nsfw=media_nsfw,
         )
         buttons.append(button_2)
+        await ctx.send(embed=embed, components=buttons)
+        return
 
     except MediaIsNsfw as e:
         notice = e.arg[0] if e.args else ""
@@ -376,6 +378,8 @@ async def simkl_submit(
             lang_dict=l_,
             error_type=PlatformErrType.NSFW,
         )
+        await ctx.send(embed=embed)
+        save_traceback_to_file("simkl", ctx.author, e)
 
     except ProviderHttpError as e:
         status = e.status_code
@@ -387,5 +391,6 @@ async def simkl_submit(
             lang_dict=l_,
             error_type=PlatformErrType.SYSTEM,
         )
+        await ctx.send(embed=embed)
+        save_traceback_to_file("simkl", ctx.author, e)
 
-    await ctx.send(embed=embed, components=buttons)

@@ -4,7 +4,7 @@ import cutlet
 import interactions as ipy
 import pykakasi
 
-from modules.commons import sanitize_markdown
+from modules.commons import sanitize_markdown, save_traceback_to_file, generate_commons_except_embed
 
 
 class NihongoCog(ipy.Extension):
@@ -66,60 +66,67 @@ class NihongoCog(ipy.Extension):
         use_foreign: bool = True,
     ) -> None:
         """Convert kana to romaji"""
-        await ctx.defer()
-        katsu = cutlet.Cutlet(
-            system=spelling_type,
-            ensure_ascii=False,
-            use_foreign_spelling=use_foreign,
-        )
-        romaji: str = katsu.romaji(
-            text=source,
-            capitalize=True,
-        )
-        kks = pykakasi.kakasi()
-        result = kks.convert(source)
-        hira: str = " ".join([item["hira"] for item in result])
-        kata: str = " ".join([item["kana"] for item in result])
-
-        # Sanitize markdown
-        source = sanitize_markdown(source)
-        romaji = sanitize_markdown(romaji)
-        hira = sanitize_markdown(hira)
-        kata = sanitize_markdown(kata)
-
-        await ctx.send(
-            embed=ipy.Embed(
-                title="Kana to Romaji",
-                color=0x168821,
-                fields=[
-                    ipy.EmbedField(
-                        name="Source",
-                        value=source,
-                        inline=False,
-                    ),
-                    ipy.EmbedField(
-                        name="Romaji",
-                        value=romaji,
-                        inline=False,
-                    ),
-                    ipy.EmbedField(
-                        name="Hiragana",
-                        value=hira,
-                        inline=False,
-                    ),
-                    ipy.EmbedField(
-                        name="Katakana",
-                        value=kata,
-                        inline=False,
-                    ),
-                ],
-                footer=ipy.EmbedFooter(
-                    text="Powered by Cutlet and PyKakasi, romanization may not be accurate, please use with caution",
-                ),
-                timestamp=datetime.now(tz=timezone.utc),
+        try:
+            await ctx.defer()
+            katsu = cutlet.Cutlet(
+                system=spelling_type,
+                ensure_ascii=False,
+                use_foreign_spelling=use_foreign,
             )
-        )
+            romaji: str = katsu.romaji(
+                text=source,
+                capitalize=True,
+            )
+            kks = pykakasi.kakasi()
+            result = kks.convert(source)
+            hira: str = " ".join([item["hira"] for item in result])
+            kata: str = " ".join([item["kana"] for item in result])
 
+            # Sanitize markdown
+            source = sanitize_markdown(source)
+            romaji = sanitize_markdown(romaji)
+            hira = sanitize_markdown(hira)
+            kata = sanitize_markdown(kata)
+
+            await ctx.send(
+                embed=ipy.Embed(
+                    title="Kana to Romaji",
+                    color=0x168821,
+                    fields=[
+                        ipy.EmbedField(
+                            name="Source",
+                            value=source,
+                            inline=False,
+                        ),
+                        ipy.EmbedField(
+                            name="Romaji",
+                            value=romaji,
+                            inline=False,
+                        ),
+                        ipy.EmbedField(
+                            name="Hiragana",
+                            value=hira,
+                            inline=False,
+                        ),
+                        ipy.EmbedField(
+                            name="Katakana",
+                            value=kata,
+                            inline=False,
+                        ),
+                    ],
+                    footer=ipy.EmbedFooter(
+                        text="Powered by Cutlet and PyKakasi, romanization may not be accurate, please use with caution",
+                    ),
+                    timestamp=datetime.now(tz=timezone.utc),
+                )
+            )
+        except Exception as e:
+            embed = generate_commons_except_embed(
+                description="Failed to convert Japanese script to romaji",
+                error=e,
+            )
+            await ctx.send(embed=embed)
+            save_traceback_to_file("nihongo_romajinize", ctx.author, e)
 
 def setup(bot: ipy.Client | ipy.AutoShardedClient) -> None:
     """Load the extension"""

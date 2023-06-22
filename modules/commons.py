@@ -13,7 +13,7 @@ from uuid import uuid4 as id4
 
 from interactions import (Button, ButtonStyle, ComponentContext, Embed,
                           EmbedAuthor, EmbedField, Member, PartialEmoji,
-                          SlashContext, User)
+                          SlashContext, User, ClientUser)
 
 from classes.anilist import AniListTrailerStruct
 from classes.i18n import LanguageDict
@@ -246,8 +246,8 @@ def generate_utils_except_embed(
 
 def generate_commons_except_embed(
     description: str,
-    error: str,
-    lang_dict: dict = deflang,  # type: ignore
+    error: str | Exception,
+    language: dict | str = "en_US",  # type: ignore
     color: int = 0xFF0000,
 ) -> Embed:
     """
@@ -256,7 +256,7 @@ def generate_commons_except_embed(
     Args:
         description (str): A description of the error that occurred.
         error (str): The error message to include in the embed.
-        lang_dict (dict): A dictionary containing language codes and their associated values. Defaults to default language set on .env.
+        language (dict | str, optional): The language code to use for the error message. Defaults to "en_US".
         color (int, optional): The color of the embed. Defaults to 0xFF0000 (red).
 
     Returns:
@@ -267,7 +267,14 @@ def generate_commons_except_embed(
         >>> generate_commons_except_embed("An error occurred while processing the request.", "Error message", lang_dict)
         <discord.Embed object at 0x...>
     """
-    l_ = lang_dict
+    if isinstance(language, str):
+        l_ = fetch_language_data(code=language, use_raw=True)
+    else:
+        l_ = language
+
+    if isinstance(error, Exception):
+        error = str(error)
+
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
     dcEm = Embed(
         color=color,
@@ -489,7 +496,7 @@ def generate_delete_button(
 
 def save_traceback_to_file(
     command: str,
-    author: Member | User,
+    author: Member | User | ClientUser,
     error: Exception,
     mute_error: bool = False,
 ) -> None:
@@ -498,7 +505,9 @@ def save_traceback_to_file(
 
     Args:
         command (str): Command name
-        error (Exception): Error object
+        author (Member | User | ClientUser): Author of the command
+        error (Exception): Error
+        mute_error (bool, optional): Whether to mute the error. Defaults to False.
 
     Raises:
         error (Exception): Re-raise the error (for logging purpose)
@@ -519,3 +528,23 @@ def save_traceback_to_file(
     if mute_error is False:
         # re-raise the error
         raise error
+
+
+__all__ = [
+    "convert_float_to_time",
+    "convert_html_to_markdown",
+    "generate_commons_except_embed",
+    "generate_delete_button",
+    "generate_search_embed",
+    "generate_trailer",
+    "generate_utils_except_embed",
+    "get_nsfw_status",
+    "get_random_seed",
+    "platform_exception_embed",
+    "PlatformErrType",
+    "pluralize",
+    "sanitize_markdown",
+    "save_traceback_to_file",
+    "snowflake_to_datetime",
+    "trim_synopsis",
+]

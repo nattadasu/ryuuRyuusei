@@ -16,6 +16,7 @@ from classes.html.myanimelist import HtmlMyAnimeList
 from classes.lastfm import LastFM
 from classes.shikimori import Shikimori
 from classes.verificator import Verificator
+from modules.commons import save_traceback_to_file
 from modules.const import (DECLINED_GDPR, EMOJI_SUCCESS,
                            EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR,
                            VERIFICATION_SERVER, VERIFIED_ROLE)
@@ -343,6 +344,7 @@ To complete your registration, please follow the instructions below:""",
                 is_user_error=False,
             )
             await ctx.send(embed=embed)
+            save_traceback_to_file("platform_link", ctx.author, e)
         except Exception as e:
             embed = self.generate_error_embed(
                 header="Error!",
@@ -350,6 +352,7 @@ To complete your registration, please follow the instructions below:""",
                 is_user_error=False,
             )
             await ctx.send(embed=embed)
+            save_traceback_to_file("platform_link", ctx.author, e)
 
     @ipy.cooldown(ipy.Buckets.USER, 1, 5)
     @ipy.slash_command(
@@ -423,6 +426,7 @@ To complete your registration, please follow the instructions below:""",
                 is_user_error=False,
             )
             await ctx.send(embed=embed)
+            save_traceback_to_file("platform_unlink", ctx.author, e)
 
     @ipy.cooldown(ipy.Buckets.USER, 1, 60)
     @ipy.slash_command(

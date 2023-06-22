@@ -12,7 +12,8 @@ from classes.i18n import LanguageDict
 from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
 from classes.thecolorapi import Color, TheColorApi
 from classes.usrbg import UserBackground
-from modules.commons import generate_utils_except_embed, snowflake_to_datetime
+from modules.commons import (generate_utils_except_embed,
+                             save_traceback_to_file, snowflake_to_datetime)
 from modules.i18n import fetch_language_data, read_user_language
 
 
@@ -74,6 +75,7 @@ class Utilities(ipy.Extension):
                     error=e,
                 )
             )
+            save_traceback_to_file("utilities_math", ctx.author, e)
 
     @utilities_head.subcommand(
         sub_cmd_name="base64",
@@ -139,6 +141,7 @@ class Utilities(ipy.Extension):
                     error=e,
                 )
             )
+            save_traceback_to_file("utilities_base64", ctx.author, e)
 
     @utilities_head.subcommand(
         sub_cmd_name="color",
@@ -243,6 +246,7 @@ class Utilities(ipy.Extension):
                     error=e,
                 )
             )
+            save_traceback_to_file("utilities_color", ctx.author, e)
 
     @utilities_head.subcommand(
         sub_cmd_name="qrcode",
@@ -311,6 +315,7 @@ class Utilities(ipy.Extension):
                     error=e,
                 )
             )
+            save_traceback_to_file("utilities_qrcode", ctx.author, e)
 
     @utilities_head.subcommand(
         sub_cmd_name="snowflake",
@@ -329,7 +334,19 @@ class Utilities(ipy.Extension):
         ul = read_user_language(ctx)
         l_: LanguageDict = fetch_language_data(
             ul)["strings"]["utilities"]["snowflake"]
-        tmsp = int(snowflake_to_datetime(int(snowflake)))
+        try:
+            tmsp = int(snowflake_to_datetime(int(snowflake)))
+        except Exception as e:
+            await ctx.send(
+                embed=generate_utils_except_embed(
+                    language=ul,
+                    description=l_["exception"],
+                    field_name="Snowflake",
+                    field_value=f"```{snowflake}```",
+                    error=e,
+                )
+            )
+            save_traceback_to_file("utilities_snowflake", ctx.author, e)
         await ctx.send(
             embed=ipy.Embed(
                 title=l_["title"],
@@ -428,8 +445,9 @@ class Utilities(ipy.Extension):
 
             embed.set_thumbnail(
                 url=f"https://www.isitdownrightnow.com/screenshot/{lt}/{domain}.jpg")
-            embed.set_image(
-                url=f"https://www.isitdownrightnow.com/data/{domain}.png")
+            # embed.set_image(
+            #     url=f"https://www.isitdownrightnow.com/data/{domain}.png")
+            # Data was out-of-date, so I'm not using it
 
             await ctx.send(embed=embed)
 

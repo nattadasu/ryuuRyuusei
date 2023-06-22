@@ -1,6 +1,7 @@
 import interactions as ipy
 from emoji import emojize
 
+from modules.commons import save_traceback_to_file
 from modules.const import EMOJI_FORBIDDEN, EMOJI_SUCCESS
 from modules.i18n import (paginate_language, search_language,
                           set_default_language)
@@ -53,6 +54,7 @@ class UserSettings(ipy.Extension):
             await ctx.send(f"{EMOJI_SUCCESS} Language set to {lang}", ephemeral=True)
         except Exception as e:
             await ctx.send(f"{EMOJI_FORBIDDEN} {e}")
+            save_traceback_to_file("usersettings_language_set", ctx.author, e)
 
     @usersettings_language_set.autocomplete("lang")
     async def code_autocomplete(self, ctx: ipy.AutocompleteContext):

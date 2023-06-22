@@ -11,7 +11,7 @@ from classes.excepts import MediaIsNsfw, ProviderHttpError
 from modules.commons import (PlatformErrType, convert_html_to_markdown,
                              generate_trailer, get_nsfw_status,
                              platform_exception_embed, sanitize_markdown,
-                             trim_synopsis)
+                             save_traceback_to_file, trim_synopsis)
 from modules.const import MESSAGE_WARN_CONTENTS, banned_tags
 from modules.i18n import fetch_language_data
 
@@ -392,6 +392,8 @@ async def anilist_submit(ctx: SlashContext | ComponentContext, media_id: int) ->
             is_nsfw=nsfw_bool,
         )
         buttons.extend(button_2)
+        await ctx.send(embed=embed, components=buttons)
+        return
 
     except MediaIsNsfw as e:
         notice = e.args[0] if e.args else ""
@@ -401,6 +403,9 @@ async def anilist_submit(ctx: SlashContext | ComponentContext, media_id: int) ->
             lang_dict=l_,
             error_type=PlatformErrType.NSFW,
         )
+        await ctx.send(embed=embed)
+        save_traceback_to_file("anilist", ctx.author, e)
+
     except ProviderHttpError as e:
         message = e.message
 
@@ -410,5 +415,6 @@ async def anilist_submit(ctx: SlashContext | ComponentContext, media_id: int) ->
             lang_dict=l_,
             error_type=PlatformErrType.SYSTEM,
         )
+        await ctx.send(embed=embed)
+        save_traceback_to_file("anilist", ctx.author, e)
 
-    await ctx.send(embed=embed, components=buttons)

@@ -5,6 +5,7 @@ import interactions as ipy
 from classes.randomorg import ProviderHttpError, RandomOrg
 from modules.const import (EMOJI_ATTENTIVE, EMOJI_DOUBTING, EMOJI_SUCCESS,
                            EMOJI_UNEXPECTED_ERROR)
+from modules.commons import save_traceback_to_file
 
 
 class Random(ipy.Extension):
@@ -37,7 +38,7 @@ class Random(ipy.Extension):
         try:
             async with RandomOrg() as rand:
                 numbers = await rand.integers(num=1, min_val=0, max_val=19, base=10)
-        except ProviderHttpError:
+        except ProviderHttpError as e:
             embed = ipy.Embed(
                 title="Unexpected error",
                 description="An unexpected error has occurred while trying to get a random number from random.org",
@@ -49,7 +50,7 @@ class Random(ipy.Extension):
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
             await ctx.send(embed=embed)
-            return
+            save_traceback_to_file("random_8ball", ctx.author, e)
 
         answers = [
             "It is certain.",
@@ -164,18 +165,33 @@ class Random(ipy.Extension):
         max_value: int = 10,
         base: int = 10,
     ):
-        async with RandomOrg() as rand:
-            numbers = await rand.integers(
-                num=numbers, min_val=min_value, max_val=max_value, base=base
+        try:
+            await ctx.defer()
+            async with RandomOrg() as rand:
+                numbers = await rand.integers(
+                    num=numbers, min_val=min_value, max_val=max_value, base=base
+                )
+            # convert arrays of int to arrays of str
+            numbers = [str(i) for i in numbers]
+            await ctx.send(
+                embed=ipy.Embed(
+                    description=f"```py\n{', '.join(numbers)}\n```",
+                    color=0x1F1F1F,
+                )
             )
-        # convert arrays of int to arrays of str
-        numbers = [str(i) for i in numbers]
-        await ctx.send(
-            embed=ipy.Embed(
-                description=f"```py\n{', '.join(numbers)}\n```",
-                color=0x1F1F1F,
+        except Exception as e:
+            embed = ipy.Embed(
+                title="Unexpected error",
+                description="An unexpected error has occurred while trying to get a random number from random.org",
+                color=0xFF0000,
             )
-        )
+            embed.set_footer(text="Please try again later")
+            emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>",
+                           r"\1", EMOJI_UNEXPECTED_ERROR)
+            embed.set_thumbnail(
+                url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
+            await ctx.send(embed=embed)
+            save_traceback_to_file("random_number", ctx.author, e)
 
     @randomize.subcommand(
         sub_cmd_name="string",
@@ -224,24 +240,39 @@ class Random(ipy.Extension):
         use_lowercase: bool = True,
         use_digits: bool = True,
     ):
-        upper = "off" if not use_uppercase else "on"
-        lower = "off" if not use_lowercase else "on"
-        digits = "off" if not use_digits else "on"
-        async with RandomOrg() as rand:
-            strings = await rand.strings(
-                length=length,
-                num=amount,
-                upperalpha=upper,
-                loweralpha=lower,
-                digits=digits,
-                unique="on",
+        try:
+            await ctx.defer()
+            upper = "off" if not use_uppercase else "on"
+            lower = "off" if not use_lowercase else "on"
+            digits = "off" if not use_digits else "on"
+            async with RandomOrg() as rand:
+                strings = await rand.strings(
+                    length=length,
+                    num=amount,
+                    upperalpha=upper,
+                    loweralpha=lower,
+                    digits=digits,
+                    unique="on",
+                )
+            await ctx.send(
+                embed=ipy.Embed(
+                    description=f"```py\n{', '.join(strings)}\n```",
+                    color=0x1F1F1F,
+                )
             )
-        await ctx.send(
-            embed=ipy.Embed(
-                description=f"```py\n{', '.join(strings)}\n```",
-                color=0x1F1F1F,
+        except Exception as e:
+            embed = ipy.Embed(
+                title="Unexpected error",
+                description="An unexpected error has occurred while trying to get a random number from random.org",
+                color=0xFF0000,
             )
-        )
+            embed.set_footer(text="Please try again later")
+            emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>",
+                           r"\1", EMOJI_UNEXPECTED_ERROR)
+            embed.set_thumbnail(
+                url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
+            await ctx.send(embed=embed)
+            save_traceback_to_file("random_string", ctx.author, e)
 
 
 def setup(bot):

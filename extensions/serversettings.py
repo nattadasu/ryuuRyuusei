@@ -12,6 +12,7 @@ from modules.const import (EMOJI_FORBIDDEN, EMOJI_SUCCESS,
                            EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR)
 from modules.discord import format_username
 from modules.i18n import search_language, set_default_language
+from modules.commons import save_traceback_to_file
 
 
 class ServerSettings(ipy.Extension):
@@ -53,6 +54,7 @@ class ServerSettings(ipy.Extension):
             await ctx.send(f"{EMOJI_SUCCESS} Server Language set to {lang}")
         except Exception as e:
             await ctx.send(f"{EMOJI_FORBIDDEN} {e}")
+            save_traceback_to_file("serversettings_language_set", ctx.author, e)
 
     @serversettings_language_set.autocomplete("lang")
     async def code_autocomplete(self, ctx: ipy.AutocompleteContext):

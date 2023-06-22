@@ -9,6 +9,7 @@ from classes.excepts import ProviderHttpError, SimklTypeError
 from classes.kitsu import Kitsu
 from classes.simkl import Simkl, SimklMediaTypes, SimklRelations
 from classes.trakt import Trakt, TraktIdsStruct, TraktMediaStruct
+from modules.commons import save_traceback_to_file
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.platforms import (get_platform_color, media_id_to_platform,
                                platforms_to_fields)
@@ -202,7 +203,7 @@ class ExtenalSitesRelations(ipy.Extension):
                 await ctx.send(
                     f"❌ We couldn't find the title with the ID `{media_id}` on SIMKL! Error: `{phe}`"
                 )
-                return
+                save_traceback_to_file("relations_show", ctx.author, phe)
         elif platform in ["tmdb", "tvdb", "imdb"]:
             try:
                 if platform == "tmdb":
@@ -229,12 +230,12 @@ class ExtenalSitesRelations(ipy.Extension):
                 await ctx.send(
                     f"❌ We can't find the {platform.upper()} ID on SIMKL! It's possible that the show is not on SIMKL or that the ID is invalid!"
                 )
-                return
+                save_traceback_to_file("relations_show", ctx.author, phe)
             except ProviderHttpError as phe:
                 await ctx.send(
                     f"❌ We can't connect to SIMKL to get data from {platform.upper()} ID! Please try again later!\nReason: `{phe}`"
                 )
-                return
+                save_traceback_to_file("relations_show", ctx.author, phe)
         elif platform == "trakt":
             try:
                 matching = re.match(
@@ -299,7 +300,7 @@ class ExtenalSitesRelations(ipy.Extension):
                 await ctx.send(
                     f"❌ We can't connect to Trakt right now! Please try again later! Reason: {eht.message}"
                 )
-                return
+                save_traceback_to_file("relations_show", ctx.author, phe)
         elif platform == "kitsu":
             if not re.match(r"^\d+$", media_id):
                 try:
@@ -313,7 +314,7 @@ class ExtenalSitesRelations(ipy.Extension):
                     await ctx.send(
                         f"❌ We unable to resolve the slug `{media_id}` to a Kitsu ID! Error: `{phe}`"
                     )
-                    return
+                    save_traceback_to_file("relations_show", ctx.author, phe)
             anime_api = await self.get_anime_api_relation(
                 f"{media_id}", AnimeApi.AnimeApiPlatforms.KITSU
             )

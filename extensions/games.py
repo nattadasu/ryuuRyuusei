@@ -2,7 +2,7 @@
 import interactions as ipy
 
 from classes.rawg import RawgApi
-from modules.commons import generate_search_embed, sanitize_markdown
+from modules.commons import generate_search_embed, sanitize_markdown, save_traceback_to_file
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.i18n import fetch_language_data, read_user_language
 from modules.rawg import rawg_submit
@@ -118,6 +118,7 @@ class Games(ipy.Extension):
                     emoji="🗑️"
                 ),
             )
+            save_traceback_to_file("games_search", ctx.author, _)
 
     @ipy.component_callback("rawg_games_search")
     async def rawg_games_search(self, ctx: ipy.ComponentContext):
