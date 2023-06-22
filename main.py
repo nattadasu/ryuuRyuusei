@@ -81,7 +81,8 @@ async def main():
         try:
             if ext == "interactions.ext.sentry" and SENTRY_DSN not in [
                     "", None]:
-                bot.load_extension(ext, token=SENTRY_DSN)
+                bot.load_extension(ext, token=SENTRY_DSN, filter=None,
+                                   traces_sample_rate=0.3)
             else:
                 bot.load_extension(ext)
         except Exception as ea:
