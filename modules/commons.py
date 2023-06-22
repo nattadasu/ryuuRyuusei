@@ -275,7 +275,7 @@ def generate_commons_except_embed(
         description=description,
         fields=[
             EmbedField(
-                name=l_["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
+                name=l_["commons"]["reason"], value=f"{error}", inline=False
             )  # type: ignore
         ],
     )
@@ -465,7 +465,8 @@ def save_traceback_to_file(
     command: str,
     author: Member | User,
     error: Exception,
-):
+    mute_error: bool = False,
+) -> None:
     """
     Save traceback to a file.
 
@@ -477,7 +478,7 @@ def save_traceback_to_file(
         error (Exception): Re-raise the error (for logging purpose)
     """
     if not isinstance(error, Exception):
-        return False
+        return
     error_type = type(error).__name__
     error_str = str(error)
     error_traceback = "".join(
@@ -489,5 +490,6 @@ def save_traceback_to_file(
         encoding="utf-8",
     ) as f:
         f.write(f"{error_type}: {error_str}\n\n{error_traceback}")
-    # re-raise the error
-    raise error
+    if mute_error is False:
+        # re-raise the error
+        raise error
