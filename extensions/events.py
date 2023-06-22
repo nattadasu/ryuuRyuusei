@@ -42,6 +42,15 @@ class BotEvents(ipy.Extension):
         """
         if ctx.message is None:
             return
+        # ref
+        reference = ctx.message.interaction._user_id
+        # check if the user is the author
+        if ctx.author.id != reference:
+            await ctx.send(
+                f"{EMOJI_FORBIDDEN} You can not delete a command that you did not send, allowed for <@!{reference}>",
+                ephemeral=True,
+            )
+            return
         await ctx.message.delete()
 
 
