@@ -44,10 +44,23 @@ async def first_run(py_bin: str = py_bin_path()):
             "Installing and upgrading dependencies for the next step and the bot itself..."
         )
         if current_os() == "Windows":
+            # load requirements.txt to modify
+            with open("requirements.txt", "r") as f:
+                req = f.read()
+            reqs = req.split("\n")
+            url_to_replace = "git+https://github.com/ryuuRyuusei/cutlet-pure@master"
+            for i, r in enumerate(reqs):
+                if r.startswith("cutlet"):
+                    reqs[i] = url_to_replace
+            req = "\n".join(reqs)
+            # write to requirements.txt
+            with open("requirements.txt", "w") as f:
+                f.write(req)
             subprocess.run(
                 ["pip", "install", "-U", "-r", "requirements.txt"],
                 check=True,
             )
+            req = req.replace(url_to_replace, "cutlet")
         else:
             subprocess.run(
                 [
@@ -62,21 +75,39 @@ async def first_run(py_bin: str = py_bin_path()):
                 env=env,
                 check=True,
             )
-        # Prepare the database
     except Exception:
         print("\033[31mError installing packages, please run frollowing command:")
         command = "pip install -U -r requirements.txt"
         if check_termux():
             command = "MATHLAB=m " + command
         print(f"{command}\033[0m")
+
+    # create a dummy file named cache/dict_installed, if it doesn't exist
+    if not os.path.exists("cache/dict_installed"):
+        print("Installing unidic dictionary from NINJAL...")
+        subprocess.run(
+            [
+                shlex.quote(py_bin),
+                "-m",
+                "unidic",
+                "download",
+            ]
+        )
+        with open("cache/dict_installed", "w") as f:
+            f.write("")
+
+    # Prepare the database
     print("Preparing the database as database.csv in tabbed format...")
     prepare_database()
+
     # Fetch data from GitHub
     print("Fetching the latest github:nattadasu/nekomimiDb data...")
     await nk_run()
+
     # Index MyAnimeList data from AnimeAPI
     print("Indexing MyAnimeList data from AnimeAPI...")
     await mal_run()
+
     # Check if .env exists, if not, copy .env.example
     if not os.path.exists(".env"):
         print("Copying .env.example to .env...")
@@ -86,9 +117,11 @@ async def first_run(py_bin: str = py_bin_path()):
             os.system("cp .env.example .env")
     else:
         print(".env already exists, skipping...")
+
     # Build language index
     print("Building the language index...")
     convert_langs_to_json()
+
     print("Initialization finished. You should be able to run the bot safely now.")
 
 
