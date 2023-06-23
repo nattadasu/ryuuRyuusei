@@ -9,20 +9,26 @@ updates:
     directory: "/"
     target-branch: "ipy/v5.0.0"
     schedule:
-      interval: "weekly"
+      interval: "daily"
+      time: "00:00"
+      timezone: "Asia/Jakarta"
     commit-message:
-      prefix: "[pip]"
+      prefix: "[pip] "
     labels:
       - "dependencies"
       - "pip"
     open-pull-requests-limit: 10
+    assignees:
+      - "nattadasu"
+    reviewers:
+      - "nattadasu"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: daily
+      interval: "weekly"
     commit-message:
-      prefix: "[github-actions]"
+      prefix: "[github-actions] "
     labels:
       - "dependencies"
       - "github-actions"
