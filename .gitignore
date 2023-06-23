@@ -11,6 +11,7 @@ i18n/**.json
 !errors/.gitkeep
 *.old.py
 modules/old/
+app.config
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

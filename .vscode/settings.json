@@ -13,7 +13,9 @@
   },
   "files.associations": {
     ".coveragerc": "ini",
-    "**.service": "ini",
+    "**.service": "toml",
+    "app.config": "toml",
+    "app.config.example": "toml",
     ".env.example": "properties"
   },
   "python.testing.unittestArgs": [
@@ -28,7 +30,7 @@
     "80",
     "--in-place",
     "--aggressive",
-    "--aggressive",
+    "--aggressive"
   ],
   "python.testing.pytestEnabled": false,
   "python.testing.unittestEnabled": true

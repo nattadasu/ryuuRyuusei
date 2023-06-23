@@ -1,0 +1,2 @@
+app.config            linguist-language=toml
+app.config.example    linguist-language=toml

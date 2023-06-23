@@ -1,0 +1,75 @@
+[Language]
+# Language code, must be a valid ISO 639-1 code
+DefaultLanguage = "en_US"
+
+[Emoji]
+# Emoji ID, must be a custom emoji since some commands uses image asset of it
+# as the embed thumbnail
+# Attentive: neutral and accepting
+Attentive =
+# Doubting: unsure and confused with the input or bot response
+Doubting =
+# Forbidden: content can not be shared, usually NSFW content
+Forbidden =
+# Success: the bot has successfully completed the task
+Success =
+# Unexpected error: the bot has encountered an unexpected error
+UnexpectedError =
+# User error: the user has made an error
+UserError =
+
+[Embed.Color]
+# Embed color in hex
+General = 0x996422
+Question = 0x228168
+Success = 0x13BB42
+Error = 0xFF0000
+
+# Platform Specific Embed Color
+# SNS
+ArtStation = 0x0F0F0F
+DeviantArt = 0x05CC47
+Discord = 0x7289DA
+Facebook = 0x3B5998
+Flickr = 0xFF0084
+HoYoLab = 0x1B75BB
+Instagram = 0x833AB4
+Lofter = 0x335F60
+Patreon = 0xF96854
+Pixiv = 0x0096FA
+Reddit = 0xFF4500
+NicoNicoSeiga = 0xEDA715
+Tumblr = 0x35465C
+Twitter = 0x15202B
+Weibo = 0xE6162D
+# Media tracking
+AllCinema = 0xEC0A0A
+aniDB = 0x2A2F46
+AniList = 0x2F80ED
+AnimePlanet = 0xE75448
+aniSearch = 0xFDA37C
+ANN = 0x2D50A7
+Annict = 0xF65B73
+IMDb = 0xF5C518
+Kaize = 0x692FC2
+Kitsu = 0xF85235
+LastFM = 0xD51007
+LiveChart = 0x67A427
+MyAnimeList = 0x2F51A3
+Notify = 0xDEA99E
+OtakOtaku = 0xBE2222
+Shikimori = 0x2E2E2E
+Shoboi = 0xE3F0FD
+SilverYasha = 0x0172BB
+SIMKL = 0x0B0F10
+Shoboi = 0xE3F0FD
+TMDB = 0x09B4E2
+Trakt = 0xED1C24
+TVDB = 0x6CD491
+TVTime = 0xFBD737
+
+[Extensions]
+# Disable the extensions you don't want to load
+# Must use file name without extension in extensions folder
+# Example = ["utilities", "converter"]
+Disable = []
