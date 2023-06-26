@@ -13,11 +13,12 @@ from urllib.parse import quote
 import interactions as ipy
 
 from classes.database import DatabaseException, UserDatabase
+from classes.excepts import ProviderHttpError
 from classes.i18n import LanguageDict
 from classes.jikan import JikanApi, JikanException
+from classes.rss.myanimelist import MediaStatus
 from classes.rss.myanimelist import MyAnimeListRss as Rss
-from classes.rss.myanimelist import MediaStatus, RssItem
-from classes.excepts import ProviderHttpError
+from classes.rss.myanimelist import RssItem
 from modules.commons import (PlatformErrType, convert_float_to_time,
                              platform_exception_embed, sanitize_markdown,
                              save_traceback_to_file)
@@ -83,7 +84,8 @@ class MyAnimeListCog(ipy.Extension):
         ctx: ipy.SlashContext,
         user: ipy.User | ipy.Member | None = None,
         mal_username: str | None = None,
-        embed_layout: Literal["minimal", "old", "new", "timeline", "timeline_title"] = "minimal",
+        embed_layout: Literal["minimal", "old", "new",
+                              "timeline", "timeline_title"] = "minimal",
     ):
         """
         /myanimelist profile [user] [mal_username] [embed_layout]
@@ -379,7 +381,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                 else:
                     ani_data = ["No recent activity"]
             except ProviderHttpError:
-                ani_data = ["No recent activity, most likely due to private profile."]
+                ani_data = [
+                    "No recent activity, most likely due to private profile."]
             try:
                 async with Rss("manga", embed_layout == "timeline") as man:
                     man_data = await man.get_user(username)
@@ -411,7 +414,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                 else:
                     man_data = ["No recent activity"]
             except ProviderHttpError:
-                man_data = ["No recent activity, most likely due to private profile."]
+                man_data = [
+                    "No recent activity, most likely due to private profile."]
             # convert to string
             ani_data = "\n".join(ani_data)
             man_data = "\n".join(man_data)
