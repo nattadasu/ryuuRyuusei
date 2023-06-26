@@ -506,7 +506,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 | [The Color API](https://github.com/andjosh/thecolorapi)               | Unknown License | Utility                                     | API               | Used for getting color information                                                          |
 | [The Movie Database](https://www.themoviedb.org/)                     | -               | Censorship                                  | Database          | Used for getting movie and show censorship information                                      |
 | [Trakt](https://trakt.tv/)                                            | -               | Relation                                    | Database          | Used for linking anime, movie, and show IMDb ID (provided by SIMKL and AniAPI) to Trakt ID  |
-| [`unidic-lite`](https://pypi.org/project/unidic-lite/)                | MIT             | Language                                    | Module            | Used for getting Japanese word information                                                  |
+| [`unidic`](https://pypi.org/project/unidic/)                          | MIT             | Language                                    | Module            | Used for getting Japanese word information                                                  |
 | [`validators`](https://pypi.org/project/validators/)                  | MIT             | Utility                                     | Module            | Used for validating strings                                                                 |
 <!-- markdownlint-enable MD013 -->
 
