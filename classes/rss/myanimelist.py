@@ -36,6 +36,7 @@ from classes.excepts import ProviderHttpError
 
 user_agent = FakeUserAgent(browsers=['chrome', 'firefox', "opera"]).random
 
+
 class MediaStatus(Enum):
     """Media status enum"""
 
@@ -46,6 +47,7 @@ class MediaStatus(Enum):
     DROPPED = "Dropped"
     PLAN_TO_WATCH = "Plan to Watch"
     PLAN_TO_READ = "Plan to Read"
+
 
 @dataclass
 class RssItem:
@@ -64,13 +66,14 @@ class RssItem:
     updated: datetime
     """datetime: The last updated date of the media"""
 
+
 class MyAnimeListRss:
     """MyAnimeList RSS Feed Parser"""
 
     def __init__(
-        self,
-        media_type: Literal["anime", "manga"] = "anime",
-        fetch_individual: bool = False):
+            self,
+            media_type: Literal["anime", "manga"] = "anime",
+            fetch_individual: bool = False):
         """
         Initialize the class
 
@@ -94,7 +97,8 @@ class MyAnimeListRss:
 
     async def __aenter__(self):
         """Create a new session"""
-        self.session = aiohttp.ClientSession(headers={"User-Agent": self.user_agent})
+        self.session = aiohttp.ClientSession(
+            headers={"User-Agent": self.user_agent})
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
@@ -165,7 +169,8 @@ class MyAnimeListRss:
             status = self._parse_status(description.split(" - ")[0])
             progress_from, progress_to = self._parse_progress(description)
             updated = self._parse_date(data.find("pubDate").text)
-            item.append(RssItem(title, url, status, progress_from, progress_to, updated))
+            item.append(RssItem(title, url, status,
+                        progress_from, progress_to, updated))
 
         return item
 
