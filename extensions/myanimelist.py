@@ -1,3 +1,10 @@
+"""
+MyAnimeList extension for the bot
+
+Contains:
+* /myanimelist profile
+"""
+
 from datetime import datetime as dtime
 from datetime import timezone as tz
 from typing import Literal
@@ -8,6 +15,9 @@ import interactions as ipy
 from classes.database import DatabaseException, UserDatabase
 from classes.i18n import LanguageDict
 from classes.jikan import JikanApi, JikanException
+from classes.rss.myanimelist import MyAnimeListRss as Rss
+from classes.rss.myanimelist import MediaStatus, RssItem
+from classes.excepts import ProviderHttpError
 from modules.commons import (PlatformErrType, convert_float_to_time,
                              platform_exception_embed, sanitize_markdown,
                              save_traceback_to_file)
@@ -50,15 +60,20 @@ class MyAnimeListCog(ipy.Extension):
                 required=False,
                 choices=[
                     ipy.SlashCommandChoice(
-                            name="Minimal (Default)",
-                            value="minimal",
-                    ),
+                        name="Minimal (Default)",
+                        value="minimal"),
                     ipy.SlashCommandChoice(
                         name="Classic",
                         value="old"),
                     ipy.SlashCommandChoice(
                         name="Highly Detailed",
                         value="new"),
+                    ipy.SlashCommandChoice(
+                        name="Activities by progress",
+                        value="timeline"),
+                    ipy.SlashCommandChoice(
+                        name="Activities by title",
+                        value="timeline_title"),
                 ],
             ),
         ],
@@ -68,16 +83,32 @@ class MyAnimeListCog(ipy.Extension):
         ctx: ipy.SlashContext,
         user: ipy.User | ipy.Member | None = None,
         mal_username: str | None = None,
-        embed_layout: Literal["minimal", "old", "new"] = "minimal",
+        embed_layout: Literal["minimal", "old", "new", "timeline", "timeline_title"] = "minimal",
     ):
+        """
+        /myanimelist profile [user] [mal_username] [embed_layout]
+
+        Get a user's profile
+
+        Parameters
+        ----------
+        user : ipy.User | ipy.Member | None, optional
+            The user to get the profile of, if registered, defaults to you, by default None
+
+        mal_username : str | None, optional
+            Username on MyAnimeList to get profile information of, by default None
+
+        embed_layout : Literal["minimal", "old", "new", "timeline", "timeline_title"], optional
+            Layout of the embed, by default "minimal"
+        """
         await ctx.defer()
-        l_: LanguageDict = fetch_language_data("en_US", True)
+        lang_dict: LanguageDict = fetch_language_data("en_US", True)
 
         if mal_username and user:
             embed = platform_exception_embed(
                 description="You can't use both `user` and `mal_username` options at the same time!",
                 error_type=PlatformErrType.USER,
-                lang_dict=l_,
+                lang_dict=lang_dict,
                 error="User and mal_username options used at the same time",
             )
             await ctx.send(embed=embed)
@@ -99,7 +130,7 @@ class MyAnimeListCog(ipy.Extension):
                 description=f"""{user.mention} haven't registered the MyAnimeList account to the bot yet!
 Use `/register` to register, or use `/profile myanimelist mal_username:<username>` to get the profile information of a user without registering their account to the bot""",
                 error_type=PlatformErrType.USER,
-                lang_dict=l_,
+                lang_dict=lang_dict,
                 error="User hasn't registered their MAL account yet",
             )
             await ctx.send(embed=embed)
@@ -108,15 +139,15 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
         try:
             async with JikanApi() as jikan:
                 user_data = await jikan.get_user_data(username=mal_username)
-        except JikanException as e:
+        except JikanException as error:
             embed = platform_exception_embed(
                 description="Jikan API returned an error",
-                error_type=e.status_code,
-                lang_dict=l_,
-                error=e.message,
+                error_type=error.status_code,
+                lang_dict=lang_dict,
+                error=error.message,
             )
             await ctx.send(embed=embed)
-            save_traceback_to_file("myanimelist_profile", ctx.author, e)
+            save_traceback_to_file("myanimelist_profile", ctx.author, error)
 
         username = sanitize_markdown(user_data.username)
         user_id = user_data.mal_id
@@ -191,7 +222,7 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
         )
         embed.set_thumbnail(url=user_data.images.webp.image_url)
 
-        if embed_layout != "old":
+        if embed_layout in ["minimal", "new"]:
             embed.add_fields(
                 ipy.EmbedField(
                     name="👤 User ID",
@@ -285,7 +316,7 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                         "", None] else "Unset",
                     inline=True,
                 )
-        else:
+        elif embed_layout == "old":
             embed.add_fields(
                 ipy.EmbedField(
                     name="Profile",
@@ -316,8 +347,89 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                     inline=True,
                 ),
             )
+        elif embed_layout in ["timeline", "timeline_title"]:
+            try:
+                async with Rss("anime", embed_layout == "timeline") as ani:
+                    ani_data = await ani.get_user(username)
+                    ani_data_total = len(ani_data)
+                if ani_data_total > 0:
+                    ani_data: list[RssItem | str] = ani_data[:5]
+                    for index, anime in enumerate(ani_data):
+                        if isinstance(anime, str):
+                            continue
+                        if len(anime.title) >= 50:
+                            anime.title = anime.title[:47] + "..."
+                        # convert to epoch
+                        timestamp = int(anime.updated.timestamp())
+                        status = ""
+                        match anime.status:
+                            case MediaStatus.WATCHING:
+                                status = "👀"
+                            case MediaStatus.COMPLETED:
+                                status = "✅"
+                            case MediaStatus.ON_HOLD:
+                                status = "⏸️"
+                            case MediaStatus.DROPPED:
+                                status = "🗑️"
+                            case MediaStatus.PLAN_TO_WATCH:
+                                status = "⏰"
+                        anime.progress_to = "*Unknown*" if anime.progress_to is None else anime.progress_to
+                        ani_data[index] = f"{index+1}. {status} [{anime.title}]({anime.url}), {anime.progress_from}/{anime.progress_to}, <t:{timestamp}:R>"
+                    ani_data.append(f"And {ani_data_total-5} more...")
+                else:
+                    ani_data = ["No recent activity"]
+            except ProviderHttpError:
+                ani_data = ["No recent activity, most likely due to private profile."]
+            try:
+                async with Rss("manga", embed_layout == "timeline") as man:
+                    man_data = await man.get_user(username)
+                man_data_total = len(man_data)
+                if man_data_total > 0:
+                    man_data: list[RssItem | str] = man_data[:5]
+                    for index, manga in enumerate(man_data):
+                        if isinstance(manga, str):
+                            continue
+                        if len(manga.title) >= 50:
+                            manga.title = manga.title[:47] + "..."
+                        # convert to epoch
+                        timestamp = int(manga.updated.timestamp())
+                        status = ""
+                        match manga.status:
+                            case MediaStatus.READING:
+                                status = "👀"
+                            case MediaStatus.PLAN_TO_READ:
+                                status = "⏰"
+                            case MediaStatus.COMPLETED:
+                                status = "✅"
+                            case MediaStatus.ON_HOLD:
+                                status = "⏸️"
+                            case MediaStatus.DROPPED:
+                                status = "🗑️"
+                        manga.progress_to = "*Unknown*" if manga.progress_to is None else manga.progress_to
+                        man_data[index] = f"{index+1}. {status} [{manga.title}]({manga.url}), {manga.progress_from}/{manga.progress_to}, <t:{timestamp}:R>"
+                    man_data.append(f"And {man_data_total-5} more...")
+                else:
+                    man_data = ["No recent activity"]
+            except ProviderHttpError:
+                man_data = ["No recent activity, most likely due to private profile."]
+            # convert to string
+            ani_data = "\n".join(ani_data)
+            man_data = "\n".join(man_data)
 
-        if embed_layout != "minimal":
+            embed.add_field(
+                name="📺 Recent Anime Activity",
+                value=ani_data,
+                inline=True,
+            )
+            embed.add_field(
+                name="📚 Recent Manga Activity",
+                value=man_data,
+                inline=True,
+            )
+        if embed_layout == "minimal":
+            embed.set_footer(
+                text='Powered by Jikan API for data. To expand what data will be shown, modify embed_layout parameter to "old" or "new"')
+        elif embed_layout in ["old", "new"]:
             components += [
                 ipy.Button(
                     style=ipy.ButtonStyle.URL,
@@ -334,9 +446,6 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                 url=f"https://malheatmap.com/users/{username}/signature")
             embed.set_footer(
                 text="Powered by Jikan API for data and MAL Heatmap for Activity Heatmap. Data can be inacurrate as Jikan and Ryuusei cache your profile up to a day")
-        else:
-            embed.set_footer(
-                text='Powered by Jikan API for data. To expand what data will be shown, modify embed_layout parameter to "old" or "new"')
 
         await ctx.send(embed=embed, components=components)
 
