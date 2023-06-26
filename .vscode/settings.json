@@ -1,16 +1,9 @@
 {
-  "[markdown]": {
-    "editor.rulers": [
-      80,
-      120
-    ]
-  },
-  "[yaml]": {
-    "editor.rulers": [
-      80,
-      120
-    ]
-  },
+  "editor.rulers": [
+    80,
+    100,
+    120
+  ],
   "files.associations": {
     ".coveragerc": "ini",
     "**.service": "toml",
@@ -31,6 +24,10 @@
     "--in-place",
     "--aggressive",
     "--aggressive"
+  ],
+  "python.linting.pylintArgs": [
+    "--init-hook",
+    "import sys; sys.path.insert(0, '.')"
   ],
   "python.testing.pytestEnabled": false,
   "python.testing.unittestEnabled": true
