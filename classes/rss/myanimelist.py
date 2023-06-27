@@ -23,13 +23,13 @@ Example:
     ]
 """
 
-import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from typing import Literal
 
 import aiohttp
+import defusedxml.ElementTree as ET
 from fake_useragent import FakeUserAgent
 
 from classes.excepts import ProviderHttpError
