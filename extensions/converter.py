@@ -7,7 +7,7 @@ from fuzzywuzzy import fuzz
 
 from classes.converter import Length, Mass, Temperature, Time, Volume
 from classes.excepts import ProviderHttpError
-from classes.exchangeratesapi import accepted_currencies, ExchangeRatesAPI
+from classes.exchangerateapi import accepted_currencies, ExchangeRateAPI
 from modules.commons import (PlatformErrType, platform_exception_embed,
                              save_traceback_to_file)
 from modules.const import EMOJI_SUCCESS, EMOJI_UNEXPECTED_ERROR
@@ -441,7 +441,7 @@ class ConverterCog(ipy.Extension):
         lang = read_user_language(ctx)
         l_ = fetch_language_data(lang)
         try:
-            async with ExchangeRatesAPI() as api:
+            async with ExchangeRateAPI() as api:
                 convert_raw = await api.get_exchange_rate(
                     from_currency, to_currency, value
                 )

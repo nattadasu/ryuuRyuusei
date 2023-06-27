@@ -5,7 +5,7 @@ Get exchange rates from https://www.exchangerate-api.com/
 
 Example:
     >>> import asyncio
-    >>> from classes.exchangeratesapi import ExchangeRateAPI
+    >>> from classes.exchangerateapi import ExchangeRateAPI
     >>> async def main():
     ...     async with ExchangeRateAPI() as api:
     ...         rates = await api.get_exchange_rate("USD", "EUR", 1)
@@ -41,9 +41,8 @@ accepted_currencies = Literal[
 ]
 """The accepted currencies for the ExchangeRate-API"""
 
-Cache = Caching(cache_directory="cache/exchangeratesapi",
+Cache = Caching(cache_directory="cache/exchangerateapi",
                 cache_expiration_time=86400)
-"""The cache for the ExchangeRate-API"""
 
 
 @dataclass
@@ -88,7 +87,7 @@ class PairConversionExchangeRate(ExchangeRate):
     """The conversion result of the exchange rate."""
 
 
-class ExchangeRatesAPI:
+class ExchangeRateAPI:
     """ExchangeRate-API wrapper"""
 
     def __init__(self, api_key: str = EXCHANGERATE_API_KEY) -> None:
@@ -97,7 +96,7 @@ class ExchangeRatesAPI:
         self.api_key = api_key
         self.headers = {"User-Agent": USER_AGENT}
 
-    async def __aenter__(self) -> "ExchangeRatesAPI":
+    async def __aenter__(self) -> "ExchangeRateAPI":
         """Enter the async context manager"""
         self.session = aiohttp.ClientSession(headers=self.headers)
         return self

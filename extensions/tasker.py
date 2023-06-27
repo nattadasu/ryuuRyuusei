@@ -34,7 +34,7 @@ class BotTasker(Extension):
         known_caches = {
             "anilist": {"base": a_day, "user": half_day, "nsfw": a_week},
             "animeapi": a_day,
-            "exchangeratesapi": a_day,
+            "exchangerateapi": a_day,
             "jikan": {
                 "base": a_day,
                 "user": half_day,

@@ -47,7 +47,7 @@ BOT_TOKEN: Final[str] = cast(str, ge("BOT_TOKEN"))
 CLUB_ID: Final[int] = cast(int, ge("CLUB_ID"))
 """MyAnimeList club ID"""
 EXCHANGERATE_API_KEY: Final[str] = cast(str, ge("EXCHANGERATE_API_KEY"))
-"""ExchangeRatesAPI key"""
+"""ExchangeRateAPI key"""
 LASTFM_API_KEY: Final[str] = cast(str, ge("LASTFM_API_KEY"))
 """Last.fm API key"""
 MYANIMELIST_CLIENT_ID: Final[str] = cast(str, ge("MYANIMELIST_CLIENT_ID"))
