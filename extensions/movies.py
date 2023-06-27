@@ -129,7 +129,8 @@ class MoviesCog(ipy.Extension):
             )
         # pylint: disable=broad-except
         except Exception as _:
-            language_dict: dict[str, str] = language_dict["strings"]["movies"]["search"]["exception"]
+            language_dict: dict[str,
+                                str] = language_dict["strings"]["movies"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             embed = ipy.Embed(
                 title=language_dict["title"],
