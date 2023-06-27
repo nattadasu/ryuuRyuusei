@@ -50,7 +50,7 @@ class DiscordCog(ipy.Extension):
             embed = generate_commons_except_embed(
                 description=l_["strings"]["profile"]["exception"]["general"],
                 error=f"{e}",
-                lang_dict=l_,
+                language=l_,
             )
             await ctx.send(embed=embed)
             save_traceback_to_file("discord_profile", ctx.author, e)
