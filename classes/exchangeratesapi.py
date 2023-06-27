@@ -1,3 +1,19 @@
+"""
+ExchangeRateAPI wrapper
+
+Get exchange rates from https://www.exchangerate-api.com/
+
+Example:
+    >>> import asyncio
+    >>> from classes.exchangeratesapi import ExchangeRateAPI
+    >>> async def main():
+    ...     async with ExchangeRateAPI() as api:
+    ...         rates = await api.get_exchange_rate("USD", "EUR", 1)
+    ...         print(rates)
+    >>> asyncio.run(main())
+    0.821
+"""
+
 from dataclasses import dataclass
 from typing import Literal
 
@@ -7,7 +23,7 @@ from classes.cache import Caching
 from classes.excepts import ProviderHttpError
 from modules.const import EXCHANGERATE_API_KEY, USER_AGENT
 
-Accepted_Currencies = Literal[
+accepted_currencies = Literal[
     "AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN", "BAM", "BBD",
     "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL", "BSD", "BTN", "BWP", "BYN",
     "BZD", "CAD", "CDF", "CHF", "CLP", "CNY", "COP", "CRC", "CUP", "CVE", "CZK", "DJF",
@@ -23,14 +39,17 @@ Accepted_Currencies = Literal[
     "UGX", "USD", "UYU", "UZS", "VES", "VND", "VUV", "WST", "XAF", "XCD", "XDR", "XOF",
     "XPF", "YER", "ZAR", "ZMW", "ZWL"
 ]
+"""The accepted currencies for the ExchangeRate-API"""
 
 Cache = Caching(cache_directory="cache/exchangeratesapi",
                 cache_expiration_time=86400)
+"""The cache for the ExchangeRate-API"""
 
 
 @dataclass
 class ExchangeRate:
     """A dataclass to represent an exchange rate."""
+
     result: str
     """The result of the exchange rate."""
     documentation: str
@@ -45,7 +64,7 @@ class ExchangeRate:
     """The time of the next update of the exchange rate in UNIX format."""
     time_next_update_utc: str
     """The time of the next update of the exchange rate in readable format."""
-    base_code: Accepted_Currencies
+    base_code: accepted_currencies
     """The base code of the exchange rate."""
 
 
@@ -53,7 +72,7 @@ class ExchangeRate:
 class SingleExchangeRate(ExchangeRate):
     """A dataclass to represent an exchange rate for a single conversion."""
 
-    conversion_rates: dict[Accepted_Currencies, float]
+    conversion_rates: dict[accepted_currencies, float]
     """The conversion rates of the exchange rate."""
 
 
@@ -61,7 +80,7 @@ class SingleExchangeRate(ExchangeRate):
 class PairConversionExchangeRate(ExchangeRate):
     """A dataclass to represent an exchange rate for a pair conversion."""
 
-    target_code: Accepted_Currencies
+    target_code: accepted_currencies
     """The target code of the exchange rate."""
     conversion_rate: float
     """The conversion rate of the exchange rate."""
@@ -116,12 +135,12 @@ class ExchangeRatesAPI:
             case _:
                 return "An unknown error has occurred."
 
-    async def _get_base_currency_rates(self, base_currency: Accepted_Currencies) -> SingleExchangeRate:
+    async def _get_base_currency_rates(self, base_currency: accepted_currencies) -> SingleExchangeRate:
         """
         Get the exchange rates for a base currency
 
         Args:
-            base_currency (Accepted_Currencies): The base currency to get the exchange rates for
+            base_currency (accepted_currencies): The base currency to get the exchange rates for
 
         Raises:
             ProviderHttpError: If the request to the API fails
@@ -140,8 +159,8 @@ class ExchangeRatesAPI:
                     data = await resp.json()
                     err_type = self._define_error_message(data["error-type"])
                     raise ProviderHttpError(err_type, resp.status)
-                except BaseException:
-                    raise ProviderHttpError(resp.text(), resp.status)
+                except BaseException as exc:
+                    raise ProviderHttpError(resp.text(), resp.status) from exc
             data = await resp.json()
             if data["result"] == "error":
                 err_type = self._define_error_message(data["error-type"])
@@ -149,13 +168,13 @@ class ExchangeRatesAPI:
             Cache.write_data_to_cache(data, cache_file_path)
             return SingleExchangeRate(**data)
 
-    async def get_exchange_rate(self, base_currency: Accepted_Currencies, target_currency: Accepted_Currencies, amount: float) -> PairConversionExchangeRate:
+    async def get_exchange_rate(self, base_currency: accepted_currencies, target_currency: accepted_currencies, amount: float) -> PairConversionExchangeRate:
         """
         Get the exchange rate for a pair conversion
 
         Args:
-            base_currency (Accepted_Currencies): The base currency to get the exchange rate for
-            target_currency (Accepted_Currencies): The target currency to get the exchange rate for
+            base_currency (accepted_currencies): The base currency to get the exchange rate for
+            target_currency (accepted_currencies): The target currency to get the exchange rate for
             amount (float): The amount to convert
 
         Raises:
@@ -166,8 +185,8 @@ class ExchangeRatesAPI:
         """
         try:
             base_currency_rates = await self._get_base_currency_rates(base_currency)
-        except ProviderHttpError as e:
-            raise ProviderHttpError(e.message, e.status_code)
+        except ProviderHttpError as exc:
+            raise ProviderHttpError(exc.message, exc.status_code) from exc
         if target_currency not in base_currency_rates.conversion_rates:
             raise ProviderHttpError("The currency code is not supported.", 400)
         return PairConversionExchangeRate(

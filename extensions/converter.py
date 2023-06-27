@@ -7,7 +7,7 @@ from fuzzywuzzy import fuzz
 
 from classes.converter import Length, Mass, Temperature, Time, Volume
 from classes.excepts import ProviderHttpError
-from classes.exchangeratesapi import Accepted_Currencies, ExchangeRatesAPI
+from classes.exchangeratesapi import accepted_currencies, ExchangeRatesAPI
 from modules.commons import (PlatformErrType, platform_exception_embed,
                              save_traceback_to_file)
 from modules.const import EMOJI_SUCCESS, EMOJI_UNEXPECTED_ERROR
@@ -434,8 +434,8 @@ class ConverterCog(ipy.Extension):
         self,
         ctx: ipy.SlashContext,
         value: float,
-        from_currency: Accepted_Currencies,
-        to_currency: Accepted_Currencies,
+        from_currency: accepted_currencies,
+        to_currency: accepted_currencies,
     ) -> None:
         await ctx.defer()
         lang = read_user_language(ctx)
