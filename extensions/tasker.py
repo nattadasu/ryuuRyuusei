@@ -2,7 +2,7 @@ import os
 import time
 
 from interactions import (AutoShardedClient, Client, Extension,
-                          IntervalTrigger, Task, User)
+                          IntervalTrigger, Task)
 
 from classes.excepts import ProviderHttpError
 from classes.stats.topgg import TopGG
@@ -15,9 +15,11 @@ class BotTasker(Extension):
     def __init__(self, bot: Client | AutoShardedClient) -> None:
         """Initialize the tasks"""
         self.bot = bot
+        # pylint: disable=no-member
         self.delete_cache.start()
         self.delete_error_logs.start()
         self.poll_stats.start()
+        # pylint: enable=no-member
 
     @Task.create(IntervalTrigger(minutes=10))
     async def delete_cache(self) -> None:
@@ -99,9 +101,9 @@ class BotTasker(Extension):
             print(
                 f"[Tsk] [Stats] Poll to Top.gg was completed with {server_count} servers"
             )
-        except ProviderHttpError as e:
-            print(f"[Tsk] [Stats] Failed to poll to Top.gg: {e}")
-            save_traceback_to_file("tasker_topgg", self.bot.user, e)
+        except ProviderHttpError as error:
+            print(f"[Tsk] [Stats] Failed to poll to Top.gg: {error}")
+            save_traceback_to_file("tasker_topgg", self.bot.user, error)
 
     @staticmethod
     def _delete_old_files(folder_path: str, duration: int) -> None:
