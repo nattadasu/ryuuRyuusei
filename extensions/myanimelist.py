@@ -2,7 +2,8 @@
 MyAnimeList extension for the bot
 
 Contains:
-* /myanimelist profile
+- /myanimelist profile [user] [mal_username] [embed_layout] - Shows the profile
+  of a user on MyAnimeList directly on Discord
 """
 
 from datetime import datetime as dtime
@@ -121,8 +122,8 @@ class MyAnimeListCog(ipy.Extension):
 
         if mal_username is None:
             try:
-                async with UserDatabase() as db:
-                    user_data = await db.get_user_data(discord_id=user.id)
+                async with UserDatabase() as database:
+                    user_data = await database.get_user_data(discord_id=user.id)
                     mal_username = user_data.mal_username
             except DatabaseException:
                 mal_username = None
