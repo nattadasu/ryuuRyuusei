@@ -7,7 +7,7 @@ Can be easily broken if MAL changes their HTML structure
 """
 
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -83,6 +83,53 @@ class HtmlMyAnimeList:
             ).text.strip()
             if last_online == "Now":
                 last_online = datetime.now(timezone.utc)
+            else:
+                last_online += " -0700"
+                activity = last_online.split(", ")
+                date_format = "%b %d, %Y %H:%M %p %z"
+                match activity[0]:
+                    case "Today":
+                        today_str = datetime.now(timezone.utc).strftime("%b %d, %Y")
+                        last_online = datetime.strptime(
+                            f"{today_str} {activity[1]}", date_format
+                        )
+                    case "Yesterday":
+                        yesterday_str = (
+                            datetime.now(timezone.utc) - timedelta(days=1)
+                        ).strftime("%b %d, %Y")
+                        last_online = datetime.strptime(
+                            f"{yesterday_str} {activity[1]}", date_format
+                        )
+                    case _:
+                        if len(activity) == 2:
+                            # check if in activity[1] has a year after the comma
+                            date_split = activity[1].split(" ")
+                            if len(date_split[0]) == 4:
+                                last_online = datetime.strptime(
+                                    f"{activity[0]}, {activity[1]}", date_format
+                                )
+                            else:
+                                current_year = datetime.now(timezone.utc).year
+                                last_online = datetime.strptime(
+                                    f"{activity[0]}, {current_year} {activity[1]}",
+                                    date_format
+                                )
+                        else:
+                            # handle relative time like 1 hour ago
+                            regex = r"(\d+) (\w+) ago"
+                            matching = re.search(regex, activity[0])
+                            # get time
+                            time_value: int = int(matching.group(1))
+                            # get unit
+                            time_unit: str = matching.group(2)
+                            # add s to the unit if it is not already there
+                            if not time_unit.endswith("s"):
+                                time_unit += "s"
+                            # convert to timedelta
+                            time_delta = timedelta(**{time_unit: time_value})
+                            # get the current time
+                            current_time = datetime.now(timezone.utc)
+                            last_online = current_time - time_delta
         else:
             last_online = None
 
