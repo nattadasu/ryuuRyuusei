@@ -7,7 +7,7 @@ Can be easily broken if MAL changes their HTML structure
 """
 
 import re
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -89,7 +89,8 @@ class HtmlMyAnimeList:
                 date_format = "%b %d, %Y %H:%M %p %z"
                 match activity[0]:
                     case "Today":
-                        today_str = datetime.now(timezone.utc).strftime("%b %d, %Y")
+                        today_str = datetime.now(
+                            timezone.utc).strftime("%b %d, %Y")
                         last_online = datetime.strptime(
                             f"{today_str} {activity[1]}", date_format
                         )

@@ -15,9 +15,9 @@ import interactions as ipy
 
 from classes.database import DatabaseException, UserDatabase
 from classes.excepts import ProviderHttpError
+from classes.html.myanimelist import HtmlMyAnimeList
 from classes.i18n import LanguageDict
 from classes.jikan import JikanApi, JikanException
-from classes.html.myanimelist import HtmlMyAnimeList
 from classes.rss.myanimelist import MediaStatus
 from classes.rss.myanimelist import MyAnimeListRss as Rss
 from classes.rss.myanimelist import RssItem
@@ -186,7 +186,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
         else:
             anime = None
             manga = None
-        anime_float = convert_float_to_time(anime.days_watched) if anime else None
+        anime_float = convert_float_to_time(
+            anime.days_watched) if anime else None
         manga_float = convert_float_to_time(manga.days_read) if manga else None
         joined = int(user_data.joined.timestamp())
         if birthday is not None:
@@ -412,13 +413,14 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                         "No recent activity, most likely due to private profile."]
                 else:
                     embed = platform_exception_embed(
-                    description="MyAnimeList returned an error",
-                    error_type=error.status_code,
-                    lang_dict=lang_dict,
-                    error=error.message,
-                )
+                        description="MyAnimeList returned an error",
+                        error_type=error.status_code,
+                        lang_dict=lang_dict,
+                        error=error.message,
+                    )
                 await ctx.send(embed=embed)
-                save_traceback_to_file("myanimelist_profile", ctx.author, error)
+                save_traceback_to_file(
+                    "myanimelist_profile", ctx.author, error)
             try:
                 async with Rss("manga", embed_layout == "timeline") as man:
                     man_data = await man.get_user(username)
@@ -455,13 +457,14 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                         "No recent activity, most likely due to private profile."]
                 else:
                     embed = platform_exception_embed(
-                    description="MyAnimeList returned an error",
-                    error_type=error.status_code,
-                    lang_dict=lang_dict,
-                    error=error.message,
-                )
+                        description="MyAnimeList returned an error",
+                        error_type=error.status_code,
+                        lang_dict=lang_dict,
+                        error=error.message,
+                    )
                 await ctx.send(embed=embed)
-                save_traceback_to_file("myanimelist_profile", ctx.author, error)
+                save_traceback_to_file(
+                    "myanimelist_profile", ctx.author, error)
             # convert to string
             ani_data = "\n".join(ani_data)
             man_data = "\n".join(man_data)
