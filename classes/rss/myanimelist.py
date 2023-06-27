@@ -110,6 +110,7 @@ class MyAnimeListRss:
         await self.session.close()
 
     def _parse_title(self, title: str) -> str:
+        """Parse title from string to string"""
         token = title.split(" - ")
         if self.fetch_individual is False:
             # remove the last token
