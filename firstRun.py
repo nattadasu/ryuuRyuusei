@@ -1,4 +1,5 @@
-"""A script to run first-time setup for a Discord bot.
+"""
+A script to run first-time setup for a Discord bot.
 
 This script installs dependencies, prepares the database, fetches data from GitHub,
 indexes MyAnimeList data from AnimeAPI, builds a language index, and copies .env.example to .env.
@@ -19,6 +20,11 @@ from modules.oobe.getNekomimi import nk_run
 from modules.oobe.i18nBuild import convert_langs_to_json
 from modules.oobe.malIndexer import mal_run
 
+class FirstRunError(Exception):
+    """
+    An exception class for first run script.
+    """
+
 
 async def first_run(py_bin: str = py_bin_path()):
     """
@@ -35,7 +41,7 @@ async def first_run(py_bin: str = py_bin_path()):
     """
     # Check if the script is run from the root directory
     if not os.path.exists("requirements.txt"):
-        raise Exception("Please run the script from the repo's directory.")
+        raise FirstRunError("Please run the script from the repo's directory.")
     try:
         # Check if Termux is used
         env = {"MATHLAB": "m"} if check_termux() else {}
@@ -45,17 +51,17 @@ async def first_run(py_bin: str = py_bin_path()):
         )
         if current_os() == "Windows":
             # load requirements.txt to modify
-            with open("requirements.txt", "r") as f:
-                req = f.read()
+            with open("requirements.txt", "r", encoding="utf8") as file:
+                req = file.read()
             reqs = req.split("\n")
             url_to_replace = "git+https://github.com/ryuuRyuusei/cutlet-pure@master"
-            for i, r in enumerate(reqs):
-                if r.startswith("cutlet"):
-                    reqs[i] = url_to_replace
+            for index, line in enumerate(reqs):
+                if line.startswith("cutlet"):
+                    reqs[index] = url_to_replace
             req = "\n".join(reqs)
             # write to requirements.txt
-            with open("requirements.txt", "w") as f:
-                f.write(req)
+            with open("requirements.txt", "w", encoding="utf8") as file:
+                file.write(req)
             subprocess.run(
                 ["pip", "install", "-U", "-r", "requirements.txt"],
                 check=True,
@@ -75,7 +81,7 @@ async def first_run(py_bin: str = py_bin_path()):
                 env=env,
                 check=True,
             )
-    except Exception:
+    except subprocess.CalledProcessError:
         print("\033[31mError installing packages, please run frollowing command:")
         command = "pip install -U -r requirements.txt"
         if check_termux():
@@ -91,10 +97,11 @@ async def first_run(py_bin: str = py_bin_path()):
                 "-m",
                 "unidic",
                 "download",
-            ]
+            ],
+            check=True,
         )
-        with open("cache/dict_installed", "w") as f:
-            f.write("")
+        with open("cache/dict_installed", "w", encoding="utf8") as file:
+            file.write("")
 
     # Prepare the database
     print("Preparing the database as database.csv in tabbed format...")
