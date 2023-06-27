@@ -17,6 +17,7 @@ from classes.database import DatabaseException, UserDatabase
 from classes.excepts import ProviderHttpError
 from classes.i18n import LanguageDict
 from classes.jikan import JikanApi, JikanException
+from classes.html.myanimelist import HtmlMyAnimeList
 from classes.rss.myanimelist import MediaStatus
 from classes.rss.myanimelist import MyAnimeListRss as Rss
 from classes.rss.myanimelist import RssItem
@@ -140,11 +141,25 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             return
 
         try:
-            async with JikanApi() as jikan:
-                user_data = await jikan.get_user_data(username=mal_username)
+            async with HtmlMyAnimeList() as html:
+                extended = await html.get_user(mal_username)
+            if embed_layout not in ["timeline", "timeline_title"]:
+                async with JikanApi() as jikan:
+                    user_data = await jikan.get_user_data(mal_username.lower())
+            else:
+                user_data = extended
         except JikanException as error:
             embed = platform_exception_embed(
                 description="Jikan API returned an error",
+                error_type=error.status_code,
+                lang_dict=lang_dict,
+                error=error.message,
+            )
+            await ctx.send(embed=embed)
+            save_traceback_to_file("myanimelist_profile", ctx.author, error)
+        except ProviderHttpError as error:
+            embed = platform_exception_embed(
+                description="MyAnimeList returned an error",
                 error_type=error.status_code,
                 lang_dict=lang_dict,
                 error=error.message,
@@ -165,10 +180,14 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             location = "Unset"
         gender = user_data.gender if user_data.gender not in [
             "", None] else "Unset"
-        anime = user_data.statistics.anime
-        manga = user_data.statistics.manga
-        anime_float = convert_float_to_time(anime.days_watched)
-        manga_float = convert_float_to_time(manga.days_read)
+        if user_data.statistics:
+            anime = user_data.statistics.anime
+            manga = user_data.statistics.manga
+        else:
+            anime = None
+            manga = None
+        anime_float = convert_float_to_time(anime.days_watched) if anime else None
+        manga_float = convert_float_to_time(manga.days_read) if manga else None
         joined = int(user_data.joined.timestamp())
         if birthday is not None:
             timestamped = birthday.timestamp()
@@ -192,6 +211,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             else "Unset"
         )
         joined_formatted = f"<t:{joined}:D> (<t:{joined}:R>)"
+
+        last_online = extended.last_online.timestamp()
 
         components = [
             ipy.Button(
@@ -244,6 +265,9 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                     ipy.EmbedField(name="🚁 Gender", value=gender, inline=True),
                     ipy.EmbedField(name="📍 Location",
                                    value=location, inline=True),
+                    ipy.EmbedField(name="📅 Last Online",
+                                   value=f"<t:{int(last_online)}:R>",
+                                   inline=True),
                 )
             anime_value_str = f"""* Total: {anime.total_entries:,}
 * Mean Score: ⭐ {anime.mean_score}/10
@@ -269,13 +293,13 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                 if len(ani_favs) > 0:
                     ani_fav_top = ani_favs[:5]
                     # generate string
-                    for index, anime in enumerate(ani_fav_top):
-                        if len(anime.title) >= 100:
-                            anime.title = anime.title[:97] + "..."
-                        split = anime.url.split("/")
+                    for index, ani in enumerate(ani_fav_top):
+                        if len(ani.title) >= 100:
+                            ani.title = ani.title[:97] + "..."
+                        split = ani.url.split("/")
                         if split[-1].isdigit() is False:
-                            anime.url = "/".join(split[:-1])
-                        ani_fav_list += f"{index+1}. [{anime.title}]({anime.url})\n"
+                            ani.url = "/".join(split[:-1])
+                        ani_fav_list += f"{index+1}. [{ani.title}]({ani.url})\n"
                 embed.add_field(
                     name="🌟 Top 5 Favorite Anime",
                     value=ani_fav_list if ani_fav_list not in [
@@ -306,13 +330,13 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                 man_fav_list = ""
                 if len(man_favs) > 0:
                     man_fav_top = man_favs[:5]
-                    for index, manga in enumerate(man_fav_top):
-                        if len(manga.title) >= 100:
-                            manga.title = manga.title[:97] + "..."
-                        split = manga.url.split("/")
+                    for index, man in enumerate(man_fav_top):
+                        if len(man.title) >= 100:
+                            man.title = man.title[:97] + "..."
+                        split = man.url.split("/")
                         if split[-1].isdigit() is False:
-                            manga.url = "/".join(split[:-1])
-                        man_fav_list += f"{index+1}. [{manga.title}]({manga.url})\n"
+                            man.url = "/".join(split[:-1])
+                        man_fav_list += f"{index+1}. [{man.title}]({man.url})\n"
                 embed.add_field(
                     name="🌟 Top 5 Favorite Manga",
                     value=man_fav_list if man_fav_list not in [
@@ -327,7 +351,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
 * Account created: {joined_formatted}
 * Birthday: {birthday_formatted}
 * Gender: {gender}
-* Location: {location}""",
+* Location: {location}
+* Last Online: <t:{int(last_online)}:R>""",
                     inline=False,
                 ),
                 ipy.EmbedField(
@@ -381,9 +406,19 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                     ani_data.append(f"And {ani_data_total-5} more...")
                 else:
                     ani_data = ["No recent activity"]
-            except ProviderHttpError:
-                ani_data = [
-                    "No recent activity, most likely due to private profile."]
+            except ProviderHttpError as err:
+                if err.status_code == 403:
+                    man_data = [
+                        "No recent activity, most likely due to private profile."]
+                else:
+                    embed = platform_exception_embed(
+                    description="MyAnimeList returned an error",
+                    error_type=error.status_code,
+                    lang_dict=lang_dict,
+                    error=error.message,
+                )
+                await ctx.send(embed=embed)
+                save_traceback_to_file("myanimelist_profile", ctx.author, error)
             try:
                 async with Rss("manga", embed_layout == "timeline") as man:
                     man_data = await man.get_user(username)
@@ -414,9 +449,19 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                     man_data.append(f"And {man_data_total-5} more...")
                 else:
                     man_data = ["No recent activity"]
-            except ProviderHttpError:
-                man_data = [
-                    "No recent activity, most likely due to private profile."]
+            except ProviderHttpError as err:
+                if err.status_code == 403:
+                    man_data = [
+                        "No recent activity, most likely due to private profile."]
+                else:
+                    embed = platform_exception_embed(
+                    description="MyAnimeList returned an error",
+                    error_type=error.status_code,
+                    lang_dict=lang_dict,
+                    error=error.message,
+                )
+                await ctx.send(embed=embed)
+                save_traceback_to_file("myanimelist_profile", ctx.author, error)
             # convert to string
             ani_data = "\n".join(ani_data)
             man_data = "\n".join(man_data)
