@@ -2,6 +2,7 @@ aiohttp
 beautifulsoup4
 cutlet
 dataclassy
+defusedxml
 fake-useragent
 fluent.runtime
 fuzzywuzzy
