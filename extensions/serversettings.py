@@ -11,7 +11,6 @@ from classes.verificator import Verificator
 from modules.commons import save_traceback_to_file
 from modules.const import (EMOJI_FORBIDDEN, EMOJI_SUCCESS,
                            EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR)
-from modules.discord import format_username
 from modules.i18n import search_language, set_default_language
 
 
@@ -49,34 +48,51 @@ class ServerSettings(ipy.Extension):
         ],
     )
     async def serversettings_language_set(self, ctx: ipy.InteractionContext, lang: str):
+        """
+        Set the bot language for this server
+
+        Args:
+            ctx (ipy.InteractionContext): Context
+            lang (str): Language code, autocomplete available
+        """
         try:
             await set_default_language(code=lang, ctx=ctx, isGuild=True)
             await ctx.send(f"{EMOJI_SUCCESS} Server Language set to {lang}")
-        except Exception as e:
-            await ctx.send(f"{EMOJI_FORBIDDEN} {e}")
+        # pylint: disable=broad-except
+        except Exception as error:
+            await ctx.send(f"{EMOJI_FORBIDDEN} {error}")
             save_traceback_to_file(
                 "serversettings_language_set", ctx.author, e)
+        # pylint: enable=broad-except
 
     @serversettings_language_set.autocomplete("lang")
     async def code_autocomplete(self, ctx: ipy.AutocompleteContext):
+        """
+        Autocomplete for the language code
+
+        Args:
+            ctx (ipy.AutocompleteContext): Context
+        """
         data = search_language(ctx.input_text)
         # only return the first 10 results
         data = data[:10]
         final = []
-        for di in data:
+        for d_index in data:
             try:
-                if di["name"] == "Serbian":
-                    di["dialect"] = "Serbia"
-                flag = di["dialect"].replace(" ", "_")
+                if d_index["name"] == "Serbian":
+                    d_index["dialect"] = "Serbia"
+                flag = d_index["dialect"].replace(" ", "_")
                 flag = emojize(f":{flag}:", language="alias")
                 final.append(
                     {
-                        "name": f"{flag} {di['name']} ({di['native']}, {di['dialect']})",
-                        "value": di["code"],
+                        "name": f"{flag} {d_index['name']} ({d_index['native']}, {d_index['dialect']})",
+                        "value": d_index["code"],
                     }
                 )
+            # pylint: disable=broad-except
             except BaseException:
                 break
+            # pylint: enable=broad-except
         await ctx.send(choices=final)
 
     async def _check_if_registered(
@@ -94,8 +110,8 @@ class ServerSettings(ipy.Extension):
         Returns:
             bool: Whether the user is registered
         """
-        async with UserDatabase() as ud:
-            is_registered = await ud.check_if_registered(user.id)
+        async with UserDatabase() as udb:
+            is_registered = await udb.check_if_registered(user.id)
             if is_registered is True:
                 embed = self.generate_error_embed(
                     header="Look out!",
@@ -121,20 +137,24 @@ class ServerSettings(ipy.Extension):
         Returns:
             ipy.Embed: Error embed
         """
+        emoji_id: int | None = None
         # grab emoji ID
         if is_user_error is True:
             emoji = re.search(r"<:(\w+):(\d+)>", EMOJI_USER_ERROR)
-            emoji_id = int(emoji.group(2))
+            if emoji is not None:
+                emoji_id = int(emoji.group(2))
         else:
             emoji = re.search(r"<:(\w+):(\d+)>", EMOJI_UNEXPECTED_ERROR)
-            emoji_id = int(emoji.group(2))
+            if emoji is not None:
+                emoji_id = int(emoji.group(2))
         embed = ipy.Embed(
             title=header,
             description=message,
             color=0xFF0000,
         )
-        embed.set_thumbnail(
-            url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+        if emoji_id is not None:
+            embed.set_thumbnail(
+                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
     @staticmethod
@@ -149,16 +169,19 @@ class ServerSettings(ipy.Extension):
         Returns:
             ipy.Embed: Success embed
         """
+        emoji_id: int | None = None
         # grab emoji ID
         emoji = re.search(r"<:(\w+):(\d+)>", EMOJI_SUCCESS)
-        emoji_id = int(emoji.group(2))
+        if emoji is not None:
+            emoji_id = int(emoji.group(2))
         embed = ipy.Embed(
             title=header,
             description=message,
             color=0x00FF00,
         )
-        embed.set_thumbnail(
-            url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+        if emoji_id is not None:
+            embed.set_thumbnail(
+                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
     @member.subcommand(
@@ -182,9 +205,16 @@ class ServerSettings(ipy.Extension):
     async def serversettings_member_register(
         self,
         ctx: ipy.SlashContext,
-        user: ipy.Member | ipy.User,
+        user: ipy.Member,
         mal_username: str,
     ):
+        """
+        Register a member
+
+        Args:
+            user (ipy.Member): Member to register
+            mal_username (str): User's MyAnimeList username
+        """
         await ctx.defer(ephemeral=True)
         checker = await self._check_if_registered(ctx, user)
         if checker is True:
@@ -225,7 +255,7 @@ class ServerSettings(ipy.Extension):
                     name=overwrite_prompt,
                     value=f"```\n{verification.uuid}\n```**Note:** Verification code expires <t:{remaining_time}:R>.",
                 ))
-            epoch = datetime.fromtimestamp(
+            epoch = ipy.Timestamp.fromtimestamp(
                 verification.epoch_time, tz=timezone.utc)
 
         fields += [
@@ -261,8 +291,14 @@ class ServerSettings(ipy.Extension):
         ],
     )
     async def serversettings_member_verify(
-        self, ctx: ipy.ComponentContext, user: ipy.Member | ipy.User
+        self, ctx: ipy.ComponentContext, user: ipy.Member
     ):
+        """
+        Verify a member
+
+        Args:
+            user (ipy.Member): Member to verify
+        """
         await ctx.defer(ephemeral=True)
         checker = await self._check_if_registered(ctx, user)
         if checker is True:
@@ -288,17 +324,23 @@ class ServerSettings(ipy.Extension):
             await ctx.send(embed=embed)
             return
 
-        async with UserDatabase() as ud:
-            await ud.save_to_database(
+        guild = ctx.guild
+
+        if guild is None:
+            pass
+
+
+        async with UserDatabase() as udb:
+            await udb.save_to_database(
                 UserDatabaseClass(
                     discord_id=user.id,
-                    discord_username=format_username(user),
+                    discord_username=user.username,
                     mal_id=mal_id,
                     mal_username=mal_username,
                     mal_joined=mal_joined,
                     registered_at=datetime.now(tz=timezone.utc),
-                    registered_guild_id=ctx.guild.id,
-                    registered_guild_name=ctx.guild.name,
+                    registered_guild_id=guild.id,
+                    registered_guild_name=guild.name,
                     registered_by=ctx.author.id,
                 )
             )
@@ -306,13 +348,14 @@ class ServerSettings(ipy.Extension):
             header="Success!",
             message=f"{user.mention} have been registered!",
         )
-        Cache = Caching("cache/verify", 43200)
+        cache_ = Caching("cache/verify", 43200)
         path = f"{user.id}.json"
-        file_path = Cache.get_cache_path(path)
+        file_path = cache_.get_cache_path(path)
         await ctx.send(embed=embed)
-        Cache.drop_cache(file_path)
+        cache_.drop_cache(file_path)
         return
 
 
 def setup(bot):
+    """Setup function for server settings cog"""
     ServerSettings(bot)
