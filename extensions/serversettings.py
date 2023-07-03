@@ -58,12 +58,11 @@ class ServerSettings(ipy.Extension):
         try:
             await set_default_language(code=lang, ctx=ctx, isGuild=True)
             await ctx.send(f"{EMOJI_SUCCESS} Server Language set to {lang}")
-        # pylint: disable=broad-except
+        # pylint: disable-next=broad-except
         except Exception as error:
             await ctx.send(f"{EMOJI_FORBIDDEN} {error}")
             save_traceback_to_file(
-                "serversettings_language_set", ctx.author, e)
-        # pylint: enable=broad-except
+                "serversettings_language_set", ctx.author, error)
 
     @serversettings_language_set.autocomplete("lang")
     async def code_autocomplete(self, ctx: ipy.AutocompleteContext):
@@ -267,7 +266,6 @@ class ServerSettings(ipy.Extension):
         embed = ipy.Embed(
             title="Registration",
             description=f"""To assist registration for {user.mention}, please follow the instructions below:""",
-            fields=fields,
             footer=ipy.EmbedFooter(
                 text="If you have any questions, feel free to contact the developer. Verification codes are valid for 12 hours.",
             ),
@@ -275,6 +273,7 @@ class ServerSettings(ipy.Extension):
             color=0x7289DA,
         )
         embed.set_thumbnail(url=user.display_avatar.url)
+        embed.add_fields(*fields)
 
         await ctx.send(embed=embed)
 
@@ -300,6 +299,17 @@ class ServerSettings(ipy.Extension):
             user (ipy.Member): Member to verify
         """
         await ctx.defer(ephemeral=True)
+
+        guild = ctx.guild
+
+        if guild is None:
+            await ctx.send(
+                f"{EMOJI_FORBIDDEN} This command can only be used in a server!")
+            return
+
+        guild_id = guild.id
+        guild_name = guild.name
+
         checker = await self._check_if_registered(ctx, user)
         if checker is True:
             return
@@ -324,11 +334,6 @@ class ServerSettings(ipy.Extension):
             await ctx.send(embed=embed)
             return
 
-        guild = ctx.guild
-
-        if guild is None:
-            pass
-
 
         async with UserDatabase() as udb:
             await udb.save_to_database(
@@ -339,8 +344,8 @@ class ServerSettings(ipy.Extension):
                     mal_username=mal_username,
                     mal_joined=mal_joined,
                     registered_at=datetime.now(tz=timezone.utc),
-                    registered_guild_id=guild.id,
-                    registered_guild_name=guild.name,
+                    registered_guild_id=guild_id,
+                    registered_guild_name=guild_name,
                     registered_by=ctx.author.id,
                 )
             )

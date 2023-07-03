@@ -204,7 +204,6 @@ class DataControl(ipy.Extension):
             description=f"""## Hi, {ctx.author.display_name}!
 
 To complete your registration, please follow the instructions below:""",
-            fields=fields,
             footer=ipy.EmbedFooter(
                 text="If you have any questions, feel free to contact the developer. Verification codes are valid for 12 hours.",
             ),
@@ -212,6 +211,7 @@ To complete your registration, please follow the instructions below:""",
             color=0x7289DA,
         )
         embed.set_thumbnail(url=ctx.author.display_avatar.url)
+        embed.add_fields(*fields)
         components = [
             ipy.Button(
                 style=ipy.ButtonStyle.BLURPLE,
@@ -388,7 +388,7 @@ To complete your registration, please follow the instructions below:""",
             )
             await ctx.send(embed=embed)
             save_traceback_to_file("platform_link", ctx.author, error)
-        # pylint: disable=broad-except
+        # pylint: disable-next=broad-except
         except Exception as error:
             embed = self.generate_error_embed(
                 header="Error!",
@@ -397,7 +397,6 @@ To complete your registration, please follow the instructions below:""",
             )
             await ctx.send(embed=embed)
             save_traceback_to_file("platform_link", ctx.author, error)
-        # pylint: enable=broad-except
 
     @ipy.cooldown(ipy.Buckets.USER, 1, 5)
     @ipy.slash_command(
