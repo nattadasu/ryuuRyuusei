@@ -81,7 +81,8 @@ class ServerSettings(ipy.Extension):
                 if d_index["name"] == "Serbian":
                     d_index["dialect"] = "Serbia"
                 flag = d_index["dialect"].replace(" ", "_")
-                flag: str = emojize(f":{flag}:", language="alias")  # type: ignore
+                flag: str = emojize(
+                    f":{flag}:", language="alias")  # type: ignore
                 final.append(
                     {
                         "name": f"{flag} {d_index['name']} ({d_index['native']}, {d_index['dialect']})",

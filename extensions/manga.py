@@ -1,4 +1,4 @@
-from typing import Literal, Any
+from typing import Any, Literal
 
 import interactions as ipy
 
@@ -137,7 +137,8 @@ class Manga(ipy.Extension):
             )
         # pylint: disable-next=broad-except
         except Exception as _:
-            lang_dict: dict[str, Any] = lang_dict["strings"]["manga"]["search"]["exception"]
+            lang_dict: dict[str,
+                            Any] = lang_dict["strings"]["manga"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             embed_description: str = lang_dict["text"]
             embed_description = embed_description.format(QUERY=f"`{query}`")
