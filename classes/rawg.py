@@ -475,3 +475,7 @@ class RawgApi:
             raise ProviderTypeError("**No results found!**", dict)
         Cache.write_data_to_cache(rawgRes, cache_file_path)
         return self._convert(rawgRes)
+
+    async def close() -> None:
+        """Close session"""
+        await self.session.close()
