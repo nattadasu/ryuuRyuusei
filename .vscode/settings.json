@@ -27,7 +27,8 @@
   ],
   "python.linting.pylintArgs": [
     "--init-hook",
-    "import sys; sys.path.insert(0, '.')"
+    "import sys; sys.path.insert(0, '.')",
+    "--disable=E0015"
   ],
   "python.testing.pytestEnabled": false,
   "python.testing.unittestEnabled": true,

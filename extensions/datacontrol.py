@@ -1,3 +1,11 @@
+"""
+Data Control Extension
+======================
+
+This extension is responsible for handling user data, such as registering,
+updating, and deleting user data.
+"""
+
 import json
 import os
 import re
@@ -20,7 +28,6 @@ from modules.commons import save_traceback_to_file
 from modules.const import (DECLINED_GDPR, EMOJI_SUCCESS,
                            EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR,
                            VERIFICATION_SERVER, VERIFIED_ROLE)
-from modules.discord import format_username
 
 
 class DataControl(ipy.Extension):
@@ -41,20 +48,24 @@ class DataControl(ipy.Extension):
         Returns:
             ipy.Embed: Error embed
         """
+        emoji_id: int | None = None
         # grab emoji ID
         if is_user_error is True:
             emoji = re.search(r"<:(\w+):(\d+)>", EMOJI_USER_ERROR)
-            emoji_id = int(emoji.group(2))
+            if emoji is not None:
+                emoji_id = int(emoji.group(2))
         else:
             emoji = re.search(r"<:(\w+):(\d+)>", EMOJI_UNEXPECTED_ERROR)
-            emoji_id = int(emoji.group(2))
+            if emoji is not None:
+                emoji_id = int(emoji.group(2))
         embed = ipy.Embed(
             title=header,
             description=message,
             color=0xFF0000,
         )
-        embed.set_thumbnail(
-            url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+        if emoji_id is not None:
+            embed.set_thumbnail(
+                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
     @staticmethod
@@ -69,16 +80,19 @@ class DataControl(ipy.Extension):
         Returns:
             ipy.Embed: Success embed
         """
+        emoji_id: int | None = None
         # grab emoji ID
         emoji = re.search(r"<:(\w+):(\d+)>", EMOJI_SUCCESS)
-        emoji_id = int(emoji.group(2))
+        if emoji is not None:
+            emoji_id = int(emoji.group(2))
         embed = ipy.Embed(
             title=header,
             description=message,
             color=0x00FF00,
         )
-        embed.set_thumbnail(
-            url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+        if emoji_id is not None:
+            embed.set_thumbnail(
+                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
         return embed
 
     async def _check_if_registered(
@@ -93,8 +107,8 @@ class DataControl(ipy.Extension):
         Returns:
             bool: Whether the user is registered
         """
-        async with UserDatabase() as ud:
-            is_registered = await ud.check_if_registered(ctx.author.id)
+        async with UserDatabase() as udb:
+            is_registered = await udb.check_if_registered(ctx.author.id)
             if is_registered is True:
                 embed = self.generate_error_embed(
                     header="Look out!",
@@ -123,11 +137,19 @@ class DataControl(ipy.Extension):
                 required=True,
             ),
         ],
-        dm_permission=False,
     )
     async def register(
         self, ctx: ipy.SlashContext, mal_username: str, accept_privacy_policy: bool
     ):
+        """
+        Register yourself to the database
+
+        Args:
+            ctx (ipy.SlashContext): Context
+            mal_username (str): MyAnimeList username
+            accept_privacy_policy (bool): Whether the user accepts the privacy policy.
+                This is required to register, or else the registration will be declined.
+        """
         await ctx.defer(ephemeral=True)
         if accept_privacy_policy is False:
             await ctx.send(DECLINED_GDPR)
@@ -168,7 +190,7 @@ class DataControl(ipy.Extension):
                     name=overwrite_prompt,
                     value=f"```\n{verification.uuid}\n```**Note:** Verification code expires <t:{remaining_time}:R>.",
                 ))
-            epoch = datetime.fromtimestamp(
+            epoch = ipy.Timestamp.fromtimestamp(
                 verification.epoch_time, tz=timezone.utc)
 
         fields += [
@@ -182,7 +204,6 @@ class DataControl(ipy.Extension):
             description=f"""## Hi, {ctx.author.display_name}!
 
 To complete your registration, please follow the instructions below:""",
-            fields=fields,
             footer=ipy.EmbedFooter(
                 text="If you have any questions, feel free to contact the developer. Verification codes are valid for 12 hours.",
             ),
@@ -190,6 +211,7 @@ To complete your registration, please follow the instructions below:""",
             color=0x7289DA,
         )
         embed.set_thumbnail(url=ctx.author.display_avatar.url)
+        embed.add_fields(*fields)
         components = [
             ipy.Button(
                 style=ipy.ButtonStyle.BLURPLE,
@@ -201,6 +223,7 @@ To complete your registration, please follow the instructions below:""",
 
     @ipy.component_callback("account_register")
     async def callback_registration(self, ctx: ipy.ComponentContext):
+        """Check and confirm user registration"""
         await ctx.defer(ephemeral=True)
         checker = await self._check_if_registered(ctx)
         if checker is True:
@@ -226,17 +249,25 @@ To complete your registration, please follow the instructions below:""",
             await ctx.send(embed=embed)
             return
 
-        async with UserDatabase() as ud:
-            await ud.save_to_database(
+        guild = ctx.guild
+        if guild is None:
+            guild_name = "Personal DM"
+            guild_id = ctx.author.id
+        else:
+            guild_name = guild.name
+            guild_id = guild.id
+
+        async with UserDatabase() as udb:
+            await udb.save_to_database(
                 UserDatabaseClass(
                     discord_id=ctx.author.id,
-                    discord_username=format_username(ctx.author),
+                    discord_username=ctx.author.username,
                     mal_id=mal_id,
                     mal_username=mal_username,
                     mal_joined=mal_joined,
                     registered_at=datetime.now(tz=timezone.utc),
-                    registered_guild_id=ctx.guild.id,
-                    registered_guild_name=ctx.guild.name,
+                    registered_guild_id=guild_id,
+                    registered_guild_name=guild_name,
                     registered_by=ctx.author.id,
                 )
             )
@@ -244,11 +275,11 @@ To complete your registration, please follow the instructions below:""",
             header="Success!",
             message="You have been registered!",
         )
-        Cache = Caching("cache/verify", 43200)
+        cache_ = Caching("cache/verify", 43200)
         path = f"{ctx.author.id}.json"
-        file_path = Cache.get_cache_path(path)
+        file_path = cache_.get_cache_path(path)
         await ctx.send(embed=embed)
-        Cache.drop_cache(file_path)
+        cache_.drop_cache(file_path)
         return
 
     @ipy.cooldown(ipy.Buckets.USER, 1, 5)
@@ -292,9 +323,21 @@ To complete your registration, please follow the instructions below:""",
         platform: Literal["anilist", "lastfm", "shikimori"],
         username: str,
     ):
+        """
+        Link your account to a platform
+
+        Platforms:
+            - AniList
+            - Last.fm
+            - Shikimori
+
+        Args:
+            platform (Literal["anilist", "lastfm", "shikimori"]): Platform to link
+            username (str): Your username on the platform
+        """
         await ctx.defer(ephemeral=True)
-        async with UserDatabase() as ud:
-            is_registered = await ud.check_if_registered(ctx.author.id)
+        async with UserDatabase() as udb:
+            is_registered = await udb.check_if_registered(ctx.author.id)
             if is_registered is False:
                 await ctx.send("You are not registered!")
                 return
@@ -303,29 +346,29 @@ To complete your registration, please follow the instructions below:""",
                 async with AniList() as anilist:
                     user_data = await anilist.user(username, return_id=True)
                     user_id = user_data.id
-                async with UserDatabase() as ud:
-                    await ud.update_user(
+                async with UserDatabase() as udb:
+                    await udb.update_user(
                         ctx.author.id, row="anilistId", modified_input=user_id
                     )
-                    await ud.update_user(
+                    await udb.update_user(
                         ctx.author.id, row="anilistUsername", modified_input=username
                     )
             elif platform == "lastfm":
                 async with LastFM() as lastfm:
                     await lastfm.get_user_info(username)
-                async with UserDatabase() as ud:
-                    await ud.update_user(
+                async with UserDatabase() as udb:
+                    await udb.update_user(
                         ctx.author.id, row="lastfmUsername", modified_input=username
                     )
             elif platform == "shikimori":
                 async with Shikimori() as shikimori:
                     user_data = await shikimori.get_user(username)
                     user_id = user_data.id
-                async with UserDatabase() as ud:
-                    await ud.update_user(
+                async with UserDatabase() as udb:
+                    await udb.update_user(
                         ctx.author.id, row="shikimoriId", modified_input=user_id
                     )
-                    await ud.update_user(
+                    await udb.update_user(
                         ctx.author.id, row="shikimoriUsername", modified_input=username
                     )
             embed = self.generate_success_embed(
@@ -333,26 +376,27 @@ To complete your registration, please follow the instructions below:""",
                 message=f"Your {platform} account has been linked!",
             )
             await ctx.send(embed=embed)
-        except ProviderHttpError as e:
+        except ProviderHttpError as error:
             embed = self.generate_error_embed(
                 header="Error!",
                 message=(
                     "User can't be found"
-                    if e.status_code == 404
+                    if error.status_code == 404
                     else "Unable to fetch information from platform's server"
                 ),
                 is_user_error=False,
             )
             await ctx.send(embed=embed)
-            save_traceback_to_file("platform_link", ctx.author, e)
-        except Exception as e:
+            save_traceback_to_file("platform_link", ctx.author, error)
+        # pylint: disable-next=broad-except
+        except Exception as error:
             embed = self.generate_error_embed(
                 header="Error!",
-                message=f"Something went wrong: {e}",
+                message=f"Something went wrong: {error}",
                 is_user_error=False,
             )
             await ctx.send(embed=embed)
-            save_traceback_to_file("platform_link", ctx.author, e)
+            save_traceback_to_file("platform_link", ctx.author, error)
 
     @ipy.cooldown(ipy.Buckets.USER, 1, 5)
     @ipy.slash_command(
@@ -386,32 +430,43 @@ To complete your registration, please follow the instructions below:""",
     async def platform_unlink(
         self, ctx: ipy.SlashContext, platform: Literal["anilist", "lastfm", "shikimori"]
     ):
+        """
+        Unink your account from a platform
+
+        Platforms:
+            - AniList
+            - Last.fm
+            - Shikimori
+
+        Args:
+            platform (Literal["anilist", "lastfm", "shikimori"]): Platform to unlink
+        """
         await ctx.defer(ephemeral=True)
-        async with UserDatabase() as ud:
-            is_registered = await ud.check_if_registered(ctx.author.id)
+        async with UserDatabase() as udb:
+            is_registered = await udb.check_if_registered(ctx.author.id)
             if is_registered is False:
                 await ctx.send("You are not registered!")
                 return
         try:
             if platform == "anilist":
-                async with UserDatabase() as ud:
-                    await ud.update_user(
+                async with UserDatabase() as udb:
+                    await udb.update_user(
                         ctx.author.id, row="anilistId", modified_input=None
                     )
-                    await ud.update_user(
+                    await udb.update_user(
                         ctx.author.id, row="anilistUsername", modified_input=None
                     )
             elif platform == "lastfm":
-                async with UserDatabase() as ud:
-                    await ud.update_user(
+                async with UserDatabase() as udb:
+                    await udb.update_user(
                         ctx.author.id, row="lastfmUsername", modified_input=None
                     )
             elif platform == "shikimori":
-                async with UserDatabase() as ud:
-                    await ud.update_user(
+                async with UserDatabase() as udb:
+                    await udb.update_user(
                         ctx.author.id, row="shikimoriId", modified_input=None
                     )
-                    await ud.update_user(
+                    await udb.update_user(
                         ctx.author.id, row="shikimoriUsername", modified_input=None
                     )
             embed = self.generate_success_embed(
@@ -419,14 +474,14 @@ To complete your registration, please follow the instructions below:""",
                 message=f"Your {platform} account has been unlinked!",
             )
             await ctx.send(embed=embed)
-        except ProviderHttpError as e:
+        except ProviderHttpError as error:
             embed = self.generate_error_embed(
                 header="Error!",
-                message=e.message,
+                message=error.message,
                 is_user_error=False,
             )
             await ctx.send(embed=embed)
-            save_traceback_to_file("platform_unlink", ctx.author, e)
+            save_traceback_to_file("platform_unlink", ctx.author, error)
 
     @ipy.cooldown(ipy.Buckets.USER, 1, 60)
     @ipy.slash_command(
@@ -434,9 +489,10 @@ To complete your registration, please follow the instructions below:""",
         description="Unregister from the bot",
     )
     async def unregister(self, ctx: ipy.SlashContext):
+        """Unregister from the bot"""
         await ctx.defer(ephemeral=True)
-        async with UserDatabase() as ud:
-            is_registered = await ud.check_if_registered(ctx.author.id)
+        async with UserDatabase() as udb:
+            is_registered = await udb.check_if_registered(ctx.author.id)
             if is_registered is False:
                 embed = self.generate_error_embed(
                     header="Error!",
@@ -445,7 +501,7 @@ To complete your registration, please follow the instructions below:""",
                 )
                 await ctx.send(embed=embed)
                 return
-            await ud.drop_user(ctx.author.id)
+            await udb.drop_user(ctx.author.id)
         embed = self.generate_success_embed(
             header="Success!",
             message="You have been unregistered!",
@@ -490,9 +546,15 @@ To complete your registration, please follow the instructions below:""",
         ctx: ipy.SlashContext,
         file_format: Literal["json", "csv", "yaml", "py"] = "json",
     ):
+        """
+        Exports user data to preferred format
+
+        Args:
+            file_format (Literal["json", "csv", "yaml", "py"], optional): File format to export to. Defaults to "json".
+        """
         await ctx.defer(ephemeral=True)
-        async with UserDatabase() as ud:
-            is_registered = await ud.check_if_registered(ctx.author.id)
+        async with UserDatabase() as udb:
+            is_registered = await udb.check_if_registered(ctx.author.id)
             if is_registered is False:
                 embed = self.generate_error_embed(
                     header="Error!",
@@ -501,31 +563,26 @@ To complete your registration, please follow the instructions below:""",
                 )
                 await ctx.send(embed=embed)
                 return
-            user_data = await ud.export_user_data(ctx.author.id)
+            user_data = await udb.export_user_data(ctx.author.id)
             user_data = json.loads(user_data)
 
         filename = f"cache/export_{ctx.author.id}_{int(datetime.now(tz=timezone.utc).timestamp())}"
 
-        # stringify json
-        jd = json.dumps(user_data)
-        if file_format == "json":
-            with open(f"{filename}.json", "w") as f:
-                json.dump(user_data, f, indent=4)
-        elif file_format == "csv":
-            df = pd.DataFrame([user_data])
-            df.to_csv(
-                f"{filename}.csv",
-                index=False,
-                sep="\t",
-                encoding="utf-8",
-                header=True)
-        elif file_format == "yaml":
-            with open(f"{filename}.yaml", "w") as f:
-                yaml.dump(user_data, f, indent=4)
-        elif file_format == "py":
-            with open(f"{filename}.py", "w") as f:
-                f.write(
-                    f"""from typing import Union, TypedDict
+        match file_format:
+            case "json":
+                with open(f"{filename}.json", "w", encoding="utf-8") as file:
+                    json.dump(user_data, file, indent=4)
+            case "csv":
+                dataframe = pd.DataFrame([user_data])
+                dataframe.to_csv(
+                    f"{filename}.csv",
+                    index=False,
+                    sep="\t",
+                    encoding="utf-8",
+                    header=True)
+            case "py":
+                with open(f"{filename}.py", "w", encoding="utf-8") as file:
+                    file.write(f"""from typing import Union, TypedDict
 
 class UserData(TypedDict):
     \"\"\"User data\"\"\"
@@ -563,24 +620,25 @@ class UserData(TypedDict):
     settings_language: str
     \"\"\"Language setting\"\"\"
 
-user_data: UserData = {user_data}
-"""
-                )
+user_data: UserData = {user_data}""")
+            case "yaml":
+                with open(f"{filename}.yaml", "w", encoding="utf-8") as file:
+                    yaml.dump(user_data, file, indent=4)
 
-        fn = f"{filename}.{file_format}"
+        filename_formatted = f"{filename}.{file_format}"
 
         embed = self.generate_success_embed(
             header="Success!",
-            message=f"Your data has been exported to `{fn.replace('cache/','')}`!\nFeel free to download the file!\n\nYour data in JSON format:\n```json\n{jd}```",
+            message=f"Your data has been exported to `{filename_formatted.replace('cache/','')}`!\nFeel free to download the file!",
         )
 
         await ctx.send(
             embed=embed, file=ipy.File(
-                f"{fn}", file_name=f"{fn}".replace("cache/", ""))
+                f"{filename_formatted}", file_name=f"{filename_formatted}".replace("cache/", ""))
         )
 
         # Delete the file
-        os.remove(f"{fn}")
+        os.remove(f"{filename_formatted}")
 
     @ipy.cooldown(ipy.Buckets.USER, 1, 10)
     @ipy.slash_command(
@@ -590,9 +648,10 @@ user_data: UserData = {user_data}
         scopes=[VERIFICATION_SERVER],
     )
     async def verify(self, ctx: ipy.SlashContext):
+        """Verify your account"""
         await ctx.defer(ephemeral=True)
-        async with UserDatabase() as ud:
-            is_registered = await ud.check_if_registered(ctx.author.id)
+        async with UserDatabase() as udb:
+            is_registered = await udb.check_if_registered(ctx.author.id)
             if is_registered is False:
                 embed = self.generate_error_embed(
                     header="Error!",
@@ -601,12 +660,21 @@ user_data: UserData = {user_data}
                 )
                 await ctx.send(embed=embed)
                 return
-            status = await ud.verify_user(ctx.author.id)
+            status = await udb.verify_user(ctx.author.id)
 
-        user_roles = [str(role.id) for role in ctx.author.roles]
+        if isinstance(ctx.author, ipy.Member):
+            user_roles = [str(role.id) for role in ctx.author.roles]
+        else:
+            user_roles = []
+
+        embed = self.generate_error_embed(
+            header="Error!",
+            message="Unknown error!",
+            is_user_error=True,
+        )
 
         # check if verified role exists
-        if status is True and str(VERIFIED_ROLE) not in user_roles:
+        if status is True and str(VERIFIED_ROLE) not in user_roles and isinstance(ctx.member, ipy.Member):
             await ctx.member.add_role(
                 VERIFIED_ROLE, reason="User verified via slash command"
             )
@@ -625,4 +693,5 @@ user_data: UserData = {user_data}
 
 
 def setup(bot: ipy.AutoShardedClient):
+    """Load the DataControl cog."""
     DataControl(bot)

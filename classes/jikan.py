@@ -1,3 +1,5 @@
+"""Jikan API Wrapper"""
+
 import asyncio
 import traceback
 from dataclasses import dataclass
@@ -107,6 +109,7 @@ class JikanPropParentStruct:
 
     from_: JikanPropStruct | None = None
     """Properties of the start date"""
+    # pylint: disable-next=invalid-name
     to: JikanPropStruct | None = None
     """Properties of the end date"""
 
@@ -117,6 +120,7 @@ class JikanDateStruct:
 
     from_: datetime | None = None
     """Start date"""
+    # pylint: disable-next=invalid-name
     to: datetime | None = None
     """End date"""
     prop: JikanPropParentStruct | None = None
@@ -481,7 +485,7 @@ class JikanUserStruct:
     """External links of the user"""
 
 
-def defineJikanException(error_code: int, error_message: Any) -> None:
+def define_jikan_exception(error_code: int, error_message: Any) -> None:
     """
     Define Jikan Exception
 
@@ -498,34 +502,35 @@ def defineJikanException(error_code: int, error_message: Any) -> None:
     try:
         match error_code:
             case 403:
-                em = "**Jikan unable to reach MyAnimeList at the moment**\nPlease try again in 3 seconds."
+                err_ = "**Jikan unable to reach MyAnimeList at the moment**\nPlease try again in 3 seconds."
             case 404:
-                em = "**I couldn't find the query on MAL**\nCheck the spelling or well, maybe they don't exist? 🤔"
+                err_ = "**I couldn't find the query on MAL**\nCheck the spelling or well, maybe they don't exist? 🤔"
             case 408:
-                em = "**Jikan had a timeout while fetching the data**\nPlease try again in 3 seconds."
+                err_ = "**Jikan had a timeout while fetching the data**\nPlease try again in 3 seconds."
             case 418:
-                em = f"""**It seems that I can't parse the response from Jikan due to missing data, ouch**
+                err_ = f"""**It seems that I can't parse the response from Jikan due to missing data, ouch**
 Please contact Ryuusei's dev team to resolve this issue
 Full message:```
 {error_message}
 ```"""
             case 429:
-                em = "**I have been rate-limited by Jikan**\nAny queries related to MyAnimeList may not available "
+                err_ = "**I have been rate-limited by Jikan**\nAny queries related to MyAnimeList may not available "
             case 500:
-                em = "**Uh, it seems Jikan had a bad day, and this specific endpoint might broken**\nYou could help dev team to resolve this issue"
+                err_ = "**Uh, it seems Jikan had a bad day, and this specific endpoint might broken**\nYou could help dev team to resolve this issue"
                 if isinstance(error_message,
                               dict) and "report_url" in error_message:
-                    em += f" by clicking [this link to directly submit a GitHub Issue]({error_message['report_url']})"
+                    err_ += f" by clicking [this link to directly submit a GitHub Issue]({error_message['report_url']})"
                 else:
-                    em += f"\nFull message:\n{error_message}"
+                    err_ += f"\nFull message:\n{error_message}"
             case 503:
-                em = "**I think Jikan is dead, server can't be reached** :/"
+                err_ = "**I think Jikan is dead, server can't be reached** :/"
             case _:
-                em = f"HTTP error code: {error_code}\n{error_message}"
+                err_ = f"HTTP error code: {error_code}\n{error_message}"
+    # pylint: disable-next=broad-except
     except Exception:
-        em = "Unknown error. Full traceback:\n" + traceback.format_exc()
+        err_ = "Unknown error. Full traceback:\n" + traceback.format_exc()
 
-    raise JikanException(em, error_code)
+    raise JikanException(err_, error_code)
 
 
 class JikanApi:
@@ -854,7 +859,7 @@ class JikanApi:
                 if resp.status in [200, 304]:
                     resp_data = await resp.json()
                 else:
-                    defineJikanException(resp.status, resp.reason)
+                    define_jikan_exception(resp.status, resp.reason)
             clubs: list = resp_data["data"]
             paging: int = resp_data["pagination"]["last_visible_page"]
             if paging > 1:
@@ -868,10 +873,11 @@ class JikanApi:
                             clubs.extend(respd2["data"])
                             await asyncio.sleep(2)
                         else:
-                            defineJikanException(resp.status, resp.reason)
+                            define_jikan_exception(resp.status, resp.reason)
             return clubs
-        except Exception as e:
-            defineJikanException(601, e)
+        # pylint: disable-next=broad-except
+        except Exception as error:
+            define_jikan_exception(601, error)
 
     async def get_user_data(self, username: str) -> JikanUserStruct:
         """
@@ -907,14 +913,14 @@ class JikanApi:
                     res: dict = res["data"]
                 Cache.write_data_to_cache(res, cache_file_path)
                 return self.user_dict_to_dataclass(res)
-            except JikanException as e:
+            except JikanException as error:
                 retries += 1
                 if retries == 3:
-                    errcode: int = e.status_code if hasattr(
-                        e, "status_code") else 418
-                    errmsg: str | dict = e.message if hasattr(
-                        e, "message") else e
-                    defineJikanException(errcode, errmsg)
+                    errcode: int = error.status_code if hasattr(
+                        error, "status_code") else 418
+                    errmsg: str | dict = error.message if hasattr(
+                        error, "message") else error
+                    define_jikan_exception(errcode, errmsg)
                 else:
                     backoff_time = 3**retries
                     await asyncio.sleep(backoff_time)
@@ -939,6 +945,7 @@ class JikanApi:
                 res = await resp.json()
                 res: str = res["data"]["username"]
             else:
+                # pylint: disable-next=broad-exception-raised
                 raise Exception(await resp.json())
         gud = await self.get_user_data(res)
         return gud
@@ -970,7 +977,10 @@ class JikanApi:
                 res: dict = res["data"]
             Cache.write_data_to_cache(res, cache_file_path)
             return self.anime_dict_to_dataclass(res)
-        except Exception as e:
-            errcode: int = e.status_code if hasattr(e, "status_code") else 418
-            errmsg: str | dict = e.message if hasattr(e, "message") else e
-            defineJikanException(errcode, errmsg)
+        # pylint: disable-next=broad-except
+        except Exception as error:
+            errcode: int = error.status_code if hasattr(
+                error, "status_code") else 418
+            errmsg: str | dict = error.message if hasattr(
+                error, "message") else error
+            define_jikan_exception(errcode, errmsg)
