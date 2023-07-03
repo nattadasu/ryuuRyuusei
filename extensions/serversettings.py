@@ -2,7 +2,7 @@ import re
 from datetime import datetime, timezone
 
 import interactions as ipy
-from emoji import emojize
+from emoji import emojize  # type: ignore
 
 from classes.cache import Caching
 from classes.database import UserDatabase, UserDatabaseClass
@@ -81,7 +81,7 @@ class ServerSettings(ipy.Extension):
                 if d_index["name"] == "Serbian":
                     d_index["dialect"] = "Serbia"
                 flag = d_index["dialect"].replace(" ", "_")
-                flag = emojize(f":{flag}:", language="alias")
+                flag: str = emojize(f":{flag}:", language="alias")  # type: ignore
                 final.append(
                     {
                         "name": f"{flag} {d_index['name']} ({d_index['native']}, {d_index['dialect']})",
@@ -360,6 +360,6 @@ class ServerSettings(ipy.Extension):
         return
 
 
-def setup(bot):
+def setup(bot: ipy.Client | ipy.AutoShardedClient):
     """Setup function for server settings cog"""
     ServerSettings(bot)

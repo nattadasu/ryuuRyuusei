@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Any
 
 import interactions as ipy
 
@@ -38,12 +38,12 @@ class Manga(ipy.Extension):
     )
     async def manga_search(self, ctx: ipy.SlashContext, query: str):
         await ctx.defer()
-        ul: str = read_user_language(ctx)
-        l_ = fetch_language_data(ul, use_raw=True)
+        user_lang: str = read_user_language(ctx)
+        lang_dict = fetch_language_data(user_lang, use_raw=True)
         send = await ctx.send(
             embed=ipy.Embed(
-                title=l_["commons"]["search"]["init_title"],
-                description=l_["commons"]["search"]["init"].format(
+                title=lang_dict["commons"]["search"]["init_title"],
+                description=lang_dict["commons"]["search"]["init"].format(
                     QUERY=query,
                     PLATFORM="AniList",
                 ),
@@ -98,17 +98,17 @@ class Manga(ipy.Extension):
                     ))
                 so.append(
                     ipy.StringSelectOption(
-                        label=md_title[:77] +
-                        "..." if len(md_title) > 77 else md_title,
+                        label=title[:77] +
+                        "..." if len(title) > 77 else title,
                         value=str(media_id),
                         description=f"{format_str}, {status}, {year}",
                     )
                 )
-            title = l_["commons"]["search"]["result_title"].format(
+            title = lang_dict["commons"]["search"]["result_title"].format(
                 QUERY=query,
             )
             result_embed = generate_search_embed(
-                language=ul,
+                language=user_lang,
                 mediaType="manga",
                 query=query,
                 platform="AniList",
@@ -135,14 +135,17 @@ class Manga(ipy.Extension):
                 embed=result_embed,
                 components=components,
             )
+        # pylint: disable-next=broad-except
         except Exception as _:
-            l_: dict[str, str] = l_["strings"]["manga"]["search"]["exception"]
+            lang_dict: dict[str, Any] = lang_dict["strings"]["manga"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
+            embed_description: str = lang_dict["text"]
+            embed_description = embed_description.format(QUERY=f"`{query}`")
             embed = ipy.Embed(
-                title=l_["title"],
-                description=l_["text"].format(QUERY=f"`{query}`"),
+                title=lang_dict["title"],
+                description=embed_description,
                 color=0xFF0000,
-                footer=ipy.EmbedFooter(text=l_["footer"]),
+                footer=ipy.EmbedFooter(text=lang_dict["footer"]),
             )
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
@@ -160,15 +163,18 @@ class Manga(ipy.Extension):
 
     @ipy.component_callback("anilist_manga_search")
     async def anilist_manga_search(self, ctx: ipy.ComponentContext):
+        """Callback for manga search"""
         await ctx.defer()
         entry_id: int = int(ctx.values[0])
         await anilist_submit(ctx, entry_id)
         # grab "message_delete" button
         keep_components: list[ipy.ActionRow] = []
+        if ctx.message is None or ctx.message.components is None:
+            return
         for action_row in ctx.message.components:
-            for comp in action_row.components:
-                if comp.custom_id == "message_delete":
-                    comp.label = "Delete message"
+            for comp in action_row.components:  # type: ignore
+                if comp.custom_id == "message_delete":  # type: ignore
+                    comp.label = "Delete message"  # type: ignore
                     keep_components.append(action_row)
         await ctx.message.edit(components=keep_components)
 
@@ -251,11 +257,19 @@ class Manga(ipy.Extension):
                         media_data = await anibrain.get_light_novel(
                             filter_country=countries,
                         )
-            media_id = int
-            for entry in media_data:
-                if entry.anilistId is not None:
-                    media_id = entry.anilistId
-                    break
+            media_id = media_data[0].anilistId
+            await send.edit(
+                embed=ipy.Embed(
+                    title="Random manga",
+                    description=f"We've found AniList ID [`{media_id}`](https://anilist.co/manga/{media_id}). Fetching info...",
+                    color=0x02A9FF,
+                    footer=ipy.EmbedFooter(
+                        text="This may take a while...",
+                    ),
+                )
+            )
+            await anilist_submit(ctx, media_id)
+        # pylint: disable-next=broad-except
         except Exception as _:
             await send.edit(
                 embed=ipy.Embed(
@@ -265,17 +279,6 @@ class Manga(ipy.Extension):
                 )
             )
             save_traceback_to_file("random_manga", ctx.author, _)
-        await send.edit(
-            embed=ipy.Embed(
-                title="Random manga",
-                description=f"We've found AniList ID [`{media_id}`](https://anilist.co/manga/{media_id}). Fetching info...",
-                color=0x02A9FF,
-                footer=ipy.EmbedFooter(
-                    text="This may take a while...",
-                ),
-            )
-        )
-        await anilist_submit(ctx, media_id)
 
 
 def setup(bot: ipy.Client | ipy.AutoShardedClient):
