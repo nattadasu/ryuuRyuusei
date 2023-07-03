@@ -13,7 +13,7 @@ Notable changes:
 * Removed unassigned variables
 """
 
-from datetime import datetime, timezone
+from datetime import timezone
 
 import interactions as ipy
 from interactions.ext.paginators import Paginator
@@ -33,10 +33,23 @@ class Help(ipy.Extension):
         commands = sorted(self.bot.application_commands,
                           key=lambda x: str(x.name))
 
+        scopes = [[0]]
+
+        if ctx.author_id is not None:
+            scopes.append([ctx.author_id])
+
+        if ctx.guild_id is not None:
+            scopes.append([ctx.guild_id])
+
+        if ctx.channel_id is not None:
+            scopes.append([ctx.channel_id])
+
+        scopes = tuple(scopes)
+
         commands = [
             command
             for command in commands
-            if command.scopes in ([0], [ctx.author.id], [ctx.guild.id])
+            if command.scopes in scopes
         ]
 
         owners = [
@@ -76,7 +89,7 @@ Bot Owners:
                     thumbnail=ipy.EmbedAttachment(
                         url=self.bot.user.avatar.url),
                     fields=listed,
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=ipy.Timestamp.now(timezone.utc),
                 )
             )
 
