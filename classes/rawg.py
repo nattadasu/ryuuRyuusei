@@ -26,9 +26,12 @@ class RawgBaseData:
 
 
 @dataclass
-class EsrbRating(RawgBaseData):
+class EsrbRating:
     """ESRB rating data class"""
 
+    # pylint: disable-next=invalid-name
+    id: int
+    """ID"""
     slug: Literal[
         "everyone",
         "everyone-10-plus",
@@ -44,9 +47,10 @@ class EsrbRating(RawgBaseData):
 
 
 @dataclass
-class PlatformData(RawgBaseData):
+class PlatformData:
     """Each platform data class"""
 
+    # pylint: disable-next=invalid-name
     id: int | None = None
     """ID"""
     slug: str | None = None
@@ -238,7 +242,7 @@ class RawgGameData(RawgBaseData):
     """Rating top"""
     ratings: list[Ratings] | None = None
     """Ratings"""
-    reactions: dict | None = None
+    reactions: dict[str, int | str | None] | None = None
     """Reactions"""
     added: int | None = None
     """Added"""
@@ -331,7 +335,7 @@ class RawgApi:
         Args:
             key (str): RAWG API key, defaults to RAWG_API_KEY
         """
-        if key is None:
+        if key == "":
             raise ProviderHttpError("No API key provided", 401)
         self.base_url = "https://api.rawg.io/api"
         self.params = {"key": key}
@@ -341,18 +345,19 @@ class RawgApi:
         """Enter the async context manager"""
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    # pylint: disable-next=invalid-name
+    async def __aexit__(self, exc_type, exc, tb):  # type: ignore
         """Exit the async context manager"""
         await self.session.close()
 
     # pylint: disable=too-many-branches
     @staticmethod
-    def _convert(data: dict) -> RawgGameData:
+    def _convert(data: dict[str, Any]) -> RawgGameData:
         """
         Convert RAWG API data to RawgGameData class
 
         Args:
-            data (dict): RAWG API data
+            data (dict[str, Any]): RAWG API data
 
         Returns:
             RawgGameData: RawgGameData class
@@ -423,7 +428,7 @@ class RawgApi:
 
         return RawgGameData(**data)
 
-    async def search(self, query: str) -> list[dict]:
+    async def search(self, query: str) -> list[dict[str, Any]]:
         """
         Search game on RAWG
 
@@ -471,6 +476,7 @@ class RawgApi:
         ) as resp:
             if resp.status == 200:
                 rawg_resp = await resp.json()
+                Cache.write_data_to_cache(rawg_resp, cache_file_path)
             else:
                 raise ProviderHttpError(
                     f"RAWG API returned {resp.status}. Reason: {resp.text()}",
@@ -478,5 +484,4 @@ class RawgApi:
                 )
         if len(rawg_resp) == 0:
             raise ProviderTypeError("**No results found!**", dict)
-        Cache.write_data_to_cache(rawg_resp, cache_file_path)
         return self._convert(rawg_resp)

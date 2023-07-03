@@ -65,7 +65,7 @@ class Caching:
         else:
             expirate_time = override_expiration_time
         if os.path.exists(cache_path):
-            with open(cache_path, "r") as f:
+            with open(cache_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 model = CacheModel(**data)
                 age = time.time() - model.timestamp
@@ -74,7 +74,7 @@ class Caching:
         return None
 
     @staticmethod
-    def write_cache(cache_path: str, data) -> None:
+    def write_cache(cache_path: str, data: Any) -> None:
         """
         Write data to a cache file
 
@@ -90,7 +90,7 @@ class Caching:
         """
         os.makedirs(os.path.dirname(cache_path), exist_ok=True)
         model = CacheModel(time.time(), data)
-        with open(cache_path, "w") as f:
+        with open(cache_path, "w", encoding="utf-8") as f:
             json.dump(asdict(model), f)
 
     @staticmethod
@@ -113,7 +113,7 @@ class Caching:
     read_cached_data = read_cache
     """Legacy alias of read_cache"""
 
-    def write_data_to_cache(self, data, cache_path: str) -> None:
+    def write_data_to_cache(self, data: Any, cache_path: str) -> None:
         """
         legacy alias for write_cache by swapping the arguments order
 

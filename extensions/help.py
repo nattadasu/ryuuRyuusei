@@ -29,27 +29,21 @@ class Help(ipy.Extension):
                        description="Get a list of all available commands")
     async def help(self, ctx: ipy.SlashContext) -> None:
         """Get a list of all available commands."""
-        help_list = []
+        help_list: list[ipy.Embed] = []
         commands = sorted(self.bot.application_commands,
                           key=lambda x: str(x.name))
 
-        scopes = [[0]]
-
-        if ctx.author_id is not None:
-            scopes.append([ctx.author_id])
+        scopes = [[0], [ctx.author_id], [ctx.channel_id],]
 
         if ctx.guild_id is not None:
             scopes.append([ctx.guild_id])
-
-        if ctx.channel_id is not None:
-            scopes.append([ctx.channel_id])
 
         scopes = tuple(scopes)
 
         commands = [
             command
             for command in commands
-            if command.scopes in scopes
+            if list(map(int, command.scopes)) in scopes
         ]
 
         owners = [
@@ -57,7 +51,7 @@ class Help(ipy.Extension):
         owners = "\n".join(owners)
 
         for i in range(0, len(commands), 9):
-            listed = []
+            listed: list[ipy.EmbedField] = []
             for command in commands[i: i + 9]:
                 if not isinstance(command, ipy.SlashCommand):
                     continue
@@ -88,14 +82,14 @@ Bot Owners:
                     color=0x7CB7D3,
                     thumbnail=ipy.EmbedAttachment(
                         url=self.bot.user.avatar.url),
-                    fields=listed,
+                    fields=listed,  # type: ignore
                     timestamp=ipy.Timestamp.now(timezone.utc),
                 )
             )
 
         paginator = Paginator.create_from_embeds(
             self.bot, *help_list, timeout=60)
-        await paginator.send(ctx)
+        await paginator.send(ctx)  # type: ignore
 
 
 def setup(bot: ipy.AutoShardedClient) -> None:
