@@ -92,6 +92,7 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
                     error="User hasn't link their account yet",
                 )
                 await ctx.send(embed=embed)
+                return
 
         try:
             async with LastFM() as lfm:
