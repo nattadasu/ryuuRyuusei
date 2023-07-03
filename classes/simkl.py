@@ -7,7 +7,7 @@ This module is a wrapper for Simkl API, which is used to search for anime, shows
 from copy import deepcopy
 from dataclasses import asdict, dataclass
 from enum import Enum
-from typing import List, Literal, Any
+from typing import Any, List, Literal
 from urllib.parse import quote
 
 import aiohttp
@@ -246,7 +246,8 @@ class Simkl:
                 "Unauthorized, please fill Client ID before using this module", 401)
         self.base_url = "https://api.simkl.com"
         self.params = {"client_id": self.client_id}
-        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
+        self.session = aiohttp.ClientSession(
+            headers={"User-Agent": USER_AGENT})
 
     async def __aenter__(self):
         """Enter the async context manager"""
