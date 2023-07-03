@@ -1,3 +1,5 @@
+"""LastFM API wrapper"""
+
 from dataclasses import dataclass
 from json import loads
 from typing import Any, Literal
@@ -212,11 +214,11 @@ class LastFM:
             if resp.status != 200:
                 raise ProviderHttpError(
                     f"Last.fm API returned {resp.status}. Reason: {resp.text()}", resp.status, )
-            jsonText = await resp.text()
-            jsonFinal = loads(jsonText)
-            ud = jsonFinal["user"]
-        ud = self.user_dict_to_dataclass(ud)
-        return ud
+            json_text = await resp.text()
+            json_final = loads(json_text)
+            udb = json_final["user"]
+        udb = self.user_dict_to_dataclass(udb)
+        return udb
 
     async def get_user_recent_tracks(
         self, username: str, maximum: int = 9
@@ -240,13 +242,7 @@ class LastFM:
         }
         params.update(self.params)
         async with self.session.get(self.base_url, params=params) as resp:
-            jsonText = await resp.text()
-            if resp.status == 404:
-                raise ProviderHttpError(
-                    "User can not be found on Last.fm. Check the name or register?", 404)
-            if resp.status != 200:
-                raise ProviderHttpError(
-                    f"Last.fm API returned {resp.status}. Reason: {resp.text()}", resp.status, )
+            json_text = await resp.text()
             match resp.status:
                 case 403:
                     raise ProviderHttpError(
@@ -259,10 +255,10 @@ class LastFM:
                 case _:
                     if resp.status != 200:
                         raise ProviderHttpError(
-                            f"Last.fm API returned {resp.status}. Reason: {resp.text()}",
+                            f"Last.fm API returned {resp.status}. Reason: {json_text}",
                             resp.status)
-            jsonFinal = loads(jsonText)
-            scb = jsonFinal["recenttracks"]["track"]
+            json_final = loads(json_text)
+            scb = json_final["recenttracks"]["track"]
             scb = [self.track_dict_to_dataclass(data=track) for track in scb]
         if len(scb) > maximum:
             scb = scb[:maximum]
