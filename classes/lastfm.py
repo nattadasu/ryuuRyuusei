@@ -247,6 +247,20 @@ class LastFM:
             if resp.status != 200:
                 raise ProviderHttpError(
                     f"Last.fm API returned {resp.status}. Reason: {resp.text()}", resp.status, )
+            match resp.status:
+                case 403:
+                    raise ProviderHttpError(
+                        "Either user's profile or recent track history set to private",
+                        403)
+                case 404:
+                    raise ProviderHttpError(
+                        "User can not be found on Last.fm. Check the name or register?",
+                        404)
+                case _:
+                    if resp.status != 200:
+                        raise ProviderHttpError(
+                            f"Last.fm API returned {resp.status}. Reason: {resp.text()}",
+                            resp.status)
             jsonFinal = loads(jsonText)
             scb = jsonFinal["recenttracks"]["track"]
             scb = [self.track_dict_to_dataclass(data=track) for track in scb]
