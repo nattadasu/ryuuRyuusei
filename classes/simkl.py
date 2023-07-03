@@ -330,7 +330,7 @@ class Simkl:
         page: int = 1,
         limit: int = 10,
         extended: bool = False,
-    ) -> dict[str, Any]:
+    ) -> list[dict[str, Any]]:
         """
         Search by title
 
@@ -345,7 +345,7 @@ class Simkl:
             ProviderHttpError: If response status is not 200
 
         Returns:
-            dict: Response from Simkl API
+            list[dict[str, Any]]: Response from Simkl API
         """
         params: dict[str, Any] = deepcopy(self.params)
         params["q"] = quote(title)
