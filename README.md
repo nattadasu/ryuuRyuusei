@@ -29,7 +29,43 @@ Ryuuzaki Ryuusei. 🚀
 
 <!-- markdownlint-enable MD013 -->
 
-## 🧐 About <a name = "about"></a>
+<!-- omit in toc -->
+## 📃 Table of Contents
+
+- [🧐 About](#-about)
+- [🌟 Featured On](#-featured-on)
+- [🎈 Usage](#-usage)
+- [🚀 Features](#-features)
+- [📣 Available Commands](#-available-commands)
+  - [Commons Bot Commands](#commons-bot-commands)
+  - [Anime Commands](#anime-commands)
+  - [Manga Commands](#manga-commands)
+  - [Game Commands](#game-commands)
+  - [TV and Movie Commands](#tv-and-movie-commands)
+  - [Music Commands](#music-commands)
+  - [External Link Relation Command](#external-link-relation-command)
+  - [Platform Specific Commands](#platform-specific-commands)
+  - [Data Control](#data-control)
+  - [Settings Commands](#settings-commands)
+  - [Randomization Commands](#randomization-commands)
+  - [Utility Commands](#utility-commands)
+  - [Conversion Commands](#conversion-commands)
+  - [Images: Cat Ears (Nekomimi) Commands](#images-cat-ears-nekomimi-commands)
+  - [Japanese Commands](#japanese-commands)
+  - [Dictionary Commands](#dictionary-commands)
+- [🏁 Getting Started](#-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Cloning the Repository](#cloning-the-repository)
+  - [Setting up a Virtual Environment](#setting-up-a-virtual-environment)
+  - [Installing Dependencies](#installing-dependencies)
+  - [Running the Bot](#running-the-bot)
+- [🛠️ Development](#️-development)
+- [⛏️ Built Using](#️-built-using)
+- [✍️ Authors](#️-authors)
+- [🎉 Acknowledgements](#-acknowledgements)
+- [🌟 Stargazers](#-stargazers)
+
+## 🧐 About
 
 Are you a fan of anime, manga, games, TV shows, and movies? Do you want to find
 a Discord bot that can help you look up your profile from Discord without going
@@ -68,7 +104,7 @@ By inviting this bot to your server or using it, you agree to the
 > and may have bugs. If you find any bugs, please report it to GitHub Issues or
 > on the support server.
 
-## 🌟 Featured On <a name = "featured_on"></a>
+## 🌟 Featured On
 
 <p align=center>
 <a href="https://top.gg/bot/811887256368840744">
@@ -76,7 +112,7 @@ By inviting this bot to your server or using it, you agree to the
 </a>
 </p>
 
-## 🎈 Usage <a name = "usage"></a>
+## 🎈 Usage
 
 To use the bot, invite it to your server by pressing this button:
 
@@ -95,7 +131,7 @@ command, although it may limit your experience using it.
 If you have any questions, feel free to join the
 [support server](https://nttds.my.id/discord) and ask there.
 
-## 🚀 Features <a name = "features"></a>
+## 🚀 Features
 
 > This also will be our to-do list for the bot. :3
 
@@ -133,7 +169,7 @@ If you have any questions, feel free to join the
 
 [^1]: The random seed was generated using UUID4 and truncated to 32 bits (`pandas` couldn't able to get a sample using a seed above 32 bits unfortunately), and this seed generation happened ***everytime*** user invoked command. I can not guarantee the randomness as it is not the true random as in cryptographically secure random, but it's good enough that you should have hard time to get the same result twice in a row.
 
-## 📣 Available Commands <a name = "commands"></a>
+## 📣 Available Commands
 
 | Emoji | Legend Description                                                |
 | :---: | :---------------------------------------------------------------- |
@@ -215,22 +251,27 @@ If you have any questions, feel free to join the
 
 > Show your profile from other platforms
 
+<!-- omit in toc -->
 #### AniList
 
 - `/anilist profile` - Get your AniList profile
 
+<!-- omit in toc -->
 #### Discord
 
 - `/discord profile` - Get your Discord profile
 
+<!-- omit in toc -->
 #### Last.fm
 
 - `/lastfm profile` - Get your Last.fm profile
 
+<!-- omit in toc -->
 #### MyAnimeList
 
 - `/myanimelist profile` - Get your MyAnimeList profile
 
+<!-- omit in toc -->
 #### Shikimori
 
 - `/shikimori profile` - Get your Shikimori profile
@@ -251,6 +292,7 @@ If you have any questions, feel free to join the
 
 ### Settings Commands
 
+<!-- omit in toc -->
 #### User Settings
 
 - `/usersettings language list` - List all available languages for the bot
@@ -258,6 +300,7 @@ If you have any questions, feel free to join the
 - 👁️ `/usersettings language set` - Set your preferred language for the bot
   response
 
+<!-- omit in toc -->
 #### Server Settings
 
 - 👮 `/serversettings language set` - Set your preferred language for the bot
@@ -268,6 +311,7 @@ If you have any questions, feel free to join the
   receiving verification code from either `/serversettings member register` or
   `/register` command, used when user can't invoke `/register`
 
+<!-- omit in toc -->
 #### Host/Admin Settings
 
 > These commands are only available for bot host staff in current configured
@@ -328,13 +372,14 @@ If you have any questions, feel free to join the
 
 > Search a term from known dictionary!
 
+<!-- omit in toc -->
 #### Urban Dictionary
 
 - 🫦⌚ `/urban search` - Search a term from Urban Dictionary
 - 🫦⌚ `/urban wotd` - Get a word of the day from Urban Dictionary
 - 🫦⌚ `/urban random` - Get a random word from Urban Dictionary
 
-## 🏁 Getting Started <a name = "getting_started"></a>
+## 🏁 Getting Started
 
 ### Prerequisites
 
@@ -463,14 +508,14 @@ pip install aiohttp langcodes pyyaml pandas
 
 Congratulations! You have successfully set up and launched the Discord bot.
 
-## 🛠️ Development <a name = "development"></a>
+## 🛠️ Development
 
 You can contribute to the bot by forking the repository, making changes, and
 submitting a pull request.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 
-## ⛏️ Built Using <a name = "built_using"></a>
+## ⛏️ Built Using
 
 <!-- markdownlint-disable MD013 -->
 | Service/Package/Module Name                                           | FOSS?           | Scope                                       | Type              | Description                                                                                 |
@@ -510,14 +555,14 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 | [`validators`](https://pypi.org/project/validators/)                  | MIT             | Utility                                     | Module            | Used for validating strings                                                                 |
 <!-- markdownlint-enable MD013 -->
 
-## ✍️ Authors <a name = "authors"></a>
+## ✍️ Authors
 
 - [@nattadasu](https://github.com/nattadasu) - Idea & Initial work
 
 See also the list of [contributors](https://github.com/nattadasu/ryuuRyuusei/contributors)
 who participated in this project.
 
-## 🎉 Acknowledgements <a name = "acknowledgement"></a>
+## 🎉 Acknowledgements
 
 - Karasian, for creating the verification bot for The Newbie Club Discord server
 - Lacrima, YubiYuub, and Mental Illness, for helping me with the bot
@@ -529,3 +574,11 @@ who participated in this project.
 - *And finally, a honorable mention to PowerShell, because it's literally my*
   *real first scripting language I learned, and because of it, I can create*
   *this bot in python... somehow, cough cough.*
+
+## 🌟 Stargazers
+
+<!-- markdownlint-disable MD013 -->
+<!-- [![Stargazers over time](https://starchart.cc/nattadasu/ryuuRyuusei.svg)](https://starchart.cc/nattadasu/ryuuRyuusei) -->
+<!-- markdownlint-enable MD013 -->
+
+[![Star History Chart](https://api.star-history.com/svg?repos=nattadasu/ryuuRyuusei&type=Date)](https://star-history.com/#nattadasu/ryuuRyuusei&Date)
