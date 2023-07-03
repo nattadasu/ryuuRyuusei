@@ -46,6 +46,7 @@ class AniListImageStruct:
     """Medium image URL"""
     large: str | None = None
     """Large image URL"""
+    # pylint: disable-next=invalid-name
     extraLarge: str | None = None
     """Extra large image URL"""
     color: str | None = None
@@ -56,12 +57,15 @@ class AniListImageStruct:
 class AniListTagsStruct:
     """AniList tags dataclass"""
 
+    # pylint: disable-next=invalid-name
     id: int
     """Tag ID"""
     name: str
     """Tag name"""
+    # pylint: disable-next=invalid-name
     isMediaSpoiler: bool | None = None
     """Whether the tag is a spoiler for this media"""
+    # pylint: disable-next=invalid-name
     isAdult: bool | None = None
     """Whether the tag is only for adult 18+ media"""
 
@@ -70,6 +74,7 @@ class AniListTagsStruct:
 class AniListTrailerStruct:
     """AniList trailer dataclass"""
 
+    # pylint: disable-next=invalid-name
     id: str | None = None
     """Trailer ID"""
     site: str | None = None
@@ -80,12 +85,15 @@ class AniListTrailerStruct:
 class AniListMediaStruct:
     """AniList media dataclass"""
 
+    # pylint: disable-next=invalid-name
     id: int
     """Media ID"""
+    # pylint: disable-next=invalid-name
     idMal: int | None = None
     """MyAnimeList ID"""
     title: AniListTitleStruct | None = None
     """Media title object"""
+    # pylint: disable-next=invalid-name
     isAdult: bool | None = None
     """Whether the media is 18+"""
     format: Literal[
@@ -103,34 +111,42 @@ class AniListMediaStruct:
     """Media format"""
     description: str | None = None
     """Media description"""
+    # pylint: disable-next=invalid-name
     isAdult: bool | None = None
     """Whether the media is 18+"""
     synonyms: list[str | None] | None = None
     """Media synonyms"""
+    # pylint: disable-next=invalid-name
     startDate: AniListDateStruct | None = None
     """Media start date"""
+    # pylint: disable-next=invalid-name
     endDate: AniListDateStruct | None = None
     """Media end date"""
     status: Literal[
         "FINISHED", "RELEASING", "NOT_YET_RELEASED", "CANCELLED", "HIATUS"
     ] | None = None
     """Media release status"""
+    # pylint: disable-next=invalid-name
     coverImage: AniListImageStruct | None = None
     """Media cover/poster/visual key image object"""
+    # pylint: disable-next=invalid-name
     bannerImage: str | None = None
     """Media banner image URL"""
     genres: list[str | None] | None = None
     """Media genres"""
     tags: list[AniListTagsStruct] | None = None
     """Media tags/themes"""
+    # pylint: disable-next=invalid-name
     averageScore: int | None = None
     """Media weighted average score"""
+    # pylint: disable-next=invalid-name
     meanScore: int | None = None
     """Media mean score"""
     stats: dict[str, list[dict[str, Any] | None]] | None = None
     """Media statistics, doesn't set as dataclass because it's a nested dictionary"""
     trailer: AniListTrailerStruct | None = None
     """Media trailer object"""
+    # pylint: disable-next=invalid-name
     siteUrl: str | None = None
     """Media AniList URL"""
     chapters: int | None = None
@@ -161,6 +177,7 @@ class AniListStatisticBase:
 
     count: int | None = None
     """Statistic count"""
+    # pylint: disable-next=invalid-name
     meanScore: int | None = None
     """Statistic mean score"""
     statuses: list[AniListStatusBase] | None = None
@@ -171,8 +188,10 @@ class AniListStatisticBase:
 class AniListAnimeStatistic(AniListStatisticBase):
     """AniList anime statistic dataclass"""
 
+    # pylint: disable-next=invalid-name
     minutesWatched: int | None = None
     """Minutes watched"""
+    # pylint: disable-next=invalid-name
     episodesWatched: int | None = None
     """Episodes watched"""
 
@@ -181,8 +200,10 @@ class AniListAnimeStatistic(AniListStatisticBase):
 class AniListMangaStatistic(AniListStatisticBase):
     """AniList manga statistic dataclass"""
 
+    # pylint: disable-next=invalid-name
     chaptersRead: int | None = None
     """Chapters read"""
+    # pylint: disable-next=invalid-name
     volumesRead: int | None = None
     """Volumes read"""
 
@@ -224,22 +245,28 @@ class AniListUserFavoriteStruct:
 class AniListUserStruct:
     """AniList user dataclass"""
 
+    # pylint: disable-next=invalid-name
     id: int
     """User ID"""
     name: str
     """User name"""
     about: str | None = None
     """User about/bio"""
+    # pylint: disable-next=invalid-name
     siteUrl: str | None = None
     """User AniList URL"""
     avatar: AniListImageStruct | None = None
     """User avatar image object"""
+    # pylint: disable-next=invalid-name
     bannerImage: str | None = None
     """User banner image URL"""
+    # pylint: disable-next=invalid-name
     donatorTier: int | None = None
     """User donator tier"""
+    # pylint: disable-next=invalid-name
     donatorBadge: str | None = None
     """User donator badge"""
+    # pylint: disable-next=invalid-name
     createdAt: datetime | None = None
     """User creation date"""
     statistics: AniListUserStatisticStruct | None = None
@@ -253,7 +280,7 @@ class AniList:
     def __init__(self):
         """Initialize the AniList API Wrapper"""
         self.base_url = "https://graphql.anilist.co"
-        self.session = None
+        self.session = ClientSession()
         self.headers = None
         self.access_token = ANILIST_ACCESS_TOKEN
 
@@ -271,10 +298,9 @@ class AniList:
             print(
                 "[API] [AniList] [WARNING] Access token has expired, please refresh it, otherwise bot won't show NSFW content"
             )
-        self.session = ClientSession()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:  # type: ignore
         """Close the session"""
         await self.close()
 
@@ -289,7 +315,7 @@ class AniList:
         MANGA = "MANGA"
 
     @staticmethod
-    def _media_dict_to_dataclass(data: dict):
+    def _media_dict_to_dataclass(data: dict[str, Any]):
         """Format returned dictionary from AniList to its proper dataclass"""
         data["title"] = AniListTitleStruct(
             **data["title"]) if data["title"] else None
@@ -317,12 +343,12 @@ class AniList:
             data["tags"] = [AniListTagsStruct(**tag) for tag in data["tags"]]
         return AniListMediaStruct(**data)
 
-    def _user_dict_to_dataclass(self, data: dict) -> AniListUserStruct:
+    def _user_dict_to_dataclass(self, data: dict[str, Any]) -> AniListUserStruct:
         """
         Format returned dictionary from AniList to its proper dataclass
 
         Args:
-            data (dict): Dictionary to format
+            data (dict[str, Any]): Dictionary to format
 
         Returns:
             AniListUserStruct: Formatted dataclass
@@ -415,10 +441,11 @@ class AniList:
 }}"""
         async with self.session.post(self.base_url, json={"query": query}) as response:
             try:
-                data: dict = await response.json()
-            except Exception as e:
-                raise ProviderHttpError(str(e), response.status)
-            errors: list = data.get("errors", None)
+                data: dict[str, Any] = await response.json()
+            # pylint: disable-next=broad-except
+            except Exception as err:
+                raise ProviderHttpError(str(err), response.status) from err
+            errors: list[dict[str, Any]] = data.get("errors", None)
             if errors is not None:
                 err_strings: str = "\n".join(
                     [
@@ -506,10 +533,10 @@ class AniList:
             self.base_url, json={"query": gqlquery}
         ) as response:
             try:
-                data: dict = await response.json()
-            except Exception as e:
-                raise ProviderHttpError(str(e), response.status)
-            errors: list = data.get("errors", None)
+                data: dict[str, Any] = await response.json()
+            except Exception as err:
+                raise ProviderHttpError(str(err), response.status) from err
+            errors: list[dict[str, Any]] = data.get("errors", None)
             if errors is not None:
                 err_strings: str = "\n".join(
                     [
@@ -594,10 +621,10 @@ class AniList:
             self.base_url, json={"query": gqlquery}
         ) as response:
             try:
-                data: dict = await response.json()
-            except Exception as e:
-                raise ProviderHttpError(str(e), response.status)
-            errors: list = data.get("errors", None)
+                data: dict[str, Any] = await response.json()
+            except Exception as err:
+                raise ProviderHttpError(str(err), response.status) from err
+            errors: list[dict[str, Any]] = data.get("errors", None)
             if errors is not None:
                 err_strings: str = "\n".join(
                     [
@@ -703,10 +730,10 @@ class AniList:
             self.base_url, json={"query": gqlquery}
         ) as response:
             try:
-                data: dict = await response.json()
-            except Exception as e:
-                raise ProviderHttpError(str(e), response.status)
-            errors: list = data.get("errors", None)
+                data: dict[str, Any] = await response.json()
+            except Exception as err:
+                raise ProviderHttpError(str(err), response.status) from err
+            errors: list[dict[str, Any]] = data.get("errors", None)
             if errors is not None:
                 err_strings: str = "\n".join(
                     [
@@ -731,7 +758,7 @@ class AniList:
         query: str,
         limit: int = 10,
         media_type: Literal["ANIME", "MANGA"] | MediaType = MediaType.MANGA,
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
         """
         Search anime by its title
 
@@ -745,7 +772,7 @@ class AniList:
             ProviderHttpError: Raised when the HTTP request fails
 
         Returns:
-            list[dict]: The search results
+            list[dict[str, Any]]: The search results
         """
         if limit > 10:
             raise ProviderTypeError(
@@ -781,10 +808,10 @@ class AniList:
             self.base_url, json={"query": gqlquery, "variables": variables}
         ) as response:
             try:
-                data: dict = await response.json()
-            except Exception as e:
-                raise ProviderHttpError(str(e), response.status)
-            errors: list = data.get("errors", None)
+                data: dict[str, Any] = await response.json()
+            except Exception as err:
+                raise ProviderHttpError(str(err), response.status) from err
+            errors: list[dict[str, Any]] = data.get("errors", None)
             if errors is not None:
                 err_strings: str = "\n".join(
                     [
