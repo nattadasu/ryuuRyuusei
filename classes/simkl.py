@@ -7,7 +7,7 @@ This module is a wrapper for Simkl API, which is used to search for anime, shows
 from copy import deepcopy
 from dataclasses import asdict, dataclass
 from enum import Enum
-from typing import List, Literal
+from typing import List, Literal, Any
 from urllib.parse import quote
 
 import aiohttp
@@ -78,7 +78,7 @@ class SimklRelations:
     wikijp: str | int | None = None
     """Japanese Wikipedia ID"""
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert the dataclass to a dictionary"""
         return asdict(self)
 
@@ -241,20 +241,18 @@ class Simkl:
             client_id (str): Client ID for SIMKL API, defaults to SIMKL_CLIENT_ID
         """
         self.client_id = client_id
-        if client_id is None:
+        if client_id == "":
             raise ProviderHttpError(
                 "Unauthorized, please fill Client ID before using this module", 401)
         self.base_url = "https://api.simkl.com"
         self.params = {"client_id": self.client_id}
-        self.session = None
+        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
 
     async def __aenter__(self):
         """Enter the async context manager"""
-        self.session = aiohttp.ClientSession(
-            headers={"User-Agent": USER_AGENT})
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:  # type: ignore
         """Exit the async context manager"""
         await self.session.close()
 
@@ -290,7 +288,7 @@ class Simkl:
         provider: Provider | str,
         media_id: int | str,
         media_type: TmdbMediaTypes | Literal["show", "movie"] | None = None,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """
         Search by ID
 
@@ -306,7 +304,7 @@ class Simkl:
         Returns:
             dict: Response from Simkl API
         """
-        params = deepcopy(self.params)
+        params: dict[str, Any] = deepcopy(self.params)
         if isinstance(provider, self.Provider):
             provider = provider.value
         if provider == self.Provider.TMDB and not media_type:
@@ -331,7 +329,7 @@ class Simkl:
         page: int = 1,
         limit: int = 10,
         extended: bool = False,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """
         Search by title
 
@@ -348,7 +346,7 @@ class Simkl:
         Returns:
             dict: Response from Simkl API
         """
-        params = deepcopy(self.params)
+        params: dict[str, Any] = deepcopy(self.params)
         params["q"] = quote(title)
         if extended:
             params["extended"] = "full"
@@ -365,7 +363,7 @@ class Simkl:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def get_show(self, media_id: int | str) -> dict:
+    async def get_show(self, media_id: int | str) -> dict[str, Any]:
         """
         Get show by ID
 
@@ -395,7 +393,7 @@ class Simkl:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def get_movie(self, media_id: int | str) -> dict:
+    async def get_movie(self, media_id: int | str) -> dict[str, Any]:
         """
         Get movie by ID
 
@@ -425,7 +423,7 @@ class Simkl:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def get_anime(self, media_id: int | str) -> dict:
+    async def get_anime(self, media_id: int | str) -> dict[str, Any]:
         """
         Get anime by ID
 
@@ -469,7 +467,7 @@ class Simkl:
         rating_limit: int | None = None,
         rating_from: int = 0,
         rating_to: int = 10,
-    ) -> dict | List[dict] | None:
+    ) -> dict[str, Any] | List[dict[str, Any]] | None:
         """
         Get random title, based on filters
 
@@ -488,7 +486,7 @@ class Simkl:
         Returns:
             dict | List[dict] | None: Response from Simkl API
         """
-        params = deepcopy(self.params)
+        params: dict[str, Any] = deepcopy(self.params)
         if isinstance(media_type, SimklMediaTypes):
             media_type = media_type.value
         if media_type == "show":
@@ -503,6 +501,8 @@ class Simkl:
                         genre = SimklMovieGenre(genre)
                     case "tv":
                         genre = SimklTvGenre(genre)
+                    case _:
+                        raise ValueError("Invalid media type")
             params["genre"] = genre.value
         if year_from:
             params["year_from"] = year_from
@@ -594,8 +594,8 @@ class Simkl:
         nullrels = asdict(SimklRelations())
 
         mids = {**nullrels, **data.get("ids", {})}
-        for k, v in mids.items():
-            if k in [
+        for key, value in mids.items():
+            if key in [
                 "title",
                 "slug",
                 "animeplanet",
@@ -608,14 +608,14 @@ class Simkl:
                 "wikijp",
             ]:
                 continue
-            if isinstance(v, str) and v.isdigit():
-                mids[k] = int(v)
+            if isinstance(value, str) and value.isdigit():
+                mids[key] = int(value)
         keys = ["title", "poster", "fanart", "anime_type", "type"]
-        for k in keys:
-            if k == "anime_type":
-                mids["anitype"] = data.get(k, None)
+        for key in keys:
+            if key == "anime_type":
+                mids["anitype"] = data.get(key, None)
                 continue
-            mids[k] = data.get(k, None)
+            mids[key] = data.get(key, None)
         Cache.write_data_to_cache(mids, cache_file_path)
         relations = SimklRelations(
             title=mids["title"],
