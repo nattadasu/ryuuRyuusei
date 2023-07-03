@@ -1,3 +1,5 @@
+"""RAWG API Wrapper"""
+
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -14,6 +16,7 @@ from modules.const import RAWG_API_KEY, USER_AGENT
 class RawgBaseData:
     """Rawg base data class"""
 
+    # pylint: disable-next=invalid-name
     id: int
     """ID"""
     slug: str
@@ -110,6 +113,7 @@ class TagData(RawgBaseData):
 class Stores:
     """Stores data class"""
 
+    # pylint: disable-next=invalid-name
     id: int | None = None
     """ID"""
     store: StoreData | None = None
@@ -175,6 +179,7 @@ class MetacriticPlatforms:
 class Ratings:
     """Ratings data class"""
 
+    # pylint: disable-next=invalid-name
     id: int | None = None
     """ID"""
     title: str | None = None
@@ -330,17 +335,17 @@ class RawgApi:
             raise ProviderHttpError("No API key provided", 401)
         self.base_url = "https://api.rawg.io/api"
         self.params = {"key": key}
-        self.session = None
+        self.session = ClientSession(headers={"User-Agent": USER_AGENT})
 
     async def __aenter__(self):
         """Enter the async context manager"""
-        self.session = ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
         """Exit the async context manager"""
-        await self.close()
+        await self.session.close()
 
+    # pylint: disable=too-many-branches
     @staticmethod
     def _convert(data: dict) -> RawgGameData:
         """
@@ -432,13 +437,13 @@ class RawgApi:
             list[dict]: Game data
         """
         # deep copy the params
-        params = deepcopy(self.params)
+        params: dict[str, Any] = deepcopy(self.params)
         params["search"] = query
         params["page_size"] = 5
         async with self.session.get(self.base_url + "/games", params=params) as resp:
             if resp.status == 200:
-                rawgRes = await resp.json()
-                return rawgRes["results"]
+                rawg_resp = await resp.json()
+                return rawg_resp["results"]
             raise ProviderHttpError(
                 f"RAWG API returned {resp.status}. Reason: {resp.text()}",
                 resp.status)
@@ -465,17 +470,13 @@ class RawgApi:
             f"https://api.rawg.io/api/games/{slug}", params=self.params
         ) as resp:
             if resp.status == 200:
-                rawgRes = await resp.json()
+                rawg_resp = await resp.json()
             else:
                 raise ProviderHttpError(
                     f"RAWG API returned {resp.status}. Reason: {resp.text()}",
                     resp.status,
                 )
-        if len(rawgRes) == 0:
+        if len(rawg_resp) == 0:
             raise ProviderTypeError("**No results found!**", dict)
-        Cache.write_data_to_cache(rawgRes, cache_file_path)
-        return self._convert(rawgRes)
-
-    async def close() -> None:
-        """Close session"""
-        await self.session.close()
+        Cache.write_data_to_cache(rawg_resp, cache_file_path)
+        return self._convert(rawg_resp)
