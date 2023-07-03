@@ -979,6 +979,8 @@ class JikanApi:
             return self.anime_dict_to_dataclass(res)
         # pylint: disable-next=broad-except
         except Exception as error:
-            errcode: int = error.status_code if hasattr(error, "status_code") else 418
-            errmsg: str | dict = error.message if hasattr(error, "message") else error
+            errcode: int = error.status_code if hasattr(
+                error, "status_code") else 418
+            errmsg: str | dict = error.message if hasattr(
+                error, "message") else error
             define_jikan_exception(errcode, errmsg)

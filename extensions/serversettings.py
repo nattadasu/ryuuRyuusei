@@ -334,7 +334,6 @@ class ServerSettings(ipy.Extension):
             await ctx.send(embed=embed)
             return
 
-
         async with UserDatabase() as udb:
             await udb.save_to_database(
                 UserDatabaseClass(
