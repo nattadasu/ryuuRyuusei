@@ -36,4 +36,6 @@
   "python.analysis.diagnosticSeverityOverrides": {
     "reportUnknownMemberType": "none"
   },
+  "markdown.extension.toc.unorderedList.marker": "-",
+  "markdown.extension.toc.updateOnSave": true
 }
