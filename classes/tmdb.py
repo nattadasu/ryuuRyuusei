@@ -67,7 +67,7 @@ class TheMovieDb:
         if isinstance(media_type, self.MediaType):
             media_type = media_type.value
         cache_file_path = Cache.get_cache_path(
-            f"{media_type.value}/{media_id}.json")
+            f"{media_type}/{media_id}.json")
         cached_data = Cache.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data
