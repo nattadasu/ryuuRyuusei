@@ -130,7 +130,8 @@ class LastFM:
 
     async def close(self):
         """Close the aiohttp session"""
-        await self.session.close()
+        if self.session:
+            await self.session.close()
 
     @staticmethod
     def track_dict_to_dataclass(data: dict[str, Any]) -> LastFMTrackStruct:
@@ -207,6 +208,8 @@ class LastFM:
             "user": username,
         }
         params.update(self.params)
+        if not self.session:
+            raise RuntimeError("Session is not initialized")
         async with self.session.get(self.base_url, params=params) as resp:
             if resp.status == 404:
                 raise ProviderHttpError(
@@ -241,6 +244,8 @@ class LastFM:
             "limit": maximum,
         }
         params.update(self.params)
+        if not self.session:
+            raise RuntimeError("Session is not initialized")
         async with self.session.get(self.base_url, params=params) as resp:
             json_text = await resp.text()
             match resp.status:

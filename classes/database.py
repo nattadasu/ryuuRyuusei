@@ -34,7 +34,7 @@ class UserDatabaseClass:
     """User's AniList ID"""
     anilist_username: Optional[str] = None
     """User's AniList username, as a fallback if ID is unreachable"""
-    lastfm_username: Optional[int] = None
+    lastfm_username: Optional[str] = None
     """User's Last.fm username"""
     mal_username: Optional[str] = None
     """User's MyAnimeList username, as a fallback if ID is unreachable"""
