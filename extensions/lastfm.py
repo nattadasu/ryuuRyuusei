@@ -1,13 +1,14 @@
 """Last.FM extension for interacting with Last.FM API"""
 
-from urllib.parse import quote_plus as urlquote
 from typing import Any
+from urllib.parse import quote_plus as urlquote
 
 import interactions as ipy
 
 from classes.database import DatabaseException, UserDatabase
 from classes.excepts import ProviderHttpError
-from classes.lastfm import LastFM, LastFMTrackStruct, LastFMUserStruct, LastFMReleaseStruct
+from classes.lastfm import (LastFM, LastFMReleaseStruct, LastFMTrackStruct,
+                            LastFMUserStruct)
 from modules.commons import (PlatformErrType, generate_commons_except_embed,
                              platform_exception_embed, sanitize_markdown,
                              save_traceback_to_file)
@@ -77,7 +78,8 @@ class LastFmCog(ipy.Extension):
         """
         await ctx.defer()
         user_lang = read_user_language(ctx)
-        lang_dict: dict[str, Any] = fetch_language_data(user_lang, use_raw=True)
+        lang_dict: dict[str, Any] = fetch_language_data(
+            user_lang, use_raw=True)
 
         if lfm_username and user:
             embed = platform_exception_embed(

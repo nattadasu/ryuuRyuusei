@@ -1,6 +1,7 @@
 from typing import Any
 
 import interactions as ipy
+
 from modules.commons import (generate_commons_except_embed,
                              save_traceback_to_file)
 from modules.discord import generate_discord_profile_embed
