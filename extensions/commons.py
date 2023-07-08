@@ -3,11 +3,11 @@ import re
 from datetime import datetime as dtime
 from datetime import timezone as tz
 from time import perf_counter as pc
+from typing import Any
 
 import interactions as ipy
 from aiohttp import __version__ as aiohttp_version
 
-from classes.i18n import LanguageDict
 from modules.const import (AUTHOR_USERNAME, BOT_CLIENT_ID, BOT_SUPPORT_SERVER,
                            EMOJI_SUCCESS, USER_AGENT, database, gittyHash,
                            gtHsh, ownerUserUrl)
@@ -37,7 +37,7 @@ class CommonCommands(ipy.Extension):
                        description="Get information about the bot")
     async def about(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["about"]
+        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["about"]
         authors = ""
         for u in self.bot.owners:
             authors += f"* {u.username} (<@!{u.id}>)\n"
@@ -89,7 +89,7 @@ class CommonCommands(ipy.Extension):
     async def ping(self, ctx: ipy.SlashContext):
         start = pc()
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["ping"]
+        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["ping"]
         langEnd = pc()
         send = await ctx.send(
             "",
@@ -163,7 +163,7 @@ class CommonCommands(ipy.Extension):
     @ipy.slash_command(name="invite", description="Get the bot invite link")
     async def invite(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["invite"]
+        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["invite"]
         invLink = f"https://discord.com/api/oauth2/authorize?client_id={BOT_CLIENT_ID}&permissions=274878221376&scope=bot%20applications.commands"
         dcEm = ipy.Embed(
             title=l_["title"],
@@ -203,7 +203,7 @@ class CommonCommands(ipy.Extension):
                        description="Get the bot's tl;dr version of privacy policy")
     async def privacy(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["privacy"]
+        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["privacy"]
         butt = ipy.Button(
             label=l_["read"],
             url="https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md",
@@ -222,7 +222,7 @@ class CommonCommands(ipy.Extension):
     )
     async def support(self, ctx: ipy.SlashContext):
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["support"]
+        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["support"]
         txt: str = l_["text"]
         em = ipy.Embed(
             title=l_["title"],

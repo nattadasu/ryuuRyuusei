@@ -72,7 +72,7 @@ class Games(ipy.Extension):
                 ]
             result_embed = generate_search_embed(
                 language=ul,
-                mediaType="manga",
+                media_type="manga",
                 query=query,
                 platform="RAWG",
                 homepage="https://rawg.io",

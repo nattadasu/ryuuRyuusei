@@ -8,7 +8,7 @@ Contains:
 
 from datetime import datetime as dtime
 from datetime import timezone as tz
-from typing import Literal
+from typing import Any, Literal
 from urllib.parse import quote
 
 import interactions as ipy
@@ -16,7 +16,6 @@ import interactions as ipy
 from classes.database import DatabaseException, UserDatabase
 from classes.excepts import ProviderHttpError
 from classes.html.myanimelist import HtmlMyAnimeList
-from classes.i18n import LanguageDict
 from classes.jikan import JikanApi, JikanException
 from classes.rss.myanimelist import MediaStatus
 from classes.rss.myanimelist import MyAnimeListRss as Rss
@@ -106,7 +105,7 @@ class MyAnimeListCog(ipy.Extension):
             Layout of the embed, by default "minimal"
         """
         await ctx.defer()
-        lang_dict: LanguageDict = fetch_language_data("en_US", True)
+        lang_dict: dict[str, Any] = fetch_language_data("en_US", True)
 
         if mal_username and user:
             embed = platform_exception_embed(

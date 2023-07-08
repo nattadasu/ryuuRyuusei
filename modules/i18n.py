@@ -8,6 +8,7 @@ All language files are stored in the i18n folder. Strings to change and view lan
 import csv
 from json import load
 from json import loads as jlo
+from typing import Any
 
 import pandas as pd
 from fuzzywuzzy import fuzz
@@ -15,11 +16,10 @@ from interactions import (AutoShardedClient, BaseContext, Embed, EmbedField,
                           InteractionContext)
 from interactions.ext.paginators import Paginator
 
-from classes.i18n import LanguageDict
 from modules.const import LANGUAGE_CODE
 
 
-def fetch_language_data(code: str, use_raw: bool = True) -> LanguageDict:
+def fetch_language_data(code: str, use_raw: bool = True) -> dict[str, Any]:
     """
     Get the language strings for a given language code
 
@@ -28,11 +28,11 @@ def fetch_language_data(code: str, use_raw: bool = True) -> LanguageDict:
         use_raw (bool): Whether to return the raw JSON data or not
 
     Returns:
-        LanguageDict: The language strings
+        dict[str, Any]: The language strings
     """
     try:
-        with open(f"i18n/{code}.json", "r", encoding="utf-8") as f:  # skipcq: PTC-W6004
-            data: LanguageDict = jlo(f.read())
+        with open(f"i18n/{code}.json", "r", encoding="utf-8") as file:  # skipcq: PTC-W6004
+            data: dict[str, Any] = jlo(file.read())
             if use_raw:
                 return data
             return data["strings"]  # type: ignore
@@ -65,6 +65,7 @@ def read_user_language(ctx: BaseContext | InteractionContext) -> str:
         server_row = server_df.loc[server_df["discordId"] == ctx.guild.id]
         if len(server_row) > 0:
             return server_row["language"].iloc[0]
+    # pylint: disable=broad-exception-caught
     except BaseException:
         pass
 
@@ -79,8 +80,8 @@ async def paginate_language(bot: AutoShardedClient, ctx: InteractionContext) -> 
         bot (AutoShardedClient): The bot client
         ctx (InteractionContext): The context to send the language list to
     """
-    with open("i18n/_index.json", "r") as f:
-        langs = jlo(f.read())
+    with open("i18n/_index.json", "r", encoding="utf-8") as file:
+        langs = jlo(file.read())
     pages = []
     for i in range(0, len(langs), 15):
         paged = []
@@ -118,8 +119,8 @@ def search_language(query: str) -> list[dict]:
     Returns:
         list[dict]: The list of languages that match the query
     """
-    with open("i18n/_index.json") as f:
-        data = load(f)
+    with open("i18n/_index.json", "r", encoding="utf-8") as file:
+        data = load(file)
     results = []
     for item in data:
         name_ratio = fuzz.token_set_ratio(query, item["name"])
@@ -141,8 +142,8 @@ def check_lang_exist(code: str) -> bool:
     Returns:
         bool: Whether the language exists or not
     """
-    with open("i18n/_index.json", "r") as f:
-        langs = jlo(f.read())
+    with open("i18n/_index.json", "r", encoding="utf-8") as file:
+        langs = jlo(file.read())
     for lang in langs:
         if lang["code"] == code:
             return True

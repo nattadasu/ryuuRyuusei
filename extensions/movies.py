@@ -101,7 +101,7 @@ class MoviesCog(ipy.Extension):
             )
             result_embed = generate_search_embed(
                 language=user_lang,
-                mediaType="movies",
+                media_type="movies",
                 query=query,
                 platform="SIMKL",
                 homepage="https://simkl.com",

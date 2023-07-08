@@ -1,8 +1,7 @@
-from typing import Literal
+from typing import Any, Literal
 
 import interactions as ipy
 
-from classes.i18n import LanguageDict
 from modules.anilist import search_al_anime
 from modules.commons import (generate_search_embed, sanitize_markdown,
                              save_traceback_to_file)
@@ -56,7 +55,7 @@ class Anime(ipy.Extension):
     ):
         await ctx.defer()
         ul: str = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul, use_raw=True)
+        l_: dict[str, Any] = fetch_language_data(ul, use_raw=True)
         send: ipy.Message = await ctx.send(
             embed=ipy.Embed(
                 title=l_["commons"]["search"]["init_title"],
@@ -118,7 +117,7 @@ class Anime(ipy.Extension):
             result = generate_search_embed(
                 title=title,
                 language=ul,
-                mediaType="anime",
+                media_type="anime",
                 query=query,
                 platform="MyAnimeList",
                 homepage="https://myanimelist.net",

@@ -1,7 +1,8 @@
+from typing import Any
+
 import interactions as ipy
 
 from classes.database import UserDatabase
-from classes.i18n import LanguageDict
 from modules.discord import generate_discord_profile_embed
 from modules.i18n import fetch_language_data, read_user_language
 
@@ -15,7 +16,7 @@ class WhoAmI(ipy.Extension):
     async def whoami(self, ctx: ipy.SlashContext):
         await ctx.defer(ephemeral=True)
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)
+        l_: dict[str, Any] = fetch_language_data(ul)
 
         async with UserDatabase() as ud:
             resp = await ud.check_if_registered(ctx.author.id)

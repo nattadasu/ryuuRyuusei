@@ -109,7 +109,7 @@ class Manga(ipy.Extension):
             )
             result_embed = generate_search_embed(
                 language=user_lang,
-                mediaType="manga",
+                media_type="manga",
                 query=query,
                 platform="AniList",
                 homepage="https://anilist.co",

@@ -9,6 +9,7 @@ import traceback
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 from re import sub as rSub
+from typing import Any
 from uuid import uuid4 as id4
 
 from interactions import (Button, ButtonStyle, ClientUser, ComponentContext,
@@ -16,7 +17,6 @@ from interactions import (Button, ButtonStyle, ClientUser, ComponentContext,
                           SlashContext, User)
 
 from classes.anilist import AniListTrailerStruct
-from classes.i18n import LanguageDict
 from modules.const import EMOJI_FORBIDDEN
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
 from modules.const import EMOJI_USER_ERROR, LANGUAGE_CODE
@@ -151,7 +151,7 @@ def get_random_seed(value: int = 9) -> int:
 
 def generate_search_embed(
     language: str,
-    mediaType: str,
+    media_type: str,
     platform: str,
     homepage: str,
     title: str,
@@ -165,7 +165,7 @@ def generate_search_embed(
 
     Args:
         language (str): The language of the search results.
-        mediaType (str): The media type of the search results.
+        media_type (str): The media type of the search results.
         platform (str): The platform of the search results.
         homepage (str): The homepage of the search results.
         title (str): The title of the search embed.
@@ -177,14 +177,14 @@ def generate_search_embed(
     Returns:
         Embed: The generated search selection embed.
     """
-    l_: LanguageDict = fetch_language_data(code=language, use_raw=True)
+    l_: dict[str, Any] = fetch_language_data(code=language, use_raw=True)
     match len(results):
         case 1:
-            count = l_["quantities"][f"{mediaType}"]["one"]
+            count = l_["quantities"][f"{media_type}"]["one"]
         case 2:
-            count = l_["quantities"][f"{mediaType}"]["two"]
+            count = l_["quantities"][f"{media_type}"]["two"]
         case _:
-            count = l_["quantities"][f"{mediaType}"]["many"].format(
+            count = l_["quantities"][f"{media_type}"]["many"].format(
                 count=len(results))
     dcEm = Embed(
         author=EmbedAuthor(name=platform, url=homepage, icon_url=icon),
@@ -225,7 +225,7 @@ def generate_utils_except_embed(
         >>> generate_utils_except_embed("An error occurred while processing the request.", "Field", "Value", "Error message")
         <discord.Embed object at 0x...>
     """
-    l_: LanguageDict = fetch_language_data(code=language, use_raw=True)
+    l_: dict[str, Any] = fetch_language_data(code=language, use_raw=True)
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
     dcEm = Embed(
         color=color,
@@ -263,7 +263,7 @@ def generate_commons_except_embed(
         Embed: A Discord embed object containing information about the error.
 
     Example:
-        >>> lang_dict: LanguageDict = fetch_language_data(code="en_US", use_raw=True)
+        >>> lang_dict: dict[str, Any] = fetch_language_data(code="en_US", use_raw=True)
         >>> generate_commons_except_embed("An error occurred while processing the request.", "Error message", lang_dict)
         <discord.Embed object at 0x...>
     """

@@ -1,7 +1,8 @@
+from typing import Any
+
 from interactions import (AutoShardedClient, Buckets, Client, Cooldown,
                           Extension, SlashCommand, SlashContext)
 
-from classes.i18n import LanguageDict
 from classes.nekomimidb import NekomimiGender
 from modules.i18n import fetch_language_data, read_user_language
 from modules.nekomimidb import submit_nekomimi
@@ -27,7 +28,7 @@ class Nekomimi(Extension):
     )
     async def nekomimi_random_boy(self, ctx: SlashContext):
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(
+        l_: dict[str, Any] = fetch_language_data(
             ul)["strings"]["random"]["nekomimi"]
         await submit_nekomimi(ctx=ctx, gender=NekomimiGender.BOY, lang=l_)
 
@@ -37,7 +38,7 @@ class Nekomimi(Extension):
     )
     async def nekomimi_random_girl(self, ctx: SlashContext):
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(
+        l_: dict[str, Any] = fetch_language_data(
             ul)["strings"]["random"]["nekomimi"]
         await submit_nekomimi(ctx=ctx, gender=NekomimiGender.GIRL, lang=l_)
 
@@ -47,7 +48,7 @@ class Nekomimi(Extension):
     )
     async def nekomimi_random_any(self, ctx: SlashContext):
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(
+        l_: dict[str, Any] = fetch_language_data(
             ul)["strings"]["random"]["nekomimi"]
         await submit_nekomimi(ctx=ctx, lang=l_)
 

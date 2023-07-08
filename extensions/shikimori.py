@@ -1,12 +1,11 @@
 from datetime import datetime as dtime
 from datetime import timezone as tz
-from typing import Literal
+from typing import Any, Literal
 
 import interactions as ipy
 
 from classes.database import DatabaseException, UserDatabase, UserDatabaseClass
 from classes.excepts import ProviderHttpError
-from classes.i18n import LanguageDict
 from classes.shikimori import (Shikimori, ShikimoriUserGender,
                                ShikimoriUserStruct)
 from modules.commons import (PlatformErrType, platform_exception_embed,
@@ -71,7 +70,7 @@ class ShikimoriCog(ipy.Extension):
     ) -> None:
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul, use_raw=True)
+        l_: dict[str, Any] = fetch_language_data(ul, use_raw=True)
 
         if shikimori_username and user:
             embed = platform_exception_embed(

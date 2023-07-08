@@ -1,14 +1,13 @@
 import re
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
-from typing import Literal
+from typing import Any, Literal
 from urllib.parse import urlencode as urlenc
 
 import interactions as ipy
 import validators
 from plusminus import BaseArithmeticParser as BAP
 
-from classes.i18n import LanguageDict
 from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
 from classes.thecolorapi import Color, TheColorApi
 from classes.usrbg import UserBackground
@@ -44,7 +43,7 @@ class Utilities(ipy.Extension):
     )
     async def utilities_math(self, ctx: ipy.SlashContext, expression: str):
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["utilities"]
+        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["utilities"]
         try:
             exp = BAP().evaluate(expression)
             await ctx.send(
@@ -101,7 +100,7 @@ class Utilities(ipy.Extension):
     )
     async def utilities_base64(self, ctx: ipy.SlashContext, mode: str, string: str):
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["utilities"]
+        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["utilities"]
         try:
             if mode == "encode":
                 res = b64encode(string.encode()).decode()
@@ -172,7 +171,7 @@ class Utilities(ipy.Extension):
     ):
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["utilities"]
+        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["utilities"]
         res: dict = {}
         try:
             if (color_format == "hex" and re.match(
@@ -278,7 +277,7 @@ class Utilities(ipy.Extension):
     ):
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul)["strings"]["utilities"]
+        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["utilities"]
         try:
             params = {
                 "data": string,
@@ -332,7 +331,7 @@ class Utilities(ipy.Extension):
     async def utilities_snowflake(self, ctx: ipy.SlashContext, snowflake: str):
         """Convert a Discord Snowflake to a timestamp"""
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(
+        l_: dict[str, Any] = fetch_language_data(
             ul)["strings"]["utilities"]["snowflake"]
         try:
             tmsp = int(snowflake_to_datetime(int(snowflake)))

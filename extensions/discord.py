@@ -1,6 +1,6 @@
-import interactions as ipy
+from typing import Any
 
-from classes.i18n import LanguageDict
+import interactions as ipy
 from modules.commons import (generate_commons_except_embed,
                              save_traceback_to_file)
 from modules.discord import generate_discord_profile_embed
@@ -37,7 +37,7 @@ class DiscordCog(ipy.Extension):
     ):
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul, use_raw=True)
+        l_: dict[str, Any] = fetch_language_data(ul, use_raw=True)
         try:
             embed = await generate_discord_profile_embed(
                 bot=self.bot,

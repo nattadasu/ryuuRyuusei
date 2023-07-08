@@ -83,7 +83,7 @@ class TvShow(ipy.Extension):
             )
             result_embed = generate_search_embed(
                 language=ul,
-                mediaType="shows",
+                media_type="shows",
                 query=query,
                 platform="SIMKL",
                 homepage="https://simkl.com",

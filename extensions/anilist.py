@@ -1,13 +1,12 @@
 from datetime import datetime as dtime
 from datetime import timezone as tz
-from typing import Literal
+from typing import Any, Literal
 
 import interactions as ipy
 
 from classes.anilist import AniList, AniListUserStruct
 from classes.database import DatabaseException, UserDatabase, UserDatabaseClass
 from classes.excepts import ProviderHttpError
-from classes.i18n import LanguageDict
 from modules.commons import (PlatformErrType, convert_float_to_time,
                              platform_exception_embed, sanitize_markdown,
                              save_traceback_to_file)
@@ -74,7 +73,7 @@ class AniListCog(ipy.Extension):
     ) -> None:
         await ctx.defer()
         ul = read_user_language(ctx)
-        l_: LanguageDict = fetch_language_data(ul, use_raw=True)
+        l_: dict[str, Any] = fetch_language_data(ul, use_raw=True)
 
         if anilist_username and user:
             embed = platform_exception_embed(
