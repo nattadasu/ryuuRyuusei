@@ -22,9 +22,7 @@ from modules.oobe.malIndexer import mal_run
 
 
 class FirstRunError(Exception):
-    """
-    An exception class for first run script.
-    """
+    """An exception class for first run script."""
 
 
 async def first_run(py_bin: str = py_bin_path()):

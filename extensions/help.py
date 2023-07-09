@@ -33,7 +33,7 @@ class Help(ipy.Extension):
         commands = sorted(self.bot.application_commands,
                           key=lambda x: str(x.name))
 
-        scopes = [[0], [ctx.author_id], [ctx.channel_id],]
+        scopes = [[0], [ctx.author_id], [ctx.channel_id]]
 
         if ctx.guild_id is not None:
             scopes.append([ctx.guild_id])
