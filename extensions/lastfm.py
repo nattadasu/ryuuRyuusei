@@ -126,7 +126,6 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
             save_traceback_to_file("lastfm_profile", ctx.author, err)
             return
 
-
         try:
             async with LastFM() as lfm:
                 tracks: list[LastFMTrackStruct] = await lfm.get_user_recent_tracks(
