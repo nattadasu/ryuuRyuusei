@@ -102,26 +102,20 @@ class LastFmCog(ipy.Extension):
             except DatabaseException:
                 lfm_username = None
 
-            if lfm_username is None:
-                embed = platform_exception_embed(
-                    description=f"""{user.mention} haven't linked the Last.fm account to the bot yet!
+        if lfm_username is None:
+            embed = platform_exception_embed(
+                description=f"""{user.mention} haven't linked the Last.fm account to the bot yet!
 Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>` to get the profile information directly""",
-                    error_type=PlatformErrType.USER,
-                    lang_dict=lang_dict,
-                    error="User hasn't link their account yet",
-                )
-                await ctx.send(embed=embed)
-                return
+                error_type=PlatformErrType.USER,
+                lang_dict=lang_dict,
+                error="User hasn't link their account yet",
+            )
+            await ctx.send(embed=embed)
+            return
 
         try:
             async with LastFM() as lfm:
                 profile: LastFMUserStruct = await lfm.get_user_info(lfm_username)
-                try:
-                    tracks: list[LastFMTrackStruct] = await lfm.get_user_recent_tracks(
-                        lfm_username, maximum
-                    )
-                except ProviderHttpError:
-                    tracks: list[LastFMTrackStruct] = []
         except ProviderHttpError as err:
             embed = generate_commons_except_embed(
                 description="Last.fm API is currently unavailable, please try again later",
@@ -132,18 +126,18 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
             save_traceback_to_file("lastfm_profile", ctx.author, err)
             return
 
+
+        try:
+            async with LastFM() as lfm:
+                tracks: list[LastFMTrackStruct] = await lfm.get_user_recent_tracks(
+                    lfm_username, maximum
+                )
+        except ProviderHttpError:
+            tracks: list[LastFMTrackStruct] = []
+
         fields: list[ipy.EmbedField] = []
 
         for lfm_track in tracks:
-            if len(tracks) == 0 and maximum != 0:
-                fields.append(
-                    ipy.EmbedField(
-                        name="Warning",
-                        value="It seems like you haven't scrobbled anything yet, or your profile is private!",
-                        inline=True,
-                    )
-                )
-                break
             tr_title = f"{'▶️' if lfm_track.nowplaying else ''} {self.trim_lastfm_title(lfm_track.name)}"
 
             if isinstance(lfm_track.artist, list):
@@ -187,6 +181,15 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
                     value=f"""{tr_artist}
 {tr_album}
 {tr_date}, [Link]({tr_url})""",
+                    inline=True,
+                )
+            )
+
+        if len(tracks) == 0 and maximum != 0:
+            fields.append(
+                ipy.EmbedField(
+                    name="Warning",
+                    value="It seems like you haven't scrobbled anything yet, or your profile is private!",
                     inline=True,
                 )
             )
