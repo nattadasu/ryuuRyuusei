@@ -282,7 +282,7 @@ def generate_commons_except_embed(
         description=description,
         fields=[
             EmbedField(
-                name=l_["commons"]["reason"], value=f"{error}", inline=False
+                name=l_["commons"]["reason"], value=f"{sanitize_markdown(error)}", inline=False
             )  # type: ignore
         ],
     )
