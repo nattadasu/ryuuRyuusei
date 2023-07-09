@@ -188,7 +188,7 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
             fields.append(
                 ipy.EmbedField(
                     name="Warning",
-                    value="It seems like you haven't scrobbled anything yet, or your profile is private!",
+                    value="It seems like this user haven't scrobbled anything yet, or their profile is private!",
                     inline=True,
                 )
             )
