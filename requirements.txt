@@ -16,7 +16,7 @@ pykakasi
 python-dotenv
 python-Levenshtein
 pyyaml
-regex
+regex-spm
 sentry_sdk
 tzdata
 unidic
