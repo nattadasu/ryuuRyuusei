@@ -6,7 +6,7 @@ from typing import Any, Literal, Optional
 import pandas as pd
 from interactions.models import Snowflake
 
-from modules.const import EMOJI_UNEXPECTED_ERROR, database
+from modules.const import EMOJI_UNEXPECTED_ERROR, DATABASE_PATH
 from modules.jikan import check_club_membership
 
 
@@ -47,7 +47,7 @@ class UserDatabaseClass:
 class UserDatabase:
     """User Database Wrapper"""
 
-    def __init__(self, database_path: str = database):
+    def __init__(self, database_path: str = DATABASE_PATH):
         """Initialize the database
 
         Args:

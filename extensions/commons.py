@@ -9,7 +9,7 @@ import interactions as ipy
 from aiohttp import __version__ as aiohttp_version
 
 from modules.const import (AUTHOR_USERNAME, BOT_CLIENT_ID, BOT_SUPPORT_SERVER,
-                           EMOJI_SUCCESS, USER_AGENT, database, gittyHash,
+                           EMOJI_SUCCESS, USER_AGENT, DATABASE_PATH, gittyHash,
                            gtHsh, ownerUserUrl)
 from modules.i18n import fetch_language_data, read_user_language
 
@@ -119,7 +119,7 @@ class CommonCommands(ipy.Extension):
             ),
         ]
         readLat_start = pc()
-        with open(database, "r", encoding="utf-8") as f:
+        with open(DATABASE_PATH, "r", encoding="utf-8") as f:
             # skipcq: PYL-W0612
             reader = csv.reader(f, delimiter="\t")  # pyright: ignore
         readLat_end = pc()

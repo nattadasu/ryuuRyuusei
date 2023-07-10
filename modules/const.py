@@ -19,7 +19,7 @@ __version__: Final[str] = "1.0.0"
 
 ld()
 
-database = r"database/database.csv"
+DATABASE_PATH = r"database/database.csv"
 
 
 ANILIST_CLIENT_ID: Final[str] = cast(str, ge("ANILIST_CLIENT_ID"))
