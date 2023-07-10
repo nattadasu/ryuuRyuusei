@@ -7,14 +7,14 @@ import interactions as ipy
 import regex_spm
 from interactions.api.events import MessageCreate
 
-from modules.anilist import anilist_submit
-from modules.myanimelist import mal_submit
-from modules.simkl import simkl_submit
-from modules.rawg import rawg_submit
-from modules.commons import save_traceback_to_file
-from classes.animeapi import AnimeApi
 from classes.anilist import AniList
+from classes.animeapi import AnimeApi
 from classes.simkl import Simkl
+from modules.anilist import anilist_submit
+from modules.commons import save_traceback_to_file
+from modules.myanimelist import mal_submit
+from modules.rawg import rawg_submit
+from modules.simkl import simkl_submit
 
 
 class MessageListen(ipy.Extension):
@@ -228,6 +228,7 @@ class MessageListen(ipy.Extension):
                 err,
                 mute_error=True,
             )
+
 
 def setup(bot: ipy.Client | ipy.AutoShardedClient) -> None:
     """Load the extension."""

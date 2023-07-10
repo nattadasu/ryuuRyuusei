@@ -9,7 +9,7 @@ import interactions as ipy
 from aiohttp import __version__ as aiohttp_version
 
 from modules.const import (AUTHOR_USERNAME, BOT_CLIENT_ID, BOT_SUPPORT_SERVER,
-                           EMOJI_SUCCESS, USER_AGENT, DATABASE_PATH, gittyHash,
+                           DATABASE_PATH, EMOJI_SUCCESS, USER_AGENT, gittyHash,
                            gtHsh, ownerUserUrl)
 from modules.i18n import fetch_language_data, read_user_language
 
