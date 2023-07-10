@@ -6,7 +6,7 @@ from typing import Any, Literal, Optional
 import pandas as pd
 from interactions.models import Snowflake
 
-from modules.const import EMOJI_UNEXPECTED_ERROR, DATABASE_PATH
+from modules.const import DATABASE_PATH, EMOJI_UNEXPECTED_ERROR
 from modules.jikan import check_club_membership
 
 

@@ -246,7 +246,8 @@ async def generate_mal(
     bcast = jk_dat.broadcast
 
     # Grab studio names on jk_dat['studios'][n]['name']
-    studio_names = [stud.name for stud in jk_dat.studios] if jk_dat.studios else None
+    studio_names = [
+        stud.name for stud in jk_dat.studios] if jk_dat.studios else None
     stdio = ", ".join(studio_names) if studio_names else "*None*"
 
     # start date logic
@@ -339,7 +340,8 @@ async def generate_mal(
     ent = jk_dat.title_english
 
     # Create a synonyms list
-    syns = [name.title for name in jk_dat.titles if name.type not in ["Default", "English"]]
+    syns = [name.title for name in jk_dat.titles if name.type not in [
+        "Default", "English"]]
     if not ent:
         # Set ent to a synonym in ASCII or the original title
         for name in syns:
@@ -416,7 +418,6 @@ async def generate_mal(
         eps_field = EmbedField(
             name="Eps/Duration", value=f"{eps} ({dur})", inline=True
         )
-
 
     embed = Embed(
         author=EmbedAuthor(
