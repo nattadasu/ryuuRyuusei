@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 from typing import Any, Literal
 
 from interactions import (Button, ButtonStyle, ComponentContext, Embed,
-                          EmbedAuthor, EmbedField, PartialEmoji, SlashContext)
+                          EmbedAuthor, EmbedField, Message, PartialEmoji,
+                          SlashContext)
 
 from classes.anilist import AniList, AniListMediaStruct
 from classes.excepts import MediaIsNsfw, ProviderHttpError
@@ -368,12 +369,12 @@ async def generate_anilist(
     return [embed, buttons]
 
 
-async def anilist_submit(ctx: SlashContext | ComponentContext, media_id: int) -> None:
+async def anilist_submit(ctx: SlashContext | ComponentContext | Message, media_id: int) -> None:
     """
     Submit a query to AniList API and send the result to the channel.
 
     Args:
-        ctx (SlashContext | ComponentContext): The context of the command.
+        ctx (SlashContext | ComponentContext | Message): The context of the command.
         media_id (int): The media ID to query.
 
     Raises:
@@ -392,22 +393,28 @@ async def anilist_submit(ctx: SlashContext | ComponentContext, media_id: int) ->
             is_nsfw=nsfw_bool,
         )
         buttons.extend(button_2)
-        await ctx.send(embed=embed, components=buttons)
+        if isinstance(ctx, Message):
+            await ctx.reply(embed=embed, components=buttons)
+        else:
+            await ctx.send(embed=embed, components=buttons)
         return
 
-    except MediaIsNsfw as e:
-        notice = e.args[0] if e.args else ""
+    except MediaIsNsfw as err:
+        notice = err.args[0] if err.args else ""
         embed = platform_exception_embed(
             description="This media is NSFW, please invoke the same query on NSFW enabled channel.",
             error="Media is NSFW\n" + notice,
             lang_dict=l_,
             error_type=PlatformErrType.NSFW,
         )
-        await ctx.send(embed=embed)
-        save_traceback_to_file("anilist", ctx.author, e)
+        if isinstance(ctx, Message):
+            await ctx.reply(embed=embed)
+        else:
+            await ctx.send(embed=embed)
+        save_traceback_to_file("anilist", ctx.author, err)
 
-    except ProviderHttpError as e:
-        message = e.message
+    except ProviderHttpError as err:
+        message = err.message
 
         embed = platform_exception_embed(
             description="AniList API is currently unavailable, please try again later.",
@@ -415,5 +422,8 @@ async def anilist_submit(ctx: SlashContext | ComponentContext, media_id: int) ->
             lang_dict=l_,
             error_type=PlatformErrType.SYSTEM,
         )
-        await ctx.send(embed=embed)
-        save_traceback_to_file("anilist", ctx.author, e)
+        if isinstance(ctx, Message):
+            await ctx.reply(embed=embed)
+        else:
+            await ctx.send(embed=embed)
+        save_traceback_to_file("anilist", ctx.author, err)

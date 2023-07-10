@@ -550,12 +550,13 @@ class AniList:
                 cache_file_path)
             return self._media_dict_to_dataclass(data["data"]["Media"])
 
-    async def manga(self, media_id: int) -> AniListMediaStruct:
+    async def manga(self, media_id: int, from_mal: bool = False) -> AniListMediaStruct:
         """
         Get manga information by its ID
 
         Args:
             media_id (int): The ID of the manga
+            from_mal (bool, optional): Whether the ID is from MyAnimeList or not. Defaults to False.
 
         Returns:
             AniListMediaStruct: The manga information
@@ -617,6 +618,9 @@ class AniList:
         }}
     }}
 }}"""
+        if from_mal:
+            # replace Media(id: to Media(idMal:
+            gqlquery = gqlquery.replace("Media(id:", "Media(idMal:")
         async with self.session.post(
             self.base_url, json={"query": gqlquery}
         ) as response:

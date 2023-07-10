@@ -1,7 +1,7 @@
 import re
 
 from interactions import (Button, ButtonStyle, ComponentContext, Embed,
-                          EmbedAuthor, EmbedField, SlashContext)
+                          EmbedAuthor, EmbedField, Message, SlashContext)
 
 from classes.excepts import ProviderHttpError
 from classes.rawg import RawgApi, RawgGameData
@@ -174,12 +174,12 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
     return [embed, components]
 
 
-async def rawg_submit(ctx: SlashContext | ComponentContext, slug: str) -> None:
+async def rawg_submit(ctx: SlashContext | ComponentContext | Message, slug: str) -> None:
     """
     Submit a query to the RAWG API and return the result as an embed.
 
     Args:
-        ctx (SlashContext | ComponentContext): The context of the command.
+        ctx (SlashContext | ComponentContext | Message): The context of the command.
         slug (str): The slug of the game to search for.
 
     Raises:
@@ -195,11 +195,13 @@ async def rawg_submit(ctx: SlashContext | ComponentContext, slug: str) -> None:
             game_data = await api.get_data(slug)
         embed, button_2 = await generate_rawg(data=game_data)
         buttons.extend(button_2)
-        await ctx.send(embed=embed, components=buttons)
-        return
-    except ProviderHttpError as e:
-        status = e.status_code
-        message = e.message
+        if isinstance(ctx, Message):
+            await ctx.reply(embed=embed, components=buttons)
+        else:
+            await ctx.send(embed=embed, components=buttons)
+    except ProviderHttpError as err:
+        status = err.status_code
+        message = err.message
 
         embed = platform_exception_embed(
             description="AniList API is currently unavailable, please try again later.",
@@ -207,5 +209,9 @@ async def rawg_submit(ctx: SlashContext | ComponentContext, slug: str) -> None:
             lang_dict=l_,
             error_type=PlatformErrType.SYSTEM,
         )
-        await ctx.send(embed=embed)
-        save_traceback_to_file("rawg", ctx.author, e)
+        if isinstance(ctx, Message):
+            await ctx.reply(embed=embed)
+        else:
+            await ctx.send(embed=embed)
+        save_traceback_to_file("rawg", ctx.author, err)
+    return

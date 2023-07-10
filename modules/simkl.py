@@ -323,7 +323,7 @@ def create_simkl_embed(
 
 
 async def simkl_submit(
-    ctx: ipy.SlashContext | ipy.ComponentContext,
+    ctx: ipy.SlashContext | ipy.ComponentContext | ipy.Message,
     media_id: int | str,
     media_type: Literal["tv", "movies"] = "tv",
 ) -> None:
@@ -331,7 +331,7 @@ async def simkl_submit(
     Smbit a query to SIMKL and send the result to the channel
 
     Args:
-        ctx (ipy.SlashContext | ipy.ComponentContext): The context of the command
+        ctx (ipy.SlashContext | ipy.ComponentContext | ipy.Message): The context of the command
         media_id (int | str): The ID of the media
         media_type (Literal['tv', 'movies'], optional): The type of the media. Defaults to 'tv'.
     """
@@ -367,23 +367,29 @@ async def simkl_submit(
             is_media_nsfw=media_nsfw,
         )
         buttons.append(button_2)
-        await ctx.send(embed=embed, components=buttons)
+        if isinstance(ctx, ipy.Message):
+            await ctx.reply(embed=embed, components=buttons)
+        else:
+            await ctx.send(embed=embed, components=buttons)
         return
 
-    except MediaIsNsfw as e:
-        notice = e.arg[0] if e.args else ""
+    except MediaIsNsfw as err:
+        notice = err.args[0] if err.args else ""
         embed = platform_exception_embed(
             description="This media is NSFW, please invoke the same query on NSFW enabled channel.",
             error="Media is NSFW\n" + notice,
             lang_dict=l_,
             error_type=PlatformErrType.NSFW,
         )
-        await ctx.send(embed=embed)
-        save_traceback_to_file("simkl", ctx.author, e)
+        if isinstance(ctx, ipy.Message):
+            await ctx.reply(embed=embed)
+        else:
+            await ctx.send(embed=embed)
+        save_traceback_to_file("simkl", ctx.author, err)
 
-    except ProviderHttpError as e:
-        status = e.status_code
-        message = e.message
+    except ProviderHttpError as err:
+        status = err.status_code
+        message = err.message
 
         embed = platform_exception_embed(
             description="SIMKL API is currently unavailable, please try again later.",
@@ -391,5 +397,8 @@ async def simkl_submit(
             lang_dict=l_,
             error_type=PlatformErrType.SYSTEM,
         )
-        await ctx.send(embed=embed)
-        save_traceback_to_file("simkl", ctx.author, e)
+        if isinstance(ctx, ipy.Message):
+            await ctx.reply(embed=embed)
+        else:
+            await ctx.send(embed=embed)
+        save_traceback_to_file("simkl", ctx.author, err)

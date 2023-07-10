@@ -39,6 +39,7 @@ bot = ipy.AutoShardedClient(
     delete_unused_application_cmds=True,
     sync_interactions=True,
     send_command_tracebacks=False,
+    intents=ipy.Intents.DEFAULT | ipy.Intents.MESSAGE_CONTENT
 )
 """The bot client"""
 

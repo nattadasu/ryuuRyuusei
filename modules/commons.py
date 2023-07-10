@@ -511,7 +511,7 @@ def save_traceback_to_file(
         mute_error (bool, optional): Whether to mute the error. Defaults to False.
 
     Raises:
-        error (Exception): Re-raise the error (for logging purpose)
+        error (Exception): Re-raise the error (for logging purpose), if mute_error is False.
     """
     if not isinstance(error, Exception):
         return
