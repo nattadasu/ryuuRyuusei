@@ -12,6 +12,7 @@ from interactions.api.events import MessageCreate
 from classes.anilist import AniList
 from classes.animeapi import AnimeApi
 from classes.simkl import Simkl
+from classes.mangadex import Mangadex
 from modules.anilist import anilist_submit
 from modules.commons import save_traceback_to_file
 from modules.myanimelist import mal_submit
@@ -203,6 +204,24 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_type = "tv"
                 media_id = ids["mediaid"]
                 source = "simkl"
+            # mangadex manga
+            case r"(?:https?://)?(?:www\.)?mangadex\.org/title/(?P<mediaid>[\w\-]+)" as ids:
+                async with Mangadex() as mdex:
+                    manga = await mdex.get_manga(ids["mediaid"])
+                    mal_id = manga.attributes.links.mal
+                    al_id = manga.attributes.links.al
+                    if not mal_id and not al_id:
+                        return
+                    if al_id:
+                        send_to = "anilist"
+                        send_type = "manga"
+                        media_id = al_id
+                        source = "anilist"
+                    else:
+                        send_to = "anilist"
+                        send_type = "manga"
+                        media_id = mal_id
+                        source = "myanimelist"
             case _:
                 return
 

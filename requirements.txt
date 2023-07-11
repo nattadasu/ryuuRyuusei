@@ -1,7 +1,7 @@
 aiohttp
 beautifulsoup4
 cutlet
-dataclassy
+dacite
 defusedxml
 fake-useragent
 fluent.runtime
