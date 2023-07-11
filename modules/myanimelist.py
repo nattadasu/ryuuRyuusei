@@ -163,7 +163,9 @@ async def generate_mal(
         jjpg = jk_dat.images.jpg
     note = "Images from "
 
-    al_post = alist.coverImage.extraLarge
+    al_post = None
+    if alist.coverImage is not None:
+        al_post = alist.coverImage.extraLarge
     al_bg = alist.bannerImage
 
     try:
@@ -322,7 +324,7 @@ async def generate_mal(
     elif re.match("^[0-9]{4}$", ast):
         sson = "Unknown"
     elif jk_dat.aired.prop.from_.month is not None:
-        sson = astn.strftime("%mal_id")
+        sson = astn.strftime("%m")
         if sson in ["01", "02", "03"]:
             sson = "Winter"
         elif sson in ["04", "05", "06"]:
