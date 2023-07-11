@@ -74,7 +74,9 @@ def bypass_anilist_nsfw_tag(alm: AniListMediaStruct) -> bool:
 
 
 async def generate_anilist(
-    entry_id: int, is_nsfw: bool | None = False
+    entry_id: int,
+    is_nsfw: bool | None = False,
+    from_mal: bool = False,
 ) -> list[Embed, list[Button]]:
     """
     Generate an embed for an AniList entry, especially with manga
@@ -82,6 +84,7 @@ async def generate_anilist(
     Args:
         entry_id (int): The ID of the entry
         is_nsfw (bool, optional): Whether the channel/DM of invoked command does have NSFW enabled. Defaults to False.
+        from_mal (bool, optional): Whether the entry ID is from MAL. Defaults to False.
 
     Returns:
         list[Embed, list[Button]]: The embed and the buttons
@@ -89,7 +92,7 @@ async def generate_anilist(
     notice = MESSAGE_WARN_CONTENTS if is_nsfw is None else ""
 
     async with AniList() as anilist:
-        alm = await anilist.manga(entry_id)
+        alm = await anilist.manga(entry_id, from_mal=from_mal)
 
     bypass_ecchi = bypass_anilist_nsfw_tag(alm)
     if not bypass_ecchi:
@@ -369,13 +372,18 @@ async def generate_anilist(
     return [embed, buttons]
 
 
-async def anilist_submit(ctx: SlashContext | ComponentContext | Message, media_id: int) -> None:
+async def anilist_submit(
+    ctx: SlashContext | ComponentContext | Message,
+    media_id: int,
+    from_mal: bool = False
+) -> None:
     """
     Submit a query to AniList API and send the result to the channel.
 
     Args:
         ctx (SlashContext | ComponentContext | Message): The context of the command.
         media_id (int): The media ID to query.
+        from_mal (bool, optional): Whether the media ID is from MAL. Defaults to False.
 
     Raises:
         MediaIsNsfw: If the media is NSFW and the channel is not NSFW enabled.
@@ -391,6 +399,7 @@ async def anilist_submit(ctx: SlashContext | ComponentContext | Message, media_i
         embed, button_2 = await generate_anilist(
             entry_id=media_id,
             is_nsfw=nsfw_bool,
+            from_mal=from_mal,
         )
         buttons.extend(button_2)
         if isinstance(ctx, Message):

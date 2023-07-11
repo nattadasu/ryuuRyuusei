@@ -213,11 +213,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
             match send_to:
                 case "anilist":
                     reverse_lookup = source == "myanimelist"
-                    async with AniList() as anilist:
-                        al_id = await anilist.manga(media_id, from_mal=reverse_lookup)
-                        if al_id is None:
-                            return
-                    await anilist_submit(ctx, al_id)
+                    await anilist_submit(ctx, media_id, reverse_lookup)
                 case "mal":
                     is_it_source = source == "myanimelist"
                     if is_it_source is False:
