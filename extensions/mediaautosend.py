@@ -12,7 +12,7 @@ from interactions.api.events import MessageCreate
 
 from classes.anilist import AniList
 from classes.animeapi import AnimeApi
-from classes.mangadex import Mangadex, Manga
+from classes.mangadex import Manga, Mangadex
 from classes.simkl import Simkl
 from modules.anilist import anilist_submit
 from modules.commons import save_traceback_to_file

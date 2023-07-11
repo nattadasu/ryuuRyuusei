@@ -1,11 +1,11 @@
 """Mangadex API Handler for extensions/mediaautosend.py"""
+from asyncio import sleep
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Literal
 
 import aiohttp
-from asyncio import sleep
-from dacite import from_dict, Config
+from dacite import Config, from_dict
 
 from classes.cache import Caching
 from classes.excepts import ProviderHttpError
@@ -14,6 +14,8 @@ from modules.const import USER_AGENT
 cache_ = Caching(cache_directory="cache/mangadex", cache_expiration_time=86400)
 
 # pylint: disable=invalid-name
+
+
 @dataclass
 class DatabaseLinks:
     """Links to external databases"""
@@ -175,7 +177,7 @@ class DataResponse:
     """Result"""
     response: Manga | None
     """Response"""
-    errors: list[dict[str, str|int]] | None
+    errors: list[dict[str, str | int]] | None
     """Errors"""
 
 
@@ -198,7 +200,8 @@ class Mangadex:
     async def _request(self, url: str) -> dict[str, Any]:
         """Make a request to the Mangadex API"""
         if not self.session:
-            raise RuntimeError("Mangadex not initialized with async context manager")
+            raise RuntimeError(
+                "Mangadex not initialized with async context manager")
         async with self.session.get(url) as response:
             if response.status != 200:
                 raise ProviderHttpError(
