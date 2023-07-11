@@ -177,26 +177,26 @@ def generate_search_embed(
     Returns:
         Embed: The generated search selection embed.
     """
-    l_: dict[str, Any] = fetch_language_data(code=language, use_raw=True)
+    lang_dict: dict[str, Any] = fetch_language_data(code=language, use_raw=True)
     match len(results):
         case 1:
-            count = l_["quantities"][f"{media_type}"]["one"]
+            count = lang_dict["quantities"][f"{media_type}"]["one"]
         case 2:
-            count = l_["quantities"][f"{media_type}"]["two"]
+            count = lang_dict["quantities"][f"{media_type}"]["two"]
         case _:
-            count = l_["quantities"][f"{media_type}"]["many"].format(
+            count = lang_dict["quantities"][f"{media_type}"]["many"].format(
                 count=len(results))
-    dcEm = Embed(
+    embed = Embed(
         author=EmbedAuthor(name=platform, url=homepage, icon_url=icon),
         color=color,
         title=title,
-        description=l_["commons"]["search"]["result"].format(
+        description=lang_dict["commons"]["search"]["result"].format(
             COUNT=count, QUERY=query),
         fields=results,  # type: ignore
     )
-    dcEm.set_thumbnail(url=icon)
+    embed.set_thumbnail(url=icon)
 
-    return dcEm
+    return embed
 
 
 def generate_utils_except_embed(
@@ -225,23 +225,23 @@ def generate_utils_except_embed(
         >>> generate_utils_except_embed("An error occurred while processing the request.", "Field", "Value", "Error message")
         <discord.Embed object at 0x...>
     """
-    l_: dict[str, Any] = fetch_language_data(code=language, use_raw=True)
+    lang_dict: dict[str, Any] = fetch_language_data(code=language, use_raw=True)
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
-    dcEm = Embed(
+    embed = Embed(
         color=color,
-        title=l_["commons"]["error"],
+        title=lang_dict["commons"]["error"],
         description=description,
         fields=[
             EmbedField(name=field_name, value=field_value, inline=False),
             EmbedField(
-                name=l_["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
+                name=lang_dict["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
             ),
         ],  # type: ignore
     )
-    dcEm.set_thumbnail(
+    embed.set_thumbnail(
         url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
-    return dcEm
+    return embed
 
 
 def generate_commons_except_embed(
@@ -268,28 +268,28 @@ def generate_commons_except_embed(
         <discord.Embed object at 0x...>
     """
     if isinstance(language, str):
-        l_ = fetch_language_data(code=language, use_raw=True)
+        lang_dict = fetch_language_data(code=language, use_raw=True)
     else:
-        l_ = language
+        lang_dict = language
 
     if isinstance(error, Exception):
         error = str(error)
 
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
-    dcEm = Embed(
+    embed = Embed(
         color=color,
-        title=l_["commons"]["error"],
+        title=lang_dict["commons"]["error"],
         description=description,
         fields=[
             EmbedField(
-                name=l_["commons"]["reason"], value=f"{sanitize_markdown(error)}", inline=False
+                name=lang_dict["commons"]["reason"], value=f"{sanitize_markdown(error)}", inline=False
             )  # type: ignore
         ],
     )
-    dcEm.set_thumbnail(
+    embed.set_thumbnail(
         url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
-    return dcEm
+    return embed
 
 
 def generate_trailer(
@@ -350,18 +350,18 @@ async def get_nsfw_status(
     return nsfw_bool
 
 
-def pluralize(x):
+def pluralize(amount):
     """
     Add an "s" to the end of a word if the number is greater than 1.
     Will be dropped once i18n is implemented.
 
     Args:
-        x (int): The number to check.
+        amount (int): The number to check.
 
     Returns:
         str: An "s" if the number is greater than 1, otherwise an empty string.
     """
-    return "s" if x > 1 else ""
+    return "s" if amount > 1 else ""
 
 
 def convert_float_to_time(
@@ -453,24 +453,23 @@ def platform_exception_embed(
     Returns:
         Embed: Embed object
     """
-    l_ = lang_dict
     if isinstance(error_type, PlatformErrType):
         error_type = error_type.value
     else:
         error_type = str(error_type)
     emoji = re.sub(r"(<:.*:)(\d+)(>)", r"\2", error_type)
-    dcEm = Embed(
+    embed = Embed(
         color=color,
-        title=l_["commons"]["error"],
+        title=lang_dict["commons"]["error"],
         description=description,
         fields=[
-            EmbedField(name=l_["commons"]["reason"], value=error, inline=False)
+            EmbedField(name=lang_dict["commons"]["reason"], value=error, inline=False)
         ],  # type: ignore
     )
-    dcEm.set_thumbnail(
+    embed.set_thumbnail(
         url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
-    return dcEm
+    return embed
 
 
 def generate_delete_button(
@@ -529,8 +528,8 @@ def save_traceback_to_file(
         f"errors/{command}_{author.id}_{datetime.now(tz=timezone.utc).strftime('%Y-%m-%d_%H-%M-%S')}.txt",
         "w",
         encoding="utf-8",
-    ) as f:
-        f.write(f"{error_type}: {error_str}\n\n{error_traceback}")
+    ) as file_:
+        file_.write(f"{error_type}: {error_str}\n\n{error_traceback}")
     if mute_error is False:
         # re-raise the error
         raise error
