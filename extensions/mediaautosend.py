@@ -213,7 +213,11 @@ If you can't see the slash commands, please re-invite the bot to your server, an
             match send_to:
                 case "anilist":
                     reverse_lookup = source == "myanimelist"
-                    await anilist_submit(ctx, media_id, reverse_lookup)
+                    if source != "anilist":
+                        async with AniList() as als:
+                            aldat = await als.manga(media_id, reverse_lookup)
+                            media_id = aldat.id
+                    await anilist_submit(ctx, int(media_id))
                 case "mal":
                     is_it_source = source == "myanimelist"
                     if is_it_source is False:
@@ -222,7 +226,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                             media_id = aadat.myanimelist
                             if media_id is None:
                                 return
-                    await mal_submit(ctx, media_id)
+                    await mal_submit(ctx, int(media_id))
                 case "simkl":
                     await simkl_submit(ctx, media_id, send_type)
                 case "rawg":
