@@ -13,8 +13,8 @@ from typing import Any
 from uuid import uuid4 as id4
 
 from interactions import (Button, ButtonStyle, ClientUser, ComponentContext,
-                          Embed, EmbedAuthor, EmbedField, Member, PartialEmoji,
-                          SlashContext, User)
+                          Embed, EmbedAuthor, EmbedField, Member, Message,
+                          PartialEmoji, SlashContext, User)
 
 from classes.anilist import AniListTrailerStruct
 from modules.const import EMOJI_FORBIDDEN
@@ -327,22 +327,27 @@ def generate_trailer(
     return button
 
 
-async def get_nsfw_status(context: ComponentContext | SlashContext) -> bool | None:
+async def get_nsfw_status(
+    context: ComponentContext | SlashContext | Message
+) -> bool | None:
     """
     Check if a channel is NSFW or not
 
     Args:
-        context (ComponentContext | SlashContext): The context of the command.
+        context (ComponentContext | SlashContext | Message): The context of the command.
 
     Returns:
         bool: The age restriction status of the channel, or False if the channel does not have a parent or the parent's age restriction status could not be determined.
     """
     channel = context.channel
+    # if message sent on a DM channel, return False
+    if context.guild is None:
+        return True
     if channel.type in (11, 12):
-        nsfwBool = channel.parent_channel.nsfw
+        nsfw_bool = channel.parent_channel.nsfw
     else:
-        nsfwBool = channel.nsfw
-    return nsfwBool
+        nsfw_bool = channel.nsfw
+    return nsfw_bool
 
 
 def pluralize(x):
