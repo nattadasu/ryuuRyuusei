@@ -2,6 +2,7 @@
 Automatically send a media (anime, manga, games, movie, tv) embed info
 to a channel when a message is sent with a link to a supported site.
 """
+import re
 from typing import Literal
 
 import aiohttp
@@ -11,13 +12,66 @@ from interactions.api.events import MessageCreate
 
 from classes.anilist import AniList
 from classes.animeapi import AnimeApi
+from classes.mangadex import Mangadex, Manga
 from classes.simkl import Simkl
-from classes.mangadex import Mangadex
 from modules.anilist import anilist_submit
 from modules.commons import save_traceback_to_file
 from modules.myanimelist import mal_submit
 from modules.rawg import rawg_submit
 from modules.simkl import simkl_submit
+
+
+def intepret_mdx(data: Manga) -> tuple[str, str, str, str]:
+    """Get the media ID and source from a MangaDex manga object"""
+    mal_id = data.attributes.links.mal
+    al_id = data.attributes.links.al
+    kt_id = data.attributes.links.kt
+    if not mal_id and not al_id and not kt_id:
+        return None, None, None, None
+    if al_id:
+        send_to = "anilist"
+        send_type = "manga"
+        media_id = al_id
+        source = "anilist"
+    elif kt_id:
+        mal_id = kitsu_id_to_other_id(kt_id, "manga", "anilist")
+        if mal_id is None:
+            return None, None, None, None
+        send_to = "anilist"
+        send_type = "manga"
+        media_id = mal_id
+        source = "myanimelist"
+    else:
+        send_to = "anilist"
+        send_type = "manga"
+        media_id = mal_id
+        source = "myanimelist"
+    return send_to, send_type, media_id, source
+
+
+async def kitsu_id_to_other_id(
+    kitsu_id: str,
+    media_kind: Literal["anime", "manga"],
+    destination: Literal["anilist", "myanimelist"]
+) -> str | None:
+    """Convert a Kitsu ID to another ID"""
+    if not kitsu_id.isdigit():
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"https://kitsu.io/api/edge/{media_kind}?filter[slug]={kitsu_id}") as resp:
+                if resp.status != 200:
+                    return None
+                data = await resp.json()
+                kitsu_id = data["data"][0]["id"]
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"https://kitsu.io/api/edge/{media_kind}/{kitsu_id}/mappings") as resp:
+            if resp.status != 200:
+                return
+            data = await resp.json()
+            # find for anilist/manga on data.data[*].attributes.externalSite
+            for mapping in data["data"]:
+                if mapping["attributes"]["externalSite"] == f"{destination}/{media_kind}":
+                    return mapping["attributes"]["externalId"]
+    return None
 
 
 class MessageListen(ipy.Extension):
@@ -34,6 +88,10 @@ class MessageListen(ipy.Extension):
         mentioned = msg_content.startswith(
             f'<@!{self.bot.user.id}>') or msg_content.startswith(f'<@{self.bot.user.id}>')
 
+        # do not process if the message explicitly says not to
+        if re.search(r"no bot", msg_content, re.IGNORECASE) or msg_content.startswith("!!"):
+            return
+
         # if the message mentions the bot, send warning
         if mentioned and len(msg_content) <= 30:
             await ctx.reply(
@@ -49,8 +107,9 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                            "game", "movie", "tv"] | None = None
         media_id: str | None = None
         source: str | None = None
+        mdx: Manga | None = None
 
-        match regex_spm.match_in(msg_content):
+        match regex_spm.search_in(msg_content):
             case r"(?:https?://)?(?:www\.)?anilist\.co/anime/(?P<mediaid>\d+)" as ids:
                 send_to = "mal"
                 send_type = "anime"
@@ -102,28 +161,13 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 # try find AniList ID on Kitsu GraphQL API
                 ids: dict[str, str]
                 media_id: str = ids["mediaid"]
-                if not media_id.isdigit():
-                    async with aiohttp.ClientSession() as session:
-                        async with session.get(f"https://kitsu.io/api/edge/manga?filter[slug]={media_id}") as resp:
-                            if resp.status != 200:
-                                return
-                            data = await resp.json()
-                            media_id = data["data"][0]["id"]
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(f"https://kitsu.io/api/edge/manga/{media_id}/mappings") as resp:
-                        if resp.status != 200:
-                            return
-                        data = await resp.json()
-                        # find for anilist/manga on data.data[*].attributes.externalSite
-                        for mapping in data["data"]:
-                            if mapping["attributes"]["externalSite"] == "anilist/manga":
-                                send_to = "anilist"
-                                send_type = "manga"
-                                media_id = mapping["attributes"]["externalId"]
-                                source = "anilist"
-                                break
-                        else:
-                            return
+                anilist_id = await kitsu_id_to_other_id(media_id, "manga", "anilist")
+                if anilist_id is None:
+                    return
+                send_to = "anilist"
+                send_type = "manga"
+                media_id = anilist_id
+                source = "anilist"
             case r"(?:https?://)?(?:www\.)?livechart\.me/anime/(?P<mediaid>[\w\-]+)" as ids:
                 send_to = "mal"
                 send_type = "anime"
@@ -144,7 +188,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_type = "anime"
                 media_id = ids["mediaid"]
                 source = "notify"
-            case r"(?:https?://)?(?:www\.)?otakotaku\.com/anime/view/(?P<mediaid>[\w\-]+)":
+            case r"(?:https?://)?(?:www\.)?otakotaku\.com/anime/view/(?P<mediaid>[\w\-]+)" as ids:
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
@@ -184,16 +228,12 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 media_id = ids["mediaid"]
                 source = "silveryasha"
             case r"(?:https?://)?(?:www\.)?simkl\.com/anime/(?P<mediaid>\d+)" as ids:
-                try:
-                    async with Simkl() as simkl:
-                        smk_dat = await simkl.get_title_ids(ids["mediaid"], "anime")
-                        media_id = smk_dat.mal
-                        send_to = "mal"
-                        send_type = "anime"
-                        source = "myanimelist"
-                # pylint: disable=broad-exception-caught
-                except Exception:
-                    return
+                async with Simkl() as simkl:
+                    smk_dat = await simkl.get_title_ids(ids["mediaid"], "anime")
+                    media_id = smk_dat.mal
+                    send_to = "mal"
+                    send_type = "anime"
+                    source = "myanimelist"
             case r"(?:https?://)?(?:www\.)?simkl\.com/movies/(?P<mediaid>\d+)" as ids:
                 send_to = "simkl"
                 send_type = "movie"
@@ -207,21 +247,13 @@ If you can't see the slash commands, please re-invite the bot to your server, an
             # mangadex manga
             case r"(?:https?://)?(?:www\.)?mangadex\.org/title/(?P<mediaid>[\w\-]+)" as ids:
                 async with Mangadex() as mdex:
-                    manga = await mdex.get_manga(ids["mediaid"])
-                    mal_id = manga.attributes.links.mal
-                    al_id = manga.attributes.links.al
-                    if not mal_id and not al_id:
-                        return
-                    if al_id:
-                        send_to = "anilist"
-                        send_type = "manga"
-                        media_id = al_id
-                        source = "anilist"
-                    else:
-                        send_to = "anilist"
-                        send_type = "manga"
-                        media_id = mal_id
-                        source = "myanimelist"
+                    mdx = await mdex.get_manga(ids["mediaid"])
+                    send_to, send_type, media_id, source = intepret_mdx(mdx)
+            # mangadex chapter
+            case r"(?:https?://)?(?:www\.)?mangadex\.org/chapter/(?P<chapterid>[\w\-]+)" as ids:
+                async with Mangadex() as mdex:
+                    mdx = await mdex.get_manga_from_chapter(ids["chapterid"])
+                    send_to, send_type, media_id, source = intepret_mdx(mdx)
             case _:
                 return
 

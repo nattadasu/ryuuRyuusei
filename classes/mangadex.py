@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any, Literal
 
 import aiohttp
+from asyncio import sleep
 from dacite import from_dict, Config
 
 from classes.cache import Caching
@@ -144,9 +145,9 @@ class MangaAttributes:
     """Manga state"""
     version: int
     """Manga version"""
-    createdAt: datetime | str | None
+    createdAt: datetime | None
     """Manga creation date"""
-    updatedAt: datetime | str | None
+    updatedAt: datetime | None
     """Manga last update date"""
     availableTranslatedLanguage: list[str] | None
     """Manga available translated languages"""
@@ -220,3 +221,26 @@ class Mangadex:
         data = await self._request(f"https://api.mangadex.org/manga/{manga_id}")
         cache_.write_cache(cache_file_path, data["data"])
         return from_dict(Manga, data["data"], config=dacite_config)
+
+    async def get_manga_from_chapter(self, chapter_id: str) -> Manga:
+        """Get manga from a chapter ID"""
+        cache_file_path = cache_.get_cache_path(f"chapter/{chapter_id}.json")
+        cached_data = cache_.read_cache(cache_file_path)
+        if not cached_data:
+            raw = await self._request(f"https://api.mangadex.org/chapter/{chapter_id}")
+            data = raw["data"]
+            cache_.write_cache(cache_file_path, data)
+            sleep(0.5)
+        else:
+            data = cached_data
+        # find manga id in data.data.relationships[*].type == "manga"
+        manga_id = next(
+            (
+                relationship["id"]
+                for relationship in data["relationships"]
+                if relationship["type"] == "manga"
+            ),
+            None
+        )
+        mdx = await self.get_manga(manga_id)
+        return mdx
