@@ -177,7 +177,8 @@ def generate_search_embed(
     Returns:
         Embed: The generated search selection embed.
     """
-    lang_dict: dict[str, Any] = fetch_language_data(code=language, use_raw=True)
+    lang_dict: dict[str, Any] = fetch_language_data(
+        code=language, use_raw=True)
     match len(results):
         case 1:
             count = lang_dict["quantities"][f"{media_type}"]["one"]
@@ -225,7 +226,8 @@ def generate_utils_except_embed(
         >>> generate_utils_except_embed("An error occurred while processing the request.", "Field", "Value", "Error message")
         <discord.Embed object at 0x...>
     """
-    lang_dict: dict[str, Any] = fetch_language_data(code=language, use_raw=True)
+    lang_dict: dict[str, Any] = fetch_language_data(
+        code=language, use_raw=True)
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
     embed = Embed(
         color=color,
@@ -463,7 +465,8 @@ def platform_exception_embed(
         title=lang_dict["commons"]["error"],
         description=description,
         fields=[
-            EmbedField(name=lang_dict["commons"]["reason"], value=error, inline=False)
+            EmbedField(name=lang_dict["commons"]
+                       ["reason"], value=error, inline=False)
         ],  # type: ignore
     )
     embed.set_thumbnail(
