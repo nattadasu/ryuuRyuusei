@@ -30,7 +30,8 @@ class MessageListen(ipy.Extension):
             return
 
         msg_content = ctx.content
-        mentioned = msg_content.startswith(f'<@!{self.bot.user.id}>') or msg_content.startswith(f'<@{self.bot.user.id}>')
+        mentioned = msg_content.startswith(
+            f'<@!{self.bot.user.id}>') or msg_content.startswith(f'<@{self.bot.user.id}>')
 
         # if the message mentions the bot, send warning
         if mentioned and len(msg_content) <= 30:
@@ -43,7 +44,8 @@ If you can't see the slash commands, please re-invite the bot to your server, an
             return
 
         send_to: Literal["anilist", "mal", "simkl", "rawg"] | None = None
-        send_type: Literal["anime", "manga", "game", "movie", "tv"] | None = None
+        send_type: Literal["anime", "manga",
+                           "game", "movie", "tv"] | None = None
         media_id: str | None = None
         source: str | None = None
 
