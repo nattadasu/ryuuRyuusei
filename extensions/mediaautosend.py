@@ -124,7 +124,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_type = "manga"
                 media_id = ids["mediaid"]
                 source = "anilist"
-            case r"(?:https?://)?(?:www\.)?anidb\.net/anime/(?P<mediaid>\d+)" as ids:
+            case r"(?:https?://)?(?:www\.)?anidb\.net/(?:anime/|a)(?P<mediaid>\d+)" as ids:
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
@@ -144,7 +144,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_type = "anime"
                 media_id = ids["mediaid"]
                 source = "annict"
-            case r"(?:https?://)?(?:www\.)?kaize\.io/anime/(?P<mediaid>\d+)" as ids:
+            case r"(?:https?://)?(?:www\.)?kaize\.io/anime/(?P<mediaid>[\w\-]+)" as ids:
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
