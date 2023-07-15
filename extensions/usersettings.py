@@ -27,7 +27,7 @@ class UserSettings(ipy.Extension):
         name="language",
         description="Change the bot language",
     )
-    
+
     @usersettings_head.subcommand(
         sub_cmd_name="autoembed",
         sub_cmd_description="Configure autoembed function",
@@ -61,7 +61,7 @@ class UserSettings(ipy.Extension):
         if not path_exist and state_ is False:
             await ctx.send("It seems you've disabled the feature already. If you wanted to enable, set `state` to `enable`", ephemeral=True)
             return
-        
+
         if state_:
             with open(file_path, "w", encoding="utf-8") as file:
                 file.write("")
@@ -83,7 +83,7 @@ Upcoming: IMDb, TMDB, Trakt
 *Uses RAWG*
 RAWG""", ephemeral=True)
             return
-    
+
         os.remove(file_path)
         await ctx.send("Feature disabled.", ephemeral=True)
 
