@@ -102,7 +102,7 @@ Please use the slash command `/help` to see a list of commands available.
 If you can't see the slash commands, please re-invite the bot to your server, and make sure you have the `applications.commands` scope enabled."""
             )
             return
-            
+
         if not os.path.exists(f"database/allowlist_autoembed/{ctx.author.id}"):
             return
 
