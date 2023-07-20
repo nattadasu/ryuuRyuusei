@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 import json
-from typing import Dict
+from typing import Any
 
 import aiohttp
 import pandas as pd
 
 from classes.cache import Caching
 
-MAIN_SITE = "https://aniapi.nattadasu.my.id/myanimelist%28%29.json"
+MAIN_SITE = "https://raw.githubusercontent.com/nattadasu/animeApi/v3/database/myanimelist.json"
 CACHE_PATH = "cache/"
 FILE_NAME = "mal.json"
 
@@ -19,7 +19,7 @@ FILE_PATH = Cache.get_cache_path(FILE_NAME)
 async def mal_get_data() -> None:
     """Fetches data from MAIN_SITE and saves it to a JSON file."""
     async with aiohttp.ClientSession() as session, session.get(MAIN_SITE) as response:
-        if response.status != 200:
+        if response.status not in [200, 302, 304]:
             print(
                 f"Error fetching data: HTTP {response.status}: {response.reason}")
             return
@@ -29,7 +29,7 @@ async def mal_get_data() -> None:
     Cache.write_cache(FILE_PATH, data)
 
 
-def mal_load_data() -> Dict:
+def mal_load_data() -> dict[str, Any]:
     """
     Loads data from the JSON file and returns it as a dictionary.
 

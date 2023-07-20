@@ -28,8 +28,12 @@ class AnimeApiAnime:
     """AniSearch ID"""
     annict: int | None = None
     """Annict ID"""
+    imdb: str | None = None
+    """IMDb ID"""
     kaize: str | None = None
     """Kaize slug"""
+    kaize_id: int | None = None
+    """Kaize ID"""
     kitsu: int | None = None
     """Kitsu ID, user must resolve slug to ID if using this"""
     livechart: int | None = None
@@ -46,6 +50,8 @@ class AnimeApiAnime:
     """Shoboi ID"""
     silveryasha: int | None = None
     """SilverYasha Database Tontonan Indonesia ID"""
+    themoviedb: int | None = None
+    """The Movie Database ID"""
     trakt: int | None = None
     """Trakt ID, user must resolve slug to ID if using this"""
     trakt_type: Literal["shows", "movies"] | None = None
@@ -63,7 +69,7 @@ class AnimeApi:
 
     def __init__(self):
         """Initialize the AniAPI API Wrapper"""
-        self.base_url = "https://aniapi.nattadasu.my.id"
+        self.base_url = "https://animeapi.my.id"
         self.session = None
 
     async def __aenter__(self):
