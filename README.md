@@ -110,6 +110,9 @@ By inviting this bot to your server or using it, you agree to the
 <a href="https://top.gg/bot/811887256368840744">
   <img src="https://top.gg/api/widget/811887256368840744.svg">
 </a>
+<a href="https://discord.bots.gg/bots/811887256368840744">
+  <img src="https://botsgg.snazzah.dev/widget/811887256368840744/default.svg">
+</a>
 </p>
 
 ## 🎈 Usage
