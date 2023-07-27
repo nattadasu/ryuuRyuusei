@@ -105,7 +105,7 @@ class HtmlMyAnimeList:
                         if len(activity) == 2:
                             # check if in activity[1] has a year after the comma
                             date_split = activity[1].split(" ")
-                            if len(date_split[0]) == 4:
+                            if re.match(r"\d{4}", date_split[0]) is not None:
                                 last_online = datetime.strptime(
                                     f"{activity[0]}, {activity[1]}", date_format
                                 )
