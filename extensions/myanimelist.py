@@ -6,13 +6,13 @@ Contains:
   of a user on MyAnimeList directly on Discord
 """
 
+import re
 from datetime import datetime as dtime
 from datetime import timezone as tz
 from typing import Any, Literal
 from urllib.parse import quote
 
 import interactions as ipy
-import re
 
 from classes.database import DatabaseException, UserDatabase, UserDatabaseClass
 from classes.excepts import ProviderHttpError
@@ -301,7 +301,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             )
             if embed_layout == "new":
                 embed.add_fields(
-                    ipy.EmbedField(name="🚁 Gender", value=gender, inline=True),  # type: ignore
+                    ipy.EmbedField(name="🚁 Gender", value=gender,
+                                   inline=True),  # type: ignore
                     ipy.EmbedField(name="📍 Location",
                                    value=location, inline=True),
                     ipy.EmbedField(name="📅 Last Online",
@@ -540,10 +541,12 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
 
         foo = ""
         if embed_layout in ["new", "minimal", "old"]:
-            direct_pronoun_match = re.search(r'\b(?:he|him|she|her|they|them)\b', gender, re.IGNORECASE)
+            direct_pronoun_match = re.search(
+                r'\b(?:he|him|she|her|they|them)\b', gender, re.IGNORECASE)
             if direct_pronoun_match:
                 direct_pronoun = direct_pronoun_match.group().lower()
-                pronouns = {'he': 'his', 'him': 'his', 'she': 'her', 'her': 'hers', 'they': 'their', 'them': 'theirs'}[direct_pronoun]
+                pronouns = {'he': 'his', 'him': 'his', 'she': 'her',
+                            'her': 'hers', 'they': 'their', 'them': 'theirs'}[direct_pronoun]
             else:
                 # Define regular expression patterns for each gender and their derivatives
                 male_pattern = r'\b(?:boy|m(ale)?|man|bro(ther)?)\b'
