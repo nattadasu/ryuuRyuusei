@@ -461,12 +461,12 @@ class JikanUserStruct:
     """Username"""
     url: str
     """URL of the user"""
-    images: JikanImages | None
-    """Images of the user"""
-    location: str | None
-    """Location of the user"""
     joined: datetime
     """Date the user joined MyAnimeList"""
+    images: JikanImages | None = None
+    """Images of the user"""
+    location: str | None = None
+    """Location of the user"""
     gender: str | None = None
     """Gender of the user"""
     last_online: datetime | None = None
