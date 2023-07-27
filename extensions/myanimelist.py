@@ -12,11 +12,12 @@ from typing import Any, Literal
 from urllib.parse import quote
 
 import interactions as ipy
+import re
 
-from classes.database import DatabaseException, UserDatabase
+from classes.database import DatabaseException, UserDatabase, UserDatabaseClass
 from classes.excepts import ProviderHttpError
 from classes.html.myanimelist import HtmlMyAnimeList
-from classes.jikan import JikanApi, JikanException
+from classes.jikan import JikanApi, JikanException, JikanUserStruct
 from classes.rss.myanimelist import MediaStatus
 from classes.rss.myanimelist import MyAnimeListRss as Rss
 from classes.rss.myanimelist import RssItem
@@ -106,6 +107,9 @@ class MyAnimeListCog(ipy.Extension):
         """
         await ctx.defer()
         lang_dict: dict[str, Any] = fetch_language_data("en_US", True)
+        user_data: JikanUserStruct | None = None
+        extended: JikanUserStruct = JikanUserStruct(
+            mal_id=0, username="", url="", joined=dtime.now())
 
         if mal_username and user:
             embed = platform_exception_embed(
@@ -123,8 +127,8 @@ class MyAnimeListCog(ipy.Extension):
         if mal_username is None:
             try:
                 async with UserDatabase() as database:
-                    user_data = await database.get_user_data(discord_id=user.id)
-                    mal_username = user_data.mal_username
+                    data_ = await database.get_user_data(discord_id=user.id)
+                    mal_username = data_.mal_username
             except DatabaseException:
                 mal_username = None
 
@@ -166,6 +170,16 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             await ctx.send(embed=embed)
             save_traceback_to_file("myanimelist_profile", ctx.author, error)
 
+        if user_data is None:
+            embed = platform_exception_embed(
+                description=f"""We couldn't find the user `{mal_username}` on MyAnimeList!""",
+                error_type=PlatformErrType.USER,
+                lang_dict=lang_dict,
+                error="User not found",
+            )
+            await ctx.send(embed=embed)
+            return
+
         username = sanitize_markdown(user_data.username)
         user_id = user_data.mal_id
         birthday = user_data.birthday
@@ -177,17 +191,31 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             location = f"[{location}]({location_url})"
         else:
             location = "Unset"
-        gender = user_data.gender if user_data.gender not in [
-            "", None] else "Unset"
+        if user_data.gender not in ["", None]:
+            gender = user_data.gender
+        else:
+            gender = "Unset"
+        days_watched = 0
+        days_read = 0
+        title_watched = 0
+        title_read = 0
         if user_data.statistics:
             anime = user_data.statistics.anime
+            if anime and anime.days_watched:
+                days_watched = anime.days_watched
+            if anime and (anime.watching or anime.completed):
+                title_watched = (anime.watching or 0) + (anime.completed or 0)
             manga = user_data.statistics.manga
+            if manga and manga.days_read:
+                days_read = manga.days_read
+            if manga and (manga.reading or manga.completed):
+                title_read = (manga.reading or 0) + (manga.completed or 0)
         else:
             anime = None
             manga = None
-        anime_float = convert_float_to_time(
-            anime.days_watched) if anime else None
-        manga_float = convert_float_to_time(manga.days_read) if manga else None
+        anime_float = convert_float_to_time(days_watched)
+        manga_float = convert_float_to_time(days_read)
+        time_wasted = convert_float_to_time(days_watched + days_read)
         joined = int(user_data.joined.timestamp())
         if birthday is not None:
             timestamped = birthday.timestamp()
@@ -205,14 +233,25 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             birthday_rem: str = ""
             birthday_rel: str = ""
 
-        birthday_formatted = (
-            f"{birthday_str} {birthday_rel} (Next birthday {birthday_rem})"
-            if birthday_str
-            else "Unset"
-        )
-        joined_formatted = f"<t:{joined}:D> (<t:{joined}:R>)"
+        if embed_layout != "minimal":
+            birthday_formatted = (
+                f"{birthday_str} {birthday_rel} (Next birthday {birthday_rem})"
+                if birthday_str
+                else "Unset"
+            )
+        else:
+            birthday_formatted = (
+                f"{birthday_str}"
+                if birthday_str
+                else "Unset"
+            )
 
-        last_online = extended.last_online.timestamp()
+        if embed_layout == "minimal":
+            joined_formatted = f"<t:{joined}:R>"
+        else:
+            joined_formatted = f"<t:{joined}:D> (<t:{joined}:R>)"
+
+        last_online = extended.last_online.timestamp() if extended.last_online else 0
 
         components = [
             ipy.Button(
@@ -241,10 +280,10 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                 icon_url="https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png",
             ),
             color=0x2E51A2,
-            timestamp=dtime.now(
-                tz=tz.utc),
+            timestamp=dtime.now(tz=tz.utc),  # type: ignore
         )
-        embed.set_thumbnail(url=user_data.images.webp.image_url)
+        if user_data.images and user_data.images.webp:
+            embed.set_thumbnail(url=user_data.images.webp.image_url)
 
         if embed_layout in ["minimal", "new"]:
             embed.add_fields(
@@ -262,7 +301,7 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             )
             if embed_layout == "new":
                 embed.add_fields(
-                    ipy.EmbedField(name="🚁 Gender", value=gender, inline=True),
+                    ipy.EmbedField(name="🚁 Gender", value=gender, inline=True),  # type: ignore
                     ipy.EmbedField(name="📍 Location",
                                    value=location, inline=True),
                     ipy.EmbedField(name="📅 Last Online",
@@ -271,8 +310,9 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                 )
             anime_value_str = f"""* Total: {anime.total_entries:,}
 * Mean Score: ⭐ {anime.mean_score}/10
-* Days Watched: {anime_float}
-* Episodes Watched: {anime.episodes_watched:,}"""
+* Anime Watched: {title_watched:,}
+* Episodes Watched: {anime.episodes_watched:,}
+* Time Wasted: {anime_float}"""
             embed.add_field(
                 name="🎞️ Anime List Summary",
                 value=anime_value_str,
@@ -281,7 +321,7 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Anime Statuses",
-                    value=f"""👀 Currently Watching: {anime.watching:,}
+                    value=f"""👀 Watching: {anime.watching:,}
 ✅ Completed: {anime.completed:,}
 ⏰ Planned: {anime.plan_to_watch:,}
 ⏸️ On Hold: {anime.on_hold:,}
@@ -308,9 +348,10 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                 )
             manga_value_str = f"""* Total: {manga.total_entries:,}
 * Mean Score: ⭐ {manga.mean_score}/10
-* Days Read, Estimated: {manga_float}
+* Manga Read: {title_read:,}
 * Chapters Read: {manga.chapters_read:,}
-* Volumes Read: {manga.volumes_read:,}"""
+* Volumes Read: {manga.volumes_read:,}
+* Time Wasted, Estimated: {manga_float}"""
             embed.add_field(
                 name="📔 Manga List Summary",
                 value=manga_value_str,
@@ -319,7 +360,7 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Manga Statuses",
-                    value=f"""👀 Currently Reading: {manga.reading:,}
+                    value=f"""👀 Reading: {manga.reading:,}
 ✅ Completed: {manga.completed:,}
 ⏰ Planned: {manga.plan_to_read:,}
 ⏸️ On Hold: {manga.on_hold:,}
@@ -359,8 +400,9 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                     name="Anime List Summary",
                     value=f"""* Total: {anime.total_entries:,}
 * Mean Score: ⭐ {anime.mean_score}/10
-* Days Watched: {anime_float}
+* Anime Watched: {title_watched:,}
 * Episodes Watched: {anime.episodes_watched:,}
+* Time Wasted: {anime_float}
 👀 {anime.watching:,} | ✅ {anime.completed:,} | ⏰ {anime.plan_to_watch:,} | ⏸️ {anime.on_hold:,} | 🗑️ {anime.dropped:,}""",
                     inline=True,
                 ),
@@ -368,9 +410,10 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                     name="Manga List Summary",
                     value=f"""* Total: {manga.total_entries:,}
 * Mean Score: ⭐ {manga.mean_score}/10
-* Days Read, Estimated: {manga_float}
+* Manga Read: {title_read:,}
 * Chapters Read: {manga.chapters_read:,}
 * Volumes Read: {manga.volumes_read:,}
+* Time Wasted, Estimated: {manga_float}
 👀 {manga.reading:,} | ✅ {manga.completed:,} | ⏰ {manga.plan_to_read:,} | ⏸️ {manga.on_hold:,} | 🗑️ {manga.dropped:,}""",
                     inline=True,
                 ),
@@ -478,10 +521,8 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                 value=man_data,
                 inline=True,
             )
-        if embed_layout == "minimal":
-            embed.set_footer(
-                text='Powered by Jikan API for data. To expand what data will be shown, modify embed_layout parameter to "old" or "new"')
-        elif embed_layout in ["old", "new"]:
+
+        if embed_layout in ["old", "new"]:
             components += [
                 ipy.Button(
                     style=ipy.ButtonStyle.URL,
@@ -496,8 +537,33 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             ]
             embed.set_image(
                 url=f"https://malheatmap.com/users/{username}/signature")
-            embed.set_footer(
-                text="Powered by Jikan API for data and MAL Heatmap for Activity Heatmap. Data can be inacurrate as Jikan and Ryuusei cache your profile up to a day")
+
+        foo = ""
+        if embed_layout in ["new", "minimal", "old"]:
+            direct_pronoun_match = re.search(r'\b(?:he|him|she|her|they|them)\b', gender, re.IGNORECASE)
+            if direct_pronoun_match:
+                direct_pronoun = direct_pronoun_match.group().lower()
+                pronouns = {'he': 'his', 'him': 'his', 'she': 'her', 'her': 'hers', 'they': 'their', 'them': 'theirs'}[direct_pronoun]
+            else:
+                # Define regular expression patterns for each gender and their derivatives
+                male_pattern = r'\b(?:boy|m(ale)?|man|bro(ther)?)\b'
+                female_pattern = r'\b(?:girl|f(emale)?|woman|sis(ter)?)\b'
+
+                # Check for gender-sensitive matches using regex with case-insensitive flag
+                if re.search(male_pattern, gender, re.IGNORECASE):
+                    pronouns = "his"
+                elif re.search(female_pattern, gender, re.IGNORECASE):
+                    pronouns = "her"
+                else:
+                    pronouns = "their"
+            if time_wasted.count(",") > 1:
+                time_wasted = time_wasted.rsplit(",", 1)
+                time_wasted = " and".join(time_wasted)
+            foo = f"This user has wasted {pronouns} life watching and reading for {time_wasted}"
+        elif embed_layout in ["timeline", "timeline_title"]:
+            foo = "Live feed sourced from the user's RSS feed"
+
+        embed.set_footer(text=foo)
 
         await ctx.send(embed=embed, components=components)
 

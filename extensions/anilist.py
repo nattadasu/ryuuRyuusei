@@ -74,6 +74,7 @@ class AniListCog(ipy.Extension):
         await ctx.defer()
         ul = read_user_language(ctx)
         l_: dict[str, Any] = fetch_language_data(ul, use_raw=True)
+        user_data: AniListUserStruct | None = None
 
         if anilist_username and user:
             embed = platform_exception_embed(
@@ -122,12 +123,22 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             await ctx.send(embed=embed)
             save_traceback_to_file("anilist_profile", ctx.author, e)
 
+        if user_data is None:
+            embed = platform_exception_embed(
+                description=f"AniList user `{anilist_username}` not found",
+                error_type=PlatformErrType.USER,
+                lang_dict=l_,
+                error="AniList user not found",
+            )
+            await ctx.send(embed=embed)
+            return
+
         username = sanitize_markdown(user_data.name)
         user_id = user_data.id
-        avatar = user_data.avatar.large
+        avatar = user_data.avatar.large if user_data.avatar else None
         user_url = user_data.siteUrl
         created_at = user_data.createdAt
-        donator = user_data.donatorTier
+        donator = user_data.donatorTier if user_data.donatorTier else 0
         if donator >= 3:
             donator_flair = f" (`{user_data.donatorBadge}`)"
         elif donator >= 1:
@@ -136,18 +147,24 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             donator_flair = ""
         donator = f"Tier {donator}" if donator != 0 else "Not a donator"
 
-        banner = user_data.bannerImage
-        joined_formatted = (
-            f"<t:{int(created_at.timestamp())}:D> (<t:{int(created_at.timestamp())}:R>)"
-        )
+        banner = user_data.bannerImage if user_data.bannerImage else ""
+
+        if embed_layout == "minimal":
+            joined_formatted = f"<t:{int(created_at.timestamp())}:R>"
+        else:
+            joined_formatted = (
+                f"<t:{int(created_at.timestamp())}:D> (<t:{int(created_at.timestamp())}:R>)"
+            )
+
         anime_current = 0
         anime_planning = 0
         anime_completed = 0
         anime_dropped = 0
         anime_paused = 0
         anime_stats = user_data.statistics.anime
-        anime_mean_score = anime_stats.meanScore
-        anime_episodes_watched = anime_stats.episodesWatched
+        anime_mean_score = anime_stats.meanScore if anime_stats else 0
+        anime_episodes_watched = anime_stats.episodesWatched if anime_stats else 0
+        anime_minutes_watched = (anime_stats.minutesWatched or 0) if anime_stats else 0
         # convert minutes to days
         anime_float = convert_float_to_time(anime_stats.minutesWatched / 1440)
         for status in anime_stats.statuses:
@@ -165,22 +182,24 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                 case _:
                     continue
         anime_total = (
-            anime_completed
-            + anime_current
-            + anime_dropped
-            + anime_paused
-            + anime_planning
+            (anime_completed or 0)
+            + (anime_current or 0)
+            + (anime_dropped or 0)
+            + (anime_paused or 0)
+            + (anime_planning or 0)
         )
+        title_watched = (anime_current or 0) + (anime_completed or 0)
         manga_current = 0
         manga_planning = 0
         manga_completed = 0
         manga_dropped = 0
         manga_paused = 0
         manga_stats = user_data.statistics.manga
-        manga_mean_score = manga_stats.meanScore
-        manga_chapters_read = manga_stats.chaptersRead
-        manga_volumes_read = manga_stats.volumesRead
-        manga_float = convert_float_to_time((8 * manga_chapters_read) / 1440)
+        manga_mean_score = manga_stats.meanScore if manga_stats else 0
+        manga_chapters_read = manga_stats.chaptersRead if manga_stats else 0
+        manga_volumes_read = manga_stats.volumesRead if manga_stats else 0
+        manga_minutes_read = 8 * (manga_stats.chaptersRead or 0) if manga_stats else 0
+        manga_float = convert_float_to_time(manga_minutes_read / 1440)
         for status in manga_stats.statuses:
             match status.status:
                 case "CURRENT":
@@ -196,12 +215,17 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                 case _:
                     continue
         manga_total = (
-            manga_completed
-            + manga_current
-            + manga_dropped
-            + manga_paused
-            + manga_planning
+            (manga_completed or 0)
+            + (manga_current or 0)
+            + (manga_dropped or 0)
+            + (manga_paused or 0)
+            + (manga_planning or 0)
         )
+        title_read = (manga_current or 0) + (manga_completed or 0)
+        time_wasted = convert_float_to_time(
+            (anime_minutes_watched + manga_minutes_read) / 1440
+        )
+
         embed_author = ipy.EmbedAuthor(
             name="AniList Profile",
             url="https://anilist.co",
@@ -230,9 +254,10 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             url=user_url,
             author=embed_author,
             color=embed_color,
-            timestamp=dtime.now(tz=tz.utc),
+            timestamp=dtime.now(tz=tz.utc),  # type: ignore
         )
-        embed.set_thumbnail(url=avatar)
+        if avatar:
+            embed.set_thumbnail(url=avatar)
 
         if embed_layout == "card":
             embed.description = f"""* **User ID:** `{user_id}`
@@ -261,8 +286,9 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             )
             anime_value_str = f"""* Total: {anime_total:,}
 * Mean Score: ⭐ {anime_mean_score}/100
-* Days Watched: {anime_float}
-* Episodes Watched: {anime_episodes_watched:,}"""
+* Anime Watched: {title_watched:,}
+* Episodes Watched: {anime_episodes_watched:,}
+* Time Wasted: {anime_float}"""
             embed.add_field(
                 name="🎞️ Anime List Summary",
                 value=anime_value_str,
@@ -271,7 +297,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Anime Statuses",
-                    value=f"""👀 Currently Watching: {anime_current:,}
+                    value=f"""👀 Watching: {anime_current:,}
 ✅ Completed: {anime_completed:,}
 ⏰ Planned: {anime_planning:,}
 ⏸️ On Hold: {anime_paused:,}
@@ -294,9 +320,10 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                 )
             manga_value_str = f"""* Total: {manga_total}
 * Mean Score: ⭐ {manga_mean_score}/100
-* Days Read, Estimated: {manga_float}
+* Manga Read: {title_read:,}
 * Chapters Read: {manga_chapters_read:,}
-* Volumes Read: {manga_volumes_read:,}"""
+* Volumes Read: {manga_volumes_read:,}
+* Time Wasted, Estimated: {manga_float}"""
             embed.add_field(
                 name="📔 Manga List Summary",
                 value=manga_value_str,
@@ -305,7 +332,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Manga Statuses",
-                    value=f"""👀 Currently Reading: {manga_current:,}
+                    value=f"""👀 Reading: {manga_current:,}
 ✅ Completed: {manga_completed:,}
 ⏰ Planned: {manga_planning:,}
 ⏸️ On Hold: {manga_paused:,}
@@ -330,17 +357,18 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             embed.add_fields(
                 ipy.EmbedField(
                     name="Profile",
-                    value=f"""* **User ID:** `{user_id}`
-* **Account Created:** {joined_formatted}
-* **Donator:** {donator}{donator_flair}""",
+                    value=f"""* User ID: `{user_id}`
+* Account Created: {joined_formatted}
+* Donator: {donator}{donator_flair}""",
                     inline=False,
                 ),
                 ipy.EmbedField(
                     name="Anime List Summary",
                     value=f"""* Total: {anime_total:,}
 * Mean Score: ⭐ {anime_mean_score}/100
-* Days Watched: {anime_float}
+* Anime Watched: {title_watched:,}
 * Episodes Watched: {anime_episodes_watched:,}
+* Time Wasted: {anime_float}
 👀 {anime_current:,} | ✅ {anime_completed:,} | ⏰ {anime_planning:,} | ⏸️ {anime_paused:,} | 🗑️ {anime_dropped:,}""",
                     inline=True,
                 ),
@@ -348,9 +376,10 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                     name="Manga List Summary",
                     value=f"""* Total: {manga_total:,}
 * Mean Score: ⭐ {manga_mean_score}/100
-* Days Read, Estimated: {manga_float}
+* Manga Read: {title_read:,}
 * Chapters Read: {manga_chapters_read:,}
 * Volumes Read: {manga_volumes_read:,}
+* Time Wasted, Estimated: {manga_float}
 👀 {manga_current:,} | ✅ {manga_completed:,} | ⏰ {manga_planning:,} | ⏸️ {manga_paused:,} | 🗑️ {manga_dropped:,}""",
                     inline=True,
                 ),
@@ -371,6 +400,13 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             ]
             if banner:
                 embed.set_image(url=banner)
+
+        if embed_layout != "card":
+            if time_wasted.count(",") > 1:
+                time_wasted = time_wasted.rsplit(",", 1)
+                time_wasted = " and".join(time_wasted)
+            foo = f"This user has wasted their life watching and reading for {time_wasted}"
+            embed.set_footer(text=foo)
 
         await ctx.send(embed=embed, components=components)
 

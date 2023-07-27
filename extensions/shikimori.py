@@ -71,6 +71,7 @@ class ShikimoriCog(ipy.Extension):
         await ctx.defer()
         ul = read_user_language(ctx)
         l_: dict[str, Any] = fetch_language_data(ul, use_raw=True)
+        user_data: ShikimoriUserStruct | None = None
 
         if shikimori_username and user:
             embed = platform_exception_embed(
@@ -122,6 +123,16 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
             await ctx.send(embed=embed)
             save_traceback_to_file("shikimori_profile", ctx.author, e)
 
+        if user_data is None:
+            embed = platform_exception_embed(
+                description=f"User `{shikimori_username}` not found!",
+                error_type=PlatformErrType.USER,
+                lang_dict=l_,
+                error="User not found",
+            )
+            await ctx.send(embed=embed)
+            return
+
         username = user_data.nickname
         user_id = user_data.id
         avatar = user_data.image.x160
@@ -168,6 +179,7 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
             anime_ranked += score.value
             anime_mean_score += int(score.name) * score.value
         anime_mean_score = round(anime_mean_score / anime_ranked, 2)
+        title_watched = anime_completed + anime_current + anime_repeating
 
         manga_completed = 0
         manga_current = 0
@@ -199,6 +211,7 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
             manga_ranked += score.value
             manga_mean_score += int(score.name) * score.value
         manga_mean_score = round(manga_mean_score / manga_ranked, 2)
+        title_read = manga_completed + manga_current + manga_repeating
 
         embed_author = ipy.EmbedAuthor(
             name="Shikimori Profile",
@@ -242,9 +255,11 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
                 ipy.EmbedField(name="🚁 Gender", value=gender_str, inline=True),
             )
             anime_value_str = f"""* Total: {anime_total:,}
-* Mean Score: ⭐ {anime_mean_score}/10"""
+* Mean Score: ⭐ {anime_mean_score}/10
+* Anime Watched: {title_watched:,}"""
             manga_value_str = f"""* Total: {manga_total:,}
-* Mean Score: ⭐ {manga_mean_score}/10"""
+* Mean Score: ⭐ {manga_mean_score}/10
+* Manga Read: {title_read:,}"""
             embed.add_field(
                 name="🎞️ Anime List Summary",
                 value=anime_value_str,
@@ -253,7 +268,7 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Anime Statuses",
-                    value=f"""👀 Currently Watching: {anime_current:,}
+                    value=f"""👀 Watching: {anime_current:,}
 🔁 Repeating: {anime_repeating:,}
 ✅ Completed: {anime_completed:,}
 ⏰ Planned: {anime_planning:,}
@@ -283,7 +298,7 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
             if embed_layout == "new":
                 embed.add_field(
                     name="ℹ️ Manga Statuses",
-                    value=f"""👀 Currently Reading: {manga_current:,}
+                    value=f"""👀 Reading: {manga_current:,}
 🔁 Repeating: {manga_repeating:,}
 ✅ Completed: {manga_completed:,}
 ⏰ Planned: {manga_planning:,}
@@ -318,6 +333,7 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
                     name="Anime List Summary",
                     value=f"""* Total: {anime_total:,}
 * Mean Score: ⭐ {anime_mean_score}/10
+* Anime Watched: {title_watched:,}
 👀 {anime_current:,} | 🔁 {anime_repeating:,} | ✅ {anime_completed:,} | ⏰ {anime_planning:,} | ⏸️ {anime_paused:,} | 🗑️ {anime_dropped:,}""",
                     inline=True,
                 ),
@@ -325,6 +341,7 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
                     name="Manga List Summary",
                     value=f"""* Total: {manga_total}
 * Mean Score: ⭐ {manga_mean_score}/10
+* Manga Read: {title_read:,}
 👀 {manga_current:,} | 🔁 {manga_repeating:,} | ✅ {manga_completed:,} | ⏰ {manga_planning:,} | ⏸️ {manga_paused:,} | 🗑️ {manga_dropped:,}""",
                     inline=True,
                 ),
