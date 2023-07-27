@@ -164,7 +164,8 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
         anime_stats = user_data.statistics.anime
         anime_mean_score = anime_stats.meanScore if anime_stats else 0
         anime_episodes_watched = anime_stats.episodesWatched if anime_stats else 0
-        anime_minutes_watched = (anime_stats.minutesWatched or 0) if anime_stats else 0
+        anime_minutes_watched = (
+            anime_stats.minutesWatched or 0) if anime_stats else 0
         # convert minutes to days
         anime_float = convert_float_to_time(anime_stats.minutesWatched / 1440)
         for status in anime_stats.statuses:
@@ -198,7 +199,8 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
         manga_mean_score = manga_stats.meanScore if manga_stats else 0
         manga_chapters_read = manga_stats.chaptersRead if manga_stats else 0
         manga_volumes_read = manga_stats.volumesRead if manga_stats else 0
-        manga_minutes_read = 8 * (manga_stats.chaptersRead or 0) if manga_stats else 0
+        manga_minutes_read = 8 * \
+            (manga_stats.chaptersRead or 0) if manga_stats else 0
         manga_float = convert_float_to_time(manga_minutes_read / 1440)
         for status in manga_stats.statuses:
             match status.status:
