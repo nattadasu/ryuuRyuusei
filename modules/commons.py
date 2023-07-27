@@ -438,7 +438,7 @@ class PlatformErrType(Enum):
 def platform_exception_embed(
     description: str,
     error: str,
-    lang_dict: dict,
+    lang_dict: dict[str, Any],
     error_type: PlatformErrType | str = PlatformErrType.SYSTEM,
     color: int = 0xFF0000,
 ) -> Embed:
