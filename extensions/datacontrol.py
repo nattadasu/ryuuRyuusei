@@ -533,10 +533,6 @@ To complete your registration, please follow the instructions below:""",
                         name="YAML",
                         value="yaml",
                     ),
-                    ipy.SlashCommandChoice(
-                        name="Python Dict",
-                        value="py",
-                    ),
                 ],
             ),
         ],
@@ -544,13 +540,13 @@ To complete your registration, please follow the instructions below:""",
     async def export_data(
         self,
         ctx: ipy.SlashContext,
-        file_format: Literal["json", "csv", "yaml", "py"] = "json",
+        file_format: Literal["json", "csv", "yaml"] = "json",
     ):
         """
         Exports user data to preferred format
 
         Args:
-            file_format (Literal["json", "csv", "yaml", "py"], optional): File format to export to. Defaults to "json".
+            file_format (Literal["json", "csv", "yaml"], optional): File format to export to. Defaults to "json".
         """
         await ctx.defer(ephemeral=True)
         async with UserDatabase() as udb:
@@ -580,47 +576,6 @@ To complete your registration, please follow the instructions below:""",
                     sep="\t",
                     encoding="utf-8",
                     header=True)
-            case "py":
-                with open(f"{filename}.py", "w", encoding="utf-8") as file:
-                    file.write(f"""from typing import Union, TypedDict
-
-class UserData(TypedDict):
-    \"\"\"User data\"\"\"
-
-    discordId: int
-    \"\"\"Discord ID\"\"\"
-    discordUsername: Union[str, None]
-    \"\"\"Discord username\"\"\"
-    discordJoined: int
-    \"\"\"Discord joined timestamp\"\"\"
-    malUsername: Union[str, None]
-    \"\"\"MyAnimeList username\"\"\"
-    malId: int
-    \"\"\"MyAnimeList ID\"\"\"
-    malJoined: int
-    \"\"\"MyAnimeList joined timestamp\"\"\"
-    registeredAt: int
-    \"\"\"Registered timestamp\"\"\"
-    registeredGuildId: int
-    \"\"\"Registered guild ID\"\"\"
-    registeredBy: int
-    \"\"\"Registered by\"\"\"
-    registeredGuildName: Union[str, None]
-    \"\"\"Registered guild name\"\"\"
-    anilistUsername: Union[str, None]
-    \"\"\"AniList username\"\"\"
-    anilistId: Union[int, None]
-    \"\"\"AniList ID\"\"\"
-    lastfmUsername: Union[str, None]
-    \"\"\"Last.fm username\"\"\"
-    shikimoriId: Union[int, None]
-    \"\"\"Shikimori ID\"\"\"
-    shikimoriUsername: Union[str, None]
-    \"\"\"Shikimori username\"\"\"
-    settings_language: str
-    \"\"\"Language setting\"\"\"
-
-user_data: UserData = {user_data}""")
             case "yaml":
                 with open(f"{filename}.yaml", "w", encoding="utf-8") as file:
                     yaml.dump(user_data, file, indent=4)
