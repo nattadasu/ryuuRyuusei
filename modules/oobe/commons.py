@@ -119,7 +119,7 @@ def prepare_database():
     for file in files:
         if not os.path.exists(file["path"]):
             with open(file["path"], "w") as f:
-                f.write(file["header"])
+                f.write(file["header"] + "\n")
 
     if not os.path.exists("database/allowlist_autoembed"):
         os.mkdir("database/allowlist_autoembed")
