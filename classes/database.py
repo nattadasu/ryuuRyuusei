@@ -1,4 +1,5 @@
 import json
+import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Literal, Optional
@@ -254,17 +255,22 @@ class UserDatabase:
                 f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error"
             )
         data = row.to_dict(orient="records")[0]
-        try:
-            df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
-            df2.fillna("", inplace=True)
-            row2 = df2[df2["discordId"] == str(discord_id)]
+        data["has_user_settings"] = False
+        # Check if user exist in database/member.csv
+        df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
+        df2.fillna("", inplace=True)
+        row2 = df2[df2["discordId"] == str(discord_id)]
+        if not row2.empty:
             data2 = row2.to_dict(orient="records")[0]
             data2.pop("discordId")
             data2 = {f"settings_{key}": value for key, value in data2.items()}
             data["has_user_settings"] = True
             data.update(data2)
-        except IndexError:
-            data["has_user_settings"] = False
+        # if user exist as a file in database/allowlist_autoembed/ directory
+        # then add it to the data
+        if os.path.exists(f"database/allowlist_autoembed/{discord_id}"):
+            data["has_user_settings"] = True
+            data["settings_allowlist_autoembed"] = True
         for key, value in data.items():
             value = str(value)
             if value.isdigit():
@@ -273,7 +279,7 @@ class UserDatabase:
                 data[key] = True
             elif value.lower() == "false":
                 data[key] = False
-            elif value.lower() in ["null", "", "None"]:
+            elif value.lower() in ["null", "", "None", '""']:
                 data[key] = None
             else:
                 data[key] = str(value)
