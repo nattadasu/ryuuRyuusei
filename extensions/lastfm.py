@@ -137,7 +137,13 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
         fields: list[ipy.EmbedField] = []
 
         for lfm_track in tracks:
-            tr_title = f"{'▶️' if lfm_track.nowplaying else ''} {self.trim_lastfm_title(lfm_track.name)}"
+            tr_title = (
+                # '▶️ '
+                '<a:currentlyPlaying:1135604484362477738> '
+                if lfm_track.nowplaying
+                else ''
+            )
+            tr_title += self.trim_lastfm_title(lfm_track.name)
 
             if isinstance(lfm_track.artist, list):
                 artists: list[str] = []
@@ -177,6 +183,9 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
             fields.append(
                 ipy.EmbedField(
                     name=tr_title,
+#                     value=f"""🧑‍🎤 {tr_artist}
+# 💿 {tr_album}
+# {tr_date}, [Link]({tr_url})""",
                     value=f"""{tr_artist}
 {tr_album}
 {tr_date}, [Link]({tr_url})""",
@@ -229,7 +238,7 @@ Total scrobbles: {int(profile.playcount):,}
     @staticmethod
     def trim_lastfm_title(title: str) -> str:
         """
-        Trim the title to be used in embed up to 100 chars
+        Trim the title to be used in embed up to 215 chars
 
         Args:
             title (str): Title to be trimmed
@@ -237,8 +246,8 @@ Total scrobbles: {int(profile.playcount):,}
         Returns:
             str: Trimmed title
         """
-        if len(title) >= 100:
-            title = title[:97] + "..."
+        if len(title) >= 215:
+            title = title[:212] + "..."
         title = sanitize_markdown(title)
         return title
 
