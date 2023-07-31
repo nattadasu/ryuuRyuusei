@@ -183,9 +183,9 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
             fields.append(
                 ipy.EmbedField(
                     name=tr_title,
-#                     value=f"""🧑‍🎤 {tr_artist}
-# 💿 {tr_album}
-# {tr_date}, [Link]({tr_url})""",
+                    #                     value=f"""🧑‍🎤 {tr_artist}
+                    # 💿 {tr_album}
+                    # {tr_date}, [Link]({tr_url})""",
                     value=f"""{tr_artist}
 {tr_album}
 {tr_date}, [Link]({tr_url})""",
