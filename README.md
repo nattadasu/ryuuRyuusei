@@ -13,6 +13,7 @@
 <img title="Python Version" src="https://img.shields.io/badge/Python-3.10_and_above-blue?logo=python&logoColor=white&style=for-the-badge">
 <a title="interactions.py Version" href="https://pypi.org/project/discord-py-interactions"><img src="https://img.shields.io/badge/interactions--py-5.7.0-blue?logo=python&logoColor=white&style=for-the-badge"></a>
 <a title="Discord Server" href="https://discord.gg/UKvMEZvaXc"><img alt="Discord" src="https://img.shields.io/discord/589128995501637655?color=%235865F2&logo=discord&logoColor=white&style=for-the-badge"></a>
+<a href="https://app.fossa.com/projects/git%2Bgithub.com%2Fnattadasu%2FryuuRyuusei?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnattadasu%2FryuuRyuusei.svg?type=shield"/></a>
 <a href="https://discord.com/api/oauth2/authorize?client_id=811887256368840744&permissions=274878221376&scope=bot%20applications.commands"><img src="https://img.shields.io/badge/Invite%20to%20your%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Shield"></a><br><br>
 <a title="Codacy" href="https://app.codacy.com/gh/nattadasu/ryuuRyuusei/dashboard"><img alt="Codacy grade" src="https://img.shields.io/codacy/grade/8109d97c7cca49ef9dbc96a82796ad66?logo=codacy&style=for-the-badge"> <img alt="Codacy coverage" src="https://img.shields.io/codacy/coverage/8109d97c7cca49ef9dbc96a82796ad66?logo=codacy&style=for-the-badge"></a>
 <img alt="Snyk Vulnerabilities for GitHub Repo" src="https://img.shields.io/snyk/vulnerabilities/github/nattadasu/ryuuRyuusei?logo=snyk&style=for-the-badge"><br>
@@ -585,3 +586,7 @@ who participated in this project.
 <!-- markdownlint-enable MD013 -->
 
 [![Star History Chart](https://api.star-history.com/svg?repos=nattadasu/ryuuRyuusei&type=Date)](https://star-history.com/#nattadasu/ryuuRyuusei&Date)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnattadasu%2FryuuRyuusei.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnattadasu%2FryuuRyuusei?ref=badge_large)
