@@ -230,8 +230,8 @@ class UserDatabase:
             registered_guild_id=Snowflake(data["registeredGuildId"]),
             registered_guild_name=data["registeredGuildName"],
             registered_by=Snowflake(data["registeredBy"]),
-            shikimori_id=id(data["shikimoriId"]
-                            ) if data["shikimoriId"] else None,
+            shikimori_id=int(data["shikimoriId"]
+            ) if data["shikimoriId"] else None,
             shikimori_username=data["shikimoriUsername"]
             if data["shikimoriUsername"]
             else None,
