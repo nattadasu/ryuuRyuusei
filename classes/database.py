@@ -113,8 +113,6 @@ class UserDatabase:
                 data[k] = str(int(v.timestamp()))
             elif isinstance(v, float):
                 data[k] = str(int(v))
-            elif v is None:
-                data[k] = '""'
         df = pd.DataFrame(data, index=[0])
         df = df[data.keys()]
         df.to_csv(
