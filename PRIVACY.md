@@ -2,10 +2,10 @@
 <!-- omit in toc -->
 # Ryuuzaki Ryuusei Privacy Policy
 
-|                  |               |
-| ---------------- | ------------- |
-| **Effective**    | June 19, 2023 |
-| **Last Updated** | June 19, 2023 |
+|                  |                |
+| ---------------- | -------------- |
+| **Effective**    | August 1, 2023 |
+| **Last Updated** | August 1, 2023 |
 
 Greetings, and welcome to Ryuuzaki Ryuusei's Privacy Policy. Through this
 document, we aim to provide you with an explanation of how your personal
@@ -18,7 +18,7 @@ Policy.
 which will be collected under the jurisdiction of Indonesia. We ensure that our
 policies adhere to both, the [EU General Data Protection Regulation][gdpr],
 [California Consumer Privacy Act][ccpa], and
-[Personal Data Protection Law of Indonesia (UU No. 27 Tahun 2022)][pdp]. Should
+[Personal Data Protection Act of Indonesia (UU No. 27 Tahun 2022)][pdp]. Should
 you have any questions or concerns regarding this Privacy Policy or other
 relevant matters, please do not hesitate to reach out to the data controller
 through our [About Us](#about-us) section.
@@ -118,15 +118,19 @@ yourself:
   provide users with services.
 * **Data Controller** refers to any organization or individual determining the
   method and purpose of processing personal information.
-* **We/Us/Our/Owner** collectively refer to [nattadasu][gh-nattadasu], who is a
-  Data Controller of your personal information.
-
----
-
-* **You/Author/User**, unless otherwise specified, refers to a person who
-  invoked the bot command.
+* **Developer** refers to the individual or organization that develops the
+  Ryuuzaki Ryuusei bot.
+* **nattadasu/Natsu Tadama/We/Us/Our/Owner** collectively refer to
+  [nattadasu][gh-nattadasu], who is a Data Controller of your personal
+  information and the developer of the bot.
+* **FOSS** refers to Free and Open-Source Software.
+* **AGPL 3.0** refers to the GNU Affero General Public License version 3.0,
+  which is the license under which the bot is distributed.
+* **You/Your/Author/User** refers to the individual or organization that uses
+  the bot.
 * **Discriminator** is a unique numerical value that is allocated to each user
-  on Discord platform.
+  on Discord provider. This identifier is now absolute and replaced with
+  handle nane.
 * **Personal Information** is any information that is capable of identifying an
   individual, for instance, name, email address or user ID.
 * **Sensitive Personal Information** is a specific subset of personal
@@ -138,13 +142,35 @@ yourself:
   consumer; information concerning a consumer’s health, sex life, or sexual
   orientation; or information about racial or ethnic origin, religious or
   philosophical beliefs, or union membership.
+* **Discord** is a proprietary freeware VoIP application and digital distribution
+  platform designed for video gaming communities operated by Discord Inc.
 * **Server/Guild** is a Discord digital space made up of different types of
   channels that users can join and interact with each other.
 * **Title**, unless otherwise specified, refers to a media content, such as
   anime, manga, TV, movie, music, etc.
+* **Provider** refers to a third-party service that provides information about
+  Titles.
+* **Channel** is a Discord digital subspace inside a server where users can
+  interact with each other.
+* **Command** is a message that is sent to the bot to perform a specific
+  function/operation/task.
 * **User Referral** is a user who referred or added you to the bot through admin
   commands.
 * **API** is a software interface to communicate to other software.
+* **Data Protection Laws** refers to any applicable laws and regulations
+  related to the processing of personal information, including but not limited
+  to the EU General Data Protection Regulation (GDPR) and the California Consumer
+  Privacy Act (CCPA).
+* **GDPR** refers to the General Data Protection Regulation, which is a
+  regulation in EU law on data protection and privacy for all individuals within
+  the European Union and the European Economic Area.
+* **CCPA** refers to the California Consumer Privacy Act, which is a law that
+  regulates the use of personal information of California residents by
+  businesses.
+* **UU No. 27 Tahun 2022/UU PDP/PDP** refers to Personal Data Protection Act of
+  Indonesia under Act No. 27 of the year 2022. This act is a comprehensive data
+  protection and privacy regulation that aims to safeguard the personal data of
+  individuals in Indonesia.
 
 ## About Us
 
@@ -179,11 +205,11 @@ This data is used to provide the following functionality:
 
 * `/export data` command
 * `/profile` group command, this includes, but not limited to:
-  * `/profile anilist`
-  * `/profile discord`
-  * `/profile lastfm`
-  * `/profile myanimelist`
-  * `/profile shikimori`
+  * `/anilist profile`
+  * `/discord profile`
+  * `/lastfm profile`
+  * `/myanimelist profile`
+  * `/shikimori profile`
 * `/register` command
 * `/unregister` command
 * `/whoami` command
@@ -197,7 +223,7 @@ Jikan API and MyAnimeList.
 This data is used to provide the following functionality:
 
 * `/export data` command
-* `/profile myanimelist` command
+* `/myanimelist profile` command
 * `/register` command
 
 ### AniList: User
@@ -208,9 +234,9 @@ AniList API.
 
 This data is used to provide the following functionality:
 
-* `/platform link` command
-* `/platform unlink` command
-* `/profile anilist` command
+* `/provider link` command
+* `/provider unlink` command
+* `/anilist profile` command
 
 ### Shikimori: User
 
@@ -220,9 +246,9 @@ Shikimori API.
 
 This data is used to provide the following functionality:
 
-* `/platform link` command
-* `/platform unlink` command
-* `/profile shikimori` command
+* `/provider link` command
+* `/provider unlink` command
+* `/shikimori profile` command
 
 ### Last.FM: User
 
@@ -231,9 +257,9 @@ we collect your Last.fm username as is.
 
 This data is used to provide the following functionality:
 
-* `/platform link` command
-* `/platform unlink` command
-* `/profile lastfm` command
+* `/provider link` command
+* `/provider unlink` command
+* `/lastfm profile` command
 
 ### Personal Information
 
@@ -258,7 +284,7 @@ removing their data from the bot.
 To offer user profile lookup, Ryuuzaki Ryuusei use [Jikan API][jikan] which is a
 third-party software that assists in accessing [MyAnimeList][mal] to obtain
 information about the user's profile. This information is used by Ryuuzaki
-Ryuusei for `/profile myanimelist` and `/verify` commands.
+Ryuusei for `/myanimelist profile` and `/verify` commands.
 
 During `/register` command is invoked, bot will directly connect to MyAnimeList
 to obtain live data by scraping user's profile page to check verification code.
@@ -267,25 +293,25 @@ to obtain live data by scraping user's profile page to check verification code.
 
 Last.FM username is shared with the [Last.FM][lastfm] service to retrieve
 information regarding the user's profile and recently played tracks. This
-information is accessed by Ryuuzaki Ryuusei for `/profile lastfm` command.
+information is accessed by Ryuuzaki Ryuusei for `/lastfm profile` command.
 
-Last.FM's username can be used else during platform linking to your registered
+Last.FM's username can be used else during provider linking to your registered
 account on the bot to only obtain user ID.
 
 ### AniList: Global
 
 Similarly to Last.FM, AniList username is shared to [AniList][al] to allow user
 showcasing their profile, and will return any data that is required to render
-the result when invoking `/profile anilist` command.
+the result when invoking `/anilist profile` command.
 
-AniList's username can be used else during platform linking to your registered
+AniList's username can be used else during provider linking to your registered
 account on the bot to only obtain user ID.
 
 ### MAL-Heatmap
 
 MyAnimeList username is shared with [MAL-Heatmap][malh] to obtain data related
 to the user's histories in a visualized heatmap format. This information is used
-solely for the purpose of providing data in the `/profile myanimelist` command.
+solely for the purpose of providing data in the `/myanimelist profile` command.
 
 ### Discord: Global
 
@@ -293,7 +319,7 @@ The bot utilizes Discord infrastructure to retrieve information regarding the
 user's profile and write command actor for server audit logs. The information is
 used to provide the following functionality:
 
-* `/profile discord` command
+* `/discord profile` command
 * `/utilities avatar` command
 * `/utilities banner` command
 * `/register` command
@@ -303,20 +329,20 @@ used to provide the following functionality:
 
 ### PronounDB
 
-During `/profile discord` command is invoked, bot will communicate to
-[PronounDB][pdb] to fetch currently set pronoun on the platform using Discord
+During `/discord profile` command is invoked, bot will communicate to
+[PronounDB][pdb] to fetch currently set pronoun on the provider using Discord
 user ID. The information is used to provide the following functionality:
 
-* `/profile discord` command
+* `/discord profile` command
 * `/whoami` command
 
 ### Shikimori: Global
 
 Shikimori username is shared with the [Shikimori][shiki] to allow user
 showcasing their profile, and will return any data that is required to render
-the result when invoking `/profile shikimori` command.
+the result when invoking `/shikimori profile` command.
 
-Shikimori's username can be used else during platform linking to your registered
+Shikimori's username can be used else during provider linking to your registered
 account on the bot to only obtain user ID.
 
 ## Aggregated Data Sharing
@@ -327,14 +353,14 @@ purposes, but no personal information will be included in the aggregated data.
 Following is the list of third parties that Ryuuzaki Ryuusei may share
 aggregated data with:
 
-| Platform        | Data Shared                | Purpose           |
+| Provider        | Data Shared                | Purpose           |
 | --------------- | -------------------------- | ----------------- |
 | [Top.gg][topgg] | Server Count, Shards Count | Public statistics |
 
 ## Data Caching
 
 Ryuuzaki Ryuusei stores information for the purpose of caching for limited time,
-which is intended to reduce the number of requests made to external services and
+which is intended to reduce the number of requests made to supported Providers and
 decrease the time it takes to retrieve information. This function only caches
 information that is related to a Title and optionally limited Personal
 Information, and does not transmit any information about you other than the
@@ -343,27 +369,35 @@ bot's IP address, User Agent and/or query request and responses.
 Below is the table explaining retention period for each features from 3rd party
 API:
 
-|                 Platform | Retention Period                                    |
-| -----------------------: | :-------------------------------------------------- |
-|                  AniList | 1 day                                               |
-|      AniList: NSFW Check | 1 week                                              |
-|    AniList: User Profile | 12 hours                                            |
-|                 AnimeAPI | 1 day                                               |
-|         ExchangeRate-API | 1 day                                               |
-|                    Jikan | 1 day                                               |
-|      Jikan: User Profile | 12 hours on Ryuuzaki Ryuusei, 1 day on Jikan Server |
-|                    Kitsu | 1 day                                               |
-|                  Last.FM | *Does not cache*                                    |
-|              MyAnimeList | *Does not cache*                                    |
-|                PronounDB | 1 week                                              |
-|                     RAWG | 1 day                                               |
-|  Shikimori: User Profile | 12 hours                                            |
-|                    SIMKL | 1 day                                               |
-|                  Spotify | 2 weeks                                             |
-|            The Color API | 1 week                                              |
-| The Movie DB: NSFW Check | 30 days                                             |
-|                    Trakt | 1 day                                               |
-|                    usrbg | 60 hours (2 days, 12 hours)                         |
+|                  Provider | Retention Period            |
+| ------------------------: | :-------------------------- |
+|                   AniList | 1 day                       |
+|       AniList: NSFW Check | 1 week                      |
+|     AniList: User Profile | 12 hours                    |
+|                  AnimeAPI | 1 day                       |
+|          ExchangeRate-API | 1 day                       |
+|                     Jikan | 1 day                       |
+|       Jikan: User Profile | 12 hours                    |
+|                     Kitsu | 1 day                       |
+|                   Last.FM | *Does not cache*            |
+| MyAnimeList: User Profile | *Does not cache*            |
+|                 PronounDB | 1 week                      |
+|                      RAWG | 1 day                       |
+|   Shikimori: User Profile | 12 hours                    |
+|                     SIMKL | 1 day                       |
+|                   Spotify | 2 weeks                     |
+|             The Color API | 1 week                      |
+|  The Movie DB: NSFW Check | 30 days                     |
+|                     Trakt | 1 day                       |
+|                     usrbg | 60 hours (2 days, 12 hours) |
+
+Please note that the retention periods explained above apply solely to the
+Service, referring to the Ryuuzaki Ryuusei, where data caching is implemented.
+These retention periods do not extend to the supported providers themselves. For
+precise information about data retention policies on the supported providers, we
+recommend contacting each provider directly. This ensures that users have a
+comprehensive understanding of the data caching policy's scope and that any
+inquiries regarding data retention are addressed appropriately
 
 ## Data Logging
 
@@ -426,11 +460,17 @@ section.
 As a user, you have specific rights under the
 [EU General Data Protection Regulation (GDPR)][gdpr], the
 [California Consumer Privacy Act (CCPA)][ccpa], and the
-[Indonesian Personal Data Protection Law (UU PDP)][pdp]. These rights empower
+[Personal Data Protection Act of Indonesia (UU PDP)][pdp]. These rights empower
 you to exercise control over your personal data and ensure its protection.
 We are fully committed to respecting and upholding these regulations, providing
 you with the necessary safeguards and control over your personal data in
 accordance with the GDPR, CCPA, and UU PDP.
+
+By default, Ryuuzaki Ryuusei enforces GDPR, CCPA, and UU PDP compliance for all
+its users, regardless of their location or geographical boundaries. These data
+protection regulations apply globally, without limitation of place, ensuring that
+every user's personal data is treated with the same level of respect and
+protection, regardless of where they reside.
 
 To help you better understand and exercise your rights, we have outlined below
 the specific rights you have under these regulations and the measures we have
@@ -441,7 +481,7 @@ implemented to respect and protect your privacy.
 The right to opt-out applies globally as the Bot is not authorized to share any
 personal information of the User with third-party sources for advertising
 purposes. If you, as a User, desire to remove access to your data using the Bot
-platform, you can avail of this right by executing the `/unregister` command and
+provider, you can avail of this right by executing the `/unregister` command and
 proceed to remove the bot from your server.
 
 ### Right to Non-Discrimination
@@ -511,7 +551,8 @@ You have the right to receive and use your personal data concerning yourself in
 a commonly used format, allowing for easy transfer or use. As part of this
 right, you can make use of the `/export data` command to obtain your personal
 data in a format that is commonly used and supported, including JSON (JavaScript
-Object Notation), YAML (YAML Ain't Markup Language), CSV (Comma-Separated Values),and Python Dict (Dictionary) file formats.
+Object Notation), YAML (YAML Ain't Markup Language), CSV (Comma-Separated
+Values), and Python Dict (Dictionary) file formats.
 
 By using the `/export data` command, Ryuuzaki Ryuusei will automatically generate
 to provide your personal data in any of these formats, enabling you to

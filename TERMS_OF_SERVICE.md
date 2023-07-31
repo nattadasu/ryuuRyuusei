@@ -4,7 +4,7 @@
 
 |                  |                |
 | ---------------- | -------------- |
-| **Last Updated** | May 30, 2023 |
+| **Last Updated** | August 1, 2023 |
 
 Greetings, and welcome to Ryuuzaki Ryuusei's Terms of Servive. These Terms of
 Service ("Terms") govern your access to and use of the Ryuuzaki Ryuusei Discord
@@ -104,13 +104,11 @@ synopsis of the points you should be aware of:
 * **FOSS** refers to Free and Open-Source Software.
 * **AGPL 3.0** refers to the GNU Affero General Public License version 3.0,
   which is the license under which the bot is distributed.
-
----
-
 * **You/Your/Author/User** refers to the individual or organization that uses
   the bot.
 * **Discriminator** is a unique numerical value that is allocated to each user
-  on Discord platform.
+  on Discord provider. This identifier is now absolute and replaced with
+  handle nane.
 * **Personal Information** is any information that is capable of identifying an
   individual, for instance, name, email address or user ID.
 * **Sensitive Personal Information** is a specific subset of personal
@@ -132,7 +130,7 @@ synopsis of the points you should be aware of:
   Titles.
 * **Channel** is a Discord digital subspace inside a server where users can
   interact with each other.
-* **Command** is a message that is sent to the bot to perform a specific
+* **Command/Feature** is a message that is sent to the bot to perform a specific
   function/operation/task.
 * **Data Protection Laws** refers to any applicable laws and regulations
   related to the processing of personal information, including but not limited
@@ -144,6 +142,10 @@ synopsis of the points you should be aware of:
 * **CCPA** refers to the California Consumer Privacy Act, which is a law that
   regulates the use of personal information of California residents by
   businesses.
+* **UU No. 27 Tahun 2022/UU PDP/PDP** refers to Personal Data Protection Act of
+  Indonesia under Act No. 27 of the year 2022. This act is a comprehensive data
+  protection and privacy regulation that aims to safeguard the personal data of
+  individuals in Indonesia.
 
 ## About Us
 
@@ -340,11 +342,11 @@ Indonesia, and you waive any objection to the jurisdiction of such courts.
 ## Entire Agreement
 
 This Agreement constitutes the entire agreement between the User and the
-Provider with respect to the subject matter hereof, and supersedes all prior or
+Service with respect to the subject matter hereof, and supersedes all prior or
 contemporaneous agreements, understandings, and communications, whether written
 or oral, between the parties.
 
-By accessing or using the services provided by the Provider, you agree to be
+By accessing or using the Features provided by the Service, you agree to be
 bound by the terms and conditions of this Agreement. If you do not agree to
 these terms and conditions, you may not access or use the services.
 
