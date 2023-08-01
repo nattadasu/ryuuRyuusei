@@ -31,10 +31,10 @@ ipy_const.CLIENT_FEATURE_FLAGS["FOLLOWUP_INTERACTIONS_FOR_IMAGES"] = True
 
 bot = ipy.AutoShardedClient(
     token=BOT_TOKEN,
-    status=ipy.Status.ONLINE,
+    status=ipy.Status.IDLE,
     activity=ipy.Activity(
-        name="random cat videos",
-        type=ipy.ActivityType.WATCHING,
+        name="activities",
+        type=ipy.ActivityType.LISTENING,
     ),
     delete_unused_application_cmds=True,
     sync_interactions=True,
@@ -61,6 +61,19 @@ async def on_ready():
     print(f"{sp} Guilds       : {guilds}")
     print(f"{sp} Shards       : {bot.total_shards}")
     print(f"{sp} User Agent   : {USER_AGENT}")
+    # get member count
+    member_count = 0
+    for guild in bot.guilds:
+        member_count += guild.member_count
+    # set bot status
+    await asyncio.sleep(2.5)
+    await bot.change_presence(
+        activity=ipy.Activity(
+            name=f"{guilds} guilds, {member_count} members",
+            type=ipy.ActivityType.WATCHING,
+        ),
+        status=ipy.Status.ONLINE,
+    )
 
 
 async def main():
