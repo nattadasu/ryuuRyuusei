@@ -585,6 +585,6 @@ who participated in this project.
 
 [![Star History Chart](https://api.star-history.com/svg?repos=nattadasu/ryuuRyuusei&type=Date)](https://star-history.com/#nattadasu/ryuuRyuusei&Date)
 
+## License Compliance
 
-## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnattadasu%2FryuuRyuusei.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnattadasu%2FryuuRyuusei?ref=badge_large)

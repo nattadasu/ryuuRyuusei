@@ -42,10 +42,10 @@ yourself:
   > **Warning**
   >
   > Please note that, while Ryuuzaki Ryuusei does not collect, store, maintain
-  > or use logs of messages sent about you under any circumstances, some of the
-  > third party services integrated into the Bot may have their protocols on
-  > data collection, storage, processing and sharing that you should be aware
-  > of.
+  > or use logs of messages sent about you under any circumstances without prior
+  > explicit consent, some of the third party services integrated into the Bot
+  > may have their protocols on data collection, storage, processing and sharing
+  > that you should be aware of.
   >
   > For more information, you can visit the privacy policies of the
   > questioned services. You also have the right to opt-out of these services by
@@ -92,6 +92,7 @@ yourself:
   * [Discord: Global](#discord-global)
   * [PronounDB](#pronoundb)
   * [Shikimori: Global](#shikimori-global)
+* [User Interaction](#user-interaction)
 * [Aggregated Data Sharing](#aggregated-data-sharing)
 * [Data Caching](#data-caching)
 * [Data Logging](#data-logging)
@@ -345,6 +346,19 @@ the result when invoking `/shikimori profile` command.
 Shikimori's username can be used else during provider linking to your registered
 account on the bot to only obtain user ID.
 
+## User Interaction
+
+When you invite the Bot and grant it the "Read Message/View Channels"
+permission, it will monitor and process messages from Space (Server, Group)
+members. This allows the Bot to provide interactive message features. However,
+participation in this feature is optional.
+
+To opt-out, simply send `/usersettings autoembed state:Disable` to the Bot.
+Server Administrators can also remove the "Read Message/View Channels"
+permission by modifying the invite link's "permissions" parameter from
+`274878221376` to `274878220352`. We prioritize transparency and user control,
+ensuring compliance with relevant regulations and data protection principles.
+
 ## Aggregated Data Sharing
 
 Ryuuzaki Ryuusei may share aggregated data with third parties for statistical
@@ -405,11 +419,7 @@ Ryuuzaki Ryuusei does not log any information related to the User activity. In
 situations related to development, bug fixing, and testing, however, general
 information such as bot startup, command execution, API process, caches,
 and errors may be logged, but these logs will only be used for debugging
-purposes, and will be removed periodically.
-
-The maintenance and development of the bot are overseen by a Data Controller,
-and in instances where logging is enabled, users shall be notified through
-Support Server announcements and Bot Activity status.
+purposes and will not be used for others.
 
 ## Access to User Data
 
