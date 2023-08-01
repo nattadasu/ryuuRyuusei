@@ -83,6 +83,31 @@ class UserDatabase:
             val = True
         return val
 
+    async def check_if_platform_registered(
+        self,
+        platform: Literal["mal", "anilist", "lastfm", "shikimori"],
+        value: Any
+    ) -> bool:
+        """
+        Check if user is registered on Database, so the bot can prevent duplicate registration
+
+        Args:
+            platform (Literal["mal", "anilist", "lastfm", "shikimori"]): Platform to check
+            value (Any): Value to check
+
+        Returns:
+            bool: True if user is registered, False if not
+        """
+        column_name = f"{platform}Username"
+        # check if column exists
+        df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        if column_name not in df.columns:
+            return False
+        # check if value exists
+        if str(value) in df[column_name].values:
+            return True
+        return False
+
     async def save_to_database(self, user_data: UserDatabaseClass):
         """
         Save information regarding to user with their consent

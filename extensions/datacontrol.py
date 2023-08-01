@@ -119,6 +119,40 @@ class DataControl(ipy.Extension):
                 return True
             return False
 
+    async def _check_if_platform_registered(
+        self,
+        ctx: ipy.ComponentContext | ipy.SlashContext,
+        platform: Literal['mal', 'anilist', 'lastfm', 'shikimori'],
+        value: str,
+    ) -> bool:
+        """
+        Check if the user has registered a platform
+
+        Args:
+            ctx (ipy.ComponentContext | ipy.SlashContext): Context
+            platform (str): Platform to check
+            value (str): Value to check
+
+        Returns:
+            bool: Whether the user has registered a platform
+        """
+        async with UserDatabase() as udb:
+            is_linked = await udb.check_if_platform_registered(
+                platform, value
+            )
+            if is_linked is True:
+                embed = self.generate_error_embed(
+                    header="Look out!",
+                    message=f"""It seems like `{value}` is already registered!
+If you want to change your `{platform}` account, please unlink/unregister it first from other accounts you have registered.
+
+If you have any questions, feel free to contact the developer via `/about`.""",
+                    is_user_error=True,
+                )
+                await ctx.send(embed=embed)
+                return True
+            return False
+
     @ipy.cooldown(ipy.Buckets.USER, 1, 60)
     @ipy.slash_command(
         name="register",
@@ -156,6 +190,10 @@ class DataControl(ipy.Extension):
             return
         checker = await self._check_if_registered(ctx)
         if checker is True:
+            return
+        link_checker = await self._check_if_platform_registered(
+            ctx, 'mal', mal_username)
+        if link_checker is True:
             return
         fields = [
             ipy.EmbedField(
@@ -341,6 +379,10 @@ To complete your registration, please follow the instructions below:""",
             if is_registered is False:
                 await ctx.send("You are not registered!")
                 return
+        link_checker = await self._check_if_platform_registered(
+            ctx, platform, username)
+        if link_checker is True:
+            return
         try:
             if platform == "anilist":
                 async with AniList() as anilist:

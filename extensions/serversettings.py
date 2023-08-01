@@ -1,5 +1,6 @@
 import re
 from datetime import datetime, timezone
+from typing import Literal
 
 import interactions as ipy
 from emoji import emojize  # type: ignore
@@ -116,6 +117,38 @@ class ServerSettings(ipy.Extension):
                 embed = self.generate_error_embed(
                     header="Look out!",
                     message="User is already registered!",
+                    is_user_error=True,
+                )
+                await ctx.send(embed=embed)
+                return True
+            return False
+
+    async def _check_if_platform_registered(
+        self,
+        ctx: ipy.ComponentContext | ipy.SlashContext,
+        platform: Literal['mal', 'anilist', 'lastfm', 'shikimori'],
+        value: str,
+    ) -> bool:
+        """
+        Check if the user has registered a platform
+
+        Args:
+            ctx (ipy.ComponentContext | ipy.SlashContext): Context
+            platform (str): Platform to check
+            value (str): Value to check
+
+        Returns:
+            bool: Whether the user has registered a platform
+        """
+        async with UserDatabase() as udb:
+            is_linked = await udb.check_if_platform_registered(
+                platform, value
+            )
+            if is_linked is True:
+                embed = self.generate_error_embed(
+                    header="Look out!",
+                    message=f"""It seems like `{value}` is already registered under another user!
+If you have any questions, feel free to contact the developer via `/about`.""",
                     is_user_error=True,
                 )
                 await ctx.send(embed=embed)
