@@ -1,8 +1,8 @@
 import os
 import time
 
-from interactions import (AutoShardedClient, Client, Extension,
-                          IntervalTrigger, Task, Activity, ActivityType, Status)
+from interactions import (Activity, ActivityType, AutoShardedClient, Client,
+                          Extension, IntervalTrigger, Status, Task)
 
 from classes.excepts import ProviderHttpError
 from classes.stats.topgg import TopGG
@@ -132,7 +132,6 @@ class BotTasker(Extension):
         print(f"{' ' * 14}{'=' * 20}")
         print(f"{' ' * 14}Total members: {member_count}")
         print(f"{' ' * 14}Total guilds : {len(guilds)}")
-
 
     @staticmethod
     def _delete_old_files(folder_path: str, duration: int) -> None:
