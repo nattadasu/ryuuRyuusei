@@ -30,6 +30,30 @@ from modules.const import (EMOJI_FORBIDDEN, MYANIMELIST_CLIENT_ID,
                            SIMKL_CLIENT_ID, warnThreadCW)
 
 
+def generate_animethemes_slug(title: str) -> str:
+    """
+    Generate a slug for animethemes.moe with underscore
+
+    Args:
+        title (str): Anime title, must based from MyAnimeList
+
+    Returns:
+        str: slug for the title
+    """
+
+    # Remove any characters outside [\w\- ]+ in Regex
+    title = re.sub(r"[^\w\- ]+", "", title)
+    # Replace all whitespace and dash with underscore
+    title = re.sub(r"[\s-]+", "_", title)
+    # Remove duplicate underscore
+    title = re.sub(r"__+", "_", title)
+    # Remove any underscore at the beginning and end of the string
+    title = re.sub(r"^_+|_+$", "", title)
+    # Convert to lowercase
+    title = title.lower()
+    return title
+
+
 def lookup_random_anime() -> int:
     """
     Lookup random anime from MAL
@@ -466,8 +490,8 @@ async def generate_mal(
     )
     themes_moe: Button = Button(
         style=ButtonStyle.URL,
-        label="Themes.moe",
-        url=f"https://themes.moe/list/search/{quote(rot)}",
+        label="AnimeThemes",
+        url=f"https://animethemes.moe/anime/{generate_animethemes_slug(rot)}",
     )
     buttons = [
         myani_li,
