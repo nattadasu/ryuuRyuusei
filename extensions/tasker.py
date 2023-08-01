@@ -2,7 +2,7 @@ import os
 import time
 
 from interactions import (AutoShardedClient, Client, Extension,
-                          IntervalTrigger, Task)
+                          IntervalTrigger, Task, Activity, ActivityType, Status)
 
 from classes.excepts import ProviderHttpError
 from classes.stats.topgg import TopGG
@@ -19,12 +19,12 @@ class BotTasker(Extension):
         self.delete_cache.start()
         self.delete_error_logs.start()
         self.poll_stats.start()
+        self.update_presence.start()
         # pylint: enable=no-member
 
     @Task.create(IntervalTrigger(minutes=10))
     async def delete_cache(self) -> None:
         """Automatically delete caches stored in the cache folder saved as JSON"""
-        print("[Tsk] [Cache] Deleting old cache files, if any")
         half_day = 43200
         a_day = half_day * 2
         two_and_a_half_days = a_day * 2 + half_day
@@ -85,6 +85,7 @@ class BotTasker(Extension):
         """Automatically delete error logs stored in the error_logs folder"""
         error_logs_folder = "errors"
         self._delete_old_files(error_logs_folder, 172800)
+        print("[Tsk] [Error] Finished deleting old error log files")
 
     @Task.create(IntervalTrigger(minutes=30))
     async def poll_stats(self) -> None:
@@ -92,7 +93,6 @@ class BotTasker(Extension):
         server_count = len(self.bot.guilds)
         shard_count = self.bot.total_shards
         try:
-            print("[Tsk] [Stats] Polling Top.gg")
             async with TopGG() as top:
                 await top.post_bot_stats(
                     guild_count=server_count,
@@ -104,6 +104,35 @@ class BotTasker(Extension):
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to Top.gg: {error}")
             save_traceback_to_file("tasker_topgg", self.bot.user, error)
+
+    @Task.create(IntervalTrigger(minutes=10))
+    async def update_presence(self) -> None:
+        """Update bot presence"""
+        member_count = 0
+        for guild in self.bot.guilds:
+            member_count += guild.member_count
+        await self.bot.change_presence(
+            activity=Activity(
+                name=f"{len(self.bot.guilds)} guilds, {member_count} members",
+                type=ActivityType.WATCHING,
+            ),
+            status=Status.ONLINE,
+        )
+        print("[Tsk] [Presence] Bot presence has been updated")
+
+    @Task.create(IntervalTrigger(hours=1))
+    async def update_stats(self) -> None:
+        """Generate an hourly stats of the bot"""
+        guilds = self.bot.guilds
+        member_count = 0
+        print("[Tsk] [Stats] Generating hourly stats...")
+        for guild in guilds:
+            print(f"{' ' * 17}[{guild.id}] {guild.name}: {guild.member_count}")
+            member_count += guild.member_count
+        print(f"{' ' * 14}{'=' * 20}")
+        print(f"{' ' * 14}Total members: {member_count}")
+        print(f"{' ' * 14}Total guilds : {len(guilds)}")
+
 
     @staticmethod
     def _delete_old_files(folder_path: str, duration: int) -> None:
@@ -125,11 +154,9 @@ class BotTasker(Extension):
                 modification_time = os.path.getmtime(file_path)
                 if file_name.endswith(".json"):
                     if current_time - modification_time > duration:
-                        print(f"[Tsk] [Utils] Deleting cache {file_path}")
                         os.remove(file_path)
                 elif file_name.endswith(".txt"):
                     if current_time - modification_time > duration:
-                        print(f"[Tsk] [Utils] Deleting error log {file_path}")
                         os.remove(file_path)
 
 
