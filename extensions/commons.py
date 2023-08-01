@@ -36,22 +36,29 @@ class CommonCommands(ipy.Extension):
     @ipy.slash_command(name="about",
                        description="Get information about the bot")
     async def about(self, ctx: ipy.SlashContext):
-        ul = read_user_language(ctx)
-        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["about"]
         authors = ""
         for u in self.bot.owners:
             authors += f"* {u.username} (<@!{u.id}>)\n"
         embed = ipy.Embed(
             title="About",
-            description=l_["text"].format(
-                BOT_CLIENT_ID=BOT_CLIENT_ID,
-                AUTHOR_USERNAME=AUTHOR_USERNAME,
-                ownerUserUrl=ownerUserUrl,
-                BOT_SUPPORT_SERVER=BOT_SUPPORT_SERVER,
-                gtHsh=gtHsh,
-                gittyHash=gittyHash,
-            ),
+            description=f"""{self.bot.user.mention} is a rolling release Discord bot that uses interactions.py and Python to offer a variety of features and commands for Discord users. You can look up your profile from Discord, AniList, Shikimori, MyAnimeList, and Last.fm and customize your summary for each platform. You can also search for anime, manga, games, TV shows, and movies from platforms like MyAnimeList, AniList, SIMKL, Spotify, and more. You can also export your data in different formats and enjoy true randomness with some commands. 🚀
+
+The bot cares about your privacy by not storing any data on its server except for essential information. You can also delete your data anytime using the /unregister command. For more details, you can read the Privacy Policy. 🔒
+
+The bot has many commands for different purposes, such as anime, manga, game, TV show, movie, music, and external link lookups. You can also access profile lookup commands, data control commands, settings commands (for both users and servers), randomization commands, and utility commands.
+
+If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({ownerUserUrl}) or via [support server]({BOT_SUPPORT_SERVER}).""",
             fields=[
+                ipy.EmbedField(
+                    name="Bot ID",
+                    value=f"`{self.bot.user.id}`",
+                    inline=True,
+                ),
+                ipy.EmbedField(
+                    name="Bot Version",
+                    value=f"[{gtHsh}](https://github.com/nattadasu/ryuuRyuusei/commit/{gittyHash})",
+                    inline=True,
+                ),
                 ipy.EmbedField(
                     name="User Agent",
                     value=f'```http\nUser-Agent: "{USER_AGENT}"\n```',
@@ -202,19 +209,53 @@ class CommonCommands(ipy.Extension):
     @ipy.slash_command(name="privacy",
                        description="Get the bot's tl;dr version of privacy policy")
     async def privacy(self, ctx: ipy.SlashContext):
-        ul = read_user_language(ctx)
-        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["privacy"]
         butt = ipy.Button(
-            label=l_["read"],
+            label="Read the full version",
             url="https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md",
             style=ipy.ButtonStyle.URL,
         )
         em = ipy.Embed(
-            title=l_["title"],
-            description=l_["text"],
+            title="Privacy Policy",
+            description="""# Privacy Policy, tl;dr version
+Hello and thank you for your interest to read this tl;dr version of Privacy Policy.
+
+In this message we shortly briefing which content we collect, store, and
+use, including what third party services we used for bot to function as expected. You can read the full version of [Privacy Policy here at anytime you wish](https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md).
+## What we collect
+We collect personal information tied about you, with your consent, the following data:
+* AniList (optional): username, user ID
+* Discord: username, discriminator, user snowflake ID, joined date, guild/server ID of registration, server name, date of registration, user referral (if any)
+* Last.FM (optional): username
+* MyAnimeList: username, user ID, joined date
+* Shikimori (optional): username, user ID
+* User's settings (optional): language, autoembed
+## What we share about you
+We share limited personal information about you and/or other, required for the bot to function as expected, with the following services:
+* AniList: AniList Username
+* Discord: Message Author Identifier
+* Last.FM: Last.FM Username
+* MAL-Heatmap: MyAnimeList Username
+* MyAnimeList (via Jikan): MyAnimeList Username
+* PronounDB: Message Author Identifier
+* Shikimori: Shikimori Username
+## Which data we share aggregated
+We share aggregated and anonymized data to 3rd parties. We may share aggregated and anonymized data to third parties for the purpose of improving our services and statistics. This data is not personally identifiable and is used for statistical purposes only.
+## About caching
+We stores cache in our system for limited time. This cache is used to improve the performance of the bot and to reduce the load on the third party services. The cache is stored for a limited time and is automatically deleted after a certain period of time.
+## About logging
+We do not collect, store, or use any logs of messages sent by system about you under any circumstances. We delete the log generated by the system periodically for bug fixing and performance improvement purposes.
+## About data retention
+We retain your personal information only for as long as necessary to provide you with our services and as described in our Privacy Policy.
+## About user rights of data subject
+By default, Ryuuzaki Ryuusei enforces EU General Data Protection Regulation (GDPR), the California Consumer Privacy Act (CCPA), and the Personal Data Protection Act of Indonesia (UU PDP) compliance for all its users, regardless of their location or geographical boundaries. These data protection regulations apply globally, without limitation of place, ensuring that every user's personal data is treated with the same level of respect and protection, regardless of where they reside.
+
+In short, you have the following rights:
+Opt-out; Non-discrimination; Access, know, and portability of personal data; Modify, rectify, delete, and restrict; Limit; Stop processing; Notify; Withdraw consent; Object to automated decision; and Receive personal data in common format
+
+We highly suggest to read the full version of [Privacy Policy here](https://github.com/nattadasu/ryuuRyuusei/blob/main/PRIVACY.md) for more information.""",
             color=0x996422,
         )
-        await ctx.send(embed=em, components=[ipy.ActionRow(butt)])
+        await ctx.send(embed=em, components=[ipy.ActionRow(butt)], ephemeral=True)
 
     @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
     @ipy.slash_command(
