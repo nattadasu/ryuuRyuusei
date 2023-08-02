@@ -33,7 +33,8 @@ class DiscordBotList:
     async def __aenter__(self):
         """Enter async context"""
         self.session = aiohttp.ClientSession()
-        self.headers = {"Authorization": self.token, "Content-Type": "application/json"}
+        self.headers = {"Authorization": self.token,
+                        "Content-Type": "application/json"}
         return self
 
     async def __aexit__(self, exc_type, exc, tb):  # type: ignore
