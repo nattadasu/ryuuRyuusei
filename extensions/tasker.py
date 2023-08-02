@@ -101,7 +101,8 @@ class BotTasker(Extension):
                 )
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to Top.gg: {error}")
-            save_traceback_to_file("tasker_topgg", self.bot.user, error, mute_error=True)
+            save_traceback_to_file(
+                "tasker_topgg", self.bot.user, error, mute_error=True)
 
         try:
             async with DiscordBotsGG() as dbgg:
@@ -111,9 +112,11 @@ class BotTasker(Extension):
                 )
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBots.gg: {error}")
-            save_traceback_to_file("tasker_dbgg", self.bot.user, error, mute_error=True)
+            save_traceback_to_file(
+                "tasker_dbgg", self.bot.user, error, mute_error=True)
 
-        print(f"[Tsk] [Stats] Finished polling bot stats, server count: {server_count}, shard count: {shard_count}")
+        print(
+            f"[Tsk] [Stats] Finished polling bot stats, server count: {server_count}, shard count: {shard_count}")
 
     @Task.create(IntervalTrigger(minutes=10))
     async def update_presence(self) -> None:
