@@ -7,7 +7,7 @@ fake-useragent
 fluent.runtime
 fuzzywuzzy
 html5lib
-interactions-py==5.7.0
+interactions-py==5.8.0
 langcodes
 language_data
 pandas

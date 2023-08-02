@@ -19,7 +19,9 @@ release branch:
 <!-- markdownlint-disable MD013 MD034 -->
 | Interactions.py Version |   Support Status   | Notes                                                                        |
 | ----------------------: | :----------------: | :--------------------------------------------------------------------------- |
-|                   5.6.0 | :white_check_mark: | Current release version                                                      |
+|                   5.8.0 | :white_check_mark: | Current release version                                                      |
+|                   5.7.0 | :white_check_mark: |                                                                              |
+|                   5.6.0 | :white_check_mark: |                                                                              |
 |                   5.5.1 | :white_check_mark: |                                                                              |
 |                   5.5.0 | :white_check_mark: | Pin `discord_typings` to `0.5.1` if you use this version                     |
 |                 < 5.4.0 |         :x:        | Deprecated due to Discord image proxy bug, see discord/discord-api-docs#6171 |
