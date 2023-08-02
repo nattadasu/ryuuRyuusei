@@ -36,7 +36,7 @@ class TopGG:
         self.headers = {"Authorization": self.token}
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(self, exc_type, exc, tb):  # type: ignore
         """Exit async context"""
         await self.close()
 
@@ -65,7 +65,7 @@ class TopGG:
         """
         if self.session is None:
             raise RuntimeError("Session is not initialized")
-        body: dict = {
+        body: dict[str, int | list[int]] = {
             "server_count": guild_count,
         }
         if shards:
@@ -80,5 +80,5 @@ class TopGG:
             headers=self.headers,
         ) as resp:
             if resp.status not in [200, 204]:
-                raise ProviderHttpError(resp.reason, resp.status)
+                raise ProviderHttpError(f"{resp.reason}", resp.status)
             return resp.status

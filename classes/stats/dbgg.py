@@ -36,7 +36,7 @@ class DiscordBotsGG:
         self.headers = {"Authorization": self.token, "Content-Type": "application/json"}
         return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def __aexit__(self, exc_type, exc, tb):  # type: ignore
         """Exit async context"""
         await self.close()
 
