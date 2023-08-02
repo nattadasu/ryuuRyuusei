@@ -47,9 +47,13 @@ BOT_TOKEN: Final[str] = cast(str, ge("BOT_TOKEN"))
 CLUB_ID: Final[int] = cast(int, ge("CLUB_ID"))
 """MyAnimeList club ID"""
 DBGG_API_TOKEN: Final[str] = cast(str, ge("DBGG_API_TOKEN"))
-"""Discord Bots List API token"""
+"""Discord Bots API token"""
+DBL_API_TOKEN: Final[str] = cast(str, ge("DBL_API_TOKEN"))
+"""Discord Bot List API token"""
 EXCHANGERATE_API_KEY: Final[str] = cast(str, ge("EXCHANGERATE_API_KEY"))
 """ExchangeRateAPI key"""
+INFINITY_API_TOKEN: Final[str] = cast(str, ge("INFINITY_API_TOKEN"))
+"""Infinity Bots API token"""
 LASTFM_API_KEY: Final[str] = cast(str, ge("LASTFM_API_KEY"))
 """Last.fm API key"""
 MYANIMELIST_CLIENT_ID: Final[str] = cast(str, ge("MYANIMELIST_CLIENT_ID"))

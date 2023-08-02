@@ -6,6 +6,8 @@ from interactions import (Activity, ActivityType, AutoShardedClient, Client,
 
 from classes.excepts import ProviderHttpError
 from classes.stats.dbgg import DiscordBotsGG
+from classes.stats.dbl import DiscordBotList
+from classes.stats.infinity import InfinityBots
 from classes.stats.topgg import TopGG
 from modules.commons import save_traceback_to_file
 
@@ -93,6 +95,7 @@ class BotTasker(Extension):
         """Poll bot statistic to 3rd party listing sites"""
         server_count = len(self.bot.guilds)
         shard_count = self.bot.total_shards
+        users = sum([guild.member_count for guild in self.bot.guilds])
         try:
             async with TopGG() as top:
                 await top.post_bot_stats(
@@ -114,6 +117,29 @@ class BotTasker(Extension):
             print(f"[Tsk] [Stats] Failed to poll to DiscordBots.gg: {error}")
             save_traceback_to_file(
                 "tasker_dbgg", self.bot.user, error, mute_error=True)
+
+        try:
+            async with DiscordBotList() as dbl:
+                await dbl.post_bot_stats(
+                    guild_count=server_count,
+                    members=users,
+                )
+        except ProviderHttpError as error:
+            print(f"[Tsk] [Stats] Failed to poll to DiscordBotList: {error}")
+            save_traceback_to_file(
+                "tasker_dbl", self.bot.user, error, mute_error=True)
+
+        try:
+            async with InfinityBots() as ibgg:
+                await ibgg.post_bot_stats(
+                    guild_count=server_count,
+                    shard_count=shard_count,
+                    members=users,
+                )
+        except ProviderHttpError as error:
+            print(f"[Tsk] [Stats] Failed to poll to InfinityBots: {error}")
+            save_traceback_to_file(
+                "tasker_ibgg", self.bot.user, error, mute_error=True)
 
         print(
             f"[Tsk] [Stats] Finished polling bot stats, server count: {server_count}, shard count: {shard_count}")

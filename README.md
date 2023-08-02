@@ -63,6 +63,7 @@ Ryuuzaki Ryuusei. 🚀
 - [✍️ Authors](#️-authors)
 - [🎉 Acknowledgements](#-acknowledgements)
 - [🌟 Stargazers](#-stargazers)
+- [⚖️ License Compliance](#️-license-compliance)
 
 ## 🧐 About
 
@@ -111,6 +112,16 @@ By inviting this bot to your server or using it, you agree to the
 </a>
 <a href="https://discord.bots.gg/bots/811887256368840744">
   <img src="https://botsgg.snazzah.dev/widget/811887256368840744/default.svg">
+</a>
+<a href="https://discordbotlist.com/bots/ryuuzaki-ryuusei">
+  <img
+    src="https://discordbotlist.com/api/v1/bots/811887256368840744/widget"
+    height="150">
+</a>
+<a href="https://infinitybots.gg/bot/ryuuzaki-ryuusei">
+  <img
+    src="https://widgets.infinitybots.gg/bot/811887256368840744/?size=large&theme=dark&accent=rose"
+    height="150">
 </a>
 </p>
 
@@ -585,6 +596,6 @@ who participated in this project.
 
 [![Star History Chart](https://api.star-history.com/svg?repos=nattadasu/ryuuRyuusei&type=Date)](https://star-history.com/#nattadasu/ryuuRyuusei&Date)
 
-## License Compliance
+## ⚖️ License Compliance
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fnattadasu%2FryuuRyuusei.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fnattadasu%2FryuuRyuusei?ref=badge_large)
