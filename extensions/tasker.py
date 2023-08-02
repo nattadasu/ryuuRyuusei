@@ -43,6 +43,7 @@ class BotTasker(Extension):
                 "user": half_day,
             },
             "kitsu": a_day,
+            "mangadex": a_day,
             "pronoundb": a_week,
             "rawg": a_day,
             "shikimori": {"base": a_day, "user": half_day},
@@ -62,11 +63,7 @@ class BotTasker(Extension):
             if not os.path.exists(cache_folder):
                 os.makedirs(cache_folder)
             if isinstance(durations, dict):
-                # Base folder
                 base_folder = os.path.join(cache_folder, cache_provider)
-                base_duration = durations.get("base", a_day)
-                self._delete_old_files(base_folder, base_duration)
-
                 # User folder
                 user_folder = os.path.join(base_folder, "user")
                 user_duration = durations.get("user", half_day)
@@ -76,6 +73,10 @@ class BotTasker(Extension):
                 nsfw_folder = os.path.join(base_folder, "nsfw")
                 nsfw_duration = durations.get("nsfw", a_week)
                 self._delete_old_files(nsfw_folder, nsfw_duration)
+
+                # Base folder
+                base_duration = durations.get("base", a_day)
+                self._delete_old_files(base_folder, base_duration)
             else:
                 # Single folder
                 folder_path = os.path.join(cache_folder, cache_provider)
