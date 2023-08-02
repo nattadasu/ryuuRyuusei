@@ -14,7 +14,8 @@ class BotEvents(ipy.Extension):
     async def on_command_error(self, event: CommandError):
         """Handle command errors"""
         if isinstance(event.error, ipy.errors.CommandOnCooldown):
-            emoji_id = re.search(r"<a?:\w+:(\d+)>", EMOJI_FORBIDDEN).group(1)
+            emoji_id = re.search(r"<a?:\w+:(\d+)>", EMOJI_FORBIDDEN)
+            emoji_id = emoji_id.group(1) if emoji_id else None
             now = time()
             remaining = now + event.error.cooldown.get_cooldown_time()
             embed = ipy.Embed(
@@ -25,10 +26,11 @@ class BotEvents(ipy.Extension):
                 description=f"Try again <t:{int(remaining)}:R>",
                 color=0xFF0000,
             )
-            embed.set_thumbnail(
-                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.webp"
-            )
-            await event.ctx.send(embed=embed, ephemeral=True)
+            if emoji_id:
+                embed.set_thumbnail(
+                    url=f"https://cdn.discordapp.com/emojis/{emoji_id}.webp"
+                )
+            await event.ctx.send(embed=embed, ephemeral=True)  # type: ignore
         else:
             await self.bot.on_command_error(self.bot, event)
 
@@ -43,7 +45,9 @@ class BotEvents(ipy.Extension):
         if ctx.message is None:
             return
         # ref
-        reference = ctx.message.interaction._user_id
+        if ctx.message.interaction is None:
+            return
+        reference = ctx.message.interaction.user.id
         # check if the user is the author
         if ctx.author.id != reference:
             await ctx.send(
@@ -54,5 +58,5 @@ class BotEvents(ipy.Extension):
         await ctx.message.delete()
 
 
-def setup(bot):
+def setup(bot: ipy.Client | ipy.AutoShardedClient):
     BotEvents(bot)
