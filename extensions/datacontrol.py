@@ -262,7 +262,14 @@ To complete your registration, please follow the instructions below:""",
     @ipy.component_callback("account_register")
     async def callback_registration(self, ctx: ipy.ComponentContext):
         """Check and confirm user registration"""
-        await ctx.defer(ephemeral=True)
+        guild = ctx.guild
+        if guild is None:
+            guild_name = "Personal DM"
+            guild_id = ctx.author.id
+        else:
+            guild_name = guild.name
+            guild_id = guild.id
+        await ctx.defer(ephemeral=str(guild_id) != str(VERIFICATION_SERVER))
         checker = await self._check_if_registered(ctx)
         if checker is True:
             return
@@ -287,14 +294,6 @@ To complete your registration, please follow the instructions below:""",
             await ctx.send(embed=embed)
             return
 
-        guild = ctx.guild
-        if guild is None:
-            guild_name = "Personal DM"
-            guild_id = ctx.author.id
-        else:
-            guild_name = guild.name
-            guild_id = guild.id
-
         async with UserDatabase() as udb:
             await udb.save_to_database(
                 UserDatabaseClass(
@@ -311,7 +310,7 @@ To complete your registration, please follow the instructions below:""",
             )
         embed = self.generate_success_embed(
             header="Success!",
-            message="You have been registered!",
+            message=f"You have been registered as {mal_username}, {ctx.author.mention}!",
         )
         cache_ = Caching("cache/verify", 43200)
         path = f"{ctx.author.id}.json"
@@ -646,7 +645,7 @@ To complete your registration, please follow the instructions below:""",
     )
     async def verify(self, ctx: ipy.SlashContext):
         """Verify your account"""
-        await ctx.defer(ephemeral=True)
+        await ctx.defer(ephemeral=False)
         async with UserDatabase() as udb:
             is_registered = await udb.check_if_registered(ctx.author.id)
             if is_registered is False:
