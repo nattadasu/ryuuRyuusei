@@ -181,12 +181,15 @@ def create_simkl_embed(
     score = 0
     votes = 0
     if scores is not None:
-        simkl_score: dict[str, int | float] = scores["simkl"]
+        mock = {"rating": 0, "votes": 0}
+        simkl_score: dict[str, int | float] = scores.get("simkl", mock)
         score = simkl_score.get("rating", 0)
         votes = simkl_score.get("votes", 0)
 
     # Process genres
     genres = data.get("genres", [])
+    if genres is None:
+        genres = []
     if len(genres) == 0:
         genres = "*None*"
     elif len(genres) > 20:

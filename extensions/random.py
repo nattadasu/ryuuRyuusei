@@ -210,6 +210,8 @@ class Random(ipy.Extension):
                 description="Amount of strings to generate",
                 required=False,
                 type=ipy.OptionType.INTEGER,
+                min_value=1,
+                max_value=20,
             ),
             ipy.SlashCommandOption(
                 name="use_uppercase",

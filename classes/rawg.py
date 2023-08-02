@@ -479,7 +479,7 @@ class RawgApi:
                 Cache.write_data_to_cache(rawg_resp, cache_file_path)
             else:
                 raise ProviderHttpError(
-                    f"RAWG API returned {resp.status}. Reason: {resp.text()}",
+                    f"RAWG API returned {resp.status}. Reason: {resp.reason}",
                     resp.status,
                 )
         if len(rawg_resp) == 0:
