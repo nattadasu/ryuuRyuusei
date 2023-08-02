@@ -1,31 +1,31 @@
 """
-# Top.gg API Wrapper
+# Discord Bots API Wrapper
 
-A lite wrapper for the top.gg API.
+A lite wrapper for the discord.bots.gg API.
 """
 
 import aiohttp
 
 from classes.excepts import ProviderHttpError
-from modules.const import BOT_CLIENT_ID, TOPGG_API_TOKEN
+from modules.const import BOT_CLIENT_ID, DBGG_API_TOKEN
 
 
-class TopGG:
-    """# Top.gg API Wrapper"""
+class DiscordBotsGG:
+    """# Discord Bots API Wrapper"""
 
     def __init__(
             self,
-            token: str = TOPGG_API_TOKEN,
+            token: str = DBGG_API_TOKEN,
             bot_id: int = BOT_CLIENT_ID):
         """
-        ## Top.gg API Wrapper
+        ## Discord Bots API Wrapper
 
         Args:
-            token (str, optional): Top.gg API token. Defaults to TOPGG_API_TOKEN.
+            token (str, optional): Discord Bots API token. Defaults to DBGG_API_TOKEN.
             bot_id (int, optional): Bot's client ID. Defaults to BOT_CLIENT_ID.
         """
         self.token = token
-        self.base_url = "https://top.gg/api"
+        self.base_url = "https://discord.bots.gg/api/v1"
         self.session = None
         self.headers = None
         self.bot_id = bot_id
@@ -33,7 +33,7 @@ class TopGG:
     async def __aenter__(self):
         """Enter async context"""
         self.session = aiohttp.ClientSession()
-        self.headers = {"Authorization": self.token}
+        self.headers = {"Authorization": self.token, "Content-Type": "application/json"}
         return self
 
     async def __aexit__(self, exc_type, exc, tb):
@@ -47,16 +47,14 @@ class TopGG:
     async def post_bot_stats(
         self,
         guild_count: int | list[int],
-        shards: list[int] | None = None,
         shard_id: int | None = None,
         shard_count: int | None = None,
     ) -> int:
         """
-        Post bot stats to top.gg
+        Post bot stats to discord.bots.gg
 
         Args:
             guild_count (int | list[int]): Guild count or list of guild counts.
-            shards (list[int], optional): List of shards. Defaults to None.
             shard_id (int, optional): Shard ID. Defaults to None.
             shard_count (int, optional): Shard count. Defaults to None.
 
@@ -65,20 +63,26 @@ class TopGG:
         """
         if self.session is None:
             raise RuntimeError("Session is not initialized")
-        body: dict = {
-            "server_count": guild_count,
+
+        if isinstance(guild_count, list):
+            guild_count = sum(guild_count)
+
+        payload = {
+            "guildCount": guild_count,
         }
-        if shards:
-            body["shards"] = shards
-        if shard_id:
-            body["shard_id"] = shard_id
-        if shard_count:
-            body["shard_count"] = shard_count
+
+        if shard_id or shard_count:
+            payload["shardId"] = shard_id or 0
+            payload["shardCount"] = shard_count or 1
+
         async with self.session.post(
             f"{self.base_url}/bots/{self.bot_id}/stats",
-            json=body,
             headers=self.headers,
+            json=payload,
         ) as resp:
-            if resp.status not in [200, 204]:
-                raise ProviderHttpError(resp.reason, resp.status)
+            if resp.status != 200:
+                raise ProviderHttpError(
+                    f"Discord Bots API returned HTTP status code {resp.status}",
+                    resp.status,
+                )
             return resp.status

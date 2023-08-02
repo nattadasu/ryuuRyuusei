@@ -61,12 +61,7 @@ async def on_ready():
     print(f"{sp} Guilds       : {guilds}")
     print(f"{sp} Shards       : {bot.total_shards}")
     print(f"{sp} User Agent   : {USER_AGENT}")
-    # get member count
-    print(f"{sp} Getting member count...")
-    member_count = 0
-    for guild in bot.guilds:
-        print(f"{sp * 2} [{guild.id}] {guild.name}: {guild.member_count}")
-        member_count += guild.member_count
+    member_count = sum([guild.member_count for guild in bot.guilds])
     print(f"{sp} Total members: {member_count}")
     # set bot status
     await asyncio.sleep(2.5)

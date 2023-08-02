@@ -367,9 +367,10 @@ purposes, but no personal information will be included in the aggregated data.
 Following is the list of third parties that Ryuuzaki Ryuusei may share
 aggregated data with:
 
-| Provider        | Data Shared                | Purpose           |
-| --------------- | -------------------------- | ----------------- |
-| [Top.gg][topgg] | Server Count, Shards Count | Public statistics |
+| Provider             | Data Shared                | Purpose           |
+| -------------------- | -------------------------- | ----------------- |
+| [Top.gg][topgg]      | Server Count, Shards Count | Public statistics |
+| [Discord Bots][dbgg] | Server Count, Shards Count | Public statistics |
 
 ## Data Caching
 
@@ -615,6 +616,7 @@ Data Controller.
 <!-- References -->
 [al]: https://anilist.co
 [aniapi]: https://aniapi.nattadasu.my.id
+[dbgg]: https://discord.bots.gg
 [discord]: https://discord.com
 [gh-nattadasu]: https://github.com/nattadasu
 [gdpr]: https://gdpr.eu

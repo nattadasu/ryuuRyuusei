@@ -5,6 +5,7 @@ from interactions import (Activity, ActivityType, AutoShardedClient, Client,
                           Extension, IntervalTrigger, Status, Task)
 
 from classes.excepts import ProviderHttpError
+from classes.stats.dbgg import DiscordBotsGG
 from classes.stats.topgg import TopGG
 from modules.commons import save_traceback_to_file
 
@@ -98,12 +99,21 @@ class BotTasker(Extension):
                     guild_count=server_count,
                     shard_count=shard_count,
                 )
-            print(
-                f"[Tsk] [Stats] Poll to Top.gg was completed with {server_count} servers"
-            )
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to Top.gg: {error}")
-            save_traceback_to_file("tasker_topgg", self.bot.user, error)
+            save_traceback_to_file("tasker_topgg", self.bot.user, error, mute_error=True)
+
+        try:
+            async with DiscordBotsGG() as dbgg:
+                await dbgg.post_bot_stats(
+                    guild_count=server_count,
+                    shard_count=shard_count,
+                )
+        except ProviderHttpError as error:
+            print(f"[Tsk] [Stats] Failed to poll to DiscordBots.gg: {error}")
+            save_traceback_to_file("tasker_dbgg", self.bot.user, error, mute_error=True)
+
+        print(f"[Tsk] [Stats] Finished polling bot stats, server count: {server_count}, shard count: {shard_count}")
 
     @Task.create(IntervalTrigger(minutes=10))
     async def update_presence(self) -> None:
@@ -119,19 +129,6 @@ class BotTasker(Extension):
             status=Status.ONLINE,
         )
         print("[Tsk] [Presence] Bot presence has been updated")
-
-    @Task.create(IntervalTrigger(hours=1))
-    async def update_stats(self) -> None:
-        """Generate an hourly stats of the bot"""
-        guilds = self.bot.guilds
-        member_count = 0
-        print("[Tsk] [Stats] Generating hourly stats...")
-        for guild in guilds:
-            print(f"{' ' * 17}[{guild.id}] {guild.name}: {guild.member_count}")
-            member_count += guild.member_count
-        print(f"{' ' * 14}{'=' * 20}")
-        print(f"{' ' * 14}Total members: {member_count}")
-        print(f"{' ' * 14}Total guilds : {len(guilds)}")
 
     @staticmethod
     def _delete_old_files(folder_path: str, duration: int) -> None:
