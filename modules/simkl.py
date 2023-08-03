@@ -54,6 +54,7 @@ def create_simkl_embed(
     country = data.get("country", None)
     network = data.get("network", None)
     runtime = data.get("runtime", None)
+    airing_date = None
 
     # Process synonyms
     if synonyms is None:
@@ -83,7 +84,7 @@ def create_simkl_embed(
     if runtime is not None:
         runtime = f"({runtime} mins/eps)" if media_type == "tv" else f"{runtime} mins"
     else:
-        runtime = ""
+        runtime = "*Unknown*"
 
     # Process country
     if country is not None:
