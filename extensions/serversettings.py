@@ -21,7 +21,7 @@ class ServerSettings(ipy.Extension):
     serversettings_head = ipy.SlashCommand(
         name="serversettings",
         description="Change the bot settings server-wide",
-        default_member_permissions=ipy.Permissions.ADMINISTRATOR,
+        default_member_permissions=ipy.Permissions.MANAGE_GUILD | ipy.Permissions.ADMINISTRATOR,
         dm_permission=False,
     )
 
