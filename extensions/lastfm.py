@@ -138,8 +138,8 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
 
         for lfm_track in tracks:
             tr_title = (
-                # '▶️ '
-                '<a:currentlyPlaying:1135604484362477738> '
+                '▶️ '
+                # '<a:currentlyPlaying:1135604484362477738> '
                 if lfm_track.nowplaying
                 else ''
             )
