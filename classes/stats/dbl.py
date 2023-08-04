@@ -95,7 +95,8 @@ class DiscordBotList:
                 data=await resp.json(),
                 config=Config(
                     type_hooks={
-                        datetime: lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ")
+                        datetime: lambda x: datetime.strptime(
+                            x, "%Y-%m-%dT%H:%M:%S.%fZ")
                     }
                 )
             )

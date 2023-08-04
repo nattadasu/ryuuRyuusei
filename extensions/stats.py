@@ -18,7 +18,8 @@ from classes.excepts import ProviderHttpError
 from classes.stats.dbl import DiscordBotList
 from classes.stats.infinity import InfinityBots
 from classes.stats.topgg import TopGG
-from modules.const import USER_AGENT, GIT_COMMIT_HASH, GT_HSH, VERIFICATION_SERVER
+from modules.const import (GIT_COMMIT_HASH, GT_HSH, USER_AGENT,
+                           VERIFICATION_SERVER)
 
 
 @dataclass
@@ -58,12 +59,14 @@ class SystemInfo:
     swap_percentage: float
     disks: list[DiskInfo]
 
+
 @dataclass
 class PackageInfo:
     """Package Information"""
     name: str
     version: str
     license: str
+
 
 def get_size(bytes: float | None, suffix: str = "B") -> str | None:
     """
@@ -79,6 +82,7 @@ def get_size(bytes: float | None, suffix: str = "B") -> str | None:
         if bytes < factor:
             return f"{bytes:.2f}{unit}{suffix}"
         bytes /= factor
+
 
 def get_disk_info() -> list[DiskInfo]:
     """
@@ -109,6 +113,7 @@ def get_disk_info() -> list[DiskInfo]:
             )
         )
     return disks
+
 
 def get_system_info() -> SystemInfo:
     """
@@ -148,6 +153,7 @@ def get_system_info() -> SystemInfo:
         disks=disks
     )
 
+
 def get_pkg_license(pkg: pipkg.Distribution) -> str:
     try:
         lines = pkg.get_metadata_lines('METADATA')
@@ -158,6 +164,7 @@ def get_pkg_license(pkg: pipkg.Distribution) -> str:
         if line.startswith('License:'):
             return line[9:]
     return '*Licence not found*'
+
 
 def get_pip_pkgs() -> list[PackageInfo]:
     """
@@ -177,9 +184,9 @@ def get_pip_pkgs() -> list[PackageInfo]:
     final.sort(key=lambda x: x.name)
     return final
 
+
 class Stats(ipy.Extension):
     """Stats command"""
-
 
     """Common commands"""
 
@@ -438,7 +445,6 @@ class Stats(ipy.Extension):
 
         paging = Paginator.create_from_embeds(self.bot, *message, timeout=180)
         await paging.send(ctx)
-
 
 
 def setup(bot: ipy.Client | ipy.AutoShardedClient, now: datetime):

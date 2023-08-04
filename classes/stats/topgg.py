@@ -13,6 +13,7 @@ from dacite import Config, from_dict
 from classes.excepts import ProviderHttpError
 from modules.const import BOT_CLIENT_ID, TOPGG_API_TOKEN
 
+
 @dataclass
 class TopGGBotStruct:
     """Top.gg Bot info schema"""
@@ -66,6 +67,7 @@ class TopGGBotStruct:
     vanity: str | None = None
     """The vanity url of the bot"""
 
+
 class TopGG:
     """# Top.gg API Wrapper"""
 
@@ -118,7 +120,8 @@ class TopGG:
             data = await resp.json()
             dacite_config = Config(
                 type_hooks={
-                    datetime: lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ")
+                    datetime: lambda x: datetime.strptime(
+                        x, "%Y-%m-%dT%H:%M:%S.%fZ")
                 }
             )
             return from_dict(
