@@ -33,44 +33,44 @@ The bot cares about your privacy by not storing any data on its server except fo
 The bot has many commands for different purposes, such as anime, manga, game, TV show, movie, music, and external link lookups. You can also access profile lookup commands, data control commands, settings commands (for both users and servers), randomization commands, and utility commands.
 
 If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({ownerUserUrl}) or via [support server]({BOT_SUPPORT_SERVER}).""",
-            fields=[
-                ipy.EmbedField(
-                    name="Bot ID",
-                    value=f"`{self.bot.user.id}`",
-                    inline=True,
-                ),
-                ipy.EmbedField(
-                    name="Bot Version",
-                    value=f"[{gtHsh}](https://github.com/nattadasu/ryuuRyuusei/commit/{gittyHash})",
-                    inline=True,
-                ),
-                ipy.EmbedField(
-                    name="User Agent",
-                    value=f'```http\nUser-Agent: "{USER_AGENT}"\n```',
-                    inline=False,
-                ),
-                ipy.EmbedField(
-                    name="Interactions.py Version",
-                    value=f"```py\n{ipy.__version__}\n```",
-                    inline=True,
-                ),
-                ipy.EmbedField(
-                    name="Aiohttp Version",
-                    value=f"```py\n{aiohttp_version}\n```",
-                    inline=True,
-                ),
-                ipy.EmbedField(
-                    name="Python Version",
-                    value=f"```py\n{ipy.__py_version__}\n```",
-                    inline=True,
-                ),
-                ipy.EmbedField(
-                    name="Bot Author",
-                    value=f"{authors}",
-                    inline=False,
-                ),
-            ],
             color=0x996422,
+        )
+        embed.add_fields(
+            ipy.EmbedField(
+                name="Bot ID",
+                value=f"`{self.bot.user.id}`",
+                inline=True,
+            ),
+            ipy.EmbedField(
+                name="Bot Version",
+                value=f"[{gtHsh}](https://github.com/nattadasu/ryuuRyuusei/commit/{gittyHash})",
+                inline=True,
+            ),
+            ipy.EmbedField(
+                name="User Agent",
+                value=f'```http\nUser-Agent: "{USER_AGENT}"\n```',
+                inline=False,
+            ),
+            ipy.EmbedField(
+                name="Interactions.py Version",
+                value=f"```py\n{ipy.__version__}\n```",
+                inline=True,
+            ),
+            ipy.EmbedField(
+                name="Aiohttp Version",
+                value=f"```py\n{aiohttp_version}\n```",
+                inline=True,
+            ),
+            ipy.EmbedField(
+                name="Python Version",
+                value=f"```py\n{ipy.__py_version__}\n```",
+                inline=True,
+            ),
+            ipy.EmbedField(
+                name="Bot Author",
+                value=f"{authors}",
+                inline=False,
+            ),
         )
         embed.set_thumbnail(self.bot.user.avatar.url)
         embed.set_footer(text="To get uptime and other info, use /ping")
@@ -144,8 +144,8 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({ownerUserUr
             title=l_["pong"]["title"],
             description=l_["pong"]["text"],
             color=0x996422,
-            fields=fields,
         )
+        embed.add_fields(*fields)
         emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", EMOJI_SUCCESS)
         embed.set_thumbnail(
             url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
@@ -163,18 +163,18 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({ownerUserUr
             title=l_["title"],
             description=l_["text"].format(INVBUTTON=l_["buttons"]["invite"]),
             color=0x996422,
-            fields=[
-                ipy.EmbedField(
-                    name=l_["fields"]["acc"]["title"],
-                    value=l_["fields"]["acc"]["value"],
-                    inline=True,
-                ),
-                ipy.EmbedField(
-                    name=l_["fields"]["scope"]["title"],
-                    value=l_["fields"]["scope"]["value"],
-                    inline=True,
-                ),
-            ],
+        )
+        dcEm.add_fields(
+            ipy.EmbedField(
+                name=l_["fields"]["acc"]["title"],
+                value=l_["fields"]["acc"]["value"],
+                inline=True,
+            ),
+            ipy.EmbedField(
+                name=l_["fields"]["scope"]["title"],
+                value=l_["fields"]["scope"]["value"],
+                inline=True,
+            ),
         )
         invButton = ipy.Button(
             label=l_["buttons"]["invite"],
@@ -269,5 +269,5 @@ We highly suggest to read the full version of [Privacy Policy here](https://gith
         await ctx.send(embed=em)
 
 
-def setup(bot, now):
-    CommonCommands(bot, now)
+def setup(bot: ipy.Client | ipy.AutoShardedClient):
+    CommonCommands(bot)
