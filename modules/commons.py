@@ -12,7 +12,7 @@ from re import sub as rSub
 from typing import Any
 from uuid import uuid4 as id4
 
-from interactions import (Button, ButtonStyle, ClientUser, ComponentContext,
+from interactions import (Button, ButtonStyle, ChannelType, ClientUser, ComponentContext,
                           Embed, EmbedAuthor, EmbedField, Member, Message,
                           PartialEmoji, SlashContext, User)
 
@@ -289,7 +289,7 @@ def generate_commons_except_embed(
 
 
 def generate_trailer(
-        data: dict | AniListTrailerStruct,
+        data: dict[str, Any] | AniListTrailerStruct,
         is_mal: bool = False) -> Button:
     """
     Generate a button for playing the trailer of a given anime.
@@ -308,10 +308,9 @@ def generate_trailer(
     """
     if isinstance(data, dict):
         ytid = data.get("youtube_id" if is_mal else "youtube")
-    elif isinstance(data, AniListTrailerStruct):
-        ytid = data.id
     else:
-        raise TypeError("Invalid data type.")
+        ytid = data.id
+
     if not ytid:
         raise ValueError("No trailer found.")
     button = Button(
@@ -336,28 +335,34 @@ async def get_nsfw_status(
         bool: The age restriction status of the channel, or False if the channel does not have a parent or the parent's age restriction status could not be determined.
     """
     channel = context.channel
+    nsfw_bool = False
     # if message sent on a DM channel, return False
     if context.guild is None:
         return True
-    if channel.type in (11, 12):
-        nsfw_bool = channel.parent_channel.nsfw
+
+    if channel.type in [ChannelType.DM, ChannelType.GROUP_DM]:
+        return True
+    elif channel.type in [ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD]:
+        nsfw_bool = channel.parent_channel.nsfw  # type: ignore
     else:
-        nsfw_bool = channel.nsfw
-    return nsfw_bool
+        nsfw_bool = channel.nsfw  # type: ignore
+    return nsfw_bool  # type: ignore
 
 
-def pluralize(amount):
+def pluralize(amount: float | int, word: str | None = None):
     """
     Add an "s" to the end of a word if the number is greater than 1.
-    Will be dropped once i18n is implemented.
 
     Args:
-        amount (int): The number to check.
+        amount (float | int): The number to check.
+        word (str | None): Word to be modified, defaults: None
 
     Returns:
         str: An "s" if the number is greater than 1, otherwise an empty string.
     """
-    return "s" if amount > 1 else ""
+    if amount == 1:
+        return "" if not word else word
+    return 's' if not word else f"{word}s" if not word.endswith("s") else f"{word}es"
 
 
 def convert_float_to_time(
@@ -458,11 +463,11 @@ def platform_exception_embed(
         color=color,
         title=lang_dict["commons"]["error"],
         description=description,
-        fields=[
-            EmbedField(name=lang_dict["commons"]
-                       ["reason"], value=error, inline=False)
-        ],  # type: ignore
     )
+    embed.add_field(
+        name=lang_dict["commons"]["reason"],
+        value=error,
+        inline=False)
     embed.set_thumbnail(
         url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
@@ -514,8 +519,6 @@ def save_traceback_to_file(
     Raises:
         error (Exception): Re-raise the error (for logging purpose), if mute_error is False.
     """
-    if not isinstance(error, Exception):
-        return
     error_type = type(error).__name__
     error_str = str(error)
     error_traceback = "".join(
