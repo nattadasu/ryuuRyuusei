@@ -4,10 +4,40 @@
 A lite wrapper for the discordbotlist.com API.
 """
 
+from dataclasses import dataclass
+from datetime import datetime
+
 import aiohttp
+from dacite import Config, from_dict
 
 from classes.excepts import ProviderHttpError
 from modules.const import BOT_CLIENT_ID, DBL_API_TOKEN
+
+
+@dataclass
+class UserStruct:
+    """Struct for user object"""
+
+    user_id: str
+    """The id of the user"""
+    timestamp: datetime
+    """The timestamp of upvote by the user"""
+    username: str
+    """The username of the user"""
+    discriminator: str
+    """The discriminator of the user"""
+    avatar: str
+    """The avatar hash of the user"""
+
+
+@dataclass
+class UpvoteStruct:
+    """Struct for upvote object"""
+
+    upvotes: UserStruct
+    """The user object of the upvote"""
+    total: int
+    """The total amount of upvotes in the last 12 hours"""
 
 
 class DiscordBotList:
@@ -44,6 +74,31 @@ class DiscordBotList:
     async def close(self):
         """Close the session"""
         await self.session.close() if self.session else None
+
+    async def get_recent_upvotes(self) -> UpvoteStruct:
+        """
+        Get recent upvotes in past 12 hours
+
+        Returns:
+            UpvoteStruct: Upvote data
+        """
+        if self.session is None:
+            raise RuntimeError("Session is not initialized")
+        async with self.session.get(
+            f"{self.base_url}/bots/{self.bot_id}/upvotes",
+            headers=self.headers,
+        ) as resp:
+            if resp.status != 200:
+                raise ProviderHttpError(f"{resp.reason}", resp.status)
+            return from_dict(
+                data_class=UpvoteStruct,
+                data=await resp.json(),
+                config=Config(
+                    type_hooks={
+                        datetime: lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ")
+                    }
+                )
+            )
 
     async def post_bot_stats(
         self,
