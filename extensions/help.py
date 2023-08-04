@@ -46,10 +46,6 @@ class Help(ipy.Extension):
             if list(map(int, command.scopes)) in scopes
         ]
 
-        owners = [
-            f"* {owner.username} ({owner.mention})" for owner in self.bot.owners]
-        owners = "\n".join(owners)
-
         for i in range(0, len(commands), 9):
             listed: list[ipy.EmbedField] = []
             for command in commands[i: i + 9]:
@@ -76,8 +72,6 @@ class Help(ipy.Extension):
                 ipy.Embed(
                     title="List of available commands.",
                     description=f"""Total commands: {(len(commands)):,}
-Bot Owners:
-{owners}
 *To see more info about bot, use `/about` command*""",
                     color=0x7CB7D3,
                     thumbnail=ipy.EmbedAttachment(
