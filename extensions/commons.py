@@ -8,9 +8,9 @@ from typing import Any
 import interactions as ipy
 from aiohttp import __version__ as aiohttp_version
 
-from modules.const import (AUTHOR_USERNAME, BOT_CLIENT_ID, BOT_SUPPORT_SERVER,
-                           DATABASE_PATH, EMOJI_SUCCESS, USER_AGENT, GIT_COMMIT_HASH,
-                           GT_HSH, AUTHOR_USER_URL)
+from modules.const import (AUTHOR_USER_URL, AUTHOR_USERNAME, BOT_CLIENT_ID,
+                           BOT_SUPPORT_SERVER, DATABASE_PATH, EMOJI_SUCCESS,
+                           GIT_COMMIT_HASH, GT_HSH, USER_AGENT)
 from modules.i18n import fetch_language_data, read_user_language
 
 

@@ -5,7 +5,7 @@ from enum import Enum
 from typing import Any, Literal
 
 from aiohttp import ClientSession
-from dacite import from_dict, Config
+from dacite import Config, from_dict
 
 from classes.cache import Caching
 from classes.excepts import ProviderHttpError, ProviderTypeError
@@ -315,7 +315,6 @@ class AniList:
         ANIME = "ANIME"
         MANGA = "MANGA"
 
-
     async def nsfw_check(
         self,
         media_id: int,
@@ -572,7 +571,8 @@ class AniList:
         cached_data = Cache.read_cached_data(cache_file_path, 43200)
         config = Config(
             type_hooks={
-                datetime: lambda value: datetime.fromtimestamp(value, timezone.utc)
+                datetime: lambda value: datetime.fromtimestamp(
+                    value, timezone.utc)
             }
         )
         if cached_data is not None and not return_id:

@@ -12,9 +12,9 @@ from re import sub as rSub
 from typing import Any
 from uuid import uuid4 as id4
 
-from interactions import (Button, ButtonStyle, ChannelType, ClientUser, ComponentContext,
-                          Embed, EmbedAuthor, EmbedField, Member, Message,
-                          PartialEmoji, SlashContext, User)
+from interactions import (Button, ButtonStyle, ChannelType, ClientUser,
+                          ComponentContext, Embed, EmbedAuthor, EmbedField,
+                          Member, Message, PartialEmoji, SlashContext, User)
 
 from classes.anilist import AniListTrailerStruct
 from modules.const import EMOJI_FORBIDDEN
