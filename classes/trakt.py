@@ -1,9 +1,10 @@
 import json
 from dataclasses import dataclass
 from enum import Enum
-from typing import Literal
+from typing import Any, Literal
 
 import aiohttp
+from dacite import from_dict
 
 from classes.cache import Caching
 from classes.excepts import ProviderHttpError, ProviderTypeError
@@ -26,7 +27,7 @@ class TraktIdsStruct:
     """TMDB ID"""
     tvdb: int | None = None
     """TVDB ID"""
-    tvrage: dict | int | str | None = None
+    tvrage: dict[str, Any] | int | str | None = None
     """TVRage ID"""
 
 
@@ -46,7 +47,7 @@ class TraktMediaStruct:
 class TraktLookupStruct:
     """Trakt Lookup dataclass"""
 
-    type: Literal["movie", "show"]
+    type: Literal["movie", "show"] | str
     """Media type"""
     score: float | None
     """Media score"""
@@ -76,8 +77,6 @@ class TraktExtendedShowStruct(TraktMediaStruct):
     """Show overview"""
     first_aired: str | None
     """First aired date"""
-    airs: TraktAirStruct | None
-    """Show air data"""
     runtime: int | None
     """Show runtime"""
     certification: str | None
@@ -100,7 +99,7 @@ class TraktExtendedShowStruct(TraktMediaStruct):
         "canceled",
         "ended",
         "pilot",
-    ]
+    ] | str
     """Show status"""
     rating: float | None
     """Show rating"""
@@ -116,6 +115,8 @@ class TraktExtendedShowStruct(TraktMediaStruct):
     """Show genres"""
     aired_episodes: int | None
     """Show aired episodes"""
+    airs: TraktAirStruct | None = None
+    """Show air data"""
 
 
 @dataclass
@@ -162,15 +163,13 @@ class TraktExtendedMovieStruct(TraktMediaStruct):
 class Trakt:
     """Trakt API Wrapper"""
 
-    def __init__(self, headers: dict | None = None):
+    def __init__(self, headers: dict[str, str] | None = None):
         """
         Initialize the Trakt API Wrapper
 
         Args:
             headers (dict): Trakt API headers, defaults to traktHeader on modules/const.py
         """
-        if headers is None:
-            headers = traktHeader
         self.base_url = "https://api.trakt.tv/"
         if headers is None:
             self.headers = traktHeader
@@ -183,7 +182,7 @@ class Trakt:
         """Enter the async context manager"""
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type, exc_val, exc_tb):  # type: ignore
         """Exit the async context manager"""
         await self.close()
 
@@ -208,7 +207,7 @@ class Trakt:
         data: list[
             dict[
                 str,
-                str | float | dict | None,
+                Any,
             ]
         ],
     ) -> list[TraktLookupStruct]:
@@ -216,31 +215,24 @@ class Trakt:
         Convert a dict of IDs to a dataclass
 
         Args:
-            data (list[dict[str, str | float | dict | None]]): List of IDs
+            data (list[dict[str, Any]]): List of IDs
 
         Returns:
             list[TraktLookupStruct]: List of converted dataclass
         """
-        converted_data = []
-        for x in data:
-            if x.get("movie", None):
-                x["movie"]["ids"] = TraktIdsStruct(**x["movie"]["ids"])
-                x["movie"] = TraktMediaStruct(**x["movie"])
-            if x.get("show", None):
-                x["show"]["ids"] = TraktIdsStruct(**x["show"]["ids"])
-                x["show"] = TraktMediaStruct(**x["show"])
+        converted_data: list[TraktLookupStruct] = []
+        for entry in data:
+            # if entry.get("movie", None):
+            #     entry["movie"] = from_dict(TraktMediaStruct, entry["movie"])
+            # if entry.get("show", None):
+            #     entry["show"] = from_dict(TraktMediaStruct, entry["show"])
             converted_data.append(
-                TraktLookupStruct(
-                    type=x["type"],
-                    score=x["score"],
-                    movie=x.get("movie", None),
-                    show=x.get("show", None),
-                )
+                from_dict(TraktLookupStruct, entry)
             )
         return converted_data
 
     def extended_dict_to_dataclass(
-        self, data: dict, media_type: MediaType
+        self, data: dict[str, Any], media_type: MediaType
     ) -> TraktExtendedMovieStruct | TraktExtendedShowStruct:
         """
         Convert a dict of extended information to a dataclass
@@ -252,14 +244,10 @@ class Trakt:
         Returns:
             TraktExtendedMovieStruct | TraktExtendedShowStruct: Converted dataclass
         """
-        data["ids"] = TraktIdsStruct(**data["ids"])
-        if media_type == self.MediaType.SHOWS and data.get("airs", None):
-            data["airs"] = TraktAirStruct(**data["airs"])
-        else:
-            data["airs"] = None
         if media_type == self.MediaType.SHOWS:
-            return TraktExtendedShowStruct(**data)
-        return TraktExtendedMovieStruct(**data)
+            return from_dict(TraktExtendedShowStruct, data=data)
+
+        return from_dict(TraktExtendedMovieStruct, data=data)
 
     async def lookup(
         self,
