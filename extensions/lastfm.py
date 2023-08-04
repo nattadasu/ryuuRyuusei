@@ -120,7 +120,6 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
             embed = generate_commons_except_embed(
                 description="Last.fm API is currently unavailable, please try again later",
                 error=err,
-                language=lang_dict,
             )
             await ctx.send(embed=embed)
             save_traceback_to_file("lastfm_profile", ctx.author, err)

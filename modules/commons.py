@@ -249,7 +249,6 @@ def generate_utils_except_embed(
 def generate_commons_except_embed(
     description: str,
     error: str | Exception,
-    language: dict | str = "en_US",  # type: ignore
     color: int = 0xFF0000,
 ) -> Embed:
     """
@@ -269,10 +268,6 @@ def generate_commons_except_embed(
         >>> generate_commons_except_embed("An error occurred while processing the request.", "Error message", lang_dict)
         <discord.Embed object at 0x...>
     """
-    if isinstance(language, str):
-        lang_dict = fetch_language_data(code=language, use_raw=True)
-    else:
-        lang_dict = language
 
     if isinstance(error, Exception):
         error = str(error)
@@ -280,14 +275,13 @@ def generate_commons_except_embed(
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
     embed = Embed(
         color=color,
-        title=lang_dict["commons"]["error"],
+        title="Error",
         description=description,
-        fields=[
-            EmbedField(
-                name=lang_dict["commons"]["reason"], value=f"{sanitize_markdown(error)}", inline=False
-            )  # type: ignore
-        ],
     )
+    embed.add_field(
+        name="Reason",
+        value=f"{sanitize_markdown(error)}",
+        inline=False)
     embed.set_thumbnail(
         url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
