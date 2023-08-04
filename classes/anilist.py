@@ -5,6 +5,7 @@ from enum import Enum
 from typing import Any, Literal
 
 from aiohttp import ClientSession
+from dacite import from_dict, Config
 
 from classes.cache import Caching
 from classes.excepts import ProviderHttpError, ProviderTypeError
@@ -140,7 +141,7 @@ class AniListMediaStruct:
     averageScore: int | None = None
     """Media weighted average score"""
     # pylint: disable-next=invalid-name
-    meanScore: int | None = None
+    meanScore: float | None = None
     """Media mean score"""
     stats: dict[str, list[dict[str, Any] | None]] | None = None
     """Media statistics, doesn't set as dataclass because it's a nested dictionary"""
@@ -178,7 +179,7 @@ class AniListStatisticBase:
     count: int | None = None
     """Statistic count"""
     # pylint: disable-next=invalid-name
-    meanScore: int | None = None
+    meanScore: float | None = None
     """Statistic mean score"""
     statuses: list[AniListStatusBase] | None = None
     """Statistic statuses"""
@@ -314,96 +315,6 @@ class AniList:
         ANIME = "ANIME"
         MANGA = "MANGA"
 
-    @staticmethod
-    def _media_dict_to_dataclass(data: dict[str, Any]):
-        """Format returned dictionary from AniList to its proper dataclass"""
-        data["title"] = AniListTitleStruct(
-            **data["title"]) if data["title"] else None
-        if data.get("startDate", None):
-            data["startDate"] = (
-                AniListDateStruct(**data["startDate"]
-                                  ) if data["startDate"] else None
-            )
-        if data.get("endDate", None):
-            data["endDate"] = (
-                AniListDateStruct(
-                    **data["endDate"]) if data["endDate"] else None
-            )
-        if data.get("coverImage", None):
-            data["coverImage"] = (
-                AniListImageStruct(
-                    **data["coverImage"]) if data["coverImage"] else None
-            )
-        if data.get("trailer", None):
-            data["trailer"] = (
-                AniListTrailerStruct(
-                    **data["trailer"]) if data["trailer"] else None
-            )
-        if data.get("tags", None):
-            data["tags"] = [AniListTagsStruct(**tag) for tag in data["tags"]]
-        return AniListMediaStruct(**data)
-
-    def _user_dict_to_dataclass(self, data: dict[str, Any]) -> AniListUserStruct:
-        """
-        Format returned dictionary from AniList to its proper dataclass
-
-        Args:
-            data (dict[str, Any]): Dictionary to format
-
-        Returns:
-            AniListUserStruct: Formatted dataclass
-        """
-        data["avatar"] = (
-            AniListImageStruct(**data["avatar"]) if data["avatar"] else None
-        )
-        data["createdAt"] = (
-            datetime.fromtimestamp(data["createdAt"], timezone.utc)
-            if data["createdAt"]
-            else None
-        )
-        if data["statistics"]["anime"]:
-            data["statistics"]["anime"]["statuses"] = [
-                AniListStatusBase(**status)
-                for status in data["statistics"]["anime"]["statuses"]
-            ]
-            data["statistics"]["anime"] = AniListAnimeStatistic(
-                **data["statistics"]["anime"]
-            )
-        if data["statistics"]["manga"]:
-            data["statistics"]["manga"]["statuses"] = [
-                AniListStatusBase(**status)
-                for status in data["statistics"]["manga"]["statuses"]
-            ]
-            data["statistics"]["manga"] = AniListMangaStatistic(
-                **data["statistics"]["manga"]
-            )
-        data["statistics"] = (
-            AniListUserStatisticStruct(**data["statistics"])
-            if data["statistics"]
-            else None
-        )
-        if data["favourites"]["anime"]:
-            data["favourites"]["anime"]["nodes"] = [
-                self._media_dict_to_dataclass(media)
-                for media in data["favourites"]["anime"]["nodes"]
-            ]
-            data["favourites"]["anime"] = AniListUserMediaNode(
-                **data["favourites"]["anime"]
-            )
-        if data["favourites"]["manga"]:
-            data["favourites"]["manga"]["nodes"] = [
-                self._media_dict_to_dataclass(media)
-                for media in data["favourites"]["manga"]["nodes"]
-            ]
-            data["favourites"]["manga"] = AniListUserMediaNode(
-                **data["favourites"]["manga"]
-            )
-        data["favourites"] = (
-            AniListUserFavoriteStruct(**data["favourites"])
-            if data["favourites"]
-            else None
-        )
-        return AniListUserStruct(**data)
 
     async def nsfw_check(
         self,
@@ -445,8 +356,8 @@ class AniList:
             # pylint: disable-next=broad-except
             except Exception as err:
                 raise ProviderHttpError(str(err), response.status) from err
-            errors: list[dict[str, Any]] = data.get("errors", None)
-            if errors is not None:
+            errors: list[dict[str, Any]] | None = data.get("errors", None)
+            if errors:
                 err_strings: str = "\n".join(
                     [
                         f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
@@ -475,7 +386,8 @@ class AniList:
         cache_file_path = Cache.get_cache_file_path(f"anime/{media_id}.json")
         cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
-            return self._media_dict_to_dataclass(cached_data)
+            # return self._media_dict_to_dataclass(cached_data)
+            return from_dict(AniListMediaStruct, cached_data)
         gqlquery = f"""query {{
     Media(id: {media_id}, type: ANIME) {{
         id
@@ -536,8 +448,8 @@ class AniList:
                 data: dict[str, Any] = await response.json()
             except Exception as err:
                 raise ProviderHttpError(str(err), response.status) from err
-            errors: list[dict[str, Any]] = data.get("errors", None)
-            if errors is not None:
+            errors: list[dict[str, Any]] | None = data.get("errors", None)
+            if errors:
                 err_strings: str = "\n".join(
                     [
                         f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
@@ -548,7 +460,7 @@ class AniList:
             Cache.write_data_to_cache(
                 data["data"]["Media"],
                 cache_file_path)
-            return self._media_dict_to_dataclass(data["data"]["Media"])
+            return from_dict(AniListMediaStruct, data["data"]["Media"])
 
     async def manga(self, media_id: int, from_mal: bool = False) -> AniListMediaStruct:
         """
@@ -564,7 +476,7 @@ class AniList:
         cache_file_path = Cache.get_cache_file_path(f"manga/{media_id}.json")
         cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
-            return self._media_dict_to_dataclass(cached_data)
+            return from_dict(AniListMediaStruct, cached_data)
         gqlquery = f"""query {{
     Media(id: {media_id}, type: MANGA) {{
         id
@@ -628,8 +540,8 @@ class AniList:
                 data: dict[str, Any] = await response.json()
             except Exception as err:
                 raise ProviderHttpError(str(err), response.status) from err
-            errors: list[dict[str, Any]] = data.get("errors", None)
-            if errors is not None:
+            errors: list[dict[str, Any]] | None = data.get("errors", None)
+            if errors:
                 err_strings: str = "\n".join(
                     [
                         f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
@@ -640,7 +552,7 @@ class AniList:
             Cache.write_data_to_cache(
                 data["data"]["Media"],
                 cache_file_path)
-            return self._media_dict_to_dataclass(data["data"]["Media"])
+            return from_dict(AniListMediaStruct, data["data"]["Media"])
 
     async def user(self, username: str, return_id: bool = False) -> AniListUserStruct:
         """
@@ -658,9 +570,13 @@ class AniList:
         """
         cache_file_path = Cache.get_cache_file_path(f"user/{username}.json")
         cached_data = Cache.read_cached_data(cache_file_path, 43200)
+        config = Config(
+            type_hooks={
+                datetime: lambda value: datetime.fromtimestamp(value, timezone.utc)
+            }
+        )
         if cached_data is not None and not return_id:
-            formatted_data = self._user_dict_to_dataclass(cached_data)
-            return formatted_data
+            return from_dict(AniListUserStruct, cached_data, config=config)
         if return_id:
             gqlquery = f"""query {{
     User(name: "{username}") {{
@@ -737,8 +653,8 @@ class AniList:
                 data: dict[str, Any] = await response.json()
             except Exception as err:
                 raise ProviderHttpError(str(err), response.status) from err
-            errors: list[dict[str, Any]] = data.get("errors", None)
-            if errors is not None:
+            errors: list[dict[str, Any]] | None = data.get("errors", None)
+            if errors:
                 err_strings: str = "\n".join(
                     [
                         f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
@@ -749,13 +665,8 @@ class AniList:
             user_data = data["data"]["User"]
             if not return_id:
                 Cache.write_data_to_cache(user_data, cache_file_path)
-                formatted_data = self._user_dict_to_dataclass(user_data)
-            else:
-                formatted_data = AniListUserStruct(
-                    id=user_data["id"],
-                    name=username,
-                )
-            return formatted_data
+                return from_dict(AniListUserStruct, user_data, config=config)
+            return from_dict(AniListUserStruct, user_data["id"], config=config)
 
     async def search_media(
         self,
@@ -815,8 +726,8 @@ class AniList:
                 data: dict[str, Any] = await response.json()
             except Exception as err:
                 raise ProviderHttpError(str(err), response.status) from err
-            errors: list[dict[str, Any]] = data.get("errors", None)
-            if errors is not None:
+            errors: list[dict[str, Any]] | None = data.get("errors", None)
+            if errors:
                 err_strings: str = "\n".join(
                     [
                         f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"

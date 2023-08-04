@@ -5,7 +5,7 @@ from typing import Any, Literal
 
 from interactions import (Button, ButtonStyle, ComponentContext, Embed,
                           EmbedAuthor, EmbedField, Message, PartialEmoji,
-                          SlashContext)
+                          SlashContext, Timestamp)
 
 from classes.anilist import AniList, AniListMediaStruct
 from classes.excepts import MediaIsNsfw, ProviderHttpError
@@ -13,7 +13,7 @@ from modules.commons import (PlatformErrType, convert_html_to_markdown,
                              generate_trailer, get_nsfw_status,
                              platform_exception_embed, sanitize_markdown,
                              save_traceback_to_file, trim_synopsis)
-from modules.const import MESSAGE_WARN_CONTENTS, banned_tags
+from modules.const import BANNED_TAGS, MESSAGE_WARN_CONTENTS
 from modules.i18n import fetch_language_data
 
 
@@ -64,7 +64,7 @@ async def search_al_anime(title: str) -> list[dict[str, Any]]:
 def bypass_anilist_nsfw_tag(alm: AniListMediaStruct) -> bool:
     """Bypass adult rated tagged entry on AniList if it's only an Ecchi tag"""
     # get the genres
-    tgs: list[str] = []
+    tgs: list[str | None] = []
     if alm.genres is not None:
         tgs += list(alm.genres)
     if alm.tags is not None:
@@ -77,7 +77,7 @@ async def generate_anilist(
     entry_id: int,
     is_nsfw: bool | None = False,
     from_mal: bool = False,
-) -> list[Embed, list[Button]]:
+) -> tuple[Embed, list[Button]]:
     """
     Generate an embed for an AniList entry, especially with manga
 
@@ -104,27 +104,34 @@ async def generate_anilist(
     media_id = entry_id
     mal_id = alm.idMal
     media_pg = alm.siteUrl if alm.siteUrl else f"https://anilist.co/manga/{media_id}"
-    romaji = alm.title.romaji
-    native = alm.title.native
-    synonyms = alm.synonyms
-    english = alm.title.english or next(
-        (
-            sys
-            for sys in alm.synonyms or []
-            if sys
-            and re.match(r"([0-9a-zA-Z][:0-9a-zA-Z ]+)(?= )", sys)
-            and sys is not None
-        ),
-        romaji,
-    )
-    if native is None:
+    if alm.title:
+        romaji = alm.title.romaji
+        native = alm.title.native
+        synonyms = alm.synonyms
+        english = alm.title.english or next(
+            (
+                sys
+                for sys in alm.synonyms or []
+                if sys
+                and re.match(r"([0-9a-zA-Z][:0-9a-zA-Z ]+)(?= )", sys)
+            ),
+            romaji,
+        )
+        if native is None:
+            native = "*None*"
+        english_note = english != alm.title.english
+    else:
+        romaji = "*None*"
         native = "*None*"
-    english_note = english != alm.title.english
+        synonyms = []
+        english = "*None*"
+        english_note = False
 
     original_titles = [romaji, native, english]
     synonyms = [
-        val for val in synonyms if val not in original_titles and val is not None]
-    synonyms = sorted(set(synonyms), key=str.casefold)
+        val for val in synonyms if val not in original_titles and val is not None] if synonyms else []
+    fixed_syns: list[str] = []
+    synonyms = sorted(set(fixed_syns), key=str.casefold)
     synonyms_len = len(synonyms)
     syns = ""
 
@@ -177,32 +184,37 @@ async def generate_anilist(
         ):
             desc_done += desc_attr
 
-    poster = alm.coverImage.extraLarge
-    hex_color = alm.coverImage.color if alm.coverImage.color else "#2E51A2"
-    hex_color = int(hex_color.replace("#", ""), 16)
+    poster = alm.coverImage
+    hex_color = 0x2E51A2
+    if poster:
+        cols = poster.color if poster.color else "#2E51A2"
+        hex_color = int(cols.replace("#", ""), 16)
+        poster = poster.extraLarge
     banner = alm.bannerImage
 
-    tgs = []
+    tgs: list[str] = []
     content_warning = False
     sy_chk_mark = False
-    for genre in alm.genres:
-        tgs.append(genre)
-    for tag in alm.tags:
-        if tag is None:
-            continue
-        if tag.name not in banned_tags:
-            if tag.isMediaSpoiler:
-                tgs.append(f"||{tag.name}||")
+    if alm.genres:
+        for genre in alm.genres:
+            if genre is None:
+                continue
+            tgs.append(genre)
+    if alm.tags:
+        for tag in alm.tags:
+            if tag.name not in BANNED_TAGS:
+                if tag.isMediaSpoiler:
+                    tgs.append(f"||{tag.name}||")
+                else:
+                    tgs.append(tag.name)
+            elif tag.name in BANNED_TAGS and is_nsfw:
+                if tag.isMediaSpoiler:
+                    tgs.append(f"||{tag.name} **!**||")
+                else:
+                    tgs.append(f"{tag.name} **!** ")
+                content_warning = True
             else:
-                tgs.append(tag.name)
-        elif tag.name in banned_tags and is_nsfw:
-            if tag.isMediaSpoiler:
-                tgs.append(f"||{tag.name} **!**||")
-            else:
-                tgs.append(f"{tag.name} **!** ")
-            content_warning = True
-        else:
-            sy_chk_mark = True
+                sy_chk_mark = True
 
     tags_formatted = ""
     if not tgs:
@@ -216,7 +228,7 @@ async def generate_anilist(
         sorted_tgs = sorted(set(tgs), key=str.casefold)
         tags_formatted = ", ".join(sorted_tgs)
 
-    format_raw: Literal["MANGA", "NOVEL", "ONE_SHOT"] | None = alm.format
+    format_raw = alm.format
     # lowercase the format
     match format_raw:
         case "ONE_SHOT":
@@ -242,13 +254,18 @@ async def generate_anilist(
     volumes = f"{alm.volumes}" if alm.volumes else "*??*"
 
     average_score = alm.averageScore
-    score_distribution = alm.stats["scoreDistribution"]
+    score_distribution: list[dict[str, Any] | None] | None = None
+    if alm.stats:
+        score_distribution = alm.stats.get("scoreDistribution", [])
     total_score = 0
     people_voted = 0
 
-    for item in score_distribution:
-        total_score += item["score"] * item["amount"]
-        people_voted += item["amount"]
+    if score_distribution:
+        for item in score_distribution:
+            if item is None:
+                continue
+            total_score += item["score"] * item["amount"]
+            people_voted += item["amount"]
 
     if average_score in [None, 0]:
         try:
@@ -314,30 +331,31 @@ async def generate_anilist(
 
 > {desc_done}""",
         color=hex_color,
-        timestamp=datetime.now(timezone.utc),
-        fields=[
-            EmbedField(
-                name=f"English Title{'*' if english_note else ''}",
-                value=english if english else "*None*",
-                inline=True,
-            ),
-            EmbedField(name="Native Title", value=native, inline=True),
-            EmbedField(
-                name="Synonyms",
-                value=syns,
-            ),
-            EmbedField(
-                name=f"Genres and Tags{'*' if sy_chk_mark else ''}",
-                value=tags_formatted,
-            ),
-            EmbedField(name="Volumes", value=volumes, inline=True),
-            EmbedField(name="Chapters", value=chapters, inline=True),
-            EmbedField(name="Status", value=status, inline=True),
-            EmbedField(
-                name="Published",
-                value=f"{start_date} - {end_date} ({start_date.replace('D', 'R')})",
-            ),
-        ],
+        timestamp=Timestamp.now(timezone.utc),
+    )
+
+    embed.add_fields(
+        EmbedField(
+            name=f"English Title{'*' if english_note else ''}",
+            value=english if english else "*None*",
+            inline=True,
+        ),
+        EmbedField(name="Native Title", value=native, inline=True),
+        EmbedField(
+            name="Synonyms",
+            value=syns,
+        ),
+        EmbedField(
+            name=f"Genres and Tags{'*' if sy_chk_mark else ''}",
+            value=tags_formatted,
+        ),
+        EmbedField(name="Volumes", value=volumes, inline=True),
+        EmbedField(name="Chapters", value=chapters, inline=True),
+        EmbedField(name="Status", value=status, inline=True),
+        EmbedField(
+            name="Published",
+            value=f"{start_date} - {end_date} ({start_date.replace('D', 'R')})",
+        ),
     )
 
     if content_warning_note != "" or footnote != "":
@@ -369,7 +387,7 @@ async def generate_anilist(
         )
         buttons.extend([mal_button, shikimori_button])
 
-    return [embed, buttons]
+    return (embed, buttons)
 
 
 async def anilist_submit(
@@ -392,7 +410,7 @@ async def anilist_submit(
     Returns:
         None
     """
-    buttons = []
+    buttons: list[Button] = []
     l_ = fetch_language_data(code="en_US")
     try:
         nsfw_bool = await get_nsfw_status(ctx)
@@ -403,7 +421,7 @@ async def anilist_submit(
         )
         buttons.extend(button_2)
         if isinstance(ctx, Message):
-            await ctx.reply(embed=embed, components=buttons)
+            await ctx.reply(embed=embed, components=buttons)  # type: ignore
         else:
             await ctx.send(embed=embed, components=buttons)
         return
