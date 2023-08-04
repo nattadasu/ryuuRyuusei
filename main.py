@@ -26,6 +26,7 @@ print(f"[Pyt] Python binary  : {sys.executable}")
 
 
 now: dtime = dtime.now(tz=tz.utc)
+"""The current time"""
 
 ipy_const.CLIENT_FEATURE_FLAGS["FOLLOWUP_INTERACTIONS_FOR_IMAGES"] = True
 
@@ -116,7 +117,10 @@ async def main():
             if ext.endswith(".py"):
                 print(f"{pg} Loading cog/extension: {ext}")
                 ext = ext[:-3]
-                bot.load_extension("extensions." + ext)
+                if ext not in ["commons", "stats"]:
+                    bot.load_extension("extensions." + ext)
+                else:
+                    bot.load_extension("extensions." + ext, now=now)
             else:
                 print(f"{pg} Skipping: {ext}, not a .py file")
         except Exception as eb:
