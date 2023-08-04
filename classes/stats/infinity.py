@@ -33,7 +33,7 @@ class InfinityBots:
     async def __aenter__(self):
         """Enter async context"""
         self.session = aiohttp.ClientSession()
-        self.headers = {"Authorization": self.token,
+        self.headers = {"Authorization": f"Bot {self.token}",
                         "Content-Type": "application/json"}
         return self
 
