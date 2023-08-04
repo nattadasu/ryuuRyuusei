@@ -155,24 +155,24 @@ def get_current_git_branch() -> str:
 # Call the get_current_git_branch() funct
 
 
-git_remote = get_git_remote_url()
+GIT_REMOTE = get_git_remote_url()
 """The git remote URL"""
-git_branch = get_current_git_branch()
+GIT_BRANCH = get_current_git_branch()
 """The git branch"""
-gittyHash = get_git_revision_hash()
+GIT_COMMIT_HASH = get_git_revision_hash()
 """The git revision hash"""
-gtHsh = get_git_revision_short_hash()
+GT_HSH = get_git_revision_short_hash()
 """The git revision short hash"""
 
 USER_AGENT: Final[
     str
-] = f"RyuuzakiRyuusei/1.0 ({git_remote}/{gtHsh}; branch:{git_branch}; author:{AUTHOR_USERNAME}:{AUTHOR_USERID}; https://discord.com/users/{BOT_CLIENT_ID})"
+] = f"RyuuzakiRyuusei/1.0 ({GIT_REMOTE}/{GT_HSH}; branch:{GIT_BRANCH}; author:{AUTHOR_USERNAME}:{AUTHOR_USERID}; https://discord.com/users/{BOT_CLIENT_ID})"
 """The user agent"""
 
 # =============================================================================
 # About Bot
 
-ownerUserUrl = f"https://discord.com/users/{AUTHOR_USERID}"
+AUTHOR_USER_URL = f"https://discord.com/users/{AUTHOR_USERID}"
 """The bot author's user URL"""
 
 # =============================================================================
@@ -241,7 +241,7 @@ Please send a message to AnimeApi maintainer, nattadasu (he is also a developer 
 warnThreadCW = MESSAGE_WARN_CONTENTS
 """The alias of `MESSAGE_WARN_CONTENTS`"""
 
-banned_tags = [
+BANNED_TAGS = [
     "Amputation",
     "Anal Sex",
     "Ashikoki",
@@ -291,6 +291,6 @@ banned_tags = [
 traktHeader = {
     "Content-Type": "applications/json",
     "trakt-api-key": TRAKT_CLIENT_ID,
-    "trakt-api-version": TRAKT_API_VERSION,
+    "trakt-api-version": f"{TRAKT_API_VERSION}",
 }
 """Default Trakt API header"""

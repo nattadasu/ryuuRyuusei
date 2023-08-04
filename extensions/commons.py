@@ -9,8 +9,8 @@ import interactions as ipy
 from aiohttp import __version__ as aiohttp_version
 
 from modules.const import (AUTHOR_USERNAME, BOT_CLIENT_ID, BOT_SUPPORT_SERVER,
-                           DATABASE_PATH, EMOJI_SUCCESS, USER_AGENT, gittyHash,
-                           gtHsh, ownerUserUrl)
+                           DATABASE_PATH, EMOJI_SUCCESS, USER_AGENT, GIT_COMMIT_HASH,
+                           GT_HSH, AUTHOR_USER_URL)
 from modules.i18n import fetch_language_data, read_user_language
 
 
@@ -32,7 +32,7 @@ The bot cares about your privacy by not storing any data on its server except fo
 
 The bot has many commands for different purposes, such as anime, manga, game, TV show, movie, music, and external link lookups. You can also access profile lookup commands, data control commands, settings commands (for both users and servers), randomization commands, and utility commands.
 
-If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({ownerUserUrl}) or via [support server]({BOT_SUPPORT_SERVER}).""",
+If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER_URL}) or via [support server]({BOT_SUPPORT_SERVER}).""",
             color=0x996422,
         )
         embed.add_fields(
@@ -43,7 +43,7 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({ownerUserUr
             ),
             ipy.EmbedField(
                 name="Bot Version",
-                value=f"[{gtHsh}](https://github.com/nattadasu/ryuuRyuusei/commit/{gittyHash})",
+                value=f"[{GT_HSH}](https://github.com/nattadasu/ryuuRyuusei/commit/{GIT_COMMIT_HASH})",
                 inline=True,
             ),
             ipy.EmbedField(
