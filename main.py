@@ -116,10 +116,7 @@ async def main():
             if ext.endswith(".py"):
                 print(f"{pg} Loading cog/extension: {ext}")
                 ext = ext[:-3]
-                if ext != "commons":
-                    bot.load_extension("extensions." + ext)
-                else:
-                    bot.load_extension("extensions." + ext, now=now)
+                bot.load_extension("extensions." + ext)
             else:
                 print(f"{pg} Skipping: {ext}, not a .py file")
         except Exception as eb:

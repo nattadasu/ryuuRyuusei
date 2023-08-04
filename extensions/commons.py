@@ -17,21 +17,6 @@ from modules.i18n import fetch_language_data, read_user_language
 class CommonCommands(ipy.Extension):
     """Common commands"""
 
-    def __init__(
-            self,
-            bot: ipy.AutoShardedClient,
-            now: dtime = dtime.now(
-            tz=tz.utc)):
-        """
-        Initialize the extension
-
-        Args:
-            bot (ipy.AutoShardedClient): The bot client
-            now (dtime, optional): The current time. Defaults to dtime.now(tz=tz.utc).
-        """
-        self.bot = bot
-        self.now = now
-
     @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
     @ipy.slash_command(name="about",
                        description="Get information about the bot")
@@ -130,6 +115,8 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({ownerUserUr
             # skipcq: PYL-W0612
             reader = csv.reader(f, delimiter="\t")  # pyright: ignore
         readLat_end = pc()
+        uptime = dtime.now(tz=tz.utc) - self.bot.start_time
+        uptime_epoch = uptime.total_seconds()
         fields += [
             ipy.EmbedField(
                 name="🔎 " + l_["dbRead"]["title"],
@@ -149,7 +136,7 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({ownerUserUr
             ipy.EmbedField(
                 name="📅 " + l_["uptime"]["title"],
                 value=l_["uptime"]["text"].format(
-                    TIMESTAMP=f"<t:{int(self.now.timestamp())}:R>"),
+                    TIMESTAMP=f"<t:{int(uptime_epoch)}:R>"),
                 inline=True,
             ),
         ]
