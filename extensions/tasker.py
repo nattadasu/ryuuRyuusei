@@ -28,6 +28,7 @@ class BotTasker(Extension):
     @Task.create(IntervalTrigger(minutes=10))
     async def delete_cache(self) -> None:
         """Automatically delete caches stored in the cache folder saved as JSON"""
+        show_msg = 0
         half_day = 43200
         a_day = half_day * 2
         two_and_a_half_days = a_day * 2 + half_day
@@ -67,29 +68,31 @@ class BotTasker(Extension):
                 # User folder
                 user_folder = os.path.join(base_folder, "user")
                 user_duration = durations.get("user", half_day)
-                self._delete_old_files(user_folder, user_duration)
+                show_msg += self._delete_old_files(user_folder, user_duration)
 
                 # NSFW folder
                 nsfw_folder = os.path.join(base_folder, "nsfw")
                 nsfw_duration = durations.get("nsfw", a_week)
-                self._delete_old_files(nsfw_folder, nsfw_duration)
+                show_msg += self._delete_old_files(nsfw_folder, nsfw_duration)
 
                 # Base folder
                 base_duration = durations.get("base", a_day)
-                self._delete_old_files(base_folder, base_duration)
+                show_msg += self._delete_old_files(base_folder, base_duration)
             else:
                 # Single folder
                 folder_path = os.path.join(cache_folder, cache_provider)
                 duration = durations
-                self._delete_old_files(folder_path, duration)
-        print("[Tsk] [Cache] Finished deleting old cache files")
+                show_msg += self._delete_old_files(folder_path, duration)
+        if show_msg > 0:
+            print(f"[Tsk] [Cache] Finished deleting {show_msg:,} files")
 
     @Task.create(IntervalTrigger(hours=1))
     async def delete_error_logs(self) -> None:
         """Automatically delete error logs stored in the error_logs folder"""
         error_logs_folder = "errors"
-        self._delete_old_files(error_logs_folder, 172800)
-        print("[Tsk] [Error] Finished deleting old error log files")
+        show_msg = self._delete_old_files(error_logs_folder, 172800)
+        if show_msg > 0:
+            print(f"[Tsk] [Error] Finished deleting {show_msg:,} logs")
 
     @Task.create(IntervalTrigger(minutes=30))
     async def poll_stats(self) -> None:
@@ -97,12 +100,14 @@ class BotTasker(Extension):
         server_count = len(self.bot.guilds)
         shard_count = self.bot.total_shards
         users = sum([guild.member_count for guild in self.bot.guilds])
+        show_msg: list[str] = []
         try:
             async with TopGG() as top:
                 await top.post_bot_stats(
                     guild_count=server_count,
                     shard_count=shard_count,
                 )
+            show_msg.append("Top.gg")
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to Top.gg: {error}")
             save_traceback_to_file(
@@ -114,6 +119,7 @@ class BotTasker(Extension):
                     guild_count=server_count,
                     shard_count=shard_count,
                 )
+            show_msg.append("DiscordBots.gg")
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBots.gg: {error}")
             save_traceback_to_file(
@@ -125,6 +131,7 @@ class BotTasker(Extension):
                     guild_count=server_count,
                     members=users,
                 )
+            show_msg.append("DiscordBotList.com")
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBotList: {error}")
             save_traceback_to_file(
@@ -137,31 +144,42 @@ class BotTasker(Extension):
                     shard_count=shard_count,
                     members=users,
                 )
+            show_msg.append("InfinityBots")
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to InfinityBots: {error}")
             save_traceback_to_file(
                 "tasker_ibgg", self.bot.user, error, mute_error=True)
 
-        print(
-            f"[Tsk] [Stats] Finished polling bot stats, server count: {server_count}, shard count: {shard_count}")
+        if len(show_msg) > 0:
+            print(
+                "[Tsk] [Stats] Finished polling bot stats:",
+                f"server count: {server_count},",
+                f"shard count: {shard_count},",
+                f"users: {users},",
+                f"posted to: {', '.join(show_msg)}"
+            )
 
     @Task.create(IntervalTrigger(minutes=10))
     async def update_presence(self) -> None:
         """Update bot presence"""
+        # get current activity
+        current_activity = self.bot.activity.name
         member_count = 0
         for guild in self.bot.guilds:
             member_count += guild.member_count
+        final = f"{len(self.bot.guilds)} guilds, {member_count} members"
         await self.bot.change_presence(
             activity=Activity(
-                name=f"{len(self.bot.guilds)} guilds, {member_count} members",
+                name=final,
                 type=ActivityType.WATCHING,
             ),
             status=Status.ONLINE,
         )
-        print("[Tsk] [Presence] Bot presence has been updated")
+        if current_activity != final:
+            print("[Tsk] [Presence] Bot presence has been updated to:", final)
 
     @staticmethod
-    def _delete_old_files(folder_path: str, duration: int) -> None:
+    def _delete_old_files(folder_path: str, duration: int) -> int:
         """
         Delete .json files in a folder that are older than the specified duration
 
@@ -170,20 +188,21 @@ class BotTasker(Extension):
             duration (int): The duration in seconds
 
         Returns:
-            None
+            int: The number of files deleted
         """
         current_time = time.time()
+        return_as = 0
 
         for root, _, files in os.walk(folder_path):
             for file_name in files:
                 file_path = os.path.join(root, file_name)
                 modification_time = os.path.getmtime(file_path)
-                if file_name.endswith(".json"):
+                if file_name.endswith(".json") or file_name.endswith(".txt"):
                     if current_time - modification_time > duration:
                         os.remove(file_path)
-                elif file_name.endswith(".txt"):
-                    if current_time - modification_time > duration:
-                        os.remove(file_path)
+                        return_as += 1
+
+        return return_as
 
 
 def setup(bot: Client | AutoShardedClient) -> None:
