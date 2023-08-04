@@ -13,6 +13,7 @@ language_data
 pandas
 plusminus
 pykakasi
+psutil
 python-dotenv
 python-Levenshtein
 pyyaml
