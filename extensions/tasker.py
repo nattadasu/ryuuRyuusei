@@ -153,10 +153,11 @@ class BotTasker(Extension):
         if len(show_msg) > 0:
             print(
                 "[Tsk] [Stats] Finished polling bot stats:",
-                f"server count: {server_count},",
-                f"shard count: {shard_count},",
-                f"users: {users},",
-                f"posted to: {', '.join(show_msg)}"
+                f"      Server count: {server_count},",
+                f"      Shard count: {shard_count},",
+                f"      Users: {users},",
+                f"      Posted to: {', '.join(show_msg)}",
+                sep="\n"
             )
 
     @Task.create(IntervalTrigger(minutes=10))
