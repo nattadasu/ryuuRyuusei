@@ -250,14 +250,14 @@ class InfinityBots:
             members = sum(members)
 
         payload: dict[str, int | list[int]] = {
-            "server_count": guild_count,
+            "servers": guild_count,
         }
         if shards:
             payload["shard_list"] = shards
         if shard_count:
             payload["shards"] = shard_count
         if members:
-            payload["member_count"] = members
+            payload["users"] = members
 
         async with self.session.post(
             f"{self.base_url}/bots/stats",
