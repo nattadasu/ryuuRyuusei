@@ -32,9 +32,9 @@ class TopGGBotStruct:
     """The short description of the bot"""
     tags: list[str]
     """The tags of the bot"""
-    owners: list[int]
+    owners: list[str]
     """of Snowflakes The owners of the bot. First one in the array is the main owner."""
-    guilds: list[int]
+    guilds: list[str | int]
     """of Snowflakes The guilds featured on the bot page"""
     date: datetime
     """The date the bot was approved"""
