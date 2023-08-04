@@ -392,6 +392,8 @@ class Stats(ipy.Extension):
                 inline=True),
         )
         for disk in sys_info.disks:
+            if disk.mountpoint.startswith("/snap/") or disk.mountpoint.startswith("/boot"):
+                continue
             embed.add_field(
                 name=f"💿 Storage ({disk.mountpoint})",
                 value=f"""* Total: {disk.disk_total}
