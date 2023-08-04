@@ -1,6 +1,6 @@
 from collections import defaultdict
 from enum import Enum
-from typing import Union
+from typing import Any, Union
 
 from interactions import EmbedField
 
@@ -91,7 +91,7 @@ class Platform(Enum):
     TVTIME = "tvtime"
 
 
-def get_platform_color(pf: str | Platform) -> hex:
+def get_platform_color(pf: str | Platform) -> int:
     """
     Get a color code for a specific platform
 
@@ -99,7 +99,7 @@ def get_platform_color(pf: str | Platform) -> hex:
         pf (str | Platform): The platform to get the color code for.
 
     Returns:
-        hex: The color code for the platform, or 0x000000 if the platform is not supported.
+        int: The color code for the platform, or 0x000000 if the platform is not supported.
     """
     if isinstance(pf, str):
         pf = Platform(pf)
@@ -215,7 +215,7 @@ def media_id_to_platform(
     media_id: str,
     platform: str | Platform,
     simkl_type: Union[str, None] = None
-) -> dict:
+) -> dict[str, Any]:
     """
     Convert a media ID to a platform-specific ID
 
@@ -333,7 +333,7 @@ def platforms_to_fields(
         currPlatform: str,
         **k: str | None) -> list[EmbedField]:
     """Convert a platform to a dictionary of fields"""
-    relsEm: list[dict[str, dict[str, str | bool]]] = []
+    relsEm: list[dict[str, Any]] = []
 
     platform_mappings = {
         "allcin": "allcin",
