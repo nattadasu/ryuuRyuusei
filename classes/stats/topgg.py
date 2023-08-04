@@ -6,6 +6,7 @@ A lite wrapper for the top.gg API.
 
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
 
 import aiohttp
 from dacite import Config, from_dict
@@ -20,6 +21,8 @@ class TopGGBotStruct:
 
     id: str
     """The id of the bot"""
+    clientid: str
+    """The client id of the bot"""
     username: str
     """The username of the bot"""
     discriminator: str
@@ -66,6 +69,10 @@ class TopGGBotStruct:
     """The amount of shards the bot has according to posted stats."""
     vanity: str | None = None
     """The vanity url of the bot"""
+    shards: Any | None = None
+    """Undocumented"""
+    bannerUrl: str | None = None
+    """Undocumented"""
 
 
 class TopGG:
