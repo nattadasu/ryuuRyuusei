@@ -13,8 +13,8 @@ import aiohttp
 from dacite import Config, from_dict
 
 from classes.excepts import ProviderHttpError
-from modules.const import BOT_CLIENT_ID, INFINITY_API_TOKEN
 from modules.commons import custom_datetime_converter as dconv
+from modules.const import BOT_CLIENT_ID, INFINITY_API_TOKEN
 
 
 @dataclass
