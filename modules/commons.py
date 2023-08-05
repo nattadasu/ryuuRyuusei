@@ -535,6 +535,21 @@ def save_traceback_to_file(
         raise error
 
 
+def custom_datetime_converter(time: str, zone: str = "Z"):
+    """
+    Converts inconventional datetime into ISO standard
+
+    Args:
+        time (str): date-time string
+        zone (str, optional): timezone to replace. Defaults to "Z"
+
+    Returns:
+        datetime: formatted datetime
+    """
+    time = time.replace(zone, '+00:00')
+    return datetime.fromisoformat(time)
+
+
 __all__ = [
     "convert_float_to_time",
     "convert_html_to_markdown",

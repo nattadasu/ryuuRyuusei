@@ -34,7 +34,7 @@ class UserStruct:
 class UpvoteStruct:
     """Struct for upvote object"""
 
-    upvotes: UserStruct
+    upvotes: list[UserStruct]
     """The user object of the upvote"""
     total: int
     """The total amount of upvotes in the last 12 hours"""

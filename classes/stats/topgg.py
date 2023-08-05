@@ -47,7 +47,7 @@ class TopGGBotStruct:
     """The amount of upvotes the bot has"""
     monthlyPoints: int
     """The amount of upvotes the bot has this month"""
-    donatebotguildid: str
+    donatebotguildid: str | None = None
     """The guild id for the donatebot setup"""
     avatar: str | None = None
     """The avatar hash of the bot's avatar"""
