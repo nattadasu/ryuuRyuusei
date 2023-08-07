@@ -33,6 +33,8 @@ class BotEvents(ipy.Extension):
     @ipy.listen()
     async def on_member_remove(self, event: MemberRemove):
         """When a member leaves"""
+        if event.guild is None:  # type: ignore
+            return
         BOT_DATA["server_members"][f"{event.guild.id}"] -= 1
         await self.update_presence()
 
