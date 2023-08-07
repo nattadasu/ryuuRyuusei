@@ -205,18 +205,21 @@ class Stats(ipy.Extension):
         self.now = now
 
     base = ipy.SlashCommand(
-        name="deepstats",
+        name="stats",
         description="Show various statistics and information about the bot",
+    )
+
+    deepstats = ipy.SlashCommand(
+        name="deepstats",
+        description="Show more information about bot",
         scopes=[VERIFICATION_SERVER],
         default_member_permissions=ipy.Permissions.ADMINISTRATOR
     )
 
-    @ipy.slash_command(
-        name="stats",
-        description="Show public statistic of this bot",
+    @base.subcommand(
         sub_cmd_name="general",
         sub_cmd_description="Show bot stats")
-    async def stats(self, ctx: ipy.SlashContext):
+    async def stats_general(self, ctx: ipy.SlashContext):
         """
         Show bot stats
 
@@ -334,7 +337,7 @@ class Stats(ipy.Extension):
         await msg.edit(embed=embed)
 
     @base.subcommand(sub_cmd_name="system", sub_cmd_description="Show system stats")
-    async def system(self, ctx: ipy.SlashContext):
+    async def stats_system(self, ctx: ipy.SlashContext):
         """
         Show system stats
 
@@ -410,8 +413,10 @@ class Stats(ipy.Extension):
         embed.set_thumbnail(self.bot.user.avatar.url)
         await msg.edit(embed=embed)
 
-    @base.subcommand(sub_cmd_name="packages", sub_cmd_description="Show installed PIP packages")
-    async def packages(self, ctx: ipy.SlashContext):
+    @deepstats.subcommand(
+        sub_cmd_name="packages",
+        sub_cmd_description="Show installed PIP packages")
+    async def deepstats_packages(self, ctx: ipy.SlashContext):
         """
         Show installed PIP packages
 
