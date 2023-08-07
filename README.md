@@ -195,10 +195,13 @@ If you have any questions, feel free to join the
 ### Commons Bot Commands
 
 - `/about` - Get information about the bot
+- 👮🔐 `/deepstats packages` - Get deep statistics about the bot's PIP packages
 - `/help` - Get a list of all curretly available commands
 - 👁️ `/invite` - Get the bot's invite link
 - `/ping` - Check the bot latency
 - `/privacy` - Get information about the bot's privacy policy
+- `/stats general` - Get general statistics about the bot
+- `/stats system` - Get system statistics about the bot
 - `/support` - Support the bot by donating or contributing to the bot's
   development
 
@@ -308,6 +311,8 @@ If you have any questions, feel free to join the
 <!-- omit in toc -->
 #### User Settings
 
+- `/usersettings autoembed` - Toggle autoembed for the bot response from the
+  user with supported platform URL.
 - `/usersettings language list` - List all available languages for the bot
   response
 - 👁️ `/usersettings language set` - Set your preferred language for the bot
