@@ -1,8 +1,8 @@
 import os
 import time
 
-from interactions import (Activity, ActivityType, AutoShardedClient, Client, Extension,
-                          IntervalTrigger, Task)
+from interactions import (Activity, ActivityType, AutoShardedClient, Client,
+                          Extension, IntervalTrigger, Task)
 
 from classes.excepts import ProviderHttpError
 from classes.stats.dbgg import DiscordBotsGG

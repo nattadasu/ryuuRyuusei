@@ -2,7 +2,8 @@ import re
 from time import time
 
 import interactions as ipy
-from interactions.api.events import CommandError, MemberAdd, MemberRemove, GuildJoin, GuildLeft
+from interactions.api.events import (CommandError, GuildJoin, GuildLeft,
+                                     MemberAdd, MemberRemove)
 
 from modules.const import BOT_DATA, EMOJI_FORBIDDEN
 
