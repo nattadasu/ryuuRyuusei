@@ -56,15 +56,17 @@ async def on_ready():
     bg = "[Sys]"
     lbg = len(bg)
     sp = " " * lbg
+    member_count = 0
     print("[Sys] Bot is ready!")
     print(f"{sp} Logged in as : {bot.user.display_name}")
     print(f"{sp} User ID      : {bot.user.id}")
     print(f"{sp} Guilds       : {guilds}")
     print(f"{sp} Shards       : {bot.total_shards}")
     print(f"{sp} User Agent   : {USER_AGENT}")
-    member_count = sum([guild.member_count for guild in bot.guilds])
+    for guild in bot.guilds:
+        member_count += guild.member_count
+        BOT_DATA["server_members"][f"{guild.id}"] = guild.member_count
     print(f"{sp} Total members: {member_count}")
-    BOT_DATA["member_count"] = member_count
     # set bot status
     await asyncio.sleep(2.5)
     await bot.change_presence(

@@ -238,7 +238,8 @@ class Stats(ipy.Extension):
         # count guilds
         guilds = len(self.bot.guilds)
         members = sum([g.member_count for g in self.bot.guilds])
-        true_members: int = BOT_DATA["member_count"]
+        server_members: dict[str, int] = BOT_DATA["server_members"]
+        true_members = sum(server_members.values())
         shards = self.bot.total_shards
         commands = self.bot.application_commands
         scopes = [[0], [ctx.author_id], [ctx.channel_id]]

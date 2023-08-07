@@ -99,8 +99,8 @@ class BotTasker(Extension):
         """Poll bot statistic to 3rd party listing sites"""
         server_count = len(self.bot.guilds)
         shard_count = self.bot.total_shards
-        # users = sum([guild.member_count for guild in self.bot.guilds])
-        users: int = BOT_DATA["member_count"]
+        server_members: dict[str, int] = BOT_DATA["server_members"]
+        users = sum(server_members.values())
         show_msg: list[str] = []
         try:
             async with TopGG() as top:

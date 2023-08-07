@@ -176,7 +176,7 @@ AUTHOR_USER_URL = f"https://discord.com/users/{AUTHOR_USERID}"
 """The bot author's user URL"""
 
 BOT_DATA: dict[str, Any] = {
-    "member_count": 0,
+    "server_members": {}
 }
 """Dynamic bot data"""
 
