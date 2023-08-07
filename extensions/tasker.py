@@ -23,6 +23,7 @@ class BotTasker(Extension):
         self.delete_cache.start()
         self.delete_error_logs.start()
         self.poll_stats.start()
+        self.update_bot_activity.start()
         # pylint: enable=no-member
 
     @Task.create(IntervalTrigger(minutes=10))
@@ -151,15 +152,14 @@ class BotTasker(Extension):
                 "tasker_ibgg", self.bot.user, error, mute_error=True)
             show_msg.append("InfinityBots")
 
-        if len(show_msg) > 0:
-            print(
-                "[Tsk] [Stats] Polled stats.",
-                f"{server_count:,} servers,",
-                f"{shard_count:,} shards,",
-                f"{users:,} members,",
-                f"failed to poll to {', '.join(show_msg)}" if len(
-                    show_msg) > 0 else "successfully polled to all sites",
-            )
+        print(
+            "[Tsk] [Stats] Polled stats.",
+            f"{server_count:,} servers,",
+            f"{shard_count:,} shards,",
+            f"{users:,} members,",
+            f"failed to poll to {', '.join(show_msg)}" if len(
+                show_msg) > 0 else "successfully polled to all sites",
+        )
 
     @Task.create(IntervalTrigger(minutes=10))
     async def update_bot_activity(self) -> None:
