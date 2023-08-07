@@ -157,7 +157,8 @@ class BotTasker(Extension):
                 f"{server_count:,} servers,",
                 f"{shard_count:,} shards,",
                 f"{users:,} members,",
-                f"failed to poll to {', '.join(show_msg)}" if len(show_msg) > 0 else "successfully polled to all sites",
+                f"failed to poll to {', '.join(show_msg)}" if len(
+                    show_msg) > 0 else "successfully polled to all sites",
             )
 
     @staticmethod

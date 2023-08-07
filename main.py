@@ -10,7 +10,7 @@ from aiohttp import ClientConnectorError
 from interactions.client import const as ipy_const
 
 from modules.commons import convert_float_to_time
-from modules.const import BOT_TOKEN, SENTRY_DSN, USER_AGENT, BOT_DATA
+from modules.const import BOT_DATA, BOT_TOKEN, SENTRY_DSN, USER_AGENT
 from modules.oobe.commons import UnsupportedVersion
 
 py_ver = sys.version_info
