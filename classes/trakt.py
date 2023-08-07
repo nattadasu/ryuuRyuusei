@@ -8,7 +8,7 @@ from dacite import from_dict
 
 from classes.cache import Caching
 from classes.excepts import ProviderHttpError, ProviderTypeError
-from modules.const import USER_AGENT, TRAKT_HEADER
+from modules.const import TRAKT_HEADER, USER_AGENT
 
 Cache = Caching("cache/trakt", 86400)
 

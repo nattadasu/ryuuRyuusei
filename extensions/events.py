@@ -4,7 +4,7 @@ from time import time
 import interactions as ipy
 from interactions.api.events import CommandError, MemberAdd, MemberRemove
 
-from modules.const import EMOJI_FORBIDDEN, BOT_DATA
+from modules.const import BOT_DATA, EMOJI_FORBIDDEN
 
 
 class BotEvents(ipy.Extension):
