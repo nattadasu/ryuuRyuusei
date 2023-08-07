@@ -10,24 +10,11 @@ from modules.const import BOT_DATA, EMOJI_FORBIDDEN
 class BotEvents(ipy.Extension):
     """Bot events"""
 
-    async def update_presence(self) -> None:
-        """Update bot presence"""
-        server_members: dict[str, int] = BOT_DATA["server_members"]
-        member_count = sum(server_members.values())
-        final = f"{len(self.bot.guilds)} guilds, {member_count} members"
-        await self.bot.change_presence(
-            activity=ipy.Activity(
-                name=final,
-                type=ipy.ActivityType.WATCHING,
-            ),
-        )
-
     # increment BOT_DATA["member_count"] when a member joins
     @ipy.listen()
     async def on_member_add(self, event: MemberAdd):
         """When a member joins"""
         BOT_DATA["server_members"][f"{event.guild.id}"] += 1
-        await self.update_presence()
 
     # decrement BOT_DATA["member_count"] when a member leaves
     @ipy.listen()
@@ -36,19 +23,16 @@ class BotEvents(ipy.Extension):
         if event.guild is None:  # type: ignore
             return
         BOT_DATA["server_members"][f"{event.guild.id}"] -= 1
-        await self.update_presence()
 
     @ipy.listen()
     async def on_guild_join(self, event: GuildJoin):
         """When the bot joins a guild"""
         BOT_DATA["server_members"][f"{event.guild.id}"] = event.guild.member_count
-        await self.update_presence()
 
     @ipy.listen()
     async def on_guild_leave(self, event: GuildLeft):
         """When the bot leaves a guild"""
         del BOT_DATA["server_members"][f"{event.guild.id}"]
-        await self.update_presence()
 
     @ipy.listen(disable_default_listeners=True)
     async def on_command_error(self, event: CommandError):

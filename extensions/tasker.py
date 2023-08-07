@@ -1,7 +1,7 @@
 import os
 import time
 
-from interactions import (AutoShardedClient, Client, Extension,
+from interactions import (Activity, ActivityType, AutoShardedClient, Client, Extension,
                           IntervalTrigger, Task)
 
 from classes.excepts import ProviderHttpError
@@ -160,6 +160,22 @@ class BotTasker(Extension):
                 f"failed to poll to {', '.join(show_msg)}" if len(
                     show_msg) > 0 else "successfully polled to all sites",
             )
+
+    @Task.create(IntervalTrigger(minutes=10))
+    async def update_bot_activity(self) -> None:
+        """Update the bot's activity to show the number of guilds and members it is in"""
+        old_activity = self.bot.activity.name
+        server_members: dict[str, int] = BOT_DATA["server_members"]
+        users = sum(server_members.values())
+        final = f"{len(self.bot.guilds)} guilds, {users:,} members"
+        if old_activity == final:
+            return
+        await self.bot.change_presence(
+            activity=Activity(
+                name=final,
+                type=ActivityType.WATCHING,
+            ),
+        )
 
     @staticmethod
     def _delete_old_files(folder_path: str, duration: int) -> int:

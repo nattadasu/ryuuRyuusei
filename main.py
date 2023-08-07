@@ -71,7 +71,7 @@ async def on_ready():
     await asyncio.sleep(2.5)
     await bot.change_presence(
         activity=ipy.Activity(
-            name=f"{guilds} guilds, {member_count} members",
+            name=f"{guilds} guilds, {member_count:,} members",
             type=ipy.ActivityType.WATCHING,
         ),
         status=ipy.Status.ONLINE,
