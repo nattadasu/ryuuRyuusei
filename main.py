@@ -10,7 +10,7 @@ from aiohttp import ClientConnectorError
 from interactions.client import const as ipy_const
 
 from modules.commons import convert_float_to_time
-from modules.const import BOT_TOKEN, SENTRY_DSN, USER_AGENT
+from modules.const import BOT_TOKEN, SENTRY_DSN, USER_AGENT, BOT_DATA
 from modules.oobe.commons import UnsupportedVersion
 
 py_ver = sys.version_info
@@ -34,13 +34,13 @@ bot = ipy.AutoShardedClient(
     token=BOT_TOKEN,
     status=ipy.Status.IDLE,
     activity=ipy.Activity(
-        name="activities",
+        name="system booting up...",
         type=ipy.ActivityType.LISTENING,
     ),
     delete_unused_application_cmds=True,
     sync_interactions=True,
     send_command_tracebacks=False,
-    intents=ipy.Intents.DEFAULT | ipy.Intents.MESSAGE_CONTENT
+    intents=ipy.Intents.DEFAULT | ipy.Intents.MESSAGE_CONTENT | ipy.Intents.GUILD_MEMBERS
 )
 """The bot client"""
 
@@ -64,6 +64,7 @@ async def on_ready():
     print(f"{sp} User Agent   : {USER_AGENT}")
     member_count = sum([guild.member_count for guild in bot.guilds])
     print(f"{sp} Total members: {member_count}")
+    BOT_DATA["member_count"] = member_count
     # set bot status
     await asyncio.sleep(2.5)
     await bot.change_presence(

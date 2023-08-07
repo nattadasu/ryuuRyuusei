@@ -1,8 +1,8 @@
 import os
 import time
 
-from interactions import (Activity, ActivityType, AutoShardedClient, Client,
-                          Extension, IntervalTrigger, Status, Task)
+from interactions import (AutoShardedClient, Client, Extension,
+                          IntervalTrigger, Task)
 
 from classes.excepts import ProviderHttpError
 from classes.stats.dbgg import DiscordBotsGG
@@ -10,6 +10,7 @@ from classes.stats.dbl import DiscordBotList
 from classes.stats.infinity import InfinityBots
 from classes.stats.topgg import TopGG
 from modules.commons import save_traceback_to_file
+from modules.const import BOT_DATA
 
 
 class BotTasker(Extension):
@@ -22,7 +23,6 @@ class BotTasker(Extension):
         self.delete_cache.start()
         self.delete_error_logs.start()
         self.poll_stats.start()
-        self.update_presence.start()
         # pylint: enable=no-member
 
     @Task.create(IntervalTrigger(minutes=10))
@@ -94,12 +94,13 @@ class BotTasker(Extension):
         if show_msg > 0:
             print(f"[Tsk] [Error] Finished deleting {show_msg:,} logs")
 
-    @Task.create(IntervalTrigger(minutes=30))
+    @Task.create(IntervalTrigger(minutes=15))
     async def poll_stats(self) -> None:
         """Poll bot statistic to 3rd party listing sites"""
         server_count = len(self.bot.guilds)
         shard_count = self.bot.total_shards
-        users = sum([guild.member_count for guild in self.bot.guilds])
+        # users = sum([guild.member_count for guild in self.bot.guilds])
+        users: int = BOT_DATA["member_count"]
         show_msg: list[str] = []
         try:
             async with TopGG() as top:
@@ -107,11 +108,11 @@ class BotTasker(Extension):
                     guild_count=server_count,
                     shard_count=shard_count,
                 )
-            show_msg.append("Top.gg")
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to Top.gg: {error}")
             save_traceback_to_file(
                 "tasker_topgg", self.bot.user, error, mute_error=True)
+            show_msg.append("Top.gg")
 
         try:
             async with DiscordBotsGG() as dbgg:
@@ -119,11 +120,11 @@ class BotTasker(Extension):
                     guild_count=server_count,
                     shard_count=shard_count,
                 )
-            show_msg.append("DiscordBots.gg")
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBots.gg: {error}")
             save_traceback_to_file(
                 "tasker_dbgg", self.bot.user, error, mute_error=True)
+            show_msg.append("DiscordBots.gg")
 
         try:
             async with DiscordBotList() as dbl:
@@ -131,11 +132,11 @@ class BotTasker(Extension):
                     guild_count=server_count,
                     members=users,
                 )
-            show_msg.append("DiscordBotList.com")
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBotList: {error}")
             save_traceback_to_file(
                 "tasker_dbl", self.bot.user, error, mute_error=True)
+            show_msg.append("DiscordBotList.com")
 
         try:
             async with InfinityBots() as ibgg:
@@ -144,40 +145,20 @@ class BotTasker(Extension):
                     shard_count=shard_count,
                     members=users,
                 )
-            show_msg.append("InfinityBots")
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to InfinityBots: {error}")
             save_traceback_to_file(
                 "tasker_ibgg", self.bot.user, error, mute_error=True)
+            show_msg.append("InfinityBots")
 
         if len(show_msg) > 0:
             print(
-                "[Tsk] [Stats] Finished polling bot stats:",
-                f"      Server count: {server_count},",
-                f"      Shard count: {shard_count},",
-                f"      Users: {users},",
-                f"      Posted to: {', '.join(show_msg)}",
-                sep="\n"
+                "[Tsk] [Stats] Polled stats.",
+                f"{server_count:,} servers,",
+                f"{shard_count:,} shards,",
+                f"{users:,} members,",
+                f"failed to poll to {', '.join(show_msg)}" if len(show_msg) > 0 else "successfully polled to all sites",
             )
-
-    @Task.create(IntervalTrigger(minutes=10))
-    async def update_presence(self) -> None:
-        """Update bot presence"""
-        # get current activity
-        current_activity = self.bot.activity.name
-        member_count = 0
-        for guild in self.bot.guilds:
-            member_count += guild.member_count
-        final = f"{len(self.bot.guilds)} guilds, {member_count} members"
-        await self.bot.change_presence(
-            activity=Activity(
-                name=final,
-                type=ActivityType.WATCHING,
-            ),
-            status=Status.ONLINE,
-        )
-        if current_activity != final:
-            print("[Tsk] [Presence] Bot presence has been updated to:", final)
 
     @staticmethod
     def _delete_old_files(folder_path: str, duration: int) -> int:

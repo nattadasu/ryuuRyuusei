@@ -18,7 +18,7 @@ from classes.excepts import ProviderHttpError
 from classes.stats.dbl import DiscordBotList
 from classes.stats.infinity import InfinityBots
 from classes.stats.topgg import TopGG
-from modules.const import (GIT_COMMIT_HASH, GT_HSH, USER_AGENT,
+from modules.const import (BOT_DATA, GIT_COMMIT_HASH, GT_HSH, USER_AGENT,
                            VERIFICATION_SERVER)
 
 
@@ -235,6 +235,7 @@ class Stats(ipy.Extension):
         # count guilds
         guilds = len(self.bot.guilds)
         members = sum([g.member_count for g in self.bot.guilds])
+        true_members: int = BOT_DATA["member_count"]
         shards = self.bot.total_shards
         commands = self.bot.application_commands
         scopes = [[0], [ctx.author_id], [ctx.channel_id]]
@@ -291,8 +292,12 @@ class Stats(ipy.Extension):
                 value=f"{guilds:,}",
                 inline=True),
             ipy.EmbedField(
-                name="👥 Members",
+                name="👥 Members, cached",
                 value=f"{members:,}",
+                inline=True),
+            ipy.EmbedField(
+                name="👥 Members, current",
+                value=f"{true_members:,}",
                 inline=True),
             ipy.EmbedField(
                 name="🔗 Shards",

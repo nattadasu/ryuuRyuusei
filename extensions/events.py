@@ -2,13 +2,41 @@ import re
 from time import time
 
 import interactions as ipy
-from interactions.api.events import CommandError
+from interactions.api.events import CommandError, MemberAdd, MemberRemove
 
-from modules.const import EMOJI_FORBIDDEN
+from modules.const import EMOJI_FORBIDDEN, BOT_DATA
 
 
 class BotEvents(ipy.Extension):
     """Bot events"""
+
+    async def update_presence(self) -> None:
+        """Update bot presence"""
+        current_activity = self.bot.activity.name
+        member_count = BOT_DATA["member_count"]
+        final = f"{len(self.bot.guilds)} guilds, {member_count} members"
+        await self.bot.change_presence(
+            activity=ipy.Activity(
+                name=final,
+                type=ipy.ActivityType.WATCHING,
+            ),
+        )
+        if current_activity != final:
+            print("[Tsk] [Presence] Bot presence has been updated to:", final)
+
+    # increment BOT_DATA["member_count"] when a member joins
+    @ipy.listen()
+    async def on_member_add(self, event: MemberAdd):
+        """When a member joins"""
+        BOT_DATA["member_count"] += 1
+        await self.update_presence()
+
+    # decrement BOT_DATA["member_count"] when a member leaves
+    @ipy.listen()
+    async def on_member_remove(self, event: MemberRemove):
+        """When a member leaves"""
+        BOT_DATA["member_count"] -= 1
+        await self.update_presence()
 
     @ipy.listen(disable_default_listeners=True)
     async def on_command_error(self, event: CommandError):

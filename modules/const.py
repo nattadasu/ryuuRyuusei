@@ -11,7 +11,7 @@ This module also contains some mutable variables/constant that are used oftenly 
 
 from os import getenv as ge
 from subprocess import check_output as chout
-from typing import Final, cast
+from typing import Any, Final, cast
 
 from dotenv import load_dotenv as ld
 
@@ -174,6 +174,11 @@ USER_AGENT: Final[
 
 AUTHOR_USER_URL = f"https://discord.com/users/{AUTHOR_USERID}"
 """The bot author's user URL"""
+
+BOT_DATA: dict[str, Any] = {
+    "member_count": 0,
+}
+"""Dynamic bot data"""
 
 # =============================================================================
 # Declined GDPR notice
