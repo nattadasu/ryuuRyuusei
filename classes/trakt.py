@@ -8,7 +8,7 @@ from dacite import from_dict
 
 from classes.cache import Caching
 from classes.excepts import ProviderHttpError, ProviderTypeError
-from modules.const import USER_AGENT, traktHeader
+from modules.const import USER_AGENT, TRAKT_HEADER
 
 Cache = Caching("cache/trakt", 86400)
 
@@ -168,11 +168,11 @@ class Trakt:
         Initialize the Trakt API Wrapper
 
         Args:
-            headers (dict): Trakt API headers, defaults to traktHeader on modules/const.py
+            headers (dict): Trakt API headers, defaults to TRAKT_HEADER on modules/const.py
         """
         self.base_url = "https://api.trakt.tv/"
         if headers is None:
-            self.headers = traktHeader
+            self.headers = TRAKT_HEADER
         else:
             self.headers = headers
         self.headers["User-Agent"] = USER_AGENT

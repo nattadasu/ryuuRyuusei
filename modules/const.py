@@ -210,20 +210,10 @@ For more info what do we collect and use, use `/privacy`.
 
 # Common errors and messages
 
-MESSAGE_MEMBER_REG_PROFILE: Final[
-    str
-] = f"{EMOJI_DOUBTING} **You are looking at your own profile!**\nYou can also use </profile:1072608801334755529> without any arguments to get your own profile!"
-"""The message when a user is looking at their own profile"""
-
 MESSAGE_INVITE: Final[
     str
 ] = 'To invite me, simply press "**Invite me!**" button below!\nFor any questions, please join my support server!'
 """The invite message"""
-
-MESSAGE_SELECT_TIMEOUT: Final[
-    str
-] = "*Selection menu has reached timeout, please try again if you didn't pick the option!*"
-"""The message when a selection menu has reached timeout"""
 
 MESSAGE_WARN_CONTENTS: Final[
     str
@@ -233,18 +223,6 @@ If you invoked this command outside (public or private) forum thread channel or 
 
 You can simply access it on `/support`"""
 """The message when a user invoked a command outside forum thread channel or regular text channel"""
-
-ERR_KAIZE_SLUG_MODDED: Final[
-    str
-] = """We've tried to search for the anime using the slug (and even fix the slug itself), but it seems that the anime is not found on Kaize via AnimeApi.
-Please send a message to AnimeApi maintainer, nattadasu (he is also a developer of this bot)"""
-"""The message when a slug is not found on Kaize"""
-
-# =============================================================================
-# Aliases
-
-warnThreadCW = MESSAGE_WARN_CONTENTS
-"""The alias of `MESSAGE_WARN_CONTENTS`"""
 
 BANNED_TAGS = [
     "Amputation",
@@ -293,7 +271,7 @@ BANNED_TAGS = [
 ]
 """List of tags that should be removed if found on AniList result"""
 
-traktHeader = {
+TRAKT_HEADER = {
     "Content-Type": "applications/json",
     "trakt-api-key": TRAKT_CLIENT_ID,
     "trakt-api-version": f"{TRAKT_API_VERSION}",

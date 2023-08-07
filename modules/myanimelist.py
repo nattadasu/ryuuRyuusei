@@ -26,8 +26,8 @@ from modules.commons import (generate_commons_except_embed, generate_trailer,
                              get_nsfw_status, get_random_seed,
                              sanitize_markdown, save_traceback_to_file,
                              trim_synopsis)
-from modules.const import (EMOJI_FORBIDDEN, MYANIMELIST_CLIENT_ID,
-                           SIMKL_CLIENT_ID, warnThreadCW)
+from modules.const import (EMOJI_FORBIDDEN, MESSAGE_WARN_CONTENTS,
+                           MYANIMELIST_CLIENT_ID, SIMKL_CLIENT_ID)
 
 
 def generate_animethemes_slug(title: str) -> str:
@@ -115,7 +115,7 @@ async def search_mal_anime(title: str) -> dict | list:
 # old code taken from ipy/v4.3.4
 async def generate_mal(
     entry_id: int,
-    is_nsfw: bool = False,
+    is_nsfw: bool | None = False,
     anilist_data: AniListMediaStruct | None = None,
     anime_api: AnimeApiAnime | None = None,
 ) -> list[Embed | list[Button]]:
@@ -143,7 +143,7 @@ async def generate_mal(
     else:
         alist: AniListMediaStruct = AniListMediaStruct(id=0)
 
-    msg_for_thread = warnThreadCW if is_nsfw is not None else ""
+    msg_for_thread = MESSAGE_WARN_CONTENTS if is_nsfw is not None else ""
 
     if not is_nsfw and jk_dat.genres is not None:
         for genre in jk_dat.genres:
