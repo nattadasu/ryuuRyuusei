@@ -10,7 +10,7 @@ import re
 from datetime import datetime, timedelta, timezone
 
 import aiohttp
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from classes.excepts import ProviderHttpError
 from classes.jikan import JikanImages, JikanImageStruct, JikanUserStruct
@@ -39,7 +39,9 @@ class HtmlMyAnimeList:
 
     async def close(self):
         """Close the session"""
-        await self.session.close()
+        if self.session:
+            await self.session.close()
+        return
 
     async def get_user(self, username: str) -> JikanUserStruct:
         """
@@ -54,23 +56,35 @@ class HtmlMyAnimeList:
         Returns:
             JikanUserStruct: User information
         """
+        if not self.session:
+            raise RuntimeError("Session not created")
         async with self.session.get(self.base_url + f"profile/{username}") as resp:
             if resp.status != 200:
                 raise ProviderHttpError(resp.reason, resp.status)
             html = await resp.text()
         soup = BeautifulSoup(html, "html5lib")
         report_link = soup.find(
-            "a", {"class": "header-right mt4 mr0"}).get("href")
-        user_id = re.search(r"id=(\d+)", report_link).group(1)
+            "a", {"class": "header-right mt4 mr0"})
+        if not isinstance(report_link, Tag):
+            raise RuntimeError("Could not find user information")
+        report_link = report_link.get("href")
+        if not report_link:
+            raise RuntimeError("Could not find user information")
+        elif isinstance(report_link, list):
+            report_link = report_link[0]
+        user_id = re.search(r"id=(\d+)", report_link).group(1)  # type: ignore
         image_div = soup.find("div", class_="user-image mb8")
         if image_div:
             image = image_div.find("img")
-            if image:
+            if isinstance(image, Tag):
                 image = image.get("data-src")
             else:
                 image = None
         else:
             image = None
+
+        if isinstance(image, list):
+            image = image[0]
 
         # Extract the relevant information
         last_online = soup.find(
@@ -80,7 +94,10 @@ class HtmlMyAnimeList:
         if last_online:
             last_online = last_online.find_next(
                 "span", class_="user-status-data"
-            ).text.strip()
+            )
+            if not last_online:
+                raise RuntimeError("Could not find user information")
+            last_online = last_online.text.strip()
             if last_online == "Now":
                 last_online = datetime.now(timezone.utc)
             else:
@@ -122,9 +139,9 @@ class HtmlMyAnimeList:
                             regex = r"(\d+) (\w+) ago"
                             matching = re.search(regex, activity[0])
                             # get time
-                            time_value: int = int(matching.group(1))
+                            time_value: int = int(matching.group(1))  # type: ignore
                             # get unit
-                            time_unit: str = matching.group(2)
+                            time_unit: str = matching.group(2)  # type: ignore
                             # add s to the unit if it is not already there
                             if not time_unit.endswith("s"):
                                 time_unit += "s"
@@ -136,58 +153,66 @@ class HtmlMyAnimeList:
         else:
             last_online = None
 
-        gender = soup.find("span", class_="user-status-title", text="Gender")
-        if gender:
-            gender = gender.find_next(
-                "span", class_="user-status-data").text.strip()
-        else:
-            gender = None
+        gender: str | None = None
+        gender_find = soup.find(
+            "span",
+            class_="user-status-title",
+            text="Gender")
+        if gender_find:
+            gender_find = gender_find.find_next(
+                "span", class_="user-status-data")
+            if gender_find:
+                gender = gender_find.text.strip()
 
-        birthday = soup.find(
+
+        birthday: datetime | None = None
+        birthday_find = soup.find(
             "span",
             class_="user-status-title",
             text="Birthday")
-        if birthday:
-            birthday = birthday.find_next(
+        if birthday_find:
+            birthday_find = birthday_find.find_next(
                 "span", class_="user-status-data"
-            ).text.strip()
-            try:
-                birthday = datetime.strptime(birthday, "%b %d, %Y").replace(
-                    tzinfo=timezone.utc
-                )
-            except ValueError:
-                birthday = None
-        else:
-            birthday = None
+            )
+            if birthday_find:
+                birthday_str = birthday_find.text.strip()
+                try:
+                    birthday = datetime.strptime(birthday_str, "%b %d, %Y").replace(
+                        tzinfo=timezone.utc
+                    )
+                except ValueError:
+                    birthday = None
 
-        location = soup.find(
+        location = None
+        location_find = soup.find(
             "span",
             class_="user-status-title",
             text="Location")
-        if location:
-            location = location.find_next(
+        if location_find:
+            location_find = location_find.find_next(
                 "span", class_="user-status-data"
-            ).text.strip()
-        else:
-            location = None
+            )
+            if location_find:
+                location = location_find.text.strip()
 
-        joined = soup.find("span", class_="user-status-title", text="Joined")
-        if joined:
-            joined = joined.find_next(
-                "span", class_="user-status-data").text.strip()
-            joined = datetime.strptime(
-                joined, "%b %d, %Y").replace(
-                tzinfo=timezone.utc)
-        else:
-            joined = None
+        joined = None
+        joined_find = soup.find("span", class_="user-status-title", text="Joined")
+        if joined_find:
+            joined_find = joined_find.find_next(
+                "span", class_="user-status-data")
+            if joined_find:
+                joined_find = joined_find.text.strip()
+                joined = datetime.strptime(
+                    joined_find, "%b %d, %Y").replace(
+                    tzinfo=timezone.utc)
 
         user = JikanUserStruct(
             mal_id=int(user_id),
             username=username,
             url=self.base_url + f"profile/{username}",
             images=JikanImages(
-                jpg=JikanImageStruct(image_url=image),
-                webp=JikanImageStruct(image_url=image),
+                jpg=JikanImageStruct(image_url=image) if image else None,
+                webp=JikanImageStruct(image_url=image) if image else None,
             ),
             last_online=last_online,
             birthday=birthday,

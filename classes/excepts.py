@@ -1,7 +1,9 @@
+from typing import Any
+
 class ProviderHttpError(Exception):
     """Exception for HTTP errors from providers"""
 
-    def __init__(self, message, status_code):
+    def __init__(self, message: Any, status_code: Any):
         """Params"""
         self.message = message
         self.status_code = status_code
@@ -14,7 +16,7 @@ class ProviderHttpError(Exception):
 class ProviderTypeError(Exception):
     """Exception for type errors from providers"""
 
-    def __init__(self, message, expected_type):
+    def __init__(self, message: Any, expected_type: Any):
         """Params"""
         self.message = message
         self.expected_type = expected_type
@@ -27,7 +29,7 @@ class ProviderTypeError(Exception):
 class SimklTypeError(Exception):
     """Exception for type errors from providers"""
 
-    def __init__(self, message, expected_type):
+    def __init__(self, message: Any, expected_type: Any):
         """Params"""
         self.message = message
         self.expected_type = expected_type

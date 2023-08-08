@@ -14,7 +14,7 @@ from urllib.parse import quote
 
 import interactions as ipy
 
-from classes.database import DatabaseException, UserDatabase, UserDatabaseClass
+from classes.database import DatabaseException, UserDatabase
 from classes.excepts import ProviderHttpError
 from classes.html.myanimelist import HtmlMyAnimeList
 from classes.jikan import JikanApi, JikanException, JikanUserStruct
@@ -216,7 +216,7 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
         anime_float = convert_float_to_time(days_watched)
         manga_float = convert_float_to_time(days_read)
         time_wasted = convert_float_to_time(days_watched + days_read)
-        joined = int(user_data.joined.timestamp())
+        joined = int(user_data.joined.timestamp()) if user_data.joined else 0
         if birthday is not None:
             timestamped = birthday.timestamp()
             today = dtime.now(tz=tz.utc)
@@ -301,7 +301,7 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             )
             if embed_layout == "new":
                 embed.add_fields(
-                    ipy.EmbedField(name="🚁 Gender", value=gender,
+                    ipy.EmbedField(name="🚁 Gender", value=f"{gender}",
                                    inline=True),  # type: ignore
                     ipy.EmbedField(name="📍 Location",
                                    value=location, inline=True),
@@ -541,24 +541,27 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
 
         foo = ""
         if embed_layout in ["new", "minimal", "old"]:
-            direct_pronoun_match = re.search(
-                r'\b(?:he|him|she|her|they|them)\b', gender, re.IGNORECASE)
-            if direct_pronoun_match:
-                direct_pronoun = direct_pronoun_match.group().lower()
-                pronouns = {'he': 'his', 'him': 'his', 'she': 'her',
-                            'her': 'hers', 'they': 'their', 'them': 'theirs'}[direct_pronoun]
-            else:
-                # Define regular expression patterns for each gender and their derivatives
-                male_pattern = r'\b(?:boy|m(ale)?|man|bro(ther)?)\b'
-                female_pattern = r'\b(?:girl|f(emale)?|woman|sis(ter)?)\b'
-
-                # Check for gender-sensitive matches using regex with case-insensitive flag
-                if re.search(male_pattern, gender, re.IGNORECASE):
-                    pronouns = "his"
-                elif re.search(female_pattern, gender, re.IGNORECASE):
-                    pronouns = "her"
+            if gender:
+                direct_pronoun_match = re.search(
+                    r'\b(?:he|him|she|her|they|them)\b', gender, re.IGNORECASE)
+                if direct_pronoun_match:
+                    direct_pronoun = direct_pronoun_match.group().lower()
+                    pronouns = {'he': 'his', 'him': 'his', 'she': 'her',
+                                'her': 'hers', 'they': 'their', 'them': 'theirs'}[direct_pronoun]
                 else:
-                    pronouns = "their"
+                    # Define regular expression patterns for each gender and their derivatives
+                    male_pattern = r'\b(?:boy|m(ale)?|man|bro(ther)?)\b'
+                    female_pattern = r'\b(?:girl|f(emale)?|woman|sis(ter)?)\b'
+
+                    # Check for gender-sensitive matches using regex with case-insensitive flag
+                    if re.search(male_pattern, gender, re.IGNORECASE):
+                        pronouns = "his"
+                    elif re.search(female_pattern, gender, re.IGNORECASE):
+                        pronouns = "her"
+                    else:
+                        pronouns = "their"
+            else:
+                pronouns = "their"
             if time_wasted.count(",") > 1:
                 time_wasted = time_wasted.rsplit(",", 1)
                 time_wasted = " and".join(time_wasted)
