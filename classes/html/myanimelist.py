@@ -94,6 +94,7 @@ class HtmlMyAnimeList:
                         last_online = datetime.strptime(
                             f"{today_str} {activity[1]}", date_format
                         )
+                        last_online -= timedelta(days=1)
                     case "Yesterday":
                         yesterday_str = (
                             datetime.now(timezone.utc) - timedelta(days=1)
@@ -101,6 +102,7 @@ class HtmlMyAnimeList:
                         last_online = datetime.strptime(
                             f"{yesterday_str} {activity[1]}", date_format
                         )
+                        last_online -= timedelta(days=1)
                     case _:
                         if len(activity) == 2:
                             # check if in activity[1] has a year after the comma
