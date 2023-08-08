@@ -139,7 +139,8 @@ class HtmlMyAnimeList:
                             regex = r"(\d+) (\w+) ago"
                             matching = re.search(regex, activity[0])
                             # get time
-                            time_value: int = int(matching.group(1))  # type: ignore
+                            time_value: int = int(
+                                matching.group(1))  # type: ignore
                             # get unit
                             time_unit: str = matching.group(2)  # type: ignore
                             # add s to the unit if it is not already there
@@ -163,7 +164,6 @@ class HtmlMyAnimeList:
                 "span", class_="user-status-data")
             if gender_find:
                 gender = gender_find.text.strip()
-
 
         birthday: datetime | None = None
         birthday_find = soup.find(
@@ -196,7 +196,8 @@ class HtmlMyAnimeList:
                 location = location_find.text.strip()
 
         joined = None
-        joined_find = soup.find("span", class_="user-status-title", text="Joined")
+        joined_find = soup.find(
+            "span", class_="user-status-title", text="Joined")
         if joined_find:
             joined_find = joined_find.find_next(
                 "span", class_="user-status-data")

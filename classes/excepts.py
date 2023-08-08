@@ -1,5 +1,6 @@
 from typing import Any
 
+
 class ProviderHttpError(Exception):
     """Exception for HTTP errors from providers"""
 
