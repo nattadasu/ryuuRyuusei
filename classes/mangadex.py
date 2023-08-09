@@ -216,7 +216,7 @@ class Mangadex:
         cached_data = cache_.read_cache(cache_file_path)
         dacite_config = Config(
             type_hooks={
-                datetime: lambda value: datetime.fromisoformat(value)
+                datetime: datetime.fromisoformat
             }
         )
         if cached_data:
