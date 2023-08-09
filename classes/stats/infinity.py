@@ -212,9 +212,9 @@ class InfinityBots:
                 data=await resp.json(),
                 config=Config(
                     type_hooks={
-                        datetime: lambda x: dconv(x),
+                        datetime: dconv,
                         # convert str to UUID
-                        UUID: lambda x: UUID(x)
+                        UUID: UUID
                     }
                 )
             )
