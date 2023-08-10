@@ -182,7 +182,9 @@ class InfinityBots:
 
     async def close(self):
         """Close the session"""
-        await self.session.close() if self.session else None
+        if self.session:
+            await self.session.close()
+            self.session = None
 
     async def get_bot_info(self, bot_id: int | str) -> BotStruct:
         """
@@ -212,9 +214,10 @@ class InfinityBots:
                 data=await resp.json(),
                 config=Config(
                     type_hooks={
-                        datetime: dconv,
+                        # skipcq: PYL-W0108
+                        datetime: lambda x: dconv(x),  # pylint: disable=unnecessary-lambda
                         # convert str to UUID
-                        UUID: UUID
+                        UUID: UUID,
                     }
                 )
             )
