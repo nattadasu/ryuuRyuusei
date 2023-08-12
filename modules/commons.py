@@ -317,7 +317,7 @@ def generate_trailer(
         label="PV/CM on YouTube",
         style=ButtonStyle.LINK,
         url=f"https://www.youtube.com/watch?v={ytid}",
-        emoji=PartialEmoji(id=975564205228965918, name="Youtube"),
+        emoji=PartialEmoji(id=1139810636545667072, name="YouTube"),
     )
     return button
 
