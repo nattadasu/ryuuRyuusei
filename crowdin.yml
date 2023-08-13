@@ -1,3 +1,0 @@
-files:
-  - source: /i18n/en_US.yaml
-    translation: /i18n/%locale_with_underscore%.yaml
