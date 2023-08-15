@@ -179,7 +179,7 @@ class ShikimoriUserStruct:
     """User profile URL"""
     name: str | None
     """User name"""
-    sex: ShikimoriUserGender
+    sex: ShikimoriUserGender | None
     """Gender"""
     full_years: int | None
     """User's age"""
@@ -315,7 +315,10 @@ class Shikimori:
                     else None
                 )
             data["favourites"] = ShikimoriFavorites(**data["favourites"])
-        data["sex"] = ShikimoriUserGender(data["sex"])
+        if not data["sex"]:
+            data["sex"] = ShikimoriUserGender.UNKNOWN
+        else:
+            data["sex"] = ShikimoriUserGender(data["sex"])
         user = ShikimoriUserStruct(**data)
         return user
 
