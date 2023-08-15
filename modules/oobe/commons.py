@@ -112,13 +112,11 @@ def prepare_database():
             "path": "database/database.csv",
             "header": database_header,
         },
-        {"path": "database/member.csv", "header": "discordId\tlanguage"},
-        {"path": "database/server.csv", "header": "guildId\tlanguage"},
     ]
 
     for file in files:
         if not os.path.exists(file["path"]):
-            with open(file["path"], "w") as f:
+            with open(file["path"], "w", encoding="utf-8") as f:
                 f.write(file["header"] + "\n")
 
     if not os.path.exists("database/allowlist_autoembed"):
