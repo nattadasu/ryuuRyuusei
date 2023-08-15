@@ -3,16 +3,13 @@ from datetime import datetime, timezone
 from typing import Literal
 
 import interactions as ipy
-from emoji import emojize  # type: ignore
 
 from classes.cache import Caching
 from classes.database import UserDatabase, UserDatabaseClass
 from classes.html.myanimelist import HtmlMyAnimeList
 from classes.verificator import Verificator
-from modules.commons import save_traceback_to_file
 from modules.const import (EMOJI_FORBIDDEN, EMOJI_SUCCESS,
                            EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR)
-from modules.i18n import search_language, set_default_language
 
 
 class ServerSettings(ipy.Extension):
@@ -25,76 +22,10 @@ class ServerSettings(ipy.Extension):
         dm_permission=False,
     )
 
-    language = serversettings_head.group(
-        name="language",
-        description="Change the bot language for this server",
-    )
-
     member = serversettings_head.group(
         name="member",
         description="Manage member settings on this server",
     )
-
-    @language.subcommand(
-        sub_cmd_name="set",
-        sub_cmd_description="Set the bot language for this server",
-        options=[
-            ipy.SlashCommandOption(
-                name="lang",
-                description="Language name",
-                required=True,
-                type=ipy.OptionType.STRING,
-                autocomplete=True,
-            ),
-        ],
-    )
-    async def serversettings_language_set(self, ctx: ipy.InteractionContext, lang: str):
-        """
-        Set the bot language for this server
-
-        Args:
-            ctx (ipy.InteractionContext): Context
-            lang (str): Language code, autocomplete available
-        """
-        try:
-            await set_default_language(code=lang, ctx=ctx, isGuild=True)
-            await ctx.send(f"{EMOJI_SUCCESS} Server Language set to {lang}")
-        # pylint: disable-next=broad-except
-        except Exception as error:
-            await ctx.send(f"{EMOJI_FORBIDDEN} {error}")
-            save_traceback_to_file(
-                "serversettings_language_set", ctx.author, error)
-
-    @serversettings_language_set.autocomplete("lang")
-    async def code_autocomplete(self, ctx: ipy.AutocompleteContext):
-        """
-        Autocomplete for the language code
-
-        Args:
-            ctx (ipy.AutocompleteContext): Context
-        """
-        data = search_language(ctx.input_text)
-        # only return the first 10 results
-        data = data[:10]
-        final = []
-        for d_index in data:
-            try:
-                if d_index["name"] == "Serbian":
-                    d_index["dialect"] = "Serbia"
-                flag = d_index["dialect"].replace(" ", "_")
-                flag: str = emojize(
-                    f":{flag}:", language="alias")  # type: ignore
-                final.append(
-                    {
-                        "name": f"{flag} {d_index['name']} ({d_index['native']}, {d_index['dialect']})",
-                        "value": d_index["code"],
-                    }
-                )
-            # pylint: disable=broad-except
-            except BaseException:
-                break
-            # pylint: enable=broad-except
-        await ctx.send(choices=final)
 
     async def _check_if_registered(
         self,
