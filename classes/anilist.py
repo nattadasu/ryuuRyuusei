@@ -665,8 +665,7 @@ class AniList:
             user_data = data["data"]["User"]
             if not return_id:
                 Cache.write_data_to_cache(user_data, cache_file_path)
-                return from_dict(AniListUserStruct, user_data, config=config)
-            return from_dict(AniListUserStruct, user_data["id"], config=config)
+            return from_dict(AniListUserStruct, user_data, config=config)
 
     async def search_media(
         self,
