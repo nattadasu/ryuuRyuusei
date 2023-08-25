@@ -79,6 +79,7 @@ class Platform(Enum):
     LASTFM = LAST = LFM = "lastfm"
     LIVECHART = LC = "livechart"
     MYANIMELIST = MAL = "myanimelist"
+    NAUTILJON = NJ = "nautiljon"
     NOTIFYMOE = NOTIFY = "notify"
     OTAKOTAKU = OTAKU = OO = "otakotaku"
     SHIKIMORI = SHIKI = "shikimori"
@@ -136,6 +137,7 @@ def get_platform_color(pf: str | Platform) -> int:
             "lastfm": 0xD51007,
             "livechart": 0x67A427,
             "myanimelist": 0x2F51A3,
+            "nautiljon": 0xECB253,
             "notify": 0xDEA99E,
             "otakotaku": 0xBE2222,
             "shikimori": 0x2E2E2E,
@@ -196,6 +198,7 @@ def get_platform_name(pf: str | Platform) -> str:
         "lastfm": "Last.fm",
         "livechart": "LiveChart",
         "myanimelist": "MyAnimeList",
+        "nautiljon": "Nautiljon",
         "notify": "Notify.moe",
         "otakotaku": "Otak Otaku",
         "shikimori": "Shikimori (Шикимори)",
@@ -268,6 +271,10 @@ def media_id_to_platform(
         "myanimelist": {
             "uid": f"https://myanimelist.net/anime/{media_id}",
             "emoid": "1073442204921643048",
+        },
+        "nautiljon": {
+            "uid": f"https://www.nautiljon.com/animes/{media_id}.html",
+            "emoid": "1144533712818667640",
         },
         "shikimori": {
             "uid": f"https://shikimori.one/animes/{media_id}",
@@ -348,6 +355,7 @@ def platforms_to_fields(
         "kitsu": "kitsu",
         "livechart": "livechart",
         "myanimelist": "myanimelist",
+        "nautiljon": "nautiljon",
         "notify": "notify",
         "otakotaku": "otakotaku",
         "shikimori": "shikimori",

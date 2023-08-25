@@ -184,6 +184,11 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_type = "manga"
                 media_id = ids["mediaid"]
                 source = "myanimelist"
+            case r"(?:https?://)?(?:www\.)?nautiljon.com/animes/(?P<mediaid>[\w\W]).html" as ids:
+                send_to = "mal"
+                send_type = "anime"
+                media_id = ids["mediaid"]
+                source = "nautiljon"
             case r"(?:https?://)?(?:www\.)?notify\.moe/anime/(?P<mediaid>[\w\-_]+)" as ids:
                 send_to = "mal"
                 send_type = "anime"

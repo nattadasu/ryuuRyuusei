@@ -40,6 +40,10 @@ class AnimeApiAnime:
     """LiveChart ID"""
     myanimelist: int | None = None
     """MyAnimeList ID"""
+    nautiljon: str | None = None
+    """Nautiljon Slug"""
+    nautiljon_id: int | None = None
+    """Nautiljon ID"""
     notify: str | None = None
     """Notify.moe Base64 ID"""
     otakotaku: int | None = None
@@ -97,6 +101,7 @@ class AnimeApi:
         KITSU = "kitsu"
         LIVECHART = LC = "livechart"
         MYANIMELIST = MAL = "myanimelist"
+        NAUTILJON = NJ = "nautiljon"
         NOTIFY = "notify"
         OTAKOTAKU = "otakotaku"
         SHIKIMORI = SHIKI = "shikimori"
@@ -145,6 +150,7 @@ class AnimeApi:
             "kitsu",
             "livechart",
             "myanimelist",
+            "nautiljon",
             "notify",
             "otakotaku",
             "shikimori",
