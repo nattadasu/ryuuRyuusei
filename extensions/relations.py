@@ -105,7 +105,8 @@ class ExtenalSitesRelations(ipy.Extension):
                     ipy.SlashCommandChoice(name="AniList", value="anilist"),
                     ipy.SlashCommandChoice(
                         name="Anime-Planet", value="animeplanet"),
-                    ipy.SlashCommandChoice(name="aniSearch", value="anisearch"),
+                    ipy.SlashCommandChoice(
+                        name="aniSearch", value="anisearch"),
                     ipy.SlashCommandChoice(name="Annict", value="annict"),
                     ipy.SlashCommandChoice(name="IMDb", value="imdb"),
                     ipy.SlashCommandChoice(name="Kaize", value="kaize"),
@@ -114,7 +115,8 @@ class ExtenalSitesRelations(ipy.Extension):
                         name="LiveChart", value="livechart"),
                     ipy.SlashCommandChoice(
                         name="MyAnimeList", value="myanimelist"),
-                    ipy.SlashCommandChoice(name="Nautiljon", value="nautiljon"),
+                    ipy.SlashCommandChoice(
+                        name="Nautiljon", value="nautiljon"),
                     ipy.SlashCommandChoice(name="Notify.moe", value="notify"),
                     ipy.SlashCommandChoice(
                         name="Otak Otaku", value="otakotaku"),
