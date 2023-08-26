@@ -179,12 +179,17 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_type = "anime"
                 media_id = ids["mediaid"]
                 source = "myanimelist"
+            case r"(?:https?://)?myani\.li/#/anime/details/(?P<mediaid>\d+)" as ids:
+                send_to = "mal"
+                send_type = "anime"
+                media_id = ids["mediaid"]
+                source = "myanimelist"
             case r"(?:https?://)?(?:www\.)?myanimelist\.net/manga/(?P<mediaid>\d+)" as ids:
                 send_to = "anilist"
                 send_type = "manga"
                 media_id = ids["mediaid"]
                 source = "myanimelist"
-            case r"(?:https?://)?(?:www\.)?nautiljon.com/animes/(?P<mediaid>[\w\W]).html" as ids:
+            case r"(?:https?://)?(?:www\.)?nautiljon\.com/animes/(?P<mediaid>[\w\W]).html" as ids:
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
