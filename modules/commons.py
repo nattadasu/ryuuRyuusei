@@ -535,7 +535,7 @@ def save_traceback_to_file(
         raise error
 
 
-def custom_datetime_converter(time: str, zone: str = "Z"):
+def custom_datetime_converter(time: str, zone: str = "Z", remove_millis: bool = True):
     """
     Converts inconventional datetime into ISO standard
 
@@ -547,6 +547,8 @@ def custom_datetime_converter(time: str, zone: str = "Z"):
         datetime: formatted datetime
     """
     time = time.replace(zone, '+00:00')
+    if remove_millis:
+        time = re.sub(r'\.[\d]+', '', time)
     return datetime.fromisoformat(time)
 
 

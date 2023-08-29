@@ -184,6 +184,7 @@ class ExtenalSitesRelations(ipy.Extension):
         trakt_id = None
         trakt_season = None
         trakt_type = None
+        simkl_id = None
         simkl_dat = SimklRelations()
         trakt_data = TraktMediaStruct("", 0, TraktIdsStruct(0, ""))
 
