@@ -6,7 +6,7 @@ defusedxml
 fake-useragent
 fuzzywuzzy
 html5lib
-interactions-py==5.8.0
+interactions-py==5.10.0
 langcodes
 language_data
 pandas
