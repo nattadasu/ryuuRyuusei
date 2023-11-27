@@ -216,7 +216,7 @@ class Shikimori:
 
     def __init__(self):
         """Init Shikimori class"""
-        self.base_url = "https://shikimori.me/api/"
+        self.base_url = "https://shikimori.one/api/"
         self.headers = {}
         self.params = {}
         self.session = None

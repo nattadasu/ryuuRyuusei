@@ -72,6 +72,7 @@ class ShikimoriCog(ipy.Extension):
         ul = read_user_language(ctx)
         l_: dict[str, Any] = fetch_language_data(ul, use_raw=True)
         user_data: ShikimoriUserStruct | None = None
+        base_url = "https://shikimori.one"
 
         if shikimori_username and user:
             embed = platform_exception_embed(
@@ -171,6 +172,8 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
                     anime_paused = stats.size
                 case "dropped":
                     anime_dropped = stats.size
+                case _:
+                    continue
             anime_total += stats.size
         # calculate mean score
         anime_mean_score = 0
@@ -203,6 +206,8 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
                     manga_paused = stats.size
                 case "dropped":
                     manga_dropped = stats.size
+                case _:
+                    continue
             manga_total += stats.size
         # calculate mean score
         manga_mean_score = 0
@@ -215,7 +220,7 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
 
         embed_author = ipy.EmbedAuthor(
             name="Shikimori Profile",
-            url="https://shikimori.me",
+            url=base_url,
             icon_url="https://cdn.discordapp.com/emojis/1073441855645155468.webp",
         )
         embed_color = 0x343434
@@ -278,7 +283,7 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
                     for index, fav in enumerate(ani_favs_top):
                         if len(fav.name) >= 100:
                             fav.name = fav.name[:97] + "..."
-                        ani_favs_str += f"{index + 1}. [{fav.name}](https://shikimori.me/animes/{fav.id})\n"
+                        ani_favs_str += f"{index + 1}. [{fav.name}]({base_url}/animes/{fav.id})\n"
                 embed.add_field(
                     name="🌟 Top 5 Favorite Anime",
                     value=ani_favs_str if ani_favs_str not in [
@@ -308,7 +313,7 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
                     for index, fav in enumerate(man_favs_top):
                         if len(fav.name) >= 100:
                             fav.name = fav.name[:97] + "..."
-                        man_favs_str += f"{index + 1}. [{fav.name}](https://shikimori.me/animes/{fav.id})\n"
+                        man_favs_str += f"{index + 1}. [{fav.name}]({base_url}/animes/{fav.id})\n"
                 embed.add_field(
                     name="🌟 Top 5 Favorite Manga",
                     value=man_favs_str if man_favs_str not in [

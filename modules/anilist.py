@@ -380,7 +380,7 @@ async def generate_anilist(
         )
         shikimori_button = Button(
             style=ButtonStyle.URL,
-            url=f"https://shikimori.me/mangas/{mal_id}",
+            url=f"https://shikimori.one/mangas/{mal_id}",
             emoji=PartialEmoji(id=1073441855645155468, name="shikimori"),
         )
         buttons.extend([mal_button, shikimori_button])
