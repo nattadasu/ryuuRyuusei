@@ -158,7 +158,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                     case "LEAD_DEVELOPER" | "DEVELOPER":
                         roles.append("🧑‍💻")
                     case "LEAD_COMMUNITY" | "COMMUNITY" | "DISCORD_COMMUNITY":
-                        roles.append("👮")
+                        roles.append("👥")
                     case "LEAD_ANIME_DATA" | "ANIME_DATA":
                         roles.append("🎞️")
                     case "LEAD_MANGA_DATA" | "MANGA_DATA":
@@ -174,9 +174,9 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                     case _:
                         continue
         else:
-            roles.append("*Not a moderator*")
+            roles.append("Not a moderator")
 
-        mod_roles = ", ".join(roles)
+        mod_roles = " ".join(roles)
 
         if embed_layout == "minimal":
             joined_formatted = f"<t:{int(created_at.timestamp())}:R>"
@@ -411,7 +411,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
 * Anime Watched: {title_watched:,}
 * Episodes Watched: {anime_episodes_watched:,}
 * Time Wasted: {anime_float}
-👀 {anime_current:,} | 🔁 {anime_repeating:,}| ✅ {anime_completed:,} | ⏰ {anime_planning:,} | ⏸️ {anime_paused:,} | 🗑️ {anime_dropped:,}""",
+👀 {anime_current:,} | 🔁 {anime_repeating:,} | ✅ {anime_completed:,} | ⏰ {anime_planning:,} | ⏸️ {anime_paused:,} | 🗑️ {anime_dropped:,}""",
                     inline=True,
                 ),
                 ipy.EmbedField(
@@ -422,7 +422,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
 * Chapters Read: {manga_chapters_read:,}
 * Volumes Read: {manga_volumes_read:,}
 * Time Wasted, Estimated: {manga_float}
-👀 {manga_current:,} | 🔁  {manga_repeating:,}| ✅ {manga_completed:,} | ⏰ {manga_planning:,} | ⏸️ {manga_paused:,} | 🗑️ {manga_dropped:,}""",
+👀 {manga_current:,} | 🔁  {manga_repeating:,} | ✅ {manga_completed:,} | ⏰ {manga_planning:,} | ⏸️ {manga_paused:,} | 🗑️ {manga_dropped:,}""",
                     inline=True,
                 ),
             )

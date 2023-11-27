@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 from interactions import (Button, ButtonStyle, ComponentContext, Embed,
                           EmbedAuthor, EmbedField, EmbedFooter, Message,
-                          SlashContext)
+                          PartialEmoji, SlashContext)
 
 from classes.anilist import AniList, AniListMediaStruct
 from classes.animeapi import AnimeApi, AnimeApiAnime
