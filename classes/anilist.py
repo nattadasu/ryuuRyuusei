@@ -258,6 +258,8 @@ class AniListUserStruct:
     """User AniList URL"""
     avatar: AniListImageStruct | None = None
     """User avatar image object"""
+    moderatorRoles: list[str] | None = None
+    """List of moderation roles user get on the site"""
     # pylint: disable-next=invalid-name
     bannerImage: str | None = None
     """User banner image URL"""
@@ -644,6 +646,7 @@ class AniList:
         donatorTier
         donatorBadge
         createdAt
+        moderatorRoles
     }}
 }}"""
         async with self.session.post(

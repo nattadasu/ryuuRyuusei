@@ -149,6 +149,35 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
 
         banner = user_data.bannerImage if user_data.bannerImage else ""
 
+        roles: list[str] = []
+        if user_data.moderatorRoles is not None:
+            for role in user_data.moderatorRoles:
+                match role:
+                    case "ADMIN":
+                        roles.append("👑")
+                    case "LEAD_DEVELOPER" | "DEVELOPER":
+                        roles.append("🧑‍💻")
+                    case "LEAD_COMMUNITY" | "COMMUNITY" | "DISCORD_COMMUNITY":
+                        roles.append("👮")
+                    case "LEAD_ANIME_DATA" | "ANIME_DATA":
+                        roles.append("🎞️")
+                    case "LEAD_MANGA_DATA" | "MANGA_DATA":
+                        roles.append("📔")
+                    case "LEAD_SOCIAL_MEDIA" | "SOCIAL_MEDIA":
+                        roles.append("💬")
+                    case "CHARACTER_DATA":
+                        roles.append("🧝")
+                    case "STAFF_DATA":
+                        roles.append("🧑‍🎨")
+                    case "RETIRED":
+                        roles.append("🏳️")
+                    case _:
+                        continue
+        else:
+            roles.append("*Not a moderator*")
+
+        mod_roles = ", ".join(roles)
+
         if embed_layout == "minimal":
             joined_formatted = f"<t:{int(created_at.timestamp())}:R>"
         else:
@@ -161,6 +190,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
         anime_completed = 0
         anime_dropped = 0
         anime_paused = 0
+        anime_repeating = 0
         anime_stats = user_data.statistics.anime
         anime_mean_score = anime_stats.meanScore if anime_stats else 0
         anime_episodes_watched = anime_stats.episodesWatched if anime_stats else 0
@@ -180,6 +210,8 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                     anime_dropped = status.count
                 case "PAUSED":
                     anime_paused = status.count
+                case "REPEATING":
+                    anime_repeating = status.count
                 case _:
                     continue
         anime_total = (
@@ -188,6 +220,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             + (anime_dropped or 0)
             + (anime_paused or 0)
             + (anime_planning or 0)
+            + (anime_repeating or 0)
         )
         title_watched = (anime_current or 0) + (anime_completed or 0)
         manga_current = 0
@@ -195,6 +228,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
         manga_completed = 0
         manga_dropped = 0
         manga_paused = 0
+        manga_repeating = 0
         manga_stats = user_data.statistics.manga
         manga_mean_score = manga_stats.meanScore if manga_stats else 0
         manga_chapters_read = manga_stats.chaptersRead if manga_stats else 0
@@ -214,6 +248,8 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                     manga_dropped = status.count
                 case "PAUSED":
                     manga_paused = status.count
+                case "REPEATING":
+                    manga_repeating = status.count
                 case _:
                     continue
         manga_total = (
@@ -222,6 +258,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             + (manga_dropped or 0)
             + (manga_paused or 0)
             + (manga_planning or 0)
+            + (manga_repeating or 0)
         )
         title_read = (manga_current or 0) + (manga_completed or 0)
         time_wasted = convert_float_to_time(
@@ -285,6 +322,11 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                     value=f"{donator}{donator_flair}",
                     inline=True,
                 ),
+                ipy.EmbedField(
+                    name="👮 Moderation Roles",
+                    value=mod_roles,
+                    inline=False
+                ),
             )
             anime_value_str = f"""* Total: {anime_total:,}
 * Mean Score: ⭐ {anime_mean_score}/100
@@ -300,6 +342,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                 embed.add_field(
                     name="ℹ️ Anime Statuses",
                     value=f"""👀 Watching: {anime_current:,}
+🔁 Repeating: {anime_repeating:,}
 ✅ Completed: {anime_completed:,}
 ⏰ Planned: {anime_planning:,}
 ⏸️ On Hold: {anime_paused:,}
@@ -335,6 +378,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                 embed.add_field(
                     name="ℹ️ Manga Statuses",
                     value=f"""👀 Reading: {manga_current:,}
+🔁 Repeating: {manga_repeating:,}
 ✅ Completed: {manga_completed:,}
 ⏰ Planned: {manga_planning:,}
 ⏸️ On Hold: {manga_paused:,}
@@ -361,7 +405,8 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
                     name="Profile",
                     value=f"""* User ID: `{user_id}`
 * Account Created: {joined_formatted}
-* Donator: {donator}{donator_flair}""",
+* Donator: {donator}{donator_flair}
+* Moderator Roles: {mod_roles}""",
                     inline=False,
                 ),
                 ipy.EmbedField(
@@ -371,7 +416,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
 * Anime Watched: {title_watched:,}
 * Episodes Watched: {anime_episodes_watched:,}
 * Time Wasted: {anime_float}
-👀 {anime_current:,} | ✅ {anime_completed:,} | ⏰ {anime_planning:,} | ⏸️ {anime_paused:,} | 🗑️ {anime_dropped:,}""",
+👀 {anime_current:,} | 🔁 {anime_repeating:,}| ✅ {anime_completed:,} | ⏰ {anime_planning:,} | ⏸️ {anime_paused:,} | 🗑️ {anime_dropped:,}""",
                     inline=True,
                 ),
                 ipy.EmbedField(
@@ -382,7 +427,7 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
 * Chapters Read: {manga_chapters_read:,}
 * Volumes Read: {manga_volumes_read:,}
 * Time Wasted, Estimated: {manga_float}
-👀 {manga_current:,} | ✅ {manga_completed:,} | ⏰ {manga_planning:,} | ⏸️ {manga_paused:,} | 🗑️ {manga_dropped:,}""",
+👀 {manga_current:,} | 🔁  {manga_repeating:,}| ✅ {manga_completed:,} | ⏰ {manga_planning:,} | ⏸️ {manga_paused:,} | 🗑️ {manga_dropped:,}""",
                     inline=True,
                 ),
             )
