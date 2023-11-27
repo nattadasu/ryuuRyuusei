@@ -17,7 +17,7 @@ from interactions import (Button, ButtonStyle, ComponentContext, Embed,
 
 from classes.anilist import AniList, AniListMediaStruct
 from classes.animeapi import AnimeApi, AnimeApiAnime
-from classes.excepts import MediaIsNsfw
+from classes.excepts import MediaIsNsfw, ProviderHttpError
 from classes.jikan import JikanApi
 from classes.kitsu import Kitsu
 from classes.myanimelist import MyAnimeList
@@ -364,27 +364,15 @@ async def generate_mal(
     rot = jk_dat.title
     nat = jk_dat.title_japanese or "*None*"
     ent = jk_dat.title_english
+    english_note = False
 
     # Create a synonyms list
     syns = [name.title for name in jk_dat.titles if name.type not in [
         "Default", "English"]]
-    if not ent:
+    if not ent or (ent == ""):
         # Set ent to a synonym in ASCII or the original title
         for name in syns:
             if re.match(r"([0-9a-zA-Z][:0-9a-zA-Z ]+)(?= )", name):
-                ent = name
-                break
-        else:
-            ent = rot
-
-    english_note = False
-    if (ent is None) or (ent == ""):
-        # for each name in syns, check if the name is in ASCII using regex
-        # if it is, then set ent to name
-        # if not, then set ent to rot
-        for name in syns:
-            if re.match(r"([0-9a-zA-Z][:0-9a-zA-Z ]+)(?= )", name):
-                # grab group 1
                 ent = name
                 break
         else:
@@ -478,6 +466,33 @@ async def generate_mal(
         embed.set_thumbnail(url=poster)
     if background is not None:
         embed.set_image(url=background)
+    buttons: list[Button] = []
+    if anime_api is not None:
+        if anime_api.anilist is not None:
+            buttons.append(
+                Button(
+                    style=ButtonStyle.URL,
+                    url=f"https://anilist.co/anime/{anime_api.anilist}",
+                    emoji=PartialEmoji(id=1073445700689465374, name="aniList"),
+                )
+            )
+        if anime_api.kitsu is not None:
+            buttons.append(
+                Button(
+                    style=ButtonStyle.URL,
+                    url=f"https://kitsu.io/anime/{anime_api.kitsu}",
+                    emoji=PartialEmoji(id=1073439152462368950, name="kitsu"),
+                )
+            )
+        # SIMKL uses AniDB as source database, not MAL
+        if anime_api.anidb is not None:
+            buttons.append(
+                Button(
+                    style=ButtonStyle.URL,
+                    url=f"https://api.simkl.com/redirect?to=Simkl&mal={mal_id}",
+                    emoji=PartialEmoji(id=1073630754275348631, name="simkl"),
+                )
+            )
     anime_stats: Button = Button(
         style=ButtonStyle.URL,
         label="Anime Stats",
@@ -488,28 +503,12 @@ async def generate_mal(
         label="AnimeThemes",
         url=f"https://animethemes.moe/anime/{generate_animethemes_slug(rot)}",
     )
-    anilist_button = Button(
-        style=ButtonStyle.URL,
-        url=f"https://animeapi.my.id/redirect?from=mal&id={mal_id}to=anilist",
-        emoji=PartialEmoji(id=1073445700689465374, name="aniList"),
-    )
-    kitsu_button = Button(
-        style=ButtonStyle.URL,
-        url=f"https://animeapi.my.id/redirect?from=mal&id={mal_id}to=kitsu",
-        emoji=PartialEmoji(id=1073439152462368950, name="kitsu"),
-    )
     shiki_button = Button(
         style=ButtonStyle.URL,
         url=f"https://shikimori.one/animes/{mal_id}",
         emoji=PartialEmoji(id=1073441855645155468, name="shikimori"),
     )
-    buttons = [
-        anilist_button,
-        kitsu_button,
-        shiki_button,
-        anime_stats,
-        themes_moe,
-    ]
+    buttons.extend([shiki_button, anime_stats, themes_moe])
 
     return [embed, buttons]
 
@@ -534,9 +533,14 @@ async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int
                 media_id=ani_id, platform=aniapi.AnimeApiPlatforms.MYANIMELIST
             )
 
+        al_data: AniListMediaStruct | None = None
+
         if animeapi.anilist is not None:
             async with AniList() as anilist:
-                al_data: AniListMediaStruct = await anilist.anime(media_id=animeapi.anilist)
+                try:
+                    al_data = await anilist.anime(media_id=animeapi.anilist)
+                except ProviderHttpError:
+                    al_data = None
 
                 if al_data is not None and al_data.trailer is not None:
                     trailer.append(generate_trailer(data=al_data.trailer))
