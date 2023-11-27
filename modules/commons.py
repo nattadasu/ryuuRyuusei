@@ -122,6 +122,13 @@ def convert_html_to_markdown(text: str) -> str:
         r"<(/)?u>": "__",
         r"<(/)?strike>|<(/)?s>": "~~",
         r"<(/)?br>": "\n",
+        r"<h1>": "\n# ",
+        r"<h2>": "\n## ",
+        r"<h3>": "\n### ",
+        r"<(/)?h[1-6]>": "",
+        r"<p>": "\n",
+        r"<(/)?p>": "",
+        r"<a href=\"(.*)\">(.*)</a>": r"[\2](\1)",
     }
 
     for pattern, repl in replacements.items():
