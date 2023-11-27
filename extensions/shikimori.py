@@ -222,11 +222,6 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
         components = [
             ipy.Button(
                 style=ipy.ButtonStyle.URL,
-                label="Shikimori Profile",
-                url=user_url,
-            ),
-            ipy.Button(
-                style=ipy.ButtonStyle.URL,
                 label="Anime List",
                 url=f"{user_url}/list/anime",
             ),

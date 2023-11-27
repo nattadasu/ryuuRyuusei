@@ -256,11 +256,6 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
         components = [
             ipy.Button(
                 style=ipy.ButtonStyle.URL,
-                label="MyAnimeList Profile",
-                url=f"https://myanimelist.net/profile/{username}",
-            ),
-            ipy.Button(
-                style=ipy.ButtonStyle.URL,
                 label="Anime List",
                 url=f"https://myanimelist.net/animelist/{username}",
             ),
@@ -525,6 +520,11 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
 
         if embed_layout in ["old", "new"]:
             components += [
+                ipy.Button(
+                    style=ipy.ButtonStyle.URL,
+                    label="Statistics",
+                    url=f"https://myanimelist.net/profile/{username}/statistics"
+                ),
                 ipy.Button(
                     style=ipy.ButtonStyle.URL,
                     label="anime.plus MALGraph",

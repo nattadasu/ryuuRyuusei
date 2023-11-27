@@ -483,18 +483,30 @@ async def generate_mal(
         label="Anime Stats",
         url=f"https://anime-stats.net/anime/show/{quote(rot)}",
     )
-    myani_li: Button = Button(
-        style=ButtonStyle.URL,
-        label="MyAni.Li",
-        url=f"https://myani.li/#/anime/details/{mal_id}",
-    )
     themes_moe: Button = Button(
         style=ButtonStyle.URL,
         label="AnimeThemes",
         url=f"https://animethemes.moe/anime/{generate_animethemes_slug(rot)}",
     )
+    anilist_button = Button(
+        style=ButtonStyle.URL,
+        url=f"https://animeapi.my.id/redirect?from=mal&id={mal_id}to=anilist",
+        emoji=PartialEmoji(id=1073445700689465374, name="aniList"),
+    )
+    kitsu_button = Button(
+        style=ButtonStyle.URL,
+        url=f"https://animeapi.my.id/redirect?from=mal&id={mal_id}to=kitsu",
+        emoji=PartialEmoji(id=1073439152462368950, name="kitsu"),
+    )
+    shiki_button = Button(
+        style=ButtonStyle.URL,
+        url=f"https://shikimori.one/animes/{mal_id}",
+        emoji=PartialEmoji(id=1073441855645155468, name="shikimori"),
+    )
     buttons = [
-        myani_li,
+        anilist_button,
+        kitsu_button,
+        shiki_button,
         anime_stats,
         themes_moe,
     ]

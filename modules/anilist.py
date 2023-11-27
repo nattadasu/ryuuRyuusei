@@ -375,13 +375,11 @@ async def generate_anilist(
     if mal_id:
         mal_button = Button(
             style=ButtonStyle.URL,
-            label="MyAnimeList",
             url=f"https://myanimelist.net/manga/{mal_id}",
             emoji=PartialEmoji(id=1073442204921643048, name="myAnimeList"),
         )
         shikimori_button = Button(
             style=ButtonStyle.URL,
-            label="Shikimori",
             url=f"https://shikimori.me/mangas/{mal_id}",
             emoji=PartialEmoji(id=1073441855645155468, name="shikimori"),
         )

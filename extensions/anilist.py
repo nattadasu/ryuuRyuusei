@@ -274,11 +274,6 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
         components = [
             ipy.Button(
                 style=ipy.ButtonStyle.URL,
-                label="AniList Profile",
-                url=user_url,
-            ),
-            ipy.Button(
-                style=ipy.ButtonStyle.URL,
                 label="Anime List",
                 url=f"{user_url}/animelist",
             ),
@@ -436,13 +431,8 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             components += [
                 ipy.Button(
                     style=ipy.ButtonStyle.URL,
-                    label="Full Anime Stats",
+                    label="Statistic",
                     url=f"{user_url}/stats/anime/overview",
-                ),
-                ipy.Button(
-                    style=ipy.ButtonStyle.URL,
-                    label="Full Manga Stats",
-                    url=f"{user_url}/stats/manga/overview",
                 ),
             ]
             if banner:
