@@ -14,8 +14,8 @@ from modules.commons import (PlatformErrType, convert_html_to_markdown,
                              platform_exception_embed, sanitize_markdown,
                              save_traceback_to_file, trim_synopsis)
 from modules.const import BANNED_TAGS, MESSAGE_WARN_CONTENTS
-from modules.platforms import media_id_to_platform, Platform
 from modules.i18n import fetch_language_data
+from modules.platforms import Platform, media_id_to_platform
 
 
 async def search_al_anime(title: str) -> list[dict[str, Any]]:

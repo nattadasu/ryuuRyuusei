@@ -11,8 +11,8 @@ from classes.simkl import Simkl, SimklMediaTypes, SimklRelations
 from classes.trakt import Trakt, TraktIdsStruct, TraktMediaStruct
 from modules.commons import save_traceback_to_file
 from modules.const import EMOJI_UNEXPECTED_ERROR
-from modules.platforms import (get_platform_color, media_id_to_platform,
-                               platforms_to_fields, PlatformLink)
+from modules.platforms import (PlatformLink, get_platform_color,
+                               media_id_to_platform, platforms_to_fields)
 
 
 class ExtenalSitesRelations(ipy.Extension):
