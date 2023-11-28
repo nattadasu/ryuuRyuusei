@@ -12,7 +12,7 @@ from classes.trakt import Trakt, TraktIdsStruct, TraktMediaStruct
 from modules.commons import save_traceback_to_file
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.platforms import (get_platform_color, media_id_to_platform,
-                               platforms_to_fields)
+                               platforms_to_fields, PlatformLink)
 
 
 class ExtenalSitesRelations(ipy.Extension):
@@ -187,6 +187,7 @@ class ExtenalSitesRelations(ipy.Extension):
         simkl_id = None
         simkl_dat = SimklRelations()
         trakt_data = TraktMediaStruct("", 0, TraktIdsStruct(0, ""))
+        anime_api = AnimeApiAnime()
 
         if (platform == "shikimori") and (not re.match(r"^\d+$", media_id)):
             media_id = re.search(r"^\d+", media_id).group(0)
@@ -507,11 +508,11 @@ class ExtenalSitesRelations(ipy.Extension):
             media_id = f"{tmtyp}/{id}"
 
         pfs = media_id_to_platform(
-            media_id=media_id, platform=platform, simkl_type=simkl_dat.type
+            media_id=f"{media_id}", platform=platform, simkl_type=simkl_dat.type
         )
-        pf = pfs["pf"]
-        uid = pfs["uid"]
-        emoid = pfs["emoid"]
+        pf = pfs.pf
+        uid = pfs.uid
+        emoid = pfs.emoid
 
         if simkl_dat.poster is not None:
             poster = f"https://simkl.in/posters/{simkl_dat.poster}_m.webp"

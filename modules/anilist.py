@@ -14,6 +14,7 @@ from modules.commons import (PlatformErrType, convert_html_to_markdown,
                              platform_exception_embed, sanitize_markdown,
                              save_traceback_to_file, trim_synopsis)
 from modules.const import BANNED_TAGS, MESSAGE_WARN_CONTENTS
+from modules.platforms import media_id_to_platform, Platform
 from modules.i18n import fetch_language_data
 
 
@@ -373,15 +374,17 @@ async def generate_anilist(
         )
         buttons.append(trailer)
     if mal_id:
+        mal = media_id_to_platform(f"{mal_id}", Platform.MAL)
         mal_button = Button(
             style=ButtonStyle.URL,
-            url=f"https://myanimelist.net/manga/{mal_id}",
-            emoji=PartialEmoji(id=1073442204921643048, name="myAnimeList"),
+            url=mal.uid.replace("anime/", "manga/"),
+            emoji=PartialEmoji(id=mal.emoid, name="myAnimeList"),
         )
+        shiki = media_id_to_platform(f"{mal_id}", Platform.SHIKIMORI)
         shikimori_button = Button(
             style=ButtonStyle.URL,
-            url=f"https://shikimori.one/mangas/{mal_id}",
-            emoji=PartialEmoji(id=1073441855645155468, name="shikimori"),
+            url=shiki.uid.replace("animes/", "mangas/"),
+            emoji=PartialEmoji(id=mal.emoid, name="shikimori"),
         )
         buttons.extend([mal_button, shikimori_button])
 

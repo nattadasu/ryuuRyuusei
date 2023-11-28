@@ -7,6 +7,7 @@ This module contains modules that are related to MyAnimeList or Jikan API.
 import html
 import re
 from datetime import datetime, timezone
+from typing import Any
 from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
@@ -28,6 +29,7 @@ from modules.commons import (generate_commons_except_embed, generate_trailer,
                              trim_synopsis)
 from modules.const import (EMOJI_FORBIDDEN, MESSAGE_WARN_CONTENTS,
                            MYANIMELIST_CLIENT_ID, SIMKL_CLIENT_ID)
+from modules.platforms import media_id_to_platform, Platform
 
 
 def generate_animethemes_slug(title: str) -> str:
@@ -74,7 +76,7 @@ def lookup_random_anime() -> int:
     return rand_anime_id
 
 
-async def search_mal_anime(title: str) -> dict | list:
+async def search_mal_anime(title: str) -> list[dict[str, Any]]:
     """
     Search anime via MyAnimeList API
 
@@ -82,7 +84,7 @@ async def search_mal_anime(title: str) -> dict | list:
         title (str): Anime title
 
     Returns:
-        dict | list: Anime data
+        list[dict[str, Any]]: Anime data
     """
     fields = [
         "id",
@@ -469,28 +471,31 @@ async def generate_mal(
     buttons: list[Button] = []
     if anime_api is not None:
         if anime_api.anilist is not None:
+            ext_id = media_id_to_platform(f"{anime_api.anilist}", Platform.ANILIST)
             buttons.append(
                 Button(
                     style=ButtonStyle.URL,
-                    url=f"https://anilist.co/anime/{anime_api.anilist}",
-                    emoji=PartialEmoji(id=1073445700689465374, name="aniList"),
+                    url=ext_id.uid,
+                    emoji=PartialEmoji(id=ext_id.emoid, name="aniList"),
                 )
             )
         if anime_api.kitsu is not None:
+            ext_id = media_id_to_platform(f"{anime_api.kitsu}", Platform.KITSU)
             buttons.append(
                 Button(
                     style=ButtonStyle.URL,
-                    url=f"https://kitsu.io/anime/{anime_api.kitsu}",
-                    emoji=PartialEmoji(id=1073439152462368950, name="kitsu"),
+                    url=ext_id.uid,
+                    emoji=PartialEmoji(id=ext_id.emoid, name="kitsu"),
                 )
             )
         # SIMKL uses AniDB as source database, not MAL
         if anime_api.anidb is not None:
+            ext_id = media_id_to_platform(f"{mal_id}", Platform.SIMKL, "tv")
             buttons.append(
                 Button(
                     style=ButtonStyle.URL,
                     url=f"https://api.simkl.com/redirect?to=Simkl&mal={mal_id}",
-                    emoji=PartialEmoji(id=1073630754275348631, name="simkl"),
+                    emoji=PartialEmoji(id=ext_id.emoid, name="simkl"),
                 )
             )
     anime_stats: Button = Button(
