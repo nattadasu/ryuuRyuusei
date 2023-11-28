@@ -368,11 +368,6 @@ async def generate_anilist(
 
     # buttons
     buttons: list[Button] = []
-    if alm.trailer and alm.trailer.site == "youtube":
-        trailer = generate_trailer(
-            data=alm.trailer,
-        )
-        buttons.append(trailer)
     if mal_id:
         mal = media_id_to_platform(f"{mal_id}", Platform.MAL)
         mal_button = Button(
@@ -384,9 +379,14 @@ async def generate_anilist(
         shikimori_button = Button(
             style=ButtonStyle.URL,
             url=shiki.uid.replace("animes/", "mangas/"),
-            emoji=PartialEmoji(id=mal.emoid, name="shikimori"),
+            emoji=PartialEmoji(id=shiki.emoid, name="shikimori"),
         )
         buttons.extend([mal_button, shikimori_button])
+    if alm.trailer and alm.trailer.site == "youtube":
+        trailer = generate_trailer(
+            data=alm.trailer,
+        )
+        buttons.append(trailer)
 
     return (embed, buttons)
 

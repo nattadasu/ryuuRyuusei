@@ -12,9 +12,9 @@ from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
 import pandas as pd
-from interactions import (Button, ButtonStyle, ComponentContext, Embed,
+from interactions import (ActionRow, Button, ButtonStyle, ComponentContext, Embed,
                           EmbedAuthor, EmbedField, EmbedFooter, Message,
-                          PartialEmoji, SlashContext)
+                          PartialEmoji, SlashContext, spread_to_rows)
 
 from classes.anilist import AniList, AniListMediaStruct
 from classes.animeapi import AnimeApi, AnimeApiAnime
@@ -134,7 +134,7 @@ async def generate_mal(
         MediaIsNsfw: NSFW is not allowed
 
     Returns:
-        list[Embed | list[Button]]: Embed and button
+        list[Embed | list[ActionRow]]: Embed and button
     """
 
     async with JikanApi() as jikan:
@@ -509,10 +509,11 @@ async def generate_mal(
         label="AnimeThemes",
         url=f"https://animethemes.moe/anime/{generate_animethemes_slug(rot)}",
     )
+    ext_id = media_id_to_platform(f"{mal_id}", Platform.SHIKIMORI)
     shiki_button = Button(
         style=ButtonStyle.URL,
-        url=f"https://shikimori.one/animes/{mal_id}",
-        emoji=PartialEmoji(id=1073441855645155468, name="shikimori"),
+        url=ext_id.uid,
+        emoji=PartialEmoji(id=ext_id.emoid, name="shikimori"),
     )
     buttons.extend([shiki_button, anime_stats, themes_moe])
 
@@ -531,7 +532,7 @@ async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int
         *None*
     """
     nsfw_bool = await get_nsfw_status(ctx)
-    trailer = []
+    trailer: Button | None = None
 
     try:
         async with AnimeApi() as aniapi:
@@ -540,6 +541,8 @@ async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int
             )
 
         al_data: AniListMediaStruct | None = None
+        embed: Embed
+        buttons: list[Button] = []
 
         if animeapi.anilist is not None:
             async with AniList() as anilist:
@@ -549,18 +552,32 @@ async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int
                     al_data = None
 
                 if al_data is not None and al_data.trailer is not None:
-                    trailer.append(generate_trailer(data=al_data.trailer))
+                    trailer = generate_trailer(data=al_data.trailer)
         else:
             al_data = AniListMediaStruct(id=0)
 
         embed, buttons = await generate_mal(
             ani_id, is_nsfw=nsfw_bool, anilist_data=al_data, anime_api=animeapi
         )
-        trailer.extend(buttons)  # type: ignore
+        if trailer is not None:
+            buttons.append(trailer)
+        # split to 5x5 buttons, unlabeled buttons should be at first
+        final_buttons: list[ActionRow] = []
+        unlabeled_buttons: list[Button] = []
+        labeled_buttons: list[Button] = []
+        for button in buttons:
+            if button.label is None:
+                unlabeled_buttons.append(button)
+            else:
+                labeled_buttons.append(button)
+        for i in range(0, len(unlabeled_buttons), 5):
+            final_buttons.append(ActionRow(*unlabeled_buttons[i:i + 5]))
+        for i in range(0, len(labeled_buttons), 5):
+            final_buttons.append(ActionRow(*labeled_buttons[i:i + 5]))
         if isinstance(ctx, Message):
-            await ctx.reply(embeds=embed, components=trailer)
+            await ctx.reply(embeds=embed, components=final_buttons)
         else:
-            await ctx.send(embed=embed, components=trailer)
+            await ctx.send(embed=embed, components=final_buttons)
         return
 
     except MediaIsNsfw as err:
