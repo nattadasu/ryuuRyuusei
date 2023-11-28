@@ -11,7 +11,7 @@ from modules.commons import (PlatformErrType, platform_exception_embed,
 from modules.i18n import fetch_language_data
 
 
-async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
+async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
     """
     Generate embed for RAWG API
 
@@ -19,7 +19,7 @@ async def generate_rawg(data: RawgGameData) -> list[Embed, list[Button]]:
         data (RawgGameData): RAWG API data
 
     Returns:
-        list[Embed, Button]: Embed and button
+        tuple[Embed, Button]: Embed and button
     """
     # Extract data from the input object
     id = data.slug
@@ -188,15 +188,13 @@ async def rawg_submit(ctx: SlashContext | ComponentContext | Message, slug: str)
     Returns:
         None
     """
-    buttons = []
     l_ = fetch_language_data(code="en_US")
     try:
         async with RawgApi() as api:
             game_data = await api.get_data(slug)
-        embed, button_2 = await generate_rawg(data=game_data)
-        buttons.extend(button_2)
+        embed, buttons = await generate_rawg(data=game_data)
         if isinstance(ctx, Message):
-            await ctx.reply(embed=embed, components=buttons)
+            await ctx.reply(embed=embed, components=buttons)  # type: ignore
         else:
             await ctx.send(embed=embed, components=buttons)
     except ProviderHttpError as err:

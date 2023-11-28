@@ -120,7 +120,7 @@ async def generate_mal(
     is_nsfw: bool | None = False,
     anilist_data: AniListMediaStruct | None = None,
     anime_api: AnimeApiAnime | None = None,
-) -> list[Embed | list[Button]]:
+) -> tuple[Embed, list[Button]]:
     """
     Generate an embed for /anime with MAL via Jikan
 
@@ -575,7 +575,7 @@ async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int
         for i in range(0, len(labeled_buttons), 5):
             final_buttons.append(ActionRow(*labeled_buttons[i:i + 5]))
         if isinstance(ctx, Message):
-            await ctx.reply(embeds=embed, components=final_buttons)
+            await ctx.reply(embeds=embed, components=final_buttons)  # type: ignore
         else:
             await ctx.send(embed=embed, components=final_buttons)
         return

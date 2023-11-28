@@ -19,7 +19,7 @@ async def create_simkl_embed(
     media_type: Literal["tv", "movies"],
     is_channel_nsfw: bool | None = None,
     is_media_nsfw: bool | None = None,
-) -> list[ipy.Embed | list[ipy.ActionRow | ipy.Button]]:
+) -> tuple[ipy.Embed, list[ipy.ActionRow | ipy.Button]]:
     """
     Generate embed for Simkl API
 
@@ -87,7 +87,7 @@ async def create_simkl_embed(
         runtime = "*Unknown*"
 
     # Process country
-    if country is not None:
+    if country is not None:  # type: ignore
         country: str = f"{country.upper()} :flag_{country.lower()}:"
     else:
         country = "*Unknown*"
@@ -136,8 +136,8 @@ async def create_simkl_embed(
             eps_data = [x for x in eps_data if x["type"] != "special"]
             eps_data.reverse()
             if len(eps_data) > 0:
-                season = eps_data[0].get("season", 1)
-                end_date = eps_data[0].get("date", None)
+                season = eps_data[0].get("season", 1)  # type: ignore
+                end_date = eps_data[0].get("date", None)  # type: ignore
         except ProviderHttpError:
             # do nothing
             pass
@@ -207,7 +207,7 @@ async def create_simkl_embed(
     votes = 0
     if scores is not None:
         mock = {"rating": 0, "votes": 0}
-        simkl_score: dict[str, int | float] = scores.get("simkl", mock)
+        simkl_score: dict[str, int | float] = scores.get("simkl", mock)  # type: ignore
         score = simkl_score.get("rating", 0)
         votes = simkl_score.get("votes", 0)
 
@@ -242,8 +242,7 @@ async def create_simkl_embed(
 
 > {description}""",
         color=0x0B0F10,
-        timestamp=datetime.now(
-            tz=timezone.utc),
+        timestamp=datetime.now(tz=timezone.utc),
     )
 
     if poster is not None:
@@ -370,9 +369,9 @@ async def simkl_submit(
     try:
         async with Simkl() as simkl:
             if media_type == "tv":
-                data: dict = await simkl.get_show(f"{media_id}")
+                data: dict[str, Any] = await simkl.get_show(f"{media_id}")
             else:
-                data: dict = await simkl.get_movie(f"{media_id}")
+                data: dict[str, Any] = await simkl.get_movie(f"{media_id}")
 
         tmdb_id = data.get("ids", {}).get("tmdb", None)
         if tmdb_id is not None:
@@ -398,7 +397,7 @@ async def simkl_submit(
         )
         buttons.append(button_2)
         if isinstance(ctx, ipy.Message):
-            await ctx.reply(embed=embed, components=buttons)
+            await ctx.reply(embed=embed, components=buttons)  # type: ignore
         else:
             await ctx.send(embed=embed, components=buttons)
         return
