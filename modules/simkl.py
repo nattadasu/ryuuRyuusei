@@ -207,7 +207,8 @@ async def create_simkl_embed(
     votes = 0
     if scores is not None:
         mock = {"rating": 0, "votes": 0}
-        simkl_score: dict[str, int | float] = scores.get("simkl", mock)  # type: ignore
+        simkl_score: dict[str, int | float] = scores.get(
+            "simkl", mock)  # type: ignore
         score = simkl_score.get("rating", 0)
         votes = simkl_score.get("votes", 0)
 

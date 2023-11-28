@@ -12,8 +12,8 @@ from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
 import pandas as pd
-from interactions import (ActionRow, Button, ButtonStyle, ComponentContext, Embed,
-                          EmbedAuthor, EmbedField, EmbedFooter, Message,
+from interactions import (ActionRow, Button, ButtonStyle, ComponentContext,
+                          Embed, EmbedAuthor, EmbedField, EmbedFooter, Message,
                           PartialEmoji, SlashContext, spread_to_rows)
 
 from classes.anilist import AniList, AniListMediaStruct
@@ -575,7 +575,8 @@ async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int
         for i in range(0, len(labeled_buttons), 5):
             final_buttons.append(ActionRow(*labeled_buttons[i:i + 5]))
         if isinstance(ctx, Message):
-            await ctx.reply(embeds=embed, components=final_buttons)  # type: ignore
+            # type: ignore
+            await ctx.reply(embeds=embed, components=final_buttons)
         else:
             await ctx.send(embed=embed, components=final_buttons)
         return
