@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Union
 
-from interactions import EmbedField
 from dacite import from_dict
+from interactions import EmbedField
 
 
 class Platform(Enum):

@@ -325,7 +325,8 @@ def create_simkl_embed(
             ipy.Button(
                 style=ipy.ButtonStyle.LINK,
                 url=pf.uid,
-                emoji=ipy.PartialEmoji(id=pf.emoid, name=pfn[platform["name"]]),
+                emoji=ipy.PartialEmoji(
+                    id=pf.emoid, name=pfn[platform["name"]]),
             )
         )
 

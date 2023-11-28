@@ -29,7 +29,7 @@ from modules.commons import (generate_commons_except_embed, generate_trailer,
                              trim_synopsis)
 from modules.const import (EMOJI_FORBIDDEN, MESSAGE_WARN_CONTENTS,
                            MYANIMELIST_CLIENT_ID, SIMKL_CLIENT_ID)
-from modules.platforms import media_id_to_platform, Platform
+from modules.platforms import Platform, media_id_to_platform
 
 
 def generate_animethemes_slug(title: str) -> str:
@@ -471,7 +471,8 @@ async def generate_mal(
     buttons: list[Button] = []
     if anime_api is not None:
         if anime_api.anilist is not None:
-            ext_id = media_id_to_platform(f"{anime_api.anilist}", Platform.ANILIST)
+            ext_id = media_id_to_platform(
+                f"{anime_api.anilist}", Platform.ANILIST)
             buttons.append(
                 Button(
                     style=ButtonStyle.URL,
