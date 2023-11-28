@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from typing import Dict, Literal
+from typing import Dict, Literal, Any
 
 import interactions as ipy
 
@@ -15,11 +15,11 @@ from modules.platforms import Platform, media_id_to_platform
 
 
 def create_simkl_embed(
-    data: Dict[str, any],
+    data: Dict[str, Any],
     media_type: Literal["tv", "movies"],
     is_channel_nsfw: bool | None = None,
     is_media_nsfw: bool | None = None,
-) -> list[ipy.Embed, list[ipy.Button]]:
+) -> list[ipy.Embed | list[ipy.ActionRow | ipy.Button]]:
     """
     Generate embed for Simkl API
 
@@ -30,7 +30,7 @@ def create_simkl_embed(
         is_media_nsfw (bool, optional): Whether the media is NSFW, defaults to None
 
     Returns:
-        list[Embed, list[Button]]: The embed and the buttons
+        list[Embed, list[ActionRow | Button]]: The embed and the buttons
     """
     notice = MESSAGE_WARN_CONTENTS if is_channel_nsfw is None else ""
 
@@ -249,16 +249,7 @@ def create_simkl_embed(
         embed.set_footer(
             text="* This is estimated end date (as SIMKL didn't provide end date well), please take the info with a pinch of salt")
 
-    buttons = []
-
-    if data.get("trailers", None) is not None:
-        try:
-            trailer = generate_trailer(data["trailers"][0], is_mal=False)
-        except IndexError:
-            trailer = None
-
-        if trailer is not None:
-            buttons.append(trailer)
+    buttons: list[ipy.Button] = []
 
     ids = data.get("ids", {})
 
@@ -288,15 +279,9 @@ def create_simkl_embed(
             else None,
         },
         {
-            "name": "tvtime",
-            "url": f"{'show' if media_type == 'tv' else 'movie'}/{ids.get('tvdb', '')}"
-            if ids.get("tvdb", None)
-            else None,
-        },
-        {
             "name": "trakt",
             # use IMDB's for auto-redirect from Trakt end, and media type from SIMKL
-            "url": f"search/imdb/{ids.get('imdb', '')}?type={media_type}"
+            "url": f"search/imdb/{ids.get('imdb', '')}?type={'shows' if media_type == 'tv' else 'movies'}"
             if ids.get("imdb", None)
             else None,
         }
@@ -318,7 +303,6 @@ def create_simkl_embed(
             "imdb": "IMDb",
             "tmdb": "tmdb",
             "tvdb": "tvdb",
-            "tvtime": "tvTime",
             "trakt": "trakt",
         }
         buttons.append(
@@ -329,6 +313,15 @@ def create_simkl_embed(
                     id=pf.emoid, name=pfn[platform_name]),
             )
         )
+
+    if data.get("trailers", None) is not None:
+        try:
+            trailer = generate_trailer(data["trailers"][0], is_mal=False)
+        except IndexError:
+            trailer = None
+
+        if trailer is not None:
+            buttons.append(trailer)
 
     return [embed, buttons]
 
