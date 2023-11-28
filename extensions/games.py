@@ -122,18 +122,11 @@ class Games(ipy.Extension):
             save_traceback_to_file("games_search", ctx.author, _)
 
     @ipy.component_callback("rawg_games_search")
-    async def rawg_games_search(self, ctx: ipy.ComponentContext):
+    async def rawg_games_search(self, ctx: ipy.ComponentContext) -> None:
         await ctx.defer()
         entry_id = ctx.values[0]
         await rawg_submit(ctx, entry_id)
-        # grab "message_delete" button
-        keep_components: list[ipy.ActionRow] = []
-        for action_row in ctx.message.components:
-            for comp in action_row.components:
-                if comp.custom_id == "message_delete":
-                    comp.label = "Delete message"
-                    keep_components.append(action_row)
-        await ctx.message.edit(components=keep_components)
+        await ctx.message.delete() if ctx.message else None
 
     @games_head.subcommand(
         sub_cmd_name="info",

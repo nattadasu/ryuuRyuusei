@@ -159,14 +159,7 @@ class MoviesCog(ipy.Extension):
         await ctx.defer()
         entry_id: int = int(ctx.values[0])
         await simkl_submit(ctx, entry_id, "movies")
-        # grab "message_delete" button
-        keep_components: list[ipy.ActionRow] = []
-        for action_row in ctx.message.components:
-            for comp in action_row.components:
-                if comp.custom_id == "message_delete":
-                    comp.label = "Delete message"
-                    keep_components.append(action_row)
-        await ctx.message.edit(components=keep_components)
+        await ctx.message.delete() if ctx.message else None
 
     @movies.subcommand(
         sub_cmd_name="info",

@@ -133,18 +133,11 @@ class TvShow(ipy.Extension):
             save_traceback_to_file("tv_search", ctx.author, _)
 
     @ipy.component_callback("simkl_search_select_tv")
-    async def simkl_search_select_tv(self, ctx: ipy.ComponentContext):
+    async def simkl_search_select_tv(self, ctx: ipy.ComponentContext) -> None:
         await ctx.defer()
         entry_id: int = int(ctx.values[0])
         await simkl_submit(ctx, entry_id, "tv")
-        # grab "message_delete" button
-        keep_components: list[ipy.ActionRow] = []
-        for action_row in ctx.message.components:
-            for comp in action_row.components:
-                if comp.custom_id == "message_delete":
-                    comp.label = "Delete message"
-                    keep_components.append(action_row)
-        await ctx.message.edit(components=keep_components)
+        await ctx.message.delete() if ctx.message else None
 
     @tv.subcommand(
         sub_cmd_name="info",

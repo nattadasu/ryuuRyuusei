@@ -167,14 +167,7 @@ class Anime(ipy.Extension):
         await ctx.defer()
         ani_id: int = int(ctx.values[0])
         await mal_submit(ctx, ani_id)
-        # grab "message_delete" button
-        keep_components: list[ipy.ActionRow] = []
-        for action_row in ctx.message.components:
-            for comp in action_row.components:
-                if comp.custom_id == "message_delete":
-                    comp.label = "Delete message"
-                    keep_components.append(action_row)
-        await ctx.message.edit(components=keep_components)
+        await ctx.message.delete() if ctx.message else None
 
     @anime_head.subcommand(
         sub_cmd_name="info",
@@ -222,5 +215,5 @@ class Anime(ipy.Extension):
         await mal_submit(ctx, anime)
 
 
-def setup(bot):
+def setup(bot: ipy.Client | ipy.AutoShardedClient):
     Anime(bot)

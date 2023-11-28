@@ -163,21 +163,12 @@ class Manga(ipy.Extension):
             save_traceback_to_file("manga_search", ctx.author, _)
 
     @ipy.component_callback("anilist_manga_search")
-    async def anilist_manga_search(self, ctx: ipy.ComponentContext):
+    async def anilist_manga_search(self, ctx: ipy.ComponentContext) -> None:
         """Callback for manga search"""
         await ctx.defer()
         entry_id: int = int(ctx.values[0])
         await anilist_submit(ctx, entry_id)
-        # grab "message_delete" button
-        keep_components: list[ipy.ActionRow] = []
-        if ctx.message is None or ctx.message.components is None:
-            return
-        for action_row in ctx.message.components:
-            for comp in action_row.components:  # type: ignore
-                if comp.custom_id == "message_delete":  # type: ignore
-                    comp.label = "Delete message"  # type: ignore
-                    keep_components.append(action_row)
-        await ctx.message.edit(components=keep_components)
+        await ctx.message.delete() if ctx.message else None
 
     @manga_head.subcommand(
         sub_cmd_name="info",
