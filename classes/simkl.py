@@ -377,7 +377,8 @@ class Simkl:
         Returns:
             dict: Response from Simkl API
         """
-        cache_file_path = Cache.get_cache_file_path(f"show/{media_id}/data.json")
+        cache_file_path = Cache.get_cache_file_path(
+            f"show/{media_id}/data.json")
         cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
