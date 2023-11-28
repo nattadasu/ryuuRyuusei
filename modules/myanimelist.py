@@ -499,6 +499,15 @@ async def generate_mal(
                     emoji=PartialEmoji(id=ext_id.emoid, name="simkl"),
                 )
             )
+        if anime_api.annict is not None:
+            ext_id = media_id_to_platform(f"{anime_api.annict}", Platform.ANNICT)
+            buttons.append(
+                Button(
+                    style=ButtonStyle.URL,
+                    url=ext_id.uid.replace("://en.", "://"),
+                    emoji=PartialEmoji(id=ext_id.emoid, name="annict")
+                )
+            )
     anime_stats: Button = Button(
         style=ButtonStyle.URL,
         label="Anime Stats",
@@ -517,7 +526,7 @@ async def generate_mal(
     )
     buttons.extend([shiki_button, anime_stats, themes_moe])
 
-    return [embed, buttons]
+    return (embed, buttons)
 
 
 async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int) -> None:
