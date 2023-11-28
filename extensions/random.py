@@ -35,6 +35,7 @@ class Random(ipy.Extension):
     )
     async def random_8ball(self, ctx: ipy.SlashContext, question: str):
         await ctx.defer()
+        numbers: list[int] = [0]
         try:
             async with RandomOrg() as rand:
                 numbers = await rand.integers(num=1, min_val=0, max_val=19, base=10)
@@ -78,9 +79,9 @@ class Random(ipy.Extension):
         if numbers[0] < 5:
             emoji = EMOJI_SUCCESS
         elif numbers[0] < 10:
-            emoji = EMOJI_ATTENTIVE
-        elif numbers[0] < 15:
             emoji = EMOJI_DOUBTING
+        elif numbers[0] < 15:
+            emoji = EMOJI_FORBIDDEN
         else:
             emoji = EMOJI_UNEXPECTED_ERROR
 
