@@ -1,6 +1,8 @@
 aiohttp
 beautifulsoup4
-cutlet
+# install only on windows
+git+https://github.com/ryuuRyuusei/cutlet-pure@master; sys_platform == "win32"
+cutlet; sys_platform != "win32"
 dacite
 defusedxml
 fake-useragent

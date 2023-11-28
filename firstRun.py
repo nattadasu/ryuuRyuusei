@@ -41,6 +41,11 @@ async def first_run(py_bin: str = py_bin_path()):
     # Check if the script is run from the root directory
     if not os.path.exists("requirements.txt"):
         raise FirstRunError("Please run the script from the repo's directory.")
+    match os.name:
+        case "nt":
+            safe_path = py_bin
+        case _:
+            safe_path = shlex.quote(py_bin)
     try:
         # Check if Termux is used
         env = {"MATHLAB": "m"} if check_termux() else {}
@@ -48,38 +53,20 @@ async def first_run(py_bin: str = py_bin_path()):
         print(
             "Installing and upgrading dependencies for the next step and the bot itself..."
         )
+        proc_args = [
+            safe_path,
+            "-m",
+            "pip",
+            "install",
+            "-U",
+            "-r",
+            "requirements.txt",
+        ]
         if current_os() == "Windows":
-            # load requirements.txt to modify
-            with open("requirements.txt", "r", encoding="utf8") as file:
-                req = file.read()
-            reqs = req.split("\n")
-            url_to_replace = "git+https://github.com/ryuuRyuusei/cutlet-pure@master"
-            for index, line in enumerate(reqs):
-                if line.startswith("cutlet"):
-                    reqs[index] = url_to_replace
-            req = "\n".join(reqs)
-            # write to requirements.txt
-            with open("requirements.txt", "w", encoding="utf8") as file:
-                file.write(req)
-            subprocess.run(
-                ["pip", "install", "-U", "-r", "requirements.txt"],
-                check=True,
-            )
-            req = req.replace(url_to_replace, "cutlet")
+            subprocess.run(proc_args, check=True)
         else:
-            subprocess.run(
-                [
-                    shlex.quote(py_bin),
-                    "-m",
-                    "pip",
-                    "install",
-                    "-U",
-                    "-r",
-                    "requirements.txt",
-                ],
-                env=env,
-                check=True,
-            )
+            subprocess.run(proc_args, check=True, env=env)
+
     except subprocess.CalledProcessError:
         print("\033[31mError installing packages, please run frollowing command:")
         command = "pip install -U -r requirements.txt"
@@ -90,17 +77,21 @@ async def first_run(py_bin: str = py_bin_path()):
     # create a dummy file named cache/dict_installed, if it doesn't exist
     if not os.path.exists("cache/dict_installed"):
         print("Installing unidic dictionary from NINJAL...")
-        subprocess.run(
-            [
-                shlex.quote(py_bin),
-                "-m",
-                "unidic",
-                "download",
-            ],
-            check=True,
-        )
-        with open("cache/dict_installed", "w", encoding="utf8") as file:
-            file.write("")
+        try:
+            subprocess.run(
+                [
+                    safe_path,
+                    "-m",
+                    "unidic",
+                    "download",
+                ],
+                check=True,
+            )
+            with open("cache/dict_installed", "w", encoding="utf8") as file:
+                file.write("")
+        except subprocess.CalledProcessError:
+            print("\033[31mError installing unidic dictionary, please run frollowing command:")
+            print(f"{py_bin} -m unidic download\033[0m")
 
     # Prepare the database
     print("Preparing the database as database.csv in tabbed format...")
