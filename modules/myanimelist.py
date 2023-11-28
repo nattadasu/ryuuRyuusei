@@ -500,7 +500,8 @@ async def generate_mal(
                 )
             )
         if anime_api.annict is not None:
-            ext_id = media_id_to_platform(f"{anime_api.annict}", Platform.ANNICT)
+            ext_id = media_id_to_platform(
+                f"{anime_api.annict}", Platform.ANNICT)
             buttons.append(
                 Button(
                     style=ButtonStyle.URL,
