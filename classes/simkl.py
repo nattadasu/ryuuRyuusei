@@ -8,7 +8,6 @@ from copy import deepcopy
 from dataclasses import asdict, dataclass
 from enum import Enum
 from typing import Any, List, Literal
-from urllib.parse import quote
 
 import aiohttp
 
@@ -348,7 +347,7 @@ class Simkl:
             list[dict[str, Any]]: Response from Simkl API
         """
         params: dict[str, Any] = deepcopy(self.params)
-        params["q"] = quote(title)
+        params["q"] = title
         if extended:
             params["extended"] = "full"
         params["page"] = page
