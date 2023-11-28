@@ -14,8 +14,8 @@ from modules.i18n import fetch_language_data
 from modules.platforms import Platform, media_id_to_platform
 
 
-def create_simkl_embed(
-    data: Dict[str, Any],
+async def create_simkl_embed(
+    data: dict[str, Any],
     media_type: Literal["tv", "movies"],
     is_channel_nsfw: bool | None = None,
     is_media_nsfw: bool | None = None,
@@ -92,6 +92,9 @@ def create_simkl_embed(
     else:
         country = "*Unknown*"
 
+    airing = ""
+    release = ""
+
     # Process start date
     if media_type == "tv":
         airing_date = data.get("first_aired", None)
@@ -122,11 +125,32 @@ def create_simkl_embed(
             release = f"<t:{int(release.timestamp())}:D>"
 
     year = data.get("year", None)
+    end_date: str | None = None
+    season: int = 1
+    eps_data: list[dict[str, str | int | dict[str, str | int]]] = []
+
+    if media_type == "tv":
+        try:
+            async with Simkl() as simkl:
+                eps_data: list[dict[str, str | int | dict[str, str | int]]] = await simkl.get_show_episodes(media_id)
+            eps_data = [x for x in eps_data if x["type"] != "special"]
+            eps_data.reverse()
+            if len(eps_data) > 0:
+                season = eps_data[0].get("season", 1)
+                end_date = eps_data[0].get("date", None)
+        except ProviderHttpError:
+            # do nothing
+            pass
 
     # Process end date
-    if episodes != "*??*" and airing_date is not None and status == ", Ended":
-        end_date = airing_date + timedelta(weeks=episodes)
-        end_date = f"<t:{int(end_date.timestamp())}:D>\\*"
+    # take episode information if its a show and haven't ended yet
+    if episodes != "*??*" and airing_date is not None and len(eps_data) > 0 and end_date is not None:
+        # grab "date", and format it
+        guess_date = datetime.fromisoformat(end_date)
+        end_date = f"<t:{int(guess_date.timestamp())}:D>"
+    elif episodes != "*??*" and airing_date is not None and status == ", Ended":
+        guess_date = airing_date + timedelta(weeks=episodes)
+        end_date = f"<t:{int(guess_date.timestamp())}:D>\\*"
     elif status == ", Airing":
         end_date = "TBA"
     elif status == ", To Be Announced":
@@ -239,6 +263,8 @@ def create_simkl_embed(
         value=f"{episodes} {runtime}" if media_type == "tv" else f"{runtime}",
         inline=True,
     )
+    if media_type == "tv":
+        embed.add_field(name="Seasons", value=season, inline=True)
     embed.add_field(
         name="Airing Date" if media_type == "tv" else "Release Date",
         value=date,
@@ -364,7 +390,7 @@ async def simkl_submit(
             media_nsfw = False
 
         channel_nsfw = await get_nsfw_status(ctx)
-        embed, button_2 = create_simkl_embed(
+        embed, button_2 = await create_simkl_embed(
             data=data,
             media_type=media_type,
             is_channel_nsfw=channel_nsfw,

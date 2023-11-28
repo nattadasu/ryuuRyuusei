@@ -377,7 +377,7 @@ class Simkl:
         Returns:
             dict: Response from Simkl API
         """
-        cache_file_path = Cache.get_cache_file_path(f"show/{media_id}.json")
+        cache_file_path = Cache.get_cache_file_path(f"show/{media_id}/data.json")
         cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -385,6 +385,35 @@ class Simkl:
         params["extended"] = "full"
         async with self.session.get(
             f"{self.base_url}/tv/{media_id}", params=params
+        ) as response:
+            if response.status == 200:
+                data = await response.json()
+                Cache.write_data_to_cache(data, cache_file_path)
+                return data
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
+
+    async def get_show_episodes(self, media_id: int | str) -> list[dict[str, str | int | dict[str, str | int]]]:
+        """
+        Get show episodes by ID
+
+        Args:
+            media_id (int | str): Show ID on SIMKL or IMDB
+            extended (bool, optional): Get extended info. Defaults to False.
+
+        Raises:
+            ProviderHttpError: If response status is not 200
+
+        Returns:
+            list[dict[str, str | int | dict[str, str | int]]]: Response from Simkl API
+        """
+        cache_file_path = Cache.get_cache_file_path(
+            f"show/{media_id}/episodes.json")
+        cached_data = Cache.read_cached_data(cache_file_path)
+        if cached_data is not None:
+            return cached_data
+        async with self.session.get(
+            f"{self.base_url}/tv/episodes/{media_id}", params=self.params
         ) as response:
             if response.status == 200:
                 data = await response.json()
