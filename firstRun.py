@@ -90,7 +90,8 @@ async def first_run(py_bin: str = py_bin_path()):
             with open("cache/dict_installed", "w", encoding="utf8") as file:
                 file.write("")
         except subprocess.CalledProcessError:
-            print("\033[31mError installing unidic dictionary, please run frollowing command:")
+            print(
+                "\033[31mError installing unidic dictionary, please run frollowing command:")
             print(f"{py_bin} -m unidic download\033[0m")
 
     # Prepare the database
