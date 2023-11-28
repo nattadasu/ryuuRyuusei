@@ -1,8 +1,10 @@
 from collections import defaultdict
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Union
 
 from interactions import EmbedField
+from dacite import from_dict
 
 
 class Platform(Enum):
@@ -90,6 +92,18 @@ class Platform(Enum):
     THETVDB = TVDB = "tvdb"
     TRAKT = "trakt"
     TVTIME = "tvtime"
+
+
+@dataclass
+class PlatformLink:
+    """Object of the formatted ID of the platform"""
+
+    pf: str
+    """The name of the platform"""
+    uid: str
+    """The formatted ID of the platform, a link"""
+    emoid: str
+    """Discord Emoji snowflake ID"""
 
 
 def get_platform_color(pf: str | Platform) -> int:
@@ -218,7 +232,7 @@ def media_id_to_platform(
     media_id: str,
     platform: str | Platform,
     simkl_type: Union[str, None] = None
-) -> dict[str, Any]:
+) -> PlatformLink:
     """
     Convert a media ID to a platform-specific ID
 
@@ -231,7 +245,7 @@ def media_id_to_platform(
         ValueError: If the platform is not supported
 
     Returns:
-        dict: A dictionary containing the converted ID and the emoji ID for the platform
+        PlatformLink: An object containing the converted ID and the emoji ID for the platform
     """
     if isinstance(platform, str):
         platform = Platform(platform)
@@ -331,7 +345,7 @@ def media_id_to_platform(
         data = platform_dict[platform.value]
         data["pf"] = get_platform_name(platform.value)
 
-        return data
+        return from_dict(data_class=PlatformLink, data=data)
     except KeyError:
         raise ValueError(f"Invalid platform: {platform}")
 
@@ -376,8 +390,8 @@ def platforms_to_fields(
                     value = str(value).removeprefix("https://www.thetvdb.com/")
                 relsEm.append(
                     {
-                        "name": f"<:{platform_mappings[platform]}:{pin['emoid']}> {pin['pf']}",
-                        "value": f"[{value}](<{pin['uid']}>)",
+                        "name": f"<:{platform_mappings[platform]}:{pin.emoid}> {pin.pf}",
+                        "value": f"[{value}](<{pin.uid}>)",
                         "inline": True,
                     })
         except KeyError:
@@ -388,8 +402,8 @@ def platforms_to_fields(
         pin = media_id_to_platform(media_id=media_id, platform="tvtime")
         relsEm.append(
             {
-                "name": f"<:tvTime:{pin['emoid']}> {pin['pf']}",
-                "value": f"[{media_id}](<{pin['uid']}>)",
+                "name": f"<:tvTime:{pin.emoid}> {pin.pf}",
+                "value": f"[{media_id}](<{pin.uid}>)",
                 "inline": True,
             }
         )
