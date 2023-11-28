@@ -66,19 +66,13 @@ class BotTasker(Extension):
                 os.makedirs(cache_folder)
             if isinstance(durations, dict):
                 base_folder = os.path.join(cache_folder, cache_provider)
-                # User folder
-                user_folder = os.path.join(base_folder, "user")
-                user_duration = durations.get("user", half_day)
-                show_msg += self._delete_old_files(user_folder, user_duration)
-
-                # NSFW folder
-                nsfw_folder = os.path.join(base_folder, "nsfw")
-                nsfw_duration = durations.get("nsfw", a_week)
-                show_msg += self._delete_old_files(nsfw_folder, nsfw_duration)
-
-                # Base folder
-                base_duration = durations.get("base", a_day)
-                show_msg += self._delete_old_files(base_folder, base_duration)
+                for key, value in durations.items():
+                    if key == "base":
+                        show_msg += self._delete_old_files(base_folder, value)
+                        continue
+                    folder_path = os.path.join(base_folder, key)
+                    duration = value
+                    show_msg += self._delete_old_files(folder_path, duration)
             else:
                 # Single folder
                 folder_path = os.path.join(cache_folder, cache_provider)
@@ -200,6 +194,9 @@ class BotTasker(Extension):
                     if current_time - modification_time > duration:
                         os.remove(file_path)
                         return_as += 1
+            # delete empty folders, except the base folder
+            if root != folder_path and len(os.listdir(root)) == 0:
+                os.rmdir(root)
 
         return return_as
 
