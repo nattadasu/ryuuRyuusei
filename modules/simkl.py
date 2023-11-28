@@ -293,6 +293,13 @@ def create_simkl_embed(
             if ids.get("tvdb", None)
             else None,
         },
+        {
+            "name": "trakt",
+            # use IMDB's for auto-redirect from Trakt end, and media type from SIMKL
+            "url": f"search/imdb/{ids.get('imdb', '')}?type={media_type}"
+            if ids.get("imdb", None)
+            else None,
+        }
     ]
     # if tvdbslug's url is not available, use tvdb's url instead
     if platforms[2]["url"] is not None:
@@ -307,11 +314,12 @@ def create_simkl_embed(
             pf = media_id_to_platform(platform["url"], Platform(platform_name))
         else:
             continue
-        pfn = {
+        pfn: dict[str, str] = {
             "imdb": "IMDb",
             "tmdb": "tmdb",
             "tvdb": "tvdb",
             "tvtime": "tvTime",
+            "trakt": "trakt",
         }
         buttons.append(
             ipy.Button(
