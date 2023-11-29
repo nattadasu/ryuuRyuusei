@@ -5,7 +5,7 @@ import aiohttp
 from interactions.ext.paginators import Paginator
 
 from classes.urbandictionary import UrbanDictionary as Urban, UrbanDictionaryEntry as Entry
-from modules.commons import platform_exception_embed, save_traceback_to_file
+from modules.commons import platform_exception_embed, save_traceback_to_file, get_nsfw_status
 
 
 class UrbanDictionaryCog(ipy.Extension):
@@ -34,7 +34,8 @@ class UrbanDictionaryCog(ipy.Extension):
     )
     async def urban_random(self, ctx: ipy.SlashContext, limit: int = 10):
         """Get a random word or phrase from Urban Dictionary."""
-        await ctx.defer()
+        nsfw_status = await get_nsfw_status(ctx) or False
+        await ctx.defer(ephemeral=not nsfw_status)
         entry: list[Entry] | None = None
         try:
             async with Urban() as ud:
@@ -76,7 +77,8 @@ class UrbanDictionaryCog(ipy.Extension):
     )
     async def urban_search(self, ctx: ipy.SlashContext, term: str, limit: int = 10):
         """Search Urban Dictionary for a word or phrase."""
-        await ctx.defer()
+        nsfw_status = await get_nsfw_status(ctx) or False
+        await ctx.defer(ephemeral=not nsfw_status)
         entry: list[Entry] | None = None
         try:
             async with Urban() as ud:
@@ -122,7 +124,8 @@ class UrbanDictionaryCog(ipy.Extension):
     )
     async def urban_wotd(self, ctx: ipy.SlashContext):
         """Get the Urban Dictionary Word of the Day."""
-        await ctx.defer()
+        nsfw_status = await get_nsfw_status(ctx) or False
+        await ctx.defer(ephemeral=not nsfw_status)
         entry: Entry | None = None
         try:
             async with Urban() as ud:
