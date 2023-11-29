@@ -2,7 +2,7 @@
 A script to run first-time setup for a Discord bot.
 
 This script installs dependencies, prepares the database, fetches data from GitHub,
-indexes MyAnimeList data from AnimeAPI, builds a language index, and copies .env.example to .env.
+indexes MyAnimeList data from AnimeAPI, and copies .env.example to .env.
 
 Usage: python3 firstRun.py
 
@@ -17,7 +17,6 @@ import subprocess
 from modules.oobe.commons import (check_termux, current_os, prepare_database,
                                   py_bin_path)
 from modules.oobe.getNekomimi import nk_run
-from modules.oobe.i18nBuild import convert_langs_to_json
 from modules.oobe.malIndexer import mal_run
 
 
@@ -115,10 +114,6 @@ async def first_run(py_bin: str = py_bin_path()):
             os.system("cp .env.example .env")
     else:
         print(".env already exists, skipping...")
-
-    # Build language index
-    print("Building the language index...")
-    convert_langs_to_json()
 
     print("Initialization finished. You should be able to run the bot safely now.")
 

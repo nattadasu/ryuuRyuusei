@@ -26,7 +26,7 @@ from classes.simkl import Simkl
 from modules.commons import (generate_commons_except_embed, generate_trailer,
                              get_nsfw_status, get_random_seed,
                              sanitize_markdown, save_traceback_to_file,
-                             trim_synopsis)
+                             trim_synopsis, platform_exception_embed, PlatformErrType)
 from modules.const import (EMOJI_FORBIDDEN, MESSAGE_WARN_CONTENTS,
                            MYANIMELIST_CLIENT_ID, SIMKL_CLIENT_ID)
 from modules.platforms import Platform, media_id_to_platform
@@ -152,7 +152,7 @@ async def generate_mal(
             genre_name = genre.name
             if "Hentai" in genre_name:
                 raise MediaIsNsfw(
-                    f"{EMOJI_FORBIDDEN} **NSFW is not allowed!**\nOnly NSFW channels are allowed to search NSFW content.{msg_for_thread}"
+                    f"Only NSFW channels are allowed to search NSFW content.{msg_for_thread}"
                 )
 
     mal_id = jk_dat.mal_id
@@ -592,11 +592,17 @@ async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int
         return
 
     except MediaIsNsfw as err:
+        notice = err.args[0] if err.args else ""
+        embed = platform_exception_embed(
+            description="This media is NSFW, please invoke the same query on NSFW enabled channel.",
+            error="Media is NSFW\n" + notice,
+            error_type=PlatformErrType.NSFW,
+        )
         if isinstance(ctx, Message):
-            await ctx.reply(f"**{err}**\n")
+            await ctx.reply(embed=embed)
         else:
-            await ctx.send(f"**{err}**\n")
-        save_traceback_to_file("jikan", ctx.author, err)
+            await ctx.send(embed=embed)
+        save_traceback_to_file("anilist", ctx.author, err)
     # pylint: disable=broad-exception-caught
     except Exception as err:
         embed = generate_commons_except_embed(

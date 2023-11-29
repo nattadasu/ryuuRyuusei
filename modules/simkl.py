@@ -10,7 +10,6 @@ from modules.commons import (PlatformErrType, generate_trailer,
                              get_nsfw_status, platform_exception_embed,
                              save_traceback_to_file, trim_synopsis)
 from modules.const import MESSAGE_WARN_CONTENTS
-from modules.i18n import fetch_language_data
 from modules.platforms import Platform, media_id_to_platform
 
 
@@ -366,7 +365,6 @@ async def simkl_submit(
         media_type (Literal['tv', 'movies'], optional): The type of the media. Defaults to 'tv'.
     """
     buttons = []
-    l_ = fetch_language_data(code="en_US")
     try:
         async with Simkl() as simkl:
             if media_type == "tv":
@@ -408,7 +406,6 @@ async def simkl_submit(
         embed = platform_exception_embed(
             description="This media is NSFW, please invoke the same query on NSFW enabled channel.",
             error="Media is NSFW\n" + notice,
-            lang_dict=l_,
             error_type=PlatformErrType.NSFW,
         )
         if isinstance(ctx, ipy.Message):
@@ -424,7 +421,6 @@ async def simkl_submit(
         embed = platform_exception_embed(
             description="SIMKL API is currently unavailable, please try again later.",
             error=f"HTTP Error {status}\n{message}",
-            lang_dict=l_,
             error_type=PlatformErrType.SYSTEM,
         )
         if isinstance(ctx, ipy.Message):

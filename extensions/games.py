@@ -5,7 +5,6 @@ from classes.rawg import RawgApi
 from modules.commons import (generate_search_embed, sanitize_markdown,
                              save_traceback_to_file)
 from modules.const import EMOJI_UNEXPECTED_ERROR
-from modules.i18n import fetch_language_data, read_user_language
 from modules.rawg import rawg_submit
 
 
@@ -36,15 +35,10 @@ class Games(ipy.Extension):
     )
     async def games_search(self, ctx: ipy.SlashContext, query: str):
         await ctx.defer()
-        ul: str = read_user_language(ctx)
-        l_ = fetch_language_data(ul, use_raw=True)
         send = await ctx.send(
             embed=ipy.Embed(
-                title=l_["commons"]["search"]["init_title"],
-                description=l_["commons"]["search"]["init"].format(
-                    QUERY=query,
-                    PLATFORM="RAWG",
-                ),
+                title="Searching",
+                description=f"Searching `{query}` on RAWG...",
             )
         )
         try:
@@ -52,7 +46,6 @@ class Games(ipy.Extension):
             so: list[ipy.StringSelectOption] = []
             async with RawgApi() as rawg:
                 results = await rawg.search(query=query)
-            f = []
             for r in results:
                 rhel = r["released"]
                 title = r["name"]
@@ -71,7 +64,6 @@ class Games(ipy.Extension):
                     )
                 ]
             result_embed = generate_search_embed(
-                language=ul,
                 media_type="manga",
                 query=query,
                 platform="RAWG",
@@ -99,13 +91,12 @@ class Games(ipy.Extension):
                 components=components,
             )
         except Exception as _:
-            l_: dict[str, str] = l_["strings"]["games"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             embed = ipy.Embed(
-                title=l_["title"],
-                description=l_["text"].format(QUERY=f"`{query}`"),
+                title="Error",
+                description=f"I couldn't able to find any results for {query} on RAWG. Please check your query and try again.",
                 color=0xFF0000,
-                footer=ipy.EmbedFooter(text=l_["footer"]),
+                footer=ipy.EmbedFooter(text="Pro tip: Use native title to get the most accurate result... But I can't guarantee if RAWG has original title, it depends."),
             )
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"

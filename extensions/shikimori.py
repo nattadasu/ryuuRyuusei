@@ -1,6 +1,6 @@
 from datetime import datetime as dtime
 from datetime import timezone as tz
-from typing import Any, Literal
+from typing import Literal
 
 import interactions as ipy
 
@@ -10,7 +10,6 @@ from classes.shikimori import (Shikimori, ShikimoriUserGender,
                                ShikimoriUserStruct)
 from modules.commons import (PlatformErrType, platform_exception_embed,
                              save_traceback_to_file)
-from modules.i18n import fetch_language_data, read_user_language
 
 
 class ShikimoriCog(ipy.Extension):
@@ -69,16 +68,13 @@ class ShikimoriCog(ipy.Extension):
         embed_layout: Literal["minimal", "old", "new"] = "minimal",
     ) -> None:
         await ctx.defer()
-        ul = read_user_language(ctx)
-        l_: dict[str, Any] = fetch_language_data(ul, use_raw=True)
-        user_data: ShikimoriUserStruct | None = None
+        user_data: ShikimoriUserStruct | None
         base_url = "https://shikimori.one"
 
         if shikimori_username and user:
             embed = platform_exception_embed(
                 description="You can't use both `user` and `shikimori_username` options at the same time!",
                 error_type=PlatformErrType.USER,
-                lang_dict=l_,
                 error="User and shikimori_username options used at the same time",
             )
             await ctx.send(embed=embed)
@@ -102,7 +98,6 @@ class ShikimoriCog(ipy.Extension):
                     description=f"""{user.mention} haven't linked the Shikimori account to the bot yet!
 Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimori_username>` to get the profile information directly""",
                     error_type=PlatformErrType.USER,
-                    lang_dict=l_,
                     error="User hasn't link their account yet",
                 )
                 await ctx.send(embed=embed)
@@ -110,7 +105,7 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
 
         try:
             async with Shikimori() as shiki:
-                user_data: ShikimoriUserStruct = await shiki.get_user(
+                user_data = await shiki.get_user(
                     user_id=shikimori_username,
                     is_nickname=True,
                 )
@@ -118,7 +113,6 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
             embed = platform_exception_embed(
                 description=e.message,
                 error_type=PlatformErrType.SYSTEM,
-                lang_dict=l_,
                 error="Error while getting user data",
             )
             await ctx.send(embed=embed)
@@ -128,7 +122,6 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
             embed = platform_exception_embed(
                 description=f"User `{shikimori_username}` not found!",
                 error_type=PlatformErrType.USER,
-                lang_dict=l_,
                 error="User not found",
             )
             await ctx.send(embed=embed)
@@ -140,7 +133,7 @@ Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimo
         user_url = user_data.url
         gender = user_data.sex
         match gender:
-            case ShikimoriUserGender.UNKNOWN:
+            case ShikimoriUserGender.UNKNOWN | None:
                 gender_str = "Unset"
             case _:
                 gender_str = gender.value.capitalize()

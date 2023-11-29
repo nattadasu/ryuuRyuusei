@@ -2,8 +2,6 @@
 cache/
 database/
 errors/
-i18n/_index.yaml
-i18n/**.json
 !cache/.gitkeep
 !database/.gitkeep
 !database/README.md

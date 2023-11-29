@@ -13,7 +13,6 @@ please feel free to ask me on [Discord](https://discord.gg/UKvMEZvaXc).
   - [How do I invite Ryuuzaki Ryuusei to my server?](#how-do-i-invite-ryuuzaki-ryuusei-to-my-server)
   - [How do I use Ryuuzaki Ryuusei?](#how-do-i-use-ryuuzaki-ryuusei)
   - [How do I change the prefix?](#how-do-i-change-the-prefix)
-  - [How do I change the language?](#how-do-i-change-the-language)
   - [How do I change the theme?](#how-do-i-change-the-theme)
 - [Legal Questions](#legal-questions)
   - [Is Ryuuzaki Ryuusei legal?](#is-ryuuzaki-ryuusei-legal)
@@ -80,12 +79,6 @@ list of commands.
 
 No, you can't. Ryuuzaki Ryuusei only uses slash commands, so you don't need to
 change the prefix.
-
-### How do I change the language?
-
-You can change the language by typing `/usersettings language set <language>`.
-You can see the list of available languages by typing `/usersettings language
-list`. However, please note that not all languages are fully translated.
 
 ### How do I change the theme?
 

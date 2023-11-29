@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Literal
 
 import interactions as ipy
 
@@ -7,8 +7,7 @@ from classes.anilist import AniList
 from modules.anilist import anilist_submit
 from modules.commons import (generate_search_embed, sanitize_markdown,
                              save_traceback_to_file)
-from modules.const import EMOJI_UNEXPECTED_ERROR
-from modules.i18n import fetch_language_data, read_user_language
+from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
 
 
 class Manga(ipy.Extension):
@@ -38,15 +37,10 @@ class Manga(ipy.Extension):
     )
     async def manga_search(self, ctx: ipy.SlashContext, query: str):
         await ctx.defer()
-        user_lang: str = read_user_language(ctx)
-        lang_dict = fetch_language_data(user_lang, use_raw=True)
         send = await ctx.send(
             embed=ipy.Embed(
-                title=lang_dict["commons"]["search"]["init_title"],
-                description=lang_dict["commons"]["search"]["init"].format(
-                    QUERY=query,
-                    PLATFORM="AniList",
-                ),
+                title="Searching",
+                description=f"Searching `{query}` on AniList...",
             )
         )
         try:
@@ -104,11 +98,8 @@ class Manga(ipy.Extension):
                         description=f"{format_str}, {status}, {year}",
                     )
                 )
-            title = lang_dict["commons"]["search"]["result_title"].format(
-                QUERY=query,
-            )
+            title = "Search Results on AniList"
             result_embed = generate_search_embed(
-                language=user_lang,
                 media_type="manga",
                 query=query,
                 platform="AniList",
@@ -137,16 +128,13 @@ class Manga(ipy.Extension):
             )
         # pylint: disable-next=broad-except
         except Exception as _:
-            lang_dict: dict[str,
-                            Any] = lang_dict["strings"]["manga"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
-            embed_description: str = lang_dict["text"]
-            embed_description = embed_description.format(QUERY=f"`{query}`")
+            embed_description: str = f"I couldn't find any manga with the title {query} on AniList. Please check your query and try again."
             embed = ipy.Embed(
-                title=lang_dict["title"],
+                title="Error",
                 description=embed_description,
                 color=0xFF0000,
-                footer=ipy.EmbedFooter(text=lang_dict["footer"]),
+                footer=ipy.EmbedFooter(text=STR_RECOMMEND_NATIVE_TITLE),
             )
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"

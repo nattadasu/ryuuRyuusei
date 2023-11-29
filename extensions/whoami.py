@@ -4,7 +4,6 @@ import interactions as ipy
 
 from classes.database import UserDatabase
 from modules.discord import generate_discord_profile_embed
-from modules.i18n import fetch_language_data, read_user_language
 
 
 class WhoAmI(ipy.Extension):
@@ -15,8 +14,6 @@ class WhoAmI(ipy.Extension):
                        description="Interactively read your data")
     async def whoami(self, ctx: ipy.SlashContext):
         await ctx.defer(ephemeral=True)
-        ul = read_user_language(ctx)
-        l_: dict[str, Any] = fetch_language_data(ul)
 
         async with UserDatabase() as ud:
             resp = await ud.check_if_registered(ctx.author.id)
@@ -30,7 +27,6 @@ class WhoAmI(ipy.Extension):
         discord_embed = await generate_discord_profile_embed(
             bot=self.bot,
             ctx=ctx,
-            l_=l_,
             user=ctx.author,
         )
         database_embed = ipy.Embed(

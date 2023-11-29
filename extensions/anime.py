@@ -1,12 +1,11 @@
-from typing import Any, Literal
+from typing import Literal
 
 import interactions as ipy
 
 from modules.anilist import search_al_anime
 from modules.commons import (generate_search_embed, sanitize_markdown,
                              save_traceback_to_file)
-from modules.const import EMOJI_UNEXPECTED_ERROR
-from modules.i18n import fetch_language_data, read_user_language
+from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
 from modules.myanimelist import (lookup_random_anime, mal_submit,
                                  search_mal_anime)
 
@@ -54,15 +53,11 @@ class Anime(ipy.Extension):
         provider: Literal["anilist", "mal"] = "anilist",
     ):
         await ctx.defer()
-        ul: str = read_user_language(ctx)
-        l_: dict[str, Any] = fetch_language_data(ul, use_raw=True)
+        platform: str = "AniList" if provider == "anilist" else "MyAnimeList"
         send: ipy.Message = await ctx.send(
             embed=ipy.Embed(
-                title=l_["commons"]["search"]["init_title"],
-                description=l_["commons"]["search"]["init"].format(
-                    QUERY=query,
-                    PLATFORM="MyAnimeList" if provider == "mal" else "AniList",
-                ),
+                title="Searching...",
+                description=f"Searching `{query}` on `{platform}`.",
             )
         )
         try:
@@ -78,16 +73,11 @@ class Anime(ipy.Extension):
                 if a["node"]["start_season"] is None:
                     a["node"]["start_season"] = {
                         "season": "Unknown", "year": "Year"}
-                media_type: str = l_["commons"]["media_formats"].get(
-                    a["node"]["media_type"].lower(),
-                    l_["commons"]["unknown"],
-                )
-                season: str = l_["commons"]["season"].get(
-                    a["node"]["start_season"]["season"], "unknown"
-                )
+                media_type: str = a["node"]["media_type"] or "Unknown"
+                season: str = a["node"]["start_season"]["season"] or "Unknown"
                 year: str = (
                     a["node"]["start_season"]["year"]
-                    or l_["commons"]["year"]["unknown"]
+                    or "Unknown Year"
                 )
                 title: str = a["node"]["title"]
                 if len(title) >= 256:
@@ -111,12 +101,11 @@ class Anime(ipy.Extension):
                         description=f"{media_type}, {season} {year}",
                     )
                 )
-            title = l_["commons"]["search"]["result_title"].format(QUERY=query)
+            title = f"Search Results for `{query}`"
             if provider == "anilist":
                 title += " (AniList)"
             result = generate_search_embed(
                 title=title,
-                language=ul,
                 media_type="anime",
                 query=query,
                 platform="MyAnimeList",
@@ -141,13 +130,15 @@ class Anime(ipy.Extension):
                 components=components,
             )
         except Exception as _:
-            l_: dict[str, str] = l_["strings"]["anime"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
+            err_msg = f"I couldn't able to find any results for {query} on
+{platform}. Please check your query and try again."
+            foo_msg = STR_RECOMMEND_NATIVE_TITLE
             embed = ipy.Embed(
-                title=l_["title"], description=l_["text"] .replace(
-                    "MyAnimeList", "AniList" if provider == "anilist" else "MyAnimeList") .format(
-                    QUERY=f"`{query}`"), color=0xFF0000, footer=ipy.EmbedFooter(
-                    text=l_["footer"]), )
+                title="Error",
+                description=err_msg.replace("\n", ""),
+                color=0xFF0000,
+                footer=ipy.EmbedFooter(foo_msg.replace("\n", "")))
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
             )

@@ -2,10 +2,10 @@
 <!-- omit in toc -->
 # Ryuuzaki Ryuusei Privacy Policy
 
-|                  |                |
-| ---------------- | -------------- |
-| **Effective**    | August 2, 2023 |
-| **Last Updated** | August 2, 2023 |
+|                  |                   |
+| ---------------- | ----------------- |
+| **Effective**    | November 29, 2023 |
+| **Last Updated** | November 29, 2023 |
 
 Greetings, and welcome to Ryuuzaki Ryuusei's Privacy Policy. Through this
 document, we aim to provide you with an explanation of how your personal
@@ -36,7 +36,7 @@ yourself:
   - [Last.FM][lastfm] (optional): username
   - [MyAnimeList][mal]: username, user ID, joined date
   - [Shikimori][shiki] (optional): username, user ID
-  - User's settings (optional): language
+  - User's settings (optional): automatic embed reply state
 - **We share limited personal information about you and/or other**, required for
   the bot to function as expected, with the following services:
   > **Warning**
@@ -265,9 +265,7 @@ This data is used to provide the following functionality:
 ### Personal Information
 
 Ryuuzaki Ryuusei may collect and store limited personal information that you
-provide when you configure your experience using the bot, such as:
-
-- Languages that you prefer to use the bot
+provide when you configure your experience using the bot.
 
 ## User Data Sharing
 

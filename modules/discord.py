@@ -28,7 +28,6 @@ def format_username(
 async def generate_discord_profile_embed(
     bot: ipy.AutoShardedClient | ipy.Client,
     ctx: ipy.SlashContext,
-    l_: dict,
     user: ipy.User | ipy.Member | None = None,
 ) -> ipy.Embed:
     """
@@ -37,13 +36,11 @@ async def generate_discord_profile_embed(
     Args:
         bot (ipy.AutoShardedClient | ipy.Client): The bot client
         ctx (ipy.SlashContext): The context
-        l_ (dict): The language data
         user (ipy.User, optional): The user to get the profile of. Defaults to None.
 
     Returns:
         ipy.Embed: The embed
     """
-    lp = l_["strings"]["profile"]
     userId: str
     if user is None:
         userId = str(ctx.author.id)
@@ -67,12 +64,12 @@ async def generate_discord_profile_embed(
 
     fields = [
         ipy.EmbedField(
-            name=lp["discord"]["display_name"],
+            name="Display Name",
             value=sanitize_markdown(data.display_name),
             inline=True,
         ),
         ipy.EmbedField(
-            name=lp["commons"]["username"],
+            name="Username",
             value=format_username(data),
             inline=True,
         ),
@@ -82,12 +79,12 @@ async def generate_discord_profile_embed(
             inline=True,
         ),
         ipy.EmbedField(
-            name=lp["discord"]["snowflake"],
+            name="Snowflake/ID",
             value=f"`{userId}`",
             inline=True,
         ),
         ipy.EmbedField(
-            name=lp["discord"]["joined_discord"],
+            name="Joined Discord",
             value=f"<t:{int(data.created_at.timestamp())}:R>",
             inline=True,
         ),
@@ -108,7 +105,7 @@ async def generate_discord_profile_embed(
             nick = sanitize_markdown(servData["nick"])  # type: ignore
         else:
             nick = sanitize_markdown(data.username)
-            nick += " (" + lp["commons"]["default"] + ")"
+            nick += " (*default*)"
         joined = datetime.strptime(
             servData["joined_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
         joined = int(joined.timestamp())
@@ -120,24 +117,22 @@ async def generate_discord_profile_embed(
                 "%Y-%m-%dT%H:%M:%S.%f%z",
             )
             premium_ts: int = int(premium_dt.timestamp())
-            premium_str: str = lp["discord"]["boost_since"].format(
-                TIMESTAMP=f"<t:{premium_ts}:R>"
-            )
+            premium_str: str = f"Boosting server since <t:{premium_ts}:R>"
         else:
-            premium_str = lp["discord"]["not_boosting"]
+            premium_str = "Not boosting"
         fields += [
             ipy.EmbedField(
-                name=lp["discord"]["joined_server"],
+                name="Joined Server",
                 value=joined,
                 inline=True,
             ),
             ipy.EmbedField(
-                name=lp["commons"]["nickname"],
+                name="Nickname",
                 value=nick,
                 inline=True,
             ),
             ipy.EmbedField(
-                name=lp["discord"]["boost_status"],
+                name="Boost Status",
                 value=premium_str,
                 inline=True,
             ),
@@ -149,24 +144,19 @@ async def generate_discord_profile_embed(
     botStatus = ""
     regStatus = ""
     if data.bot:
-        botStatus = "\n🤖 " + lp["commons"]["bot"]
+        botStatus = "\n🤖 This user is a bot"
     async with UserDatabase() as db:
         reg = await db.check_if_registered(discord_id=ipy.Snowflake(int(userId)))
     if reg is True:
-        regStatus = "\n✅ " + lp["discord"]["registered"]
+        regStatus = "\n✅ This user is registered on this bot"
     embed: ipy.Embed = ipy.Embed(
-        title=lp["discord"]["title"],
-        description=lp["commons"]["about"].format(
-            USER=data.mention,
-        )
-        + botStatus
-        + regStatus,
+        title="Discord Profile",
+        description=f"User information for {data.mention}{botStatus}{regStatus}",
         color=color,
         fields=fields,  # type: ignore
     )
 
-    if avatar is not None:
-        embed.set_thumbnail(url=avatar)
+    embed.set_thumbnail(url=avatar)
     if banner is not None:
         embed.set_image(url=banner)
 

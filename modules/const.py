@@ -103,9 +103,6 @@ EMOJI_UNEXPECTED_ERROR: Final[str] = cast(str, ge("EMOJI_UNEXPECTED_ERROR"))
 EMOJI_USER_ERROR: Final[str] = cast(str, ge("EMOJI_USER_ERROR"))
 """The user error emoji"""
 
-LANGUAGE_CODE: Final[str] = cast(str, ge("LANGUAGE_CODE"))
-"""Default language code"""
-
 
 def get_git_revision_hash() -> str:
     """
@@ -277,3 +274,7 @@ TRAKT_HEADER = {
     "trakt-api-version": f"{TRAKT_API_VERSION}",
 }
 """Default Trakt API header"""
+
+
+STR_RECOMMEND_NATIVE_TITLE = "Pro tip: Use native title to get the most accurate result... that if you know how to write it 👍"
+"""A common string constant to recommend user looking up with native title"""

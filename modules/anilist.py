@@ -14,7 +14,6 @@ from modules.commons import (PlatformErrType, convert_html_to_markdown,
                              platform_exception_embed, sanitize_markdown,
                              save_traceback_to_file, trim_synopsis)
 from modules.const import BANNED_TAGS, MESSAGE_WARN_CONTENTS
-from modules.i18n import fetch_language_data
 from modules.platforms import Platform, media_id_to_platform
 
 
@@ -412,7 +411,6 @@ async def anilist_submit(
         None
     """
     buttons: list[Button] = []
-    l_ = fetch_language_data(code="en_US")
     try:
         nsfw_bool = await get_nsfw_status(ctx)
         embed, button_2 = await generate_anilist(
@@ -432,7 +430,6 @@ async def anilist_submit(
         embed = platform_exception_embed(
             description="This media is NSFW, please invoke the same query on NSFW enabled channel.",
             error="Media is NSFW\n" + notice,
-            lang_dict=l_,
             error_type=PlatformErrType.NSFW,
         )
         if isinstance(ctx, Message):
@@ -447,7 +444,6 @@ async def anilist_submit(
         embed = platform_exception_embed(
             description="AniList API is currently unavailable, please try again later.",
             error=f"{message}",
-            lang_dict=l_,
             error_type=PlatformErrType.SYSTEM,
         )
         if isinstance(ctx, Message):

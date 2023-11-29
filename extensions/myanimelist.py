@@ -24,7 +24,6 @@ from classes.rss.myanimelist import RssItem
 from modules.commons import (PlatformErrType, convert_float_to_time,
                              platform_exception_embed, sanitize_markdown,
                              save_traceback_to_file)
-from modules.i18n import fetch_language_data
 
 
 class MyAnimeListCog(ipy.Extension):
@@ -106,7 +105,6 @@ class MyAnimeListCog(ipy.Extension):
             Layout of the embed, by default "minimal"
         """
         await ctx.defer()
-        lang_dict: dict[str, Any] = fetch_language_data("en_US", True)
         user_data: JikanUserStruct | None = None
         extended: JikanUserStruct = JikanUserStruct(
             mal_id=0, username="", url="", joined=dtime.now())
@@ -115,7 +113,6 @@ class MyAnimeListCog(ipy.Extension):
             embed = platform_exception_embed(
                 description="You can't use both `user` and `mal_username` options at the same time!",
                 error_type=PlatformErrType.USER,
-                lang_dict=lang_dict,
                 error="User and mal_username options used at the same time",
             )
             await ctx.send(embed=embed)
@@ -137,7 +134,6 @@ class MyAnimeListCog(ipy.Extension):
                 description=f"""{user.mention} haven't registered the MyAnimeList account to the bot yet!
 Use `/register` to register, or use `/profile myanimelist mal_username:<username>` to get the profile information of a user without registering their account to the bot""",
                 error_type=PlatformErrType.USER,
-                lang_dict=lang_dict,
                 error="User hasn't registered their MAL account yet",
             )
             await ctx.send(embed=embed)
@@ -155,7 +151,6 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             embed = platform_exception_embed(
                 description="Jikan API returned an error",
                 error_type=error.status_code,
-                lang_dict=lang_dict,
                 error=error.message,
             )
             await ctx.send(embed=embed)
@@ -164,7 +159,6 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             embed = platform_exception_embed(
                 description="MyAnimeList returned an error",
                 error_type=error.status_code,
-                lang_dict=lang_dict,
                 error=error.message,
             )
             await ctx.send(embed=embed)
@@ -174,7 +168,6 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
             embed = platform_exception_embed(
                 description=f"""We couldn't find the user `{mal_username}` on MyAnimeList!""",
                 error_type=PlatformErrType.USER,
-                lang_dict=lang_dict,
                 error="User not found",
             )
             await ctx.send(embed=embed)
@@ -453,7 +446,6 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                     embed = platform_exception_embed(
                         description="MyAnimeList returned an error",
                         error_type=error.status_code,
-                        lang_dict=lang_dict,
                         error=error.message,
                     )
                 await ctx.send(embed=embed)
@@ -497,7 +489,6 @@ Use `/register` to register, or use `/profile myanimelist mal_username:<username
                     embed = platform_exception_embed(
                         description="MyAnimeList returned an error",
                         error_type=error.status_code,
-                        lang_dict=lang_dict,
                         error=error.message,
                     )
                 await ctx.send(embed=embed)

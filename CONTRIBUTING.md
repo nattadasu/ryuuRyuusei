@@ -9,19 +9,18 @@ of contributing to this project.
 <!-- omit in toc -->
 ## Table of Contents
 
-* [Code Development](#code-development)
-  * [Forking the Repository](#forking-the-repository)
-  * [Additional Dependencies](#additional-dependencies)
-  * [Adding New Commands](#adding-new-commands)
-  * [Adding New API Integrations from 1st or 3rd Party](#adding-new-api-integrations-from-1st-or-3rd-party)
-  * [Formatting, Linting, Batch Testing, and Coverage Reporting](#formatting-linting-batch-testing-and-coverage-reporting)
-* [Other Ways to Contribute](#other-ways-to-contribute)
-  * [Reporting Bugs](#reporting-bugs)
-  * [Suggesting New Features](#suggesting-new-features)
-  * [Translating the Bot to Your Language](#translating-the-bot-to-your-language)
-  * [Improving the Documentation](#improving-the-documentation)
-  * [Donating to the Project](#donating-to-the-project)
-  * [Starring the Repository](#starring-the-repository)
+- [Code Development](#code-development)
+  - [Forking the Repository](#forking-the-repository)
+  - [Additional Dependencies](#additional-dependencies)
+  - [Adding New Commands](#adding-new-commands)
+  - [Adding New API Integrations from 1st or 3rd Party](#adding-new-api-integrations-from-1st-or-3rd-party)
+  - [Formatting, Linting, Batch Testing, and Coverage Reporting](#formatting-linting-batch-testing-and-coverage-reporting)
+- [Other Ways to Contribute](#other-ways-to-contribute)
+  - [Reporting Bugs](#reporting-bugs)
+  - [Suggesting New Features](#suggesting-new-features)
+  - [Improving the Documentation](#improving-the-documentation)
+  - [Donating to the Project](#donating-to-the-project)
+  - [Starring the Repository](#starring-the-repository)
 
 ## Code Development
 
@@ -48,35 +47,31 @@ regarding your contribution and modification.
 
 You need to know some stuff about what we've been doing in this bot:
 
-* All 3rd APIs were separated to each file in `classes` directory as... class.
-* All data spit by API are dataclasses, unless it's not possible as some key may
+- All 3rd APIs were separated to each file in `classes` directory as... class.
+- All data spit by API are dataclasses, unless it's not possible as some key may
   not documented properly, missing, or... both (im looking at you, SIMKL).
-* `Enum` is basically fancier `Literal`, and you can assign synonym with same
+- `Enum` is basically fancier `Literal`, and you can assign synonym with same
   value. However, this is not mandatory, but highly recommended.
-* Classes must have their own test file in `tests` directory.
-* Classes must be run with `with` statement to ensure the connection on `aiohttp`
+- Classes must have their own test file in `tests` directory.
+- Classes must be run with `with` statement to ensure the connection on `aiohttp`
   is closed properly.
-* Classes should have auto caching mechanism saved as JSON file in `cache`
+- Classes should have auto caching mechanism saved as JSON file in `cache`
   directory, unless if the method is always changing, such as `get_user` method.
-* All commands were grouped and placed in `extensions` directory.
-* Classes, functions, methods, immutable variables, or even the script itself
+- All commands were grouped and placed in `extensions` directory.
+- Classes, functions, methods, immutable variables, or even the script itself
   are documented with docstrings.
-* All functions and variables must be statically typed to prevent any
+- All functions and variables must be statically typed to prevent any
   unexpected errors.
-* Naming convetions:
-  * `UpperCamelCase` for classes, dataclass, and enum
-  * `UPPER_SNAKE_CASE` for immutable variables
-  * `snake_case` for functions, methods, mutable variables, and file name
-  * `lowercase` for extension file name
-  * `spaced lowercase` for command name, consist of:
-    * `command` * the command name
-    * `group` * the command group
-    * `subcommand` * the subcommand name
-  * BCP 47 with underscore (`_`) for language code, example:
-    * `en_US` for English (United States)
-    * `ace_ID` for Achinese (Indonesia)
-    * `zh_Hans_CN` for Chinese (Simplified, China)
-* Project must pass all tests and CI/CD before merging to branch.
+- Naming convetions:
+  - `UpperCamelCase` for classes, dataclass, and enum
+  - `UPPER_SNAKE_CASE` for immutable variables
+  - `snake_case` for functions, methods, mutable variables, and file name
+  - `lowercase` for extension file name
+  - `spaced lowercase` for command name, consist of:
+    - `command` * the command name
+    - `group` * the command group
+    - `subcommand` * the subcommand name
+- Project must pass all tests and CI/CD before merging to branch.
 
 ### Additional Dependencies
 
@@ -149,13 +144,6 @@ existing issue.
 
 Suggesting new features is also a way to contribute to this project. You can
 suggest new features by following similar steps as [Reporting Bugs](#reporting-bugs).
-
-### Translating the Bot to Your Language
-
-If you're interested in translating the bot to your language, you can do so by
-visiting [Crowdin](https://crowdin.com/project/ryuuryuusei) and start translating
-the bot. You can also [suggest new languages](#suggesting-new-features) to be
-added to the bot.
 
 ### Improving the Documentation
 

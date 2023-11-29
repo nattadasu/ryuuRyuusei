@@ -19,10 +19,7 @@ from interactions import (Button, ButtonStyle, ChannelType, ClientUser,
 from classes.anilist import AniListTrailerStruct
 from modules.const import EMOJI_FORBIDDEN
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
-from modules.const import EMOJI_USER_ERROR, LANGUAGE_CODE
-from modules.i18n import fetch_language_data
-
-deflang = fetch_language_data(LANGUAGE_CODE, use_raw=True)
+from modules.const import EMOJI_USER_ERROR
 
 
 def snowflake_to_datetime(snowflake: int) -> int:
@@ -157,7 +154,6 @@ def get_random_seed(value: int = 9) -> int:
 
 
 def generate_search_embed(
-    language: str,
     media_type: str,
     platform: str,
     homepage: str,
@@ -171,7 +167,6 @@ def generate_search_embed(
     Generate an embed for search selections.
 
     Args:
-        language (str): The language of the search results.
         media_type (str): The media type of the search results.
         platform (str): The platform of the search results.
         homepage (str): The homepage of the search results.
@@ -184,22 +179,13 @@ def generate_search_embed(
     Returns:
         Embed: The generated search selection embed.
     """
-    lang_dict: dict[str, Any] = fetch_language_data(
-        code=language, use_raw=True)
-    match len(results):
-        case 1:
-            count = lang_dict["quantities"][f"{media_type}"]["one"]
-        case 2:
-            count = lang_dict["quantities"][f"{media_type}"]["two"]
-        case _:
-            count = lang_dict["quantities"][f"{media_type}"]["many"].format(
-                count=len(results))
+    res_total = len(results)
+    count = f"{res_total} {pluralize(res_total, media_type)}"
     embed = Embed(
         author=EmbedAuthor(name=platform, url=homepage, icon_url=icon),
         color=color,
         title=title,
-        description=lang_dict["commons"]["search"]["result"].format(
-            COUNT=count, QUERY=query),
+        description=f"Found **{count}** for `{query}`, Please select by choosing right option in the dropdown below.",
         fields=results,  # type: ignore
     )
     embed.set_thumbnail(url=icon)
@@ -212,7 +198,6 @@ def generate_utils_except_embed(
     field_name: str,
     field_value: str,
     error: str,
-    language: str = "en_US",
     color: int = 0xFF0000,
 ) -> Embed:
     """
@@ -223,7 +208,6 @@ def generate_utils_except_embed(
         field_name (str): The name of the field to include in the embed.
         field_value (str): The value of the field to include in the embed.
         error (str): The error message to include in the embed.
-        language (str, optional): The language code to use for the error message. Defaults to "en_US".
         color (int, optional): The color of the embed. Defaults to 0xFF0000 (red).
 
     Returns:
@@ -233,17 +217,15 @@ def generate_utils_except_embed(
         >>> generate_utils_except_embed("An error occurred while processing the request.", "Field", "Value", "Error message")
         <discord.Embed object at 0x...>
     """
-    lang_dict: dict[str, Any] = fetch_language_data(
-        code=language, use_raw=True)
     emoji = rSub(r"(<:.*:)(\d+)(>)", r"\2", EUNER)
     embed = Embed(
         color=color,
-        title=lang_dict["commons"]["error"],
+        title="Error",
         description=description,
         fields=[
             EmbedField(name=field_name, value=field_value, inline=False),
             EmbedField(
-                name=lang_dict["commons"]["reason"], value=f"```md\n{error}\n```", inline=False
+                name="Reason", value=f"```md\n{error}\n```", inline=False
             ),
         ],  # type: ignore
     )
@@ -264,15 +246,13 @@ def generate_commons_except_embed(
     Args:
         description (str): A description of the error that occurred.
         error (str): The error message to include in the embed.
-        language (dict | str, optional): The language code to use for the error message. Defaults to "en_US".
         color (int, optional): The color of the embed. Defaults to 0xFF0000 (red).
 
     Returns:
         Embed: A Discord embed object containing information about the error.
 
     Example:
-        >>> lang_dict: dict[str, Any] = fetch_language_data(code="en_US", use_raw=True)
-        >>> generate_commons_except_embed("An error occurred while processing the request.", "Error message", lang_dict)
+        >>> generate_commons_except_embed("An error occurred while processing the request.", "Error message")
         <discord.Embed object at 0x...>
     """
 
@@ -444,7 +424,6 @@ class PlatformErrType(Enum):
 def platform_exception_embed(
     description: str,
     error: str,
-    lang_dict: dict[str, Any],
     error_type: PlatformErrType | str = PlatformErrType.SYSTEM,
     color: int = 0xFF0000,
 ) -> Embed:
@@ -454,7 +433,6 @@ def platform_exception_embed(
     Args:
         description (str): Description of the error
         error (str): Error message
-        lang_dict (dict): Language dictionary
         error_type (PlatformErrType | str, optional): Error type. Defaults to PlatformErrType.SYSTEM.
         color (int, optional): Embed color. Defaults to 0xFF0000.
 
@@ -468,11 +446,11 @@ def platform_exception_embed(
     emoji = re.sub(r"(<:.*:)(\d+)(>)", r"\2", error_type)
     embed = Embed(
         color=color,
-        title=lang_dict["commons"]["error"],
+        title="Error",
         description=description,
     )
     embed.add_field(
-        name=lang_dict["commons"]["reason"],
+        name="Reason",
         value=error,
         inline=False)
     embed.set_thumbnail(

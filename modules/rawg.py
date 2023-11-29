@@ -8,7 +8,6 @@ from classes.rawg import RawgApi, RawgGameData
 from modules.commons import (PlatformErrType, platform_exception_embed,
                              sanitize_markdown, save_traceback_to_file,
                              trim_synopsis)
-from modules.i18n import fetch_language_data
 
 
 async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
@@ -25,12 +24,12 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
     id = data.slug
 
     # Process alternative names
-    syns = sorted(set(data.alternative_names) -
+    syns = sorted(set(data.alternative_names or []) -
                   {data.name, data.name_original}, key=str.casefold)
     syns = syns[:8] if len(syns) > 8 else syns
     syns_text = ", ".join(syns) if syns else "*None*"
-    if len(syns) < len(data.alternative_names):
-        syns_text += f", *and {len(data.alternative_names) - len(syns)} more*"
+    if len(syns) < len(data.alternative_names or []):
+        syns_text += f", *and {len(data.alternative_names or []) - len(syns)} more*"
 
     # Process platforms
     pfs = sorted({pf.platform.name for pf in data.platforms}, key=str.casefold)
@@ -44,11 +43,11 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
     rte = data.esrb_rating.name if data.esrb_rating else "Unknown Rating"
 
     # Process developers
-    devs = sorted({d.name for d in data.developers}, key=str.casefold)
+    devs = sorted({d.name for d in data.developers or []}, key=str.casefold)
     devs_text = ", ".join(devs) if devs else "*None*"
 
     # Process publishers
-    pubs = sorted({p.name for p in data.publishers}, key=str.casefold)
+    pubs = sorted({p.name for p in data.publishers or []}, key=str.casefold)
     pubs_text = ", ".join(pubs) if pubs else "*None*"
 
     # Process game description
@@ -109,6 +108,7 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
         pdt.append({"name": "Metacritic", "value": data.metacritic_url})
     if data.reddit_url:
         reddit = data.reddit_url
+        subreddit: str = ""
         if re.match(r"^http(s)?://(www.)?reddit.com/r/(\w+)", reddit):
             subreddit = reddit
         elif re.match(r"r/(\w+)", reddit):
@@ -188,7 +188,6 @@ async def rawg_submit(ctx: SlashContext | ComponentContext | Message, slug: str)
     Returns:
         None
     """
-    l_ = fetch_language_data(code="en_US")
     try:
         async with RawgApi() as api:
             game_data = await api.get_data(slug)
@@ -204,7 +203,6 @@ async def rawg_submit(ctx: SlashContext | ComponentContext | Message, slug: str)
         embed = platform_exception_embed(
             description="RAWG API is currently unavailable, please try again later.",
             error=f"HTTP Error {status}\n{message}",
-            lang_dict=l_,
             error_type=PlatformErrType.SYSTEM,
         )
         if isinstance(ctx, Message):

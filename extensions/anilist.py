@@ -1,6 +1,6 @@
 from datetime import datetime as dtime
 from datetime import timezone as tz
-from typing import Any, Literal
+from typing import Literal
 
 import interactions as ipy
 
@@ -10,7 +10,6 @@ from classes.excepts import ProviderHttpError
 from modules.commons import (PlatformErrType, convert_float_to_time,
                              platform_exception_embed, sanitize_markdown,
                              save_traceback_to_file)
-from modules.i18n import fetch_language_data, read_user_language
 
 
 class AniListCog(ipy.Extension):
@@ -72,15 +71,12 @@ class AniListCog(ipy.Extension):
         embed_layout: Literal["card", "minimal", "old", "new"] = "minimal",
     ) -> None:
         await ctx.defer()
-        ul = read_user_language(ctx)
-        l_: dict[str, Any] = fetch_language_data(ul, use_raw=True)
         user_data: AniListUserStruct | None = None
 
         if anilist_username and user:
             embed = platform_exception_embed(
                 description="You can't use both `user` and `anilist_username` options at the same time!",
                 error_type=PlatformErrType.USER,
-                lang_dict=l_,
                 error="User and anilist_username options used at the same time",
             )
             await ctx.send(embed=embed)
@@ -104,7 +100,6 @@ class AniListCog(ipy.Extension):
                     description=f"""{user.mention} haven't linked the AniList account to the bot yet!
 Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_username>` to get the profile information directly""",
                     error_type=PlatformErrType.USER,
-                    lang_dict=l_,
                     error="User hasn't link their account yet",
                 )
                 await ctx.send(embed=embed)
@@ -117,7 +112,6 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             embed = platform_exception_embed(
                 description="AniList API returned an error",
                 error=f"{e.message}",
-                lang_dict=l_,
                 error_type=PlatformErrType.SYSTEM,
             )
             await ctx.send(embed=embed)
@@ -127,7 +121,6 @@ Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_use
             embed = platform_exception_embed(
                 description=f"AniList user `{anilist_username}` not found",
                 error_type=PlatformErrType.USER,
-                lang_dict=l_,
                 error="AniList user not found",
             )
             await ctx.send(embed=embed)

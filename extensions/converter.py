@@ -11,7 +11,6 @@ from classes.exchangerateapi import ExchangeRateAPI, accepted_currencies
 from modules.commons import (PlatformErrType, platform_exception_embed,
                              save_traceback_to_file)
 from modules.const import EMOJI_SUCCESS, EMOJI_UNEXPECTED_ERROR
-from modules.i18n import fetch_language_data, read_user_language
 
 emoji_err = re.sub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_UNEXPECTED_ERROR)
 emoji_success = re.sub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_SUCCESS)
@@ -438,8 +437,6 @@ class ConverterCog(ipy.Extension):
         to_currency: accepted_currencies,
     ) -> None:
         await ctx.defer()
-        lang = read_user_language(ctx)
-        l_ = fetch_language_data(lang)
         try:
             async with ExchangeRateAPI() as api:
                 convert_raw = await api.get_exchange_rate(
@@ -459,7 +456,6 @@ class ConverterCog(ipy.Extension):
             embed = platform_exception_embed(
                 description="An error occurred while trying to get exchange rates from ExchangeRate-API.",
                 error=f"{e}",
-                lang_dict=l_,
                 error_type=PlatformErrType.SYSTEM)
             await ctx.send(embed=embed)
             save_traceback_to_file("convert_currency", ctx.author, e)

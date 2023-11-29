@@ -4,7 +4,7 @@ import interactions as ipy
 
 from classes.randomorg import ProviderHttpError, RandomOrg
 from modules.commons import save_traceback_to_file
-from modules.const import (EMOJI_ATTENTIVE, EMOJI_DOUBTING, EMOJI_SUCCESS,
+from modules.const import (EMOJI_DOUBTING, EMOJI_SUCCESS, EMOJI_FORBIDDEN,
                            EMOJI_UNEXPECTED_ERROR)
 
 
@@ -90,7 +90,7 @@ class Random(ipy.Extension):
 
         embed = ipy.Embed(
             title="8ball",
-            fields=[
+            fields=[  # type: ignore
                 ipy.EmbedField(
                     name="Question",
                     value=f"{question}",
@@ -169,14 +169,17 @@ class Random(ipy.Extension):
         try:
             await ctx.defer()
             async with RandomOrg() as rand:
-                numbers = await rand.integers(
+                numbers_fx = await rand.integers(
                     num=numbers, min_val=min_value, max_val=max_value, base=base
                 )
             # convert arrays of int to arrays of str
-            numbers = [str(i) for i in numbers]
+            if isinstance(numbers_fx, int):
+                numbers_fx = [str(numbers_fx)]
+            else:
+                numbers_fx = [str(number) for number in numbers]
             await ctx.send(
                 embed=ipy.Embed(
-                    description=f"```py\n{', '.join(numbers)}\n```",
+                    description=f"```py\n{', '.join(numbers_fx)}\n```",
                     color=0x1F1F1F,
                 )
             )
@@ -278,5 +281,5 @@ class Random(ipy.Extension):
             save_traceback_to_file("random_string", ctx.author, e)
 
 
-def setup(bot):
+def setup(bot:ipy.Client | ipy.AutoShardedClient):
     Random(bot)

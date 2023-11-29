@@ -13,8 +13,7 @@ from classes.excepts import ProviderHttpError
 from classes.simkl import Simkl, SimklMediaTypes
 from modules.commons import (generate_search_embed, sanitize_markdown,
                              save_traceback_to_file)
-from modules.const import EMOJI_UNEXPECTED_ERROR
-from modules.i18n import fetch_language_data, read_user_language
+from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
 from modules.simkl import simkl_submit
 
 
@@ -54,15 +53,10 @@ class MoviesCog(ipy.Extension):
             The movie title to search for
         """
         await ctx.defer()
-        user_lang: str = read_user_language(ctx)
-        language_dict = fetch_language_data(user_lang, use_raw=True)
         send = await ctx.send(
             embed=ipy.Embed(
-                title=language_dict["commons"]["search"]["init_title"],
-                description=language_dict["commons"]["search"]["init"].format(
-                    QUERY=query,
-                    PLATFORM="SIMKL",
-                ),
+                title="Searching",
+                description=f"Searching for `{query}` on SIMKL...",
             )
         )
         try:
@@ -96,11 +90,8 @@ class MoviesCog(ipy.Extension):
                         description=f"{first_aired}",
                     )
                 )
-            title = language_dict["commons"]["search"]["result_title"].format(
-                QUERY=query,
-            )
+            title = f"Search Results for {query}"
             result_embed = generate_search_embed(
-                language=user_lang,
                 media_type="movies",
                 query=query,
                 platform="SIMKL",
@@ -129,14 +120,12 @@ class MoviesCog(ipy.Extension):
             )
         # pylint: disable=broad-except
         except Exception as _:
-            language_dict: dict[str,
-                                str] = language_dict["strings"]["movies"]["search"]["exception"]
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             embed = ipy.Embed(
-                title=language_dict["title"],
-                description=language_dict["text"].format(QUERY=f"`{query}`"),
+                title="Error",
+                description=f"I couldn't find any movies for `{query}` on SIMKL. Please check your query and try again.",
                 color=0xFF0000,
-                footer=ipy.EmbedFooter(text=language_dict["footer"]),
+                footer=ipy.EmbedFooter(text=STR_RECOMMEND_NATIVE_TITLE),
             )
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"

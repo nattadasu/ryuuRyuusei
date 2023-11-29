@@ -1,6 +1,5 @@
 """Last.FM extension for interacting with Last.FM API"""
 
-from typing import Any
 from urllib.parse import quote_plus as urlquote
 
 import interactions as ipy
@@ -12,7 +11,6 @@ from classes.lastfm import (LastFM, LastFMReleaseStruct, LastFMTrackStruct,
 from modules.commons import (PlatformErrType, generate_commons_except_embed,
                              platform_exception_embed, sanitize_markdown,
                              save_traceback_to_file)
-from modules.i18n import fetch_language_data, read_user_language
 
 
 class LastFmCog(ipy.Extension):
@@ -77,15 +75,11 @@ class LastFmCog(ipy.Extension):
             None: None
         """
         await ctx.defer()
-        user_lang = read_user_language(ctx)
-        lang_dict: dict[str, Any] = fetch_language_data(
-            user_lang, use_raw=True)
 
         if lfm_username and user:
             embed = platform_exception_embed(
                 description="You can't use both `user` and `lfm_username` options at the same time!",
                 error_type=PlatformErrType.USER,
-                lang_dict=lang_dict,
                 error="User and lfm_username options used at the same time",
             )
             await ctx.send(embed=embed)
@@ -107,7 +101,6 @@ class LastFmCog(ipy.Extension):
                 description=f"""{user.mention} haven't linked the Last.fm account to the bot yet!
 Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>` to get the profile information directly""",
                 error_type=PlatformErrType.USER,
-                lang_dict=lang_dict,
                 error="User hasn't link their account yet",
             )
             await ctx.send(embed=embed)

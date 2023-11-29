@@ -1,6 +1,6 @@
-[Language]
-# Language code, must be a valid ISO 639-1 code
-DefaultLanguage = "en_US"
+#! WARNING
+#! This file is currently not used by the bot, please modify .env file instead
+#!   and optionally edit modules/const.py too.
 
 [Emoji]
 # Emoji ID, must be a custom emoji since some commands uses image asset of it

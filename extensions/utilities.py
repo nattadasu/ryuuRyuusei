@@ -1,12 +1,12 @@
 import re
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
-from typing import Any, Literal
+from typing import Literal
 from urllib.parse import urlencode as urlenc
 
 import interactions as ipy
-import validators
-from plusminus import BaseArithmeticParser as BAP
+import validators  # type: ignore
+from plusminus import BaseArithmeticParser as BAP  # type: ignore
 
 from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
 from classes.thecolorapi import Color, TheColorApi
@@ -14,7 +14,6 @@ from classes.usrbg import UserBackground
 from classes.userpfp import UserPFP
 from modules.commons import (generate_utils_except_embed,
                              save_traceback_to_file, snowflake_to_datetime)
-from modules.i18n import fetch_language_data, read_user_language
 
 
 class Utilities(ipy.Extension):
@@ -43,22 +42,20 @@ class Utilities(ipy.Extension):
         ],
     )
     async def utilities_math(self, ctx: ipy.SlashContext, expression: str):
-        ul = read_user_language(ctx)
-        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["utilities"]
         try:
             exp = BAP().evaluate(expression)
             await ctx.send(
                 embed=ipy.Embed(
-                    title=l_["commons"]["result"],
+                    title="Math Expression",
                     color=0x996422,
                     fields=[
                         ipy.EmbedField(
-                            name=l_["math"]["expression"],
+                            name="Expression",
                             value=f"```py\n{expression}```",
                             inline=False,
                         ),
                         ipy.EmbedField(
-                            name=l_["commons"]["result"],
+                            name="Result",
                             value=f"```py\n{exp}```",
                             inline=False,
                         ),
@@ -68,9 +65,8 @@ class Utilities(ipy.Extension):
         except Exception as e:
             await ctx.send(
                 embed=generate_utils_except_embed(
-                    language=ul,
-                    description=l_["math"]["exception"],
-                    field_name=l_["math"]["expression"],
+                    description="An error occurred while evaluating the expression",
+                    field_name="Expression"",
                     field_value=f"```py\n{expression}```",
                     error=e,
                 )
@@ -100,8 +96,6 @@ class Utilities(ipy.Extension):
         ],
     )
     async def utilities_base64(self, ctx: ipy.SlashContext, mode: str, string: str):
-        ul = read_user_language(ctx)
-        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["utilities"]
         try:
             if mode == "encode":
                 res = b64encode(string.encode()).decode()
@@ -117,26 +111,19 @@ class Utilities(ipy.Extension):
     ```"""
             await ctx.send(
                 embed=ipy.Embed(
-                    title=l_["commons"]["result"],
+                    title=f"Base64 {mode.title()}",
                     color=0x996422,
                     fields=[
-                        ipy.EmbedField(
-                            name=l_[
-                                "commons"]["string"], value=strVal, inline=False
-                        ),
-                        ipy.EmbedField(
-                            name=l_[
-                                "commons"]["result"], value=resVal, inline=False
-                        ),
+                        ipy.EmbedField(name="String", value=strVal, inline=False),
+                        ipy.EmbedField(name="Result", value=resVal, inline=False),
                     ],
                 )
             )
         except Exception as e:
             await ctx.send(
                 embed=generate_utils_except_embed(
-                    language=ul,
-                    description=l_["base64"]["exception"],
-                    field_name=l_["commons"]["string"],
+                    description=f"An error occurred while {mode}ing the string",
+                    field_name="String",
                     field_value=f"```{string}```",
                     error=e,
                 )
@@ -171,8 +158,6 @@ class Utilities(ipy.Extension):
         self, ctx: ipy.SlashContext, color_format: str, color_value: str
     ):
         await ctx.defer()
-        ul = read_user_language(ctx)
-        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["utilities"]
         res: dict = {}
         try:
             if (color_format == "hex" and re.match(
@@ -194,7 +179,7 @@ class Utilities(ipy.Extension):
             col: int = (rgb.r << 16) + (rgb.g << 8) + rgb.b
             fields = [
                 ipy.EmbedField(
-                    name=l_["color"]["name"],
+                    name="Color name",
                     value=f"{res.name.value}",
                     inline=False,
                 ),
@@ -227,10 +212,10 @@ class Utilities(ipy.Extension):
                     name="DEC", value=f"```py\n{col}\n```", inline=True),
             ]
             embed = ipy.Embed(
-                title=l_["commons"]["result"],
+                title="Color Information",
                 color=col,
                 fields=fields,
-                footer=ipy.EmbedFooter(text=l_["color"]["powered"]),
+                footer=ipy.EmbedFooter(text="Powered by TheColorApi"),
             )
             embed.set_thumbnail(url=res.image.bare)
             await ctx.send(
@@ -239,9 +224,8 @@ class Utilities(ipy.Extension):
         except Exception as e:
             await ctx.send(
                 embed=generate_utils_except_embed(
-                    language=ul,
-                    description=l_["color"]["exception"],
-                    field_name=l_["color"]["color"],
+                    description="An error occurred while getting information about the color from TheColorApi",
+                    field_name="Color Value",
                     field_value=f"```{color_value}```",
                     error=e,
                 )
@@ -277,8 +261,6 @@ class Utilities(ipy.Extension):
         self, ctx: ipy.SlashContext, string: str, error_correction: str = "L"
     ):
         await ctx.defer()
-        ul = read_user_language(ctx)
-        l_: dict[str, Any] = fetch_language_data(ul)["strings"]["utilities"]
         try:
             params = {
                 "data": string,
@@ -289,16 +271,16 @@ class Utilities(ipy.Extension):
             # convert params object to string
             params = urlenc(params)
             embed = ipy.Embed(
-                title=l_["commons"]["result"],
+                title="QR Code",
                 color=0x000000,
                 fields=[
                     ipy.EmbedField(
-                        name=l_["commons"]["string"],
+                        name="String",
                         value=f"```{string}```",
                         inline=False,
                     ),
                 ],
-                footer=ipy.EmbedFooter(text=l_["qrcode"]["powered"]),
+                footer=ipy.EmbedFooter(text="Powered by goQR.me"),
             )
             embed.set_image(
                 url=f"https://api.qrserver.com/v1/create-qr-code/?{params}")
@@ -308,9 +290,8 @@ class Utilities(ipy.Extension):
         except Exception as e:
             await ctx.send(
                 embed=generate_utils_except_embed(
-                    language=ul,
-                    description=l_["qrcode"]["exception"],
-                    field_name=l_["commons"]["string"],
+                    description="An error occurred while generating the QR code",
+                    field_name="String",
                     field_value=f"```{string}```",
                     error=e,
                 )
@@ -331,16 +312,21 @@ class Utilities(ipy.Extension):
     )
     async def utilities_snowflake(self, ctx: ipy.SlashContext, snowflake: str):
         """Convert a Discord Snowflake to a timestamp"""
-        ul = read_user_language(ctx)
-        l_: dict[str, Any] = fetch_language_data(
-            ul)["strings"]["utilities"]["snowflake"]
         try:
+            bin_len = len(bin(int(snowflake)))
+            # Check if the snowflake is valid
+            if not snowflake.isdigit():
+                raise ValueError("Invalid snowflake")
+            # else, check for the bits size should be 64 from binary
+            elif bin_len > 64:
+                raise ValueError("Snowflake is too big, did you randomly generate it?")
+            elif bin_len < 60:
+                raise ValueError("Snowflake is too small, did you randomly generate it?")
             tmsp = int(snowflake_to_datetime(int(snowflake)))
         except Exception as e:
             await ctx.send(
                 embed=generate_utils_except_embed(
-                    language=ul,
-                    description=l_["exception"],
+                    description="An error occurred while converting the snowflake to a timestamp",
                     field_name="Snowflake",
                     field_value=f"```{snowflake}```",
                     error=e,
@@ -349,25 +335,25 @@ class Utilities(ipy.Extension):
             save_traceback_to_file("utilities_snowflake", ctx.author, e)
         await ctx.send(
             embed=ipy.Embed(
-                title=l_["title"],
-                description=l_["text"],
+                title="Snowflake Information",
+                description="Below is the information about the snowflake",
                 color=0x1F1F1F,
                 fields=[
                     ipy.EmbedField(
-                        name=l_["snowflake"],
+                        name="Snowflake",
                         value=f"```py\n{snowflake}\n```",
                         inline=False,
                     ),
                     ipy.EmbedField(
-                        name=l_["timestamp"], value=f"```py\n{tmsp}\n```", inline=False
+                        name="Timestamp", value=f"```py\n{tmsp}\n```", inline=False
                     ),
-                    ipy.EmbedField(name=l_["date"],
+                    ipy.EmbedField(name="Date",
                                    value=f"<t:{tmsp}:D>", inline=True),
                     ipy.EmbedField(
-                        name=l_["full_date"], value=f"<t:{tmsp}:F>", inline=True
+                        name="Full Date", value=f"<t:{tmsp}:F>", inline=True
                     ),
                     ipy.EmbedField(
-                        name=l_["relative"], value=f"<t:{tmsp}:R>", inline=True
+                        name="Relative", value=f"<t:{tmsp}:R>", inline=True
                     ),
                 ],
             )
@@ -390,7 +376,6 @@ class Utilities(ipy.Extension):
     async def utilities_site_status(self, ctx: ipy.SlashContext, url: str):
         """Check the status of a website"""
         await ctx.defer()
-        ul = read_user_language(ctx)
         err_msg: str = ""
         try:
             async with WebsiteChecker() as check:
@@ -407,7 +392,6 @@ class Utilities(ipy.Extension):
         if err_msg:
             await ctx.send(
                 embed=generate_utils_except_embed(
-                    language=ul,
                     description="Failed to check the status of the website",
                     field_name="URL",
                     field_value=f"```{url}```",
@@ -468,7 +452,7 @@ class Utilities(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 choices=[
                     ipy.SlashCommandChoice(
-                        name="Discord Profile",
+                        name="Discord Profile (Default)",
                         value="user"),
                     ipy.SlashCommandChoice(
                         name="Usrbg",
@@ -480,7 +464,7 @@ class Utilities(ipy.Extension):
     async def utilities_banner(
         self,
         ctx: ipy.SlashContext,
-        user: ipy.Member | ipy.User = None,
+        user: ipy.Member | ipy.User | None = None,
         scope: Literal["user", "usrbg"] = "user",
     ):
         await ctx.defer()
@@ -488,10 +472,9 @@ class Utilities(ipy.Extension):
         if not user:
             user = ctx.author
 
-        user_data = await self.bot.http.get_user(user.id)
-        user_data = ipy.User.from_dict(user_data, self.bot)
-
         if scope == "user":
+            user_data = await self.bot.http.get_user(user.id)
+            user_data = ipy.User.from_dict(user_data, self.bot)
             try:
                 banner = user_data.banner.url
             except AttributeError:
@@ -517,7 +500,6 @@ class Utilities(ipy.Extension):
             await ctx.send(embed=embed)
         else:
             embed = generate_utils_except_embed(
-                language="en_US",
                 description="Failed to fetch the banner",
                 field_name="User",
                 field_value=f"```{user}```",
@@ -542,7 +524,7 @@ class Utilities(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 choices=[
                     ipy.SlashCommandChoice(
-                        name="Discord Profile",
+                        name="Discord Profile (Default)",
                         value="user"),
                     ipy.SlashCommandChoice(
                         name="Server Profile",
@@ -557,7 +539,7 @@ class Utilities(ipy.Extension):
     async def utilities_avatar(
         self,
         ctx: ipy.SlashContext,
-        user: ipy.Member | ipy.User = None,
+        user: ipy.Member | ipy.User | None = None,
         scope: Literal["user", "server", "userpfp"] = "user",
     ):
         await ctx.defer()
@@ -593,5 +575,5 @@ class Utilities(ipy.Extension):
         await ctx.send(embed=embed)
 
 
-def setup(bot):
+def setup(bot: ipy.Client):
     Utilities(bot)

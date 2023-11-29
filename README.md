@@ -313,16 +313,10 @@ If you have any questions, feel free to join the
 
 - `/usersettings autoembed` - Toggle autoembed for the bot response from the
   user with supported platform URL.
-- `/usersettings language list` - List all available languages for the bot
-  response
-- 👁️ `/usersettings language set` - Set your preferred language for the bot
-  response
 
 <!-- omit in toc -->
 #### Server Settings
 
-- 👮 `/serversettings language set` - Set your preferred language for the bot
-  response
 - 👮 `/serversettings member register` - Register member's MAL account to the
   bot, used when user can't invoke `/register`
 - 👮 `/seversettings member verify` - Verify memeber's MAL account after
@@ -486,7 +480,7 @@ Before running the bot, you need to install its dependencies. Execute the
 following command:
 
 ```bash
-pip install aiohttp langcodes pyyaml pandas
+pip install aiohttp pyyaml pandas
 ```
 
 - If you are using Termux on Android, add `MATHLIB="m"` before the `pip`
@@ -542,7 +536,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 | [AniList](https://anilist.co/)                                        | -               | Anime, Censorship, Manga, Relation, Profile | Database          | Mainly used for Manga commands, anime for searching                                         |
 | [`autopep8`](https://pypi.org/project/autopep8/)                      | MIT             | Utility                                     | Module            | Used for auto formatting                                                                    |
 | [Codacy](https://codacy.com)                                          | -               | Code Quality                                | Code Quality Tool | Used for checking code quality and linter                                                   |
-| [Crowdin](https://crowdin.com)                                        | -               | Language                                    | Translation Tool  | Used for translating the bot to other languages                                             |
 | [`cutlet` (Modified)](https://github.com/ryuuRyuusei/cutlet-pure)     | MIT             | Language                                    | Module            | Used for transliterating Japanese text to Romaji                                            |
 | [Deepsource](https://deepsource.io)                                   | -               | Code Quality                                | Code Quality Tool | Used for checking code quality, auto formatter, and linter                                  |
 | [`emoji`](https://pypi.org/project/emoji/)                            | MIT             | Language, Utility                           | Module            | Used for converting emoji to Unicode                                                        |
@@ -552,7 +545,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 | [Is It Down Right Now?](https://www.isitdownrightnow.com/)            | -               | Utility                                     | API               | Used for checking if a website is down                                                      |
 | [Jikan](https://jikan.moe/)                                           | MIT             | Anime, Profile, Verify                      | 3rd Party MAL API | Used for showing anime information, verify user, and show user's profile                    |
 | [Kitsu](https://kitsu.io/)                                            | Apache-2.0      | Anime                                       | Database          | Used for adding additional information to anime information, mainly background and poster   |
-| [`langcodes`](https://pypi.org/project/langcodes/)                    | MIT             | Language                                    | Wrapper           | Used for getting language name from language code                                           |
 | [Last.fm](https://www.last.fm/)                                       | -               | Profile                                     | Database          | Used for getting user's last.fm profile and scrobble summary                                |
 | [MyAnimeList](https://myanimelist.net/)                               | -               | Anime                                       | Database          | Search and show anime information                                                           |
 | [nattadasu/animeApi](https://github.com/nattadasu/animeApi)           | AGPL-3.0        | Random, Relation                            | Relation          | Linking ID from a database to another database                                              |
