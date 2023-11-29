@@ -10,8 +10,8 @@ from plusminus import BaseArithmeticParser as BAP  # type: ignore
 
 from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
 from classes.thecolorapi import Color, TheColorApi
-from classes.usrbg import UserBackground
 from classes.userpfp import UserPFP
+from classes.usrbg import UserBackground
 from modules.commons import (generate_utils_except_embed,
                              save_traceback_to_file, snowflake_to_datetime)
 
@@ -114,8 +114,10 @@ class Utilities(ipy.Extension):
                     title=f"Base64 {mode.title()}",
                     color=0x996422,
                     fields=[
-                        ipy.EmbedField(name="String", value=strVal, inline=False),
-                        ipy.EmbedField(name="Result", value=resVal, inline=False),
+                        ipy.EmbedField(
+                            name="String", value=strVal, inline=False),
+                        ipy.EmbedField(
+                            name="Result", value=resVal, inline=False),
                     ],
                 )
             )
@@ -319,9 +321,11 @@ class Utilities(ipy.Extension):
                 raise ValueError("Invalid snowflake")
             # else, check for the bits size should be 64 from binary
             elif bin_len > 64:
-                raise ValueError("Snowflake is too big, did you randomly generate it?")
+                raise ValueError(
+                    "Snowflake is too big, did you randomly generate it?")
             elif bin_len < 60:
-                raise ValueError("Snowflake is too small, did you randomly generate it?")
+                raise ValueError(
+                    "Snowflake is too small, did you randomly generate it?")
             tmsp = int(snowflake_to_datetime(int(snowflake)))
         except Exception as e:
             await ctx.send(

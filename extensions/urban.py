@@ -1,11 +1,13 @@
 """Add Urban Dictionary commands to the bot."""
 
-import interactions as ipy
 import aiohttp
+import interactions as ipy
 from interactions.ext.paginators import Paginator
 
-from classes.urbandictionary import UrbanDictionary as Urban, UrbanDictionaryEntry as Entry
-from modules.commons import platform_exception_embed, save_traceback_to_file, get_nsfw_status
+from classes.urbandictionary import UrbanDictionary as Urban
+from classes.urbandictionary import UrbanDictionaryEntry as Entry
+from modules.commons import (get_nsfw_status, platform_exception_embed,
+                             save_traceback_to_file)
 
 
 class UrbanDictionaryCog(ipy.Extension):
@@ -137,7 +139,7 @@ class UrbanDictionaryCog(ipy.Extension):
             ))
             save_traceback_to_file("urban_random", ctx.author, e)
             return
-        await ctx.send(embed=entry.embed) # type: ignore
+        await ctx.send(embed=entry.embed)  # type: ignore
 
 
 def setup(bot: ipy.Client):

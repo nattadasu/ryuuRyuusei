@@ -35,6 +35,7 @@ def determine_domain(url: str) -> str:
             return guess_name
     return domain
 
+
 def generate_nekomimi_embed(row: NekomimiDbStruct) -> Embed:
     """
     Generate nekomimi embed

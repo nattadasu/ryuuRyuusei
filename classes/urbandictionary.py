@@ -6,12 +6,11 @@ from datetime import datetime
 from urllib.parse import quote
 
 import aiohttp
-from interactions import Embed
 from bs4 import BeautifulSoup
 from fake_useragent import FakeUserAgent
+from interactions import Embed
 
 from classes.excepts import ProviderHttpError
-
 
 USER_AGENT = FakeUserAgent().random
 
