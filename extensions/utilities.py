@@ -11,6 +11,7 @@ from plusminus import BaseArithmeticParser as BAP
 from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
 from classes.thecolorapi import Color, TheColorApi
 from classes.usrbg import UserBackground
+from classes.userpfp import UserPFP
 from modules.commons import (generate_utils_except_embed,
                              save_traceback_to_file, snowflake_to_datetime)
 from modules.i18n import fetch_language_data, read_user_language
@@ -546,6 +547,9 @@ class Utilities(ipy.Extension):
                     ipy.SlashCommandChoice(
                         name="Server Profile",
                         value="server"),
+                    ipy.SlashCommandChoice(
+                        name="UserPFP",
+                        value="userpfp"),
                 ],
             ),
         ],
@@ -554,17 +558,31 @@ class Utilities(ipy.Extension):
         self,
         ctx: ipy.SlashContext,
         user: ipy.Member | ipy.User = None,
-        scope: Literal["user", "server"] = "user",
+        scope: Literal["user", "server", "userpfp"] = "user",
     ):
         await ctx.defer()
 
         if not user:
             user = ctx.author
 
-        if scope == "user":
-            avatar = user.avatar.url
-        else:
-            avatar = user.display_avatar.url
+        match scope:
+            case "user":
+                avatar = user.avatar.url
+            case "server":
+                avatar = user.display_avatar.url
+            case "userpfp":
+                async with UserPFP() as pfp:
+                    avatar = await pfp.get_picture(user.id)
+
+        if not avatar:
+            embed = generate_utils_except_embed(
+                description="Failed to fetch the avatar",
+                field_name="User",
+                field_value=f"```{user}```",
+                error="User has no avatar",
+            )
+            await ctx.send(embed=embed)
+            return
 
         embed = ipy.Embed(
             title=f"{user.display_name}'s avatar",
