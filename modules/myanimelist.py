@@ -23,10 +23,11 @@ from classes.jikan import JikanApi
 from classes.kitsu import Kitsu
 from classes.myanimelist import MyAnimeList
 from classes.simkl import Simkl
-from modules.commons import (generate_commons_except_embed, generate_trailer,
-                             get_nsfw_status, get_random_seed,
+from modules.commons import (PlatformErrType, generate_commons_except_embed,
+                             generate_trailer, get_nsfw_status,
+                             get_random_seed, platform_exception_embed,
                              sanitize_markdown, save_traceback_to_file,
-                             trim_synopsis, platform_exception_embed, PlatformErrType)
+                             trim_synopsis)
 from modules.const import (EMOJI_FORBIDDEN, MESSAGE_WARN_CONTENTS,
                            MYANIMELIST_CLIENT_ID, SIMKL_CLIENT_ID)
 from modules.platforms import Platform, media_id_to_platform

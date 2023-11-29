@@ -96,7 +96,8 @@ class Games(ipy.Extension):
                 title="Error",
                 description=f"I couldn't able to find any results for {query} on RAWG. Please check your query and try again.",
                 color=0xFF0000,
-                footer=ipy.EmbedFooter(text="Pro tip: Use native title to get the most accurate result... But I can't guarantee if RAWG has original title, it depends."),
+                footer=ipy.EmbedFooter(
+                    text="Pro tip: Use native title to get the most accurate result... But I can't guarantee if RAWG has original title, it depends."),
             )
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"

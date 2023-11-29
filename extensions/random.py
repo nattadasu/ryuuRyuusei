@@ -4,7 +4,7 @@ import interactions as ipy
 
 from classes.randomorg import ProviderHttpError, RandomOrg
 from modules.commons import save_traceback_to_file
-from modules.const import (EMOJI_DOUBTING, EMOJI_SUCCESS, EMOJI_FORBIDDEN,
+from modules.const import (EMOJI_DOUBTING, EMOJI_FORBIDDEN, EMOJI_SUCCESS,
                            EMOJI_UNEXPECTED_ERROR)
 
 
@@ -281,5 +281,5 @@ class Random(ipy.Extension):
             save_traceback_to_file("random_string", ctx.author, e)
 
 
-def setup(bot:ipy.Client | ipy.AutoShardedClient):
+def setup(bot: ipy.Client | ipy.AutoShardedClient):
     Random(bot)
