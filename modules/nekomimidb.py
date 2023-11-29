@@ -27,11 +27,12 @@ def determine_domain(url: str) -> str:
     domain = urls[2]
     subs = domain.split(".")
     for sub in subs:
-        guess_name = get_platform_name(sub)
+        try:
+            guess_name = get_platform_name(sub)
+        except ValueError:
+            guess_name = "Unknown"
         if guess_name != "Unknown":
             return guess_name
-    # format the domain with Title Case
-    domain = domain.title()
     return domain
 
 def generate_nekomimi_embed(row: NekomimiDbStruct) -> Embed:
