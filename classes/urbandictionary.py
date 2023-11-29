@@ -3,8 +3,8 @@
 import re
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from urllib.parse import quote
 from typing import TypedDict
+from urllib.parse import quote
 
 import aiohttp
 from bs4 import BeautifulSoup
@@ -104,6 +104,7 @@ class UrbanDictionaryRawEntry(TypedDict):
     written_on: str | datetime
     """Date written on"""
 
+
 class UrbanDictionary:
     """Urban Dictionary Unofficial API Wrapper"""
 
@@ -167,7 +168,8 @@ class UrbanDictionary:
             # convert wiki markup to markdown
             entry["definition"] = UrbanDictionary._add_hyperlinks(
                 entry["definition"])
-            entry["example"] = UrbanDictionary._add_hyperlinks(entry["example"])
+            entry["example"] = UrbanDictionary._add_hyperlinks(
+                entry["example"])
             date: datetime = datetime.strptime(entry["written_on"],  # type: ignore
                                                "%Y-%m-%dT%H:%M:%S.%fZ")
             # fix timezone to UTC
