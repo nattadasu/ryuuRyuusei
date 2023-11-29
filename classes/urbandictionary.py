@@ -2,17 +2,18 @@
 
 import re
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from urllib.parse import quote
+from typing import TypedDict
 
 import aiohttp
 from bs4 import BeautifulSoup
-from fake_useragent import FakeUserAgent
+from fake_useragent import FakeUserAgent  # type: ignore
 from interactions import Embed
 
 from classes.excepts import ProviderHttpError
 
-USER_AGENT = FakeUserAgent().random
+USER_AGENT = FakeUserAgent().random  # type: ignore
 
 
 @dataclass
@@ -79,6 +80,30 @@ class UrbanDictionaryEntry:
         return embed
 
 
+class UrbanDictionaryRawEntry(TypedDict):
+    """Raw Urban Dictionary entry"""
+
+    author: str
+    """Word definition author"""
+    current_vote: str
+    """Current vote"""
+    defid: int
+    """Definition ID"""
+    definition: str
+    """Definition of the word"""
+    example: str
+    """Example of the word"""
+    permalink: str
+    """Word permalink"""
+    thumbs_down: int
+    """Number of thumbs down"""
+    thumbs_up: int
+    """Number of thumbs up"""
+    word: str
+    """Keyword"""
+    written_on: str | datetime
+    """Date written on"""
+
 class UrbanDictionary:
     """Urban Dictionary Unofficial API Wrapper"""
 
@@ -126,6 +151,32 @@ class UrbanDictionary:
 
         return text
 
+    @staticmethod
+    def _iterate_entries(data: list[UrbanDictionaryRawEntry]) -> list[UrbanDictionaryEntry]:
+        """
+        Iterate entries to UrbanDictionaryEntry object
+
+        Args:
+            data (list[UrbanDictionaryRawEntry]): List of UrbanDictionaryEntry
+
+        Returns:
+            list[UrbanDictionaryEntry]: List of UrbanDictionaryEntry
+        """
+        listed: list[UrbanDictionaryEntry] = []
+        for entry in data:
+            # convert wiki markup to markdown
+            entry["definition"] = UrbanDictionary._add_hyperlinks(
+                entry["definition"])
+            entry["example"] = UrbanDictionary._add_hyperlinks(entry["example"])
+            date: datetime = datetime.strptime(entry["written_on"],  # type: ignore
+                                               "%Y-%m-%dT%H:%M:%S.%fZ")
+            # fix timezone to UTC
+            date = date.replace(tzinfo=timezone.utc)
+            entry["written_on"] = date
+            listed += [UrbanDictionaryEntry(**entry)]  # type: ignore
+
+        return listed
+
     async def lookup_definition(self, term: str) -> list[UrbanDictionaryEntry]:
         """
         Lookup definition of a word
@@ -151,17 +202,7 @@ class UrbanDictionary:
             if len(data["list"]) == 0:
                 raise ProviderHttpError(
                     f"{term} not found in Urban Dictionary", 404)
-            listed: list[UrbanDictionaryEntry] = []
-            for entry in data["list"]:
-                # convert wiki markup to markdown
-                entry["definition"] = self._add_hyperlinks(entry["definition"])
-                entry["example"] = self._add_hyperlinks(entry["example"])
-                entry["written_on"].replace("Z", "+00:00")
-                entry["written_on"] = datetime.fromisoformat(
-                    entry["written_on"])
-                listed += [UrbanDictionaryEntry(**entry)]
-
-            return listed
+            return self._iterate_entries(data["list"])
 
     async def _fetch_raw_html(self, path: str = "") -> str:
         """
@@ -231,14 +272,4 @@ class UrbanDictionary:
                     resp.status,
                 )
             data = await resp.json()
-            listed: list[UrbanDictionaryEntry] = []
-            for entry in data["list"]:
-                # convert wiki markup to markdown
-                entry["definition"] = self._add_hyperlinks(entry["definition"])
-                entry["example"] = self._add_hyperlinks(entry["example"])
-                entry["written_on"].replace("Z", "+00:00")
-                entry["written_on"] = datetime.fromisoformat(
-                    entry["written_on"])
-                listed += [UrbanDictionaryEntry(**entry)]
-
-            return listed
+            return self._iterate_entries(data["list"])
