@@ -131,8 +131,7 @@ class Anime(ipy.Extension):
             )
         except Exception as _:
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
-            err_msg = f"I couldn't able to find any results for {query} on
-{platform}. Please check your query and try again."
+            err_msg = f"I couldn't able to find any results for {query} on {platform}. Please check your query and try again."
             foo_msg = STR_RECOMMEND_NATIVE_TITLE
             embed = ipy.Embed(
                 title="Error",

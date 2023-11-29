@@ -66,7 +66,7 @@ class Utilities(ipy.Extension):
             await ctx.send(
                 embed=generate_utils_except_embed(
                     description="An error occurred while evaluating the expression",
-                    field_name="Expression"",
+                    field_name="Expression",
                     field_value=f"```py\n{expression}```",
                     error=e,
                 )
