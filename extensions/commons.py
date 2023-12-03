@@ -114,7 +114,7 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER
             ),
             ipy.EmbedField(
                 name="🤖 Bot",
-                value=f"`{duration:.2f}`ms\n> *Compares message timestamp to current timestamp, might not reliableas benchmark per se*",
+                value=f"`{duration:.2f}`ms\n> *Compares message timestamp to current timestamp, might not reliable as benchmark per se*",
                 inline=True,
             ),
         ]
