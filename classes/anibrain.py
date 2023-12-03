@@ -68,11 +68,13 @@ class AniBrainAiMedia:
     studios: List[str] | None = None
     """Studios"""
 
+
 class AniBrainAiCountData(TypedDict):
     """AniBrainAI Count Data dict"""
 
     totalCount: int
     """Total count"""
+
 
 class AniBrainAiCount(TypedDict):
     """AniBrainAI Count dict"""
@@ -80,6 +82,7 @@ class AniBrainAiCount(TypedDict):
     code: int
     """Response code"""
     data: AniBrainAiCountData
+
 
 class AniBrainAI:
     """AniBrainAI Unofficial Python API Wrapper"""
@@ -298,7 +301,6 @@ class AniBrainAI:
             final = await resp.json()
             data_ret = [AniBrainAiMedia(**i) for i in final["data"]]
             return data_ret
-
 
     async def get_anime(
         self,

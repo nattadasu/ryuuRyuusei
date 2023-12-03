@@ -5,8 +5,8 @@ import interactions as ipy
 from classes.anibrain import AniBrainAI, AniBrainAiMedia
 from classes.anilist import AniList
 from modules.anilist import anilist_submit
-from modules.commons import (generate_search_embed, sanitize_markdown,
-                             save_traceback_to_file, platform_exception_embed)
+from modules.commons import (generate_search_embed, platform_exception_embed,
+                             sanitize_markdown, save_traceback_to_file)
 from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
 
 
@@ -205,7 +205,8 @@ class Manga(ipy.Extension):
                 choices=[
                     ipy.SlashCommandChoice(name="Any (default)", value="any"),
                     ipy.SlashCommandChoice(name="Japan", value="Japan"),
-                    ipy.SlashCommandChoice(name="South Korea", value="South Korea"),
+                    ipy.SlashCommandChoice(
+                        name="South Korea", value="South Korea"),
                     ipy.SlashCommandChoice(name="China", value="China"),
                     ipy.SlashCommandChoice(name="Taiwan", value="Taiwan"),
                 ],
@@ -239,7 +240,8 @@ class Manga(ipy.Extension):
         self,
         ctx: ipy.SlashContext,
         media_type: Literal["manga", "one_shot", "light_novel"] = "manga",
-        country: Literal["any", "Japan", "South Korea", "China", "Taiwan"] = "any",
+        country: Literal["any", "Japan",
+                         "South Korea", "China", "Taiwan"] = "any",
         min_score: int = 0,
         release_from: int = 1930,
         release_to: int | None = None
