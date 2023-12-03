@@ -223,6 +223,7 @@ class Manga(ipy.Extension):
                     anibrain.CountryOfOrigin.JAPAN,
                     anibrain.CountryOfOrigin.KOREA,
                     anibrain.CountryOfOrigin.CHINA,
+                    anibrain.CountryOfOrigin.TAIWAN,
                 ]
                 match media_type:
                     case "manga":
