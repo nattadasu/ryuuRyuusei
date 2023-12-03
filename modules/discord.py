@@ -144,10 +144,10 @@ async def generate_discord_profile_embed(
     botStatus = ""
     regStatus = ""
     if data.bot:
-        botStatus = "\n🤖 This user is a bot"
+        botStatus = "\n🤖 This account is a bot"
     async with UserDatabase() as db:
         reg = await db.check_if_registered(discord_id=ipy.Snowflake(int(userId)))
-    if reg is True:
+    if reg is True and userId == str(ctx.author.id):
         regStatus = "\n✅ This user is registered on this bot"
     embed: ipy.Embed = ipy.Embed(
         title="Discord Profile",
