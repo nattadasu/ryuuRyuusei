@@ -14,7 +14,7 @@ from zoneinfo import ZoneInfo
 import pandas as pd
 from interactions import (ActionRow, Button, ButtonStyle, ComponentContext,
                           Embed, EmbedAuthor, EmbedField, EmbedFooter, Message,
-                          PartialEmoji, SlashContext, spread_to_rows)
+                          PartialEmoji, SlashContext)
 
 from classes.anilist import AniList, AniListMediaStruct
 from classes.animeapi import AnimeApi, AnimeApiAnime
@@ -22,14 +22,12 @@ from classes.excepts import MediaIsNsfw, ProviderHttpError
 from classes.jikan import JikanApi
 from classes.kitsu import Kitsu
 from classes.myanimelist import MyAnimeList
-from classes.simkl import Simkl
 from modules.commons import (PlatformErrType, generate_commons_except_embed,
                              generate_trailer, get_nsfw_status,
                              get_random_seed, platform_exception_embed,
                              sanitize_markdown, save_traceback_to_file,
                              trim_synopsis)
-from modules.const import (EMOJI_FORBIDDEN, MESSAGE_WARN_CONTENTS,
-                           MYANIMELIST_CLIENT_ID, SIMKL_CLIENT_ID)
+from modules.const import MESSAGE_WARN_CONTENTS, MYANIMELIST_CLIENT_ID
 from modules.platforms import Platform, media_id_to_platform
 
 
@@ -195,22 +193,8 @@ async def generate_mal(
         al_post = alist.coverImage.extraLarge
     al_bg = alist.bannerImage
 
-    try:
-        async with Simkl(SIMKL_CLIENT_ID) as sim:
-            sim_id = await sim.search_by_id(sim.Provider.MYANIMELIST, mal_id)
-            smk = await sim.get_anime(sim_id[0]["ids"]["simkl"])
-    # pylint: disable=broad-except
-    except Exception:
-        smk = {"poster": None, "fanart": None}
-
-    smk_post = smk.get("poster")
-    smk_bg = smk.get("fanart")
-    smk_post = f"https://simkl.in/posters/{smk_post}_m.webp" if smk_post else None
-    smk_bg = f"https://simkl.in/fanart/{smk_bg}_w.webp" if smk_bg else None
-
-    if anime_api.kitsu and (
-            (not al_post and not al_bg) or (
-            not smk_post and not smk_bg)):
+    if anime_api is not None and anime_api.kitsu and (
+            (not al_post and not al_bg)):
         async with Kitsu() as kts:
             kts = await kts.get_anime(anime_api.kitsu)
     else:
@@ -221,28 +205,26 @@ async def generate_mal(
                     "coverImage": None}}}
 
     kts_post = kts["data"]["attributes"].get("posterImage")
-    kts_post = kts_post.get("original") if kts_post else None
+    kts_post: str | None = kts_post.get("original") if kts_post else None
     kts_bg = kts["data"]["attributes"].get("coverImage")
-    kts_bg = kts_bg.get("original") if kts_bg else None
+    kts_bg: str | None = kts_bg.get("original") if kts_bg else None
 
     mal_post = jjpg.large_image_url or jjpg.image_url
     mal_bg = ""
 
     poster = next(
-        (img for img in (al_post, smk_post, kts_post, mal_post) if img), None)
+        (img for img in (al_post, kts_post, mal_post) if img), None)
     post_note = (
         "AniList"
         if al_post
-        else "SIMKL"
-        if smk_post
         else "Kitsu"
         if kts_post
         else "MyAnimeList"
     )
     background = next(
-        (img for img in (al_bg, smk_bg, kts_bg, mal_bg) if img), None)
+        (img for img in (al_bg, kts_bg, mal_bg) if img), None)
     bg_note = (
-        "AniList" if al_bg else "SIMKL" if smk_bg else "Kitsu" if kts_bg else "MyAnimeList"
+        "AniList" if al_bg else "Kitsu" if kts_bg else "MyAnimeList"
     )
 
     if post_note == bg_note:
@@ -371,7 +353,7 @@ async def generate_mal(
 
     # Create a synonyms list
     syns = [name.title for name in jk_dat.titles if name.type not in [
-        "Default", "English"]]
+        "Default", "English"]] if jk_dat.titles else []
     if not ent or (ent == ""):
         # Set ent to a synonym in ASCII or the original title
         for name in syns:
@@ -587,7 +569,7 @@ async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int
             final_buttons.append(ActionRow(*labeled_buttons[i:i + 5]))
         if isinstance(ctx, Message):
             # type: ignore
-            await ctx.reply(embeds=embed, components=final_buttons)
+            await ctx.reply(embeds=embed, components=final_buttons)  # type: ignore
         else:
             await ctx.send(embed=embed, components=final_buttons)
         return
