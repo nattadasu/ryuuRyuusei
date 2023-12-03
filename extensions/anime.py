@@ -2,6 +2,7 @@ from typing import Literal
 
 import interactions as ipy
 
+from classes.anibrain import AniBrainAI
 from modules.anilist import search_al_anime
 from modules.commons import (generate_search_embed, sanitize_markdown,
                              save_traceback_to_file)
@@ -177,9 +178,26 @@ class Anime(ipy.Extension):
 
     @anime_head.subcommand(
         sub_cmd_name="random",
-        sub_cmd_description="Get a random anime, powered by AnimeAPI",
+        sub_cmd_description="Get a random anime, powered by AniBrain and AnimeAPI",
+        options=[
+            ipy.SlashCommandOption(
+                name="media_type",
+                description="The media type to get",
+                type=ipy.OptionType.STRING,
+                required=False,
+                choices=[
+                    ipy.SlashCommandChoice(name="Any (default)", value="any"),
+                    ipy.SlashCommandChoice(name="TV", value="tv"),
+                    ipy.SlashCommandChoice(name="Movie", value="movie"),
+                    ipy.SlashCommandChoice(name="OVA", value="ova"),
+                    ipy.SlashCommandChoice(name="ONA", value="ona"),
+                    ipy.SlashCommandChoice(name="Special", value="special"),
+                    ipy.SlashCommandChoice(name="TV Short", value="tv short"),
+                ],
+            )
+        ],
     )
-    async def anime_random(self, ctx: ipy.SlashContext):
+    async def anime_random(self, ctx: ipy.SlashContext, media_type: str = "any"):
         await ctx.defer()
         send = await ctx.send(
             embed=ipy.Embed(
@@ -191,16 +209,50 @@ class Anime(ipy.Extension):
                 ),
             )
         )
-        anime = lookup_random_anime()
-        await send.edit(
-            embed=ipy.Embed(
-                title="Random Anime",
-                description=f"We've found MAL ID [`{anime}`](https://myanimelist.net/anime/{anime}). Fetching info...",
-                color=0x213498,
-                footer=ipy.EmbedFooter(
-                    text="This may take a while...",
-                ),
+        try:
+            async with AniBrainAI() as ai:
+                countries = [
+                    ai.CountryOfOrigin.CHINA,
+                    ai.CountryOfOrigin.JAPAN,
+                    ai.CountryOfOrigin.KOREA,
+                    ai.CountryOfOrigin.TAIWAN,
+                ]
+                if media_type != "any":
+                    target_media_type = [ai.AnimeMediaType(media_type)]
+                else:
+                    target_media_type = "[]"
+                media_data = await ai.get_anime(filter_country=countries,
+                                                filter_format=target_media_type)
+                # find the first anime with a valid MAL ID
+                for ani in media_data:
+                    if ani.myanimelistId:
+                        anime = ani.myanimelistId
+                        sauce = "AniBrain"
+                        break
+                else:
+                    raise Exception("No result")
+        except Exception as err:
+            save_traceback_to_file("anime_random", ctx.author, err, True)
+            anime = lookup_random_anime()
+            sauce = "AnimeAPI"
+        found = ipy.Embed(
+            title="Random Anime",
+            description=f"We've found MAL ID [`{anime}`](https://myanimelist.net/anime/{anime}) from {sauce}. Fetching info...",
+            color=0x213498,
+            footer=ipy.EmbedFooter(
+                text="This may take a while...",
+            ),
+        )
+        if sauce == "AnimeAPI" and media_type != "any":
+            media_type = "TV Short" if media_type == "tv short" else media_type.upper() if len(media_type) <= 4 else media_type.title()
+            media_type = f"an {media_type}" if media_type[0] in "aeiou" else f"a {media_type}"
+            found.add_field(
+                name="Note",
+                value=f"AnimeAPI doesn't support filtering by media type. The anime may not be {media_type}.",
+                inline=False,
             )
+        await send.edit(
+            embed=found
         )
         await mal_submit(ctx, anime)
 
