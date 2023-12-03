@@ -569,7 +569,8 @@ async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int
             final_buttons.append(ActionRow(*labeled_buttons[i:i + 5]))
         if isinstance(ctx, Message):
             # type: ignore
-            await ctx.reply(embeds=embed, components=final_buttons)  # type: ignore
+            # type: ignore
+            await ctx.reply(embeds=embed, components=final_buttons)
         else:
             await ctx.send(embed=embed, components=final_buttons)
         return
