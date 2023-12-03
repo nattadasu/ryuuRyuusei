@@ -40,6 +40,10 @@ class UrbanDictionaryEntry:
     """Example of the word"""
     thumbs_down: int
     """Number of thumbs down"""
+    current: int = 1
+    """Current page of embed"""
+    total_pages: int = 1
+    """Total embed pages"""
 
     @property
     def embed(self) -> Embed:
@@ -74,7 +78,7 @@ class UrbanDictionaryEntry:
             (self.thumbs_up / (self.thumbs_up + self.thumbs_down)) * 100
         )
         embed.set_footer(
-            text=f"👍 {self.thumbs_up} / {self.thumbs_down} ({percentage}%)"
+            text=f"👍 {self.thumbs_up} / {self.thumbs_down} ({percentage}%), page {self.current}/{self.total_pages}"
         )
         embed.timestamp = self.written_on  # type: ignore
         return embed
@@ -103,6 +107,10 @@ class UrbanDictionaryRawEntry(TypedDict):
     """Keyword"""
     written_on: str | datetime
     """Date written on"""
+    current: int
+    """Current page of embed"""
+    total_pages: int
+    """Total embed pages"""
 
 
 class UrbanDictionary:
@@ -164,6 +172,8 @@ class UrbanDictionary:
             list[UrbanDictionaryEntry]: List of UrbanDictionaryEntry
         """
         listed: list[UrbanDictionaryEntry] = []
+        pg = 1
+        total_data = len(data)
         for entry in data:
             # convert wiki markup to markdown
             entry["definition"] = UrbanDictionary._add_hyperlinks(
@@ -175,7 +185,10 @@ class UrbanDictionary:
             # fix timezone to UTC
             date = date.replace(tzinfo=timezone.utc)
             entry["written_on"] = date
+            entry["current"] = pg
+            entry["total_pages"] = total_data
             listed += [UrbanDictionaryEntry(**entry)]  # type: ignore
+            pg += 1
 
         return listed
 

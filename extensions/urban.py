@@ -19,6 +19,21 @@ class UrbanDictionaryCog(ipy.Extension):
         nsfw=True,
     )
 
+    async def _paginator(self, ctx: ipy.SlashContext, pages: list[ipy.Embed]) -> ipy.Message:
+        """
+        Send multiple embeds with pagination.
+
+        Args:
+            ctx (ipy.SlashContext): Slash context
+            pages (list[ipy.Embed]): List of embeds to paginate
+
+        Returns:
+            ipy.Message: Message object
+        """
+        paginator = Paginator.create_from_embeds(self.bot, *pages, timeout=30)
+        stat = await paginator.send(ctx)
+        return stat
+
     @urban_head.subcommand(
         sub_cmd_name="random",
         sub_cmd_description="Get a random word or phrase from Urban Dictionary.",
@@ -52,8 +67,7 @@ class UrbanDictionaryCog(ipy.Extension):
         pages: list[ipy.Embed] = []
         for _, e in enumerate(entry[:limit]):
             pages.append(e.embed)
-        paginator = Paginator.create_from_embeds(self.bot, *pages, timeout=30)
-        await paginator.send(ctx)  # type: ignore
+        await self._paginator(ctx, pages)
 
     @urban_head.subcommand(
         sub_cmd_name="search",
@@ -102,22 +116,26 @@ class UrbanDictionaryCog(ipy.Extension):
     @urban_search.autocomplete(option_name="term")
     async def urban_search_autocomplete(self, ctx: ipy.AutocompleteContext):
         """Autocomplete Urban Dictionary search term."""
-        async with aiohttp.ClientSession() as session:
-            async with session.get(f"https://api.urbandictionary.com/v0/autocomplete-extra?term={ctx.input_text}") as resp:
-                if resp.status == 200:
-                    data = await resp.json()
-                    results: list[dict[str, str]] = []
-                    for d in data["results"][:25]:
-                        results.append({
-                            "name": d["term"][:80],
-                            "value": d["term"],
-                        })
-                    await ctx.send(choices=results)  # type: ignore
-                else:
-                    await ctx.send(choices=[{
-                        "name": f"{ctx.input_text}",
-                        "value": f"{ctx.input_text}",
-                    }])
+        invalid = {
+            "name": f"{ctx.input_text}",
+            "value": f"{ctx.input_text}",
+        }
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(f"https://api.urbandictionary.com/v0/autocomplete-extra?term={ctx.input_text}") as resp:
+                    if resp.status == 200:
+                        data = await resp.json()
+                        results: list[dict[str, str]] = []
+                        for d in data["results"][:25]:
+                            results.append({
+                                "name": d["term"][:80],
+                                "value": d["term"],
+                            })
+                        await ctx.send(choices=results)  # type: ignore
+                    else:
+                        await ctx.send(choices=[invalid])  # type: ignore
+        except Exception:  # pylint: disable=broad-except
+            await ctx.send(choices=[invalid])  # type: ignore
 
     @urban_head.subcommand(
         sub_cmd_name="wotd",
