@@ -232,7 +232,8 @@ class JikanAnimeStruct:
     """Source of the anime"""
     episodes: int | None
     """Number of episodes"""
-    status: Literal["Currently Airing", "Finished Airing", "Not yet aired"] | None
+    status: Literal["Currently Airing",
+                    "Finished Airing", "Not yet aired"] | None
     """Status of the anime"""
     airing: bool | None
     """Whether the anime is airing"""

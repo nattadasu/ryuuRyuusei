@@ -244,7 +244,8 @@ class Anime(ipy.Extension):
             ),
         )
         if sauce == "AnimeAPI" and media_type != "any":
-            media_type = "TV Short" if media_type == "tv short" else media_type.upper() if len(media_type) <= 4 else media_type.title()
+            media_type = "TV Short" if media_type == "tv short" else media_type.upper(
+            ) if len(media_type) <= 4 else media_type.title()
             media_type = f"an {media_type}" if media_type[0] in "aeiou" else f"a {media_type}"
             found.add_field(
                 name="Note",
