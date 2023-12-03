@@ -6,7 +6,7 @@ from classes.anibrain import AniBrainAI, AniBrainAiMedia
 from classes.anilist import AniList
 from modules.anilist import anilist_submit
 from modules.commons import (generate_search_embed, sanitize_markdown,
-                             save_traceback_to_file)
+                             save_traceback_to_file, platform_exception_embed)
 from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
 
 
@@ -198,12 +198,51 @@ class Manga(ipy.Extension):
                 ],
                 required=False,
             ),
+            ipy.SlashCommandOption(
+                name="country",
+                description="The country of origin",
+                type=ipy.OptionType.STRING,
+                choices=[
+                    ipy.SlashCommandChoice(name="Any (default)", value="any"),
+                    ipy.SlashCommandChoice(name="Japan", value="Japan"),
+                    ipy.SlashCommandChoice(name="South Korea", value="South Korea"),
+                    ipy.SlashCommandChoice(name="China", value="China"),
+                    ipy.SlashCommandChoice(name="Taiwan", value="Taiwan"),
+                ],
+                required=False,
+            ),
+            ipy.SlashCommandOption(
+                name="min_score",
+                description="The minimum score",
+                type=ipy.OptionType.NUMBER,
+                required=False,
+                min_value=0,
+                max_value=100,
+            ),
+            ipy.SlashCommandOption(
+                name="release_from",
+                description="The release year from",
+                type=ipy.OptionType.NUMBER,
+                required=False,
+                min_value=1930,
+            ),
+            ipy.SlashCommandOption(
+                name="release_to",
+                description="The release year to",
+                type=ipy.OptionType.NUMBER,
+                required=False,
+                min_value=1930,
+            )
         ],
     )
     async def random_manga(
         self,
         ctx: ipy.SlashContext,
         media_type: Literal["manga", "one_shot", "light_novel"] = "manga",
+        country: Literal["any", "Japan", "South Korea", "China", "Taiwan"] = "any",
+        min_score: int = 0,
+        release_from: int = 1930,
+        release_to: int | None = None
     ):
         await ctx.defer()
         send = await ctx.send(
@@ -224,19 +263,28 @@ class Manga(ipy.Extension):
                     anibrain.CountryOfOrigin.KOREA,
                     anibrain.CountryOfOrigin.CHINA,
                     anibrain.CountryOfOrigin.TAIWAN,
-                ]
+                ] if country == "any" else [anibrain.CountryOfOrigin(country)]
                 match media_type:
                     case "manga":
                         media_data = await anibrain.get_manga(
                             filter_country=countries,
+                            filter_release_from=release_from,
+                            filter_release_to=release_to,
+                            filter_score=min_score,
                         )
                     case "one_shot":
                         media_data = await anibrain.get_one_shot(
                             filter_country=countries,
+                            filter_release_from=release_from,
+                            filter_release_to=release_to,
+                            filter_score=min_score,
                         )
                     case "light_novel":
                         media_data = await anibrain.get_light_novel(
                             filter_country=countries,
+                            filter_release_from=release_from,
+                            filter_release_to=release_to,
+                            filter_score=min_score,
                         )
             media_id = media_data[0].anilistId
             await send.edit(
@@ -250,16 +298,13 @@ class Manga(ipy.Extension):
                 )
             )
             await anilist_submit(ctx, media_id)
-        # pylint: disable-next=broad-except
-        except Exception as _:
-            await send.edit(
-                embed=ipy.Embed(
-                    title="Random Manga",
-                    description="We couldn't find any manga. Please try again.",
-                    color=0xFF0000,
-                )
+        except Exception as err:
+            err_embed = platform_exception_embed(
+                description="We couldn't get a random manga. Please try again.",
+                error=f"{err}",
             )
-            save_traceback_to_file("random_manga", ctx.author, _)
+            await send.edit(embed=err_embed)
+            save_traceback_to_file("random_manga", ctx.author, err)
 
 
 def setup(bot: ipy.Client | ipy.AutoShardedClient):

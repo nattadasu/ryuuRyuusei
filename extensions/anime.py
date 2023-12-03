@@ -187,17 +187,60 @@ class Anime(ipy.Extension):
                 required=False,
                 choices=[
                     ipy.SlashCommandChoice(name="Any (default)", value="any"),
-                    ipy.SlashCommandChoice(name="TV", value="tv"),
-                    ipy.SlashCommandChoice(name="Movie", value="movie"),
-                    ipy.SlashCommandChoice(name="OVA", value="ova"),
-                    ipy.SlashCommandChoice(name="ONA", value="ona"),
-                    ipy.SlashCommandChoice(name="Special", value="special"),
-                    ipy.SlashCommandChoice(name="TV Short", value="tv short"),
+                    ipy.SlashCommandChoice(name="TV", value="TV"),
+                    ipy.SlashCommandChoice(name="Movie", value="Movie"),
+                    ipy.SlashCommandChoice(name="OVA", value="OVA"),
+                    ipy.SlashCommandChoice(name="ONA", value="ONA"),
+                    ipy.SlashCommandChoice(name="Special", value="Special"),
+                    ipy.SlashCommandChoice(name="TV Short", value="TV Short"),
                 ],
+            ),
+            ipy.SlashCommandOption(
+                name="country",
+                description="The country of origin",
+                type=ipy.OptionType.STRING,
+                choices=[
+                    ipy.SlashCommandChoice(name="Any (default)", value="any"),
+                    ipy.SlashCommandChoice(name="Japan", value="Japan"),
+                    ipy.SlashCommandChoice(name="South Korea", value="South Korea"),
+                    ipy.SlashCommandChoice(name="China", value="China"),
+                    ipy.SlashCommandChoice(name="Taiwan", value="Taiwan"),
+                ],
+                required=False,
+            ),
+            ipy.SlashCommandOption(
+                name="min_score",
+                description="The minimum score",
+                type=ipy.OptionType.NUMBER,
+                required=False,
+                min_value=0,
+                max_value=100,
+            ),
+            ipy.SlashCommandOption(
+                name="release_from",
+                description="The release year from",
+                type=ipy.OptionType.NUMBER,
+                required=False,
+                min_value=1930,
+            ),
+            ipy.SlashCommandOption(
+                name="release_to",
+                description="The release year to",
+                type=ipy.OptionType.NUMBER,
+                required=False,
+                min_value=1930,
             )
         ],
     )
-    async def anime_random(self, ctx: ipy.SlashContext, media_type: str = "any"):
+    async def anime_random(
+        self,
+        ctx: ipy.SlashContext,
+        media_type: Literal["any", "TV", "Movie", "OVA", "ONA", "Special", "TV Short"] = "any",
+        country: Literal["any", "Japan", "South Korea", "China", "Taiwan"] = "any",
+        min_score: int = 0,
+        release_from: int = 1930,
+        release_to: int | None = None,
+    ):
         await ctx.defer()
         send = await ctx.send(
             embed=ipy.Embed(
@@ -216,13 +259,16 @@ class Anime(ipy.Extension):
                     ai.CountryOfOrigin.JAPAN,
                     ai.CountryOfOrigin.KOREA,
                     ai.CountryOfOrigin.TAIWAN,
-                ]
+                ] if country == "any" else [ai.CountryOfOrigin(country)]
                 if media_type != "any":
-                    target_media_type = [ai.AnimeMediaType(media_type)]
+                    target_media_type = [ai.AnimeMediaType(media_type.lower())]
                 else:
                     target_media_type = "[]"
                 media_data = await ai.get_anime(filter_country=countries,
-                                                filter_format=target_media_type)
+                                                filter_format=target_media_type,
+                                                filter_score=min_score,
+                                                filter_release_from=release_from,
+                                                filter_release_to=release_to)
                 # find the first anime with a valid MAL ID
                 for ani in media_data:
                     if ani.myanimelistId:
@@ -243,13 +289,22 @@ class Anime(ipy.Extension):
                 text="This may take a while...",
             ),
         )
-        if sauce == "AnimeAPI" and media_type != "any":
-            media_type = "TV Short" if media_type == "tv short" else media_type.upper(
-            ) if len(media_type) <= 4 else media_type.title()
-            media_type = f"an {media_type}" if media_type[0] in "aeiou" else f"a {media_type}"
+        if sauce == "AnimeAPI" and (media_type != "any" or country != "any"):
+            errs = []
+            if media_type != "any":
+                errs.append(f"* Media Type: `{media_type}`")
+            if country != "any":
+                errs.append(f"* Country: `{country}`")
+            if min_score != 0:
+                errs.append(f"* Minimum Score: `{min_score}`")
+            if release_from != 1930:
+                errs.append(f"* Release From: `{release_from}`")
+            if release_to is not None:
+                errs.append(f"* Release To: `{release_to}`")
+            errs_str = "\n".join(errs)
             found.add_field(
                 name="Note",
-                value=f"AnimeAPI doesn't support filtering by media type. The anime may not be {media_type}.",
+                value=f"AnimeAPI doesn't support filtering.\nIgnores the following filters:\n{errs_str}",
                 inline=False,
             )
         await send.edit(
