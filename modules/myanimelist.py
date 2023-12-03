@@ -577,8 +577,8 @@ async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int
     except MediaIsNsfw as err:
         notice = err.args[0] if err.args else ""
         embed = platform_exception_embed(
-            description="This media is NSFW, please invoke the same query on NSFW enabled channel.",
-            error="Media is NSFW\n" + notice,
+            description=f"I detected if this title is NSFW. {notice}",
+            error="Media is NSFW",
             error_type=PlatformErrType.NSFW,
         )
         if isinstance(ctx, Message):
