@@ -202,7 +202,8 @@ class Anime(ipy.Extension):
                 choices=[
                     ipy.SlashCommandChoice(name="Any (default)", value="any"),
                     ipy.SlashCommandChoice(name="Japan", value="Japan"),
-                    ipy.SlashCommandChoice(name="South Korea", value="South Korea"),
+                    ipy.SlashCommandChoice(
+                        name="South Korea", value="South Korea"),
                     ipy.SlashCommandChoice(name="China", value="China"),
                     ipy.SlashCommandChoice(name="Taiwan", value="Taiwan"),
                 ],
@@ -235,8 +236,10 @@ class Anime(ipy.Extension):
     async def anime_random(
         self,
         ctx: ipy.SlashContext,
-        media_type: Literal["any", "TV", "Movie", "OVA", "ONA", "Special", "TV Short"] = "any",
-        country: Literal["any", "Japan", "South Korea", "China", "Taiwan"] = "any",
+        media_type: Literal["any", "TV", "Movie", "OVA",
+                            "ONA", "Special", "TV Short"] = "any",
+        country: Literal["any", "Japan",
+                         "South Korea", "China", "Taiwan"] = "any",
         min_score: int = 0,
         release_from: int = 1930,
         release_to: int | None = None,
