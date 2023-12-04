@@ -261,10 +261,7 @@ class Manga(ipy.Extension):
         try:
             async with AniBrainAI() as anibrain:
                 countries = [
-                    anibrain.CountryOfOrigin.JAPAN,
-                    anibrain.CountryOfOrigin.KOREA,
-                    anibrain.CountryOfOrigin.CHINA,
-                    anibrain.CountryOfOrigin.TAIWAN,
+                    i for i in anibrain.CountryOfOrigin
                 ] if country == "any" else [anibrain.CountryOfOrigin(country)]
                 match media_type:
                     case "manga":

@@ -257,12 +257,8 @@ class Anime(ipy.Extension):
         )
         try:
             async with AniBrainAI() as ai:
-                countries = [
-                    ai.CountryOfOrigin.CHINA,
-                    ai.CountryOfOrigin.JAPAN,
-                    ai.CountryOfOrigin.KOREA,
-                    ai.CountryOfOrigin.TAIWAN,
-                ] if country == "any" else [ai.CountryOfOrigin(country)]
+                countries = [i for i in ai.CountryOfOrigin] if country == "any" else [
+                    ai.CountryOfOrigin(country)]
                 if media_type != "any":
                     target_media_type = [ai.AnimeMediaType(media_type.lower())]
                 else:
