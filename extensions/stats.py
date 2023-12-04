@@ -14,12 +14,43 @@ import pkg_resources as pipkg
 import psutil
 from interactions.ext.paginators import Paginator
 
-from classes.excepts import ProviderHttpError
 from classes.stats.dbl import DiscordBotList
 from classes.stats.infinity import InfinityBots
 from classes.stats.topgg import TopGG
+from modules.commons import save_traceback_to_file
 from modules.const import (BOT_DATA, GIT_COMMIT_HASH, GT_HSH, USER_AGENT,
                            VERIFICATION_SERVER)
+
+
+@dataclass
+class ProviderVoteStruct:
+    """Provider Vote Struct"""
+
+    name: str
+    """Name of the provider"""
+    bot_id: int
+    """ID of the bot"""
+    base_url: str
+    """Base URL of the provider"""
+    total_votes: int
+    """Total votes on the provider"""
+    upvote_path: str = "/vote"
+    """Path to upvote on the provider"""
+    time_limit: int = 0
+    """Time limit of vote stats on the provider in hours"""
+
+    @property
+    def as_text(self) -> str:
+        """
+        Get the provider vote stats as text
+
+        Returns:
+            str: The provider vote stats as text
+        """
+        url = f"{self.base_url}{self.bot_id}{self.upvote_path}"
+        if self.time_limit == 0:
+            return f"* [{self.name}]({url}): {self.total_votes:,} in total"
+        return f"* [{self.name}]({url}): {self.total_votes:,} in last {self.time_limit} hours"
 
 
 @dataclass
@@ -263,26 +294,55 @@ class Stats(ipy.Extension):
         py_ver = f"{verinfo.major}.{verinfo.minor}.{verinfo.micro}"
 
         # get upvotes
+        provider_votes: list[ProviderVoteStruct] = []
+
         try:
             async with TopGG() as tgg:
                 tgg_info = await tgg.get_bot_stats()
-                tgg_upvote = tgg_info.points
-        except ProviderHttpError:
-            tgg_upvote = 0
+                provider_votes.append(
+                    ProviderVoteStruct(
+                        name="Top.gg",
+                        bot_id=bot_id,
+                        base_url="https://top.gg/bot/",
+                        total_votes=tgg_info.points,
+                    )
+                )
+        except Exception as err:
+            save_traceback_to_file("stats_general-tgg", ctx.author, err, True)
 
         try:
             async with DiscordBotList() as dbl:
                 dbl_stats = await dbl.get_recent_upvotes()
-                dbl_upvote = dbl_stats.total
-        except ProviderHttpError:
-            dbl_upvote = 0
+                # dbl_upvote = dbl_stats.total
+                provider_votes.append(
+                    ProviderVoteStruct(
+                        name="Discord Bot List",
+                        bot_id=bot_id,
+                        base_url="https://discordbotlist.com/bots/",
+                        upvote_path="/upvotes",
+                        total_votes=dbl_stats.total,
+                        time_limit=12
+                    )
+                )
+        except Exception as err:
+            save_traceback_to_file("stats_general-dbl", ctx.author, err, True)
 
         try:
             async with InfinityBots() as ibl:
                 ibl_info = await ibl.get_bot_info(bot_id)
-                ibl_upvote = ibl_info.votes
-        except ProviderHttpError:
-            ibl_upvote = 0
+                provider_votes.append(
+                    ProviderVoteStruct(
+                        name="Infinity Bots",
+                        bot_id=bot_id,
+                        base_url="https://infinitybots.gg/bot/",
+                        total_votes=ibl_info.votes,
+                    )
+                )
+        except Exception as err:
+            save_traceback_to_file("stats_general-ibl", ctx.author, err, True)
+
+        provider_votes.sort(key=lambda x: x.name)
+        votes_str = "\n".join([vt.as_text for vt in provider_votes]) or "No reports"
 
         embed = ipy.Embed(
             title="General stats for bot",
@@ -325,10 +385,8 @@ class Stats(ipy.Extension):
                 inline=True),
             ipy.EmbedField(
                 name="📈 Upvotes",
-                value=f"""* [Discord Bot List](https://discordbotlist.com/bots/{bot_id}/upvote): {dbl_upvote} in last 12 hours.
-* [Infinity Bots](https://infinitybots.gg/bot/{bot_id}/vote): {ibl_upvote:,} in total
-* [Top.gg](https://top.gg/bot/{bot_id}/vote): {tgg_upvote:,} in total""",
-                inline=True),
+                value=votes_str,
+                inline=False),
             ipy.EmbedField(
                 name="🌐 User Agent",
                 value=f'```http\nUser-Agent: "{USER_AGENT}"\n```',
