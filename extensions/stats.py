@@ -342,7 +342,8 @@ class Stats(ipy.Extension):
             save_traceback_to_file("stats_general-ibl", ctx.author, err, True)
 
         provider_votes.sort(key=lambda x: x.name)
-        votes_str = "\n".join([vt.as_text for vt in provider_votes]) or "No reports"
+        votes_str = "\n".join(
+            [vt.as_text for vt in provider_votes]) or "No reports"
 
         embed = ipy.Embed(
             title="General stats for bot",

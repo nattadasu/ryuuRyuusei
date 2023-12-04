@@ -58,6 +58,7 @@ class AssetStruct:
     size: int | None = None
     """The size of the asset in bytes, if it exists"""
 
+
 @dataclass
 class LinkStruct:
     """Link Information"""
@@ -104,6 +105,7 @@ class BaseBotStruct:
     """The corresponding vanities itag, this also works to ensure that all bots have an associated vanity"""
     votes: int
     """The bot's vote count"""
+
 
 @dataclass
 class TeamMemberStruct:
@@ -163,6 +165,7 @@ class TeamServerStruct:
     """The corresponding vanities itag, this also works to ensure that all servers have an associated vanity"""
     votes: int
     """The server's vote count"""
+
 
 @dataclass
 class EntitiesStruct:
