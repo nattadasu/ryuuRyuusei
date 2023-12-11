@@ -1,10 +1,11 @@
 """Add Urban Dictionary commands to the bot."""
 
+import re
+from typing import TypedDict
+
 import aiohttp
 import interactions as ipy
-import re
 from interactions.ext.paginators import Paginator
-from typing import TypedDict
 
 from classes.urbandictionary import UrbanDictionary as Urban
 from classes.urbandictionary import UrbanDictionaryEntry as Entry
@@ -21,6 +22,7 @@ class TrustModel(TypedDict):
     """Max ratio of thumbs up to max thumbs up"""
     trustratio: float
     """Trust ratio"""
+
 
 class UrbanDictionaryCog(ipy.Extension):
     """Urban Dictionary Cog"""
@@ -73,14 +75,16 @@ class UrbanDictionaryCog(ipy.Extension):
                 })
 
         # Sort trusted entries by thumbs up
-        trusted_entries = sorted(trusted_list, key=lambda t: t["entry"].thumbs_up, reverse=True)
+        trusted_entries = sorted(
+            trusted_list, key=lambda t: t["entry"].thumbs_up, reverse=True)
         trusted_entries = [t["entry"] for t in trusted_entries]
 
         # Sort untrusted entries by thumbs up
         untrusted_entries = [e for e in thumbs_up if e not in trusted_entries]
 
         # If entry is < 70% trusted, put it at the bottom of the list
-        untrusted_entries = sorted(untrusted_entries, key=lambda e: e.thumbs_up, reverse=True)
+        untrusted_entries = sorted(
+            untrusted_entries, key=lambda e: e.thumbs_up, reverse=True)
 
         # Merge trusted and untrusted entries
         sorted_entries = trusted_entries + untrusted_entries
@@ -143,7 +147,8 @@ class UrbanDictionaryCog(ipy.Extension):
         pages: list[ipy.Embed] = []
         entry_lim = self._sort_by_thumbs_up(entry[:limit])
         for pg, e in enumerate(entry_lim):
-            embed = self._fix_footer(e.embed, cursor=pg + 1, total=len(entry_lim))
+            embed = self._fix_footer(
+                e.embed, cursor=pg + 1, total=len(entry_lim))
             pages.append(embed)
         await self._paginator(ctx, pages)
 
@@ -188,7 +193,8 @@ class UrbanDictionaryCog(ipy.Extension):
         pages: list[ipy.Embed] = []
         entry_lim = self._sort_by_thumbs_up(entry[:limit])
         for pg, e in enumerate(entry_lim):
-            embed = self._fix_footer(e.embed, cursor=pg + 1, total=len(entry_lim))
+            embed = self._fix_footer(
+                e.embed, cursor=pg + 1, total=len(entry_lim))
             pages.append(embed)
         paginator = Paginator.create_from_embeds(self.bot, *pages, timeout=30)
         await paginator.send(ctx)  # type: ignore
