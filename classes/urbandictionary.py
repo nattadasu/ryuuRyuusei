@@ -78,7 +78,7 @@ class UrbanDictionaryEntry:
             (self.thumbs_up / (self.thumbs_up + self.thumbs_down)) * 100
         )
         embed.set_footer(
-            text=f"👍 {self.thumbs_up} / {self.thumbs_down} ({percentage}%), page {self.current}/{self.total_pages}"
+            text=f"👍 {self.thumbs_up} / 👎 {self.thumbs_down} ({percentage}%), page {self.current}/{self.total_pages}"
         )
         embed.timestamp = self.written_on  # type: ignore
         return embed
