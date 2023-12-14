@@ -66,7 +66,10 @@ class UrbanDictionaryCog(ipy.Extension):
 
         # Separate trusted and untrusted entries
         for e in thumbs_up:
-            trustratio = e.thumbs_up / (e.thumbs_up + e.thumbs_down)
+            try:
+                trustratio = e.thumbs_up / (e.thumbs_up + e.thumbs_down)
+            except ZeroDivisionError:
+                trustratio = 0.0
             if trustratio >= 0.7:
                 trusted_list.append({
                     "entry": e,
