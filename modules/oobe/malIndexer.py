@@ -8,11 +8,11 @@ import pandas as pd
 
 from classes.cache import Caching
 
-MAIN_SITE = "https://raw.githubusercontent.com/nattadasu/animeApi/v3/database/myanimelist.json"
+MAIN_SITE = r"https://animeapi.my.id/myanimelist%28%29.json"
 CACHE_PATH = "cache/"
 FILE_NAME = "mal.json"
 
-Cache = Caching(cache_directory=CACHE_PATH, cache_expiration_time=1209600)
+Cache = Caching(cache_directory=CACHE_PATH, cache_expiration_time=86400)
 FILE_PATH = Cache.get_cache_path(FILE_NAME)
 
 

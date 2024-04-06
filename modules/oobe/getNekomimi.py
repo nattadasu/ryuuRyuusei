@@ -48,7 +48,7 @@ async def nk_run() -> None:
         await nk_get_data()
     else:
         # check if the file is >= 14 days old
-        if os.stat("database/nekomimiDb.tsv").st_mtime < (time() - 14 * 86400):
+        if os.stat("database/nekomimiDb.tsv").st_mtime < (time() - 86400):
             await nk_get_data()
         else:
             print("nekomimiDb.tsv is up to date")
