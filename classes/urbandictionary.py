@@ -36,7 +36,7 @@ class UrbanDictionaryEntry:
     """Current vote"""
     written_on: datetime
     """Date written on"""
-    example: str
+    example: str | None
     """Example of the word"""
     thumbs_down: int
     """Number of thumbs down"""
@@ -59,11 +59,12 @@ class UrbanDictionaryEntry:
             description=f"{self.definition}",
             color=0x1b2936,
         )
-        embed.add_field(
-            name="Example",
-            value=self.example,
-            inline=False,
-        )
+        if self.example:
+            embed.add_field(
+                name="Example",
+                value=self.example,
+                inline=False,
+            )
         embed.add_field(
             name="Author",
             value=self.author,
@@ -74,9 +75,12 @@ class UrbanDictionaryEntry:
             url="https://www.urbandictionary.com/",
         )
         # percentage of thumbs up
-        percentage = round(
-            (self.thumbs_up / (self.thumbs_up + self.thumbs_down)) * 100
-        )
+        try:
+            percentage = round(
+                (self.thumbs_up / (self.thumbs_up + self.thumbs_down)) * 100
+            )
+        except ZeroDivisionError:
+            percentage = 0
         embed.set_footer(
             text=f"👍 {self.thumbs_up} / 👎 {self.thumbs_down} ({percentage}%), page {self.current}/{self.total_pages}"
         )
