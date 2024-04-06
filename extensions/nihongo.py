@@ -9,11 +9,11 @@ from modules.commons import (generate_commons_except_embed, sanitize_markdown,
                              save_traceback_to_file)
 
 
-class NihongoCog(ipy.Extension):
+class JapaneseCog(ipy.Extension):
     """Extension for Japanese tools"""
 
-    nihongo_head = ipy.SlashCommand(
-        name="nihongo",
+    japanese_head = ipy.SlashCommand(
+        name="japanese",
         description="Japanese tools",
         cooldown=ipy.Cooldown(
             cooldown_bucket=ipy.Buckets.CHANNEL,
@@ -22,8 +22,8 @@ class NihongoCog(ipy.Extension):
         ),
     )
 
-    @nihongo_head.subcommand(
-        sub_cmd_name="romajinize",
+    @japanese_head.subcommand(
+        sub_cmd_name="transliterate",
         sub_cmd_description="Convert Japanese scripts to Romaji/Latin script",
         options=[
             ipy.SlashCommandOption(
@@ -64,7 +64,7 @@ class NihongoCog(ipy.Extension):
             ),
         ],
     )
-    async def nihongo_romajinize(
+    async def japanese_transliterate(
         self,
         ctx: ipy.SlashContext,
         source: str,
@@ -176,9 +176,9 @@ class NihongoCog(ipy.Extension):
             )
             embed.timestamp = datetime.now(tz=timezone.utc)
             await send.edit(embed=embed)
-            save_traceback_to_file("nihongo_romajinize", ctx.author, e)
+            save_traceback_to_file("japanese_transliterate", ctx.author, e)
 
 
 def setup(bot: ipy.Client | ipy.AutoShardedClient) -> None:
     """Load the extension"""
-    NihongoCog(bot)
+    JapaneseCog(bot)

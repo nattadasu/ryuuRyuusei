@@ -378,7 +378,8 @@ If you have any questions, feel free to join the
 
 > Collection of commands that are related to Japanese language.
 
-- `/nihongo romajinize` - Transliterate a Japanese script to Romaji/Latin script
+- `/japanese transliterate` - Transliterate a Japanese script to Romaji/Latin
+  script
 
 ### Dictionary Commands
 
