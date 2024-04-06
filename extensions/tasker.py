@@ -200,7 +200,6 @@ class BotTasker(Extension):
 
         return return_as
 
-
     @Task.create(IntervalTrigger(days=1))
     async def update_deps_database(self) -> None:
         """Update the dependencies database"""
@@ -208,6 +207,7 @@ class BotTasker(Extension):
         from modules.oobe.malIndexer import mal_run
         await nk_run()
         await mal_run()
+
 
 def setup(bot: Client | AutoShardedClient) -> None:
     BotTasker(bot)
