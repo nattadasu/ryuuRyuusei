@@ -47,7 +47,7 @@ class UpdateDaemon(Extension):
     @staticmethod
     def _update_pip_dependencies(is_dev: bool = False) -> bool:
         """Update the pip dependencies"""
-        dev = "_dev" if is_dev else ""
+        dev = "-dev" if is_dev else ""
         deps = chout(
             f"pip install -r requirements{dev}.txt", shell=True).decode()
         # check if the dependencies are updated
