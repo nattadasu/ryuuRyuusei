@@ -1,9 +1,12 @@
+import re
+
 import interactions as ipy
 
 from classes.database import UserDatabase
-from modules.const import AUTHOR_USERID, VERIFICATION_SERVER, VERIFIED_ROLE, EMOJI_UNEXPECTED_ERROR, EMOJI_SUCCESS, EMOJI_USER_ERROR
+from modules.const import (AUTHOR_USERID, EMOJI_SUCCESS,
+                           EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR,
+                           VERIFICATION_SERVER, VERIFIED_ROLE)
 from modules.discord import format_username
-import re
 
 hostsettings_head = ipy.SlashCommand(
     name="hostsettings",
@@ -18,7 +21,6 @@ hostsettings_head = ipy.SlashCommand(
 
 class HostSettings(ipy.Extension):
     """Host Settings commands"""
-
 
     member = hostsettings_head.group(
         name="member",
@@ -61,7 +63,8 @@ class HostSettings(ipy.Extension):
                 return
             status = await ud.verify_user(ctx.author.id)
 
-        user_roles = [str(role.id) for role in ctx.author.roles]  #  type: ignore
+        user_roles = [str(role.id)
+                      for role in ctx.author.roles]  # type: ignore
 
         # check if verified role exists
         if status is True and str(VERIFIED_ROLE) not in user_roles:
