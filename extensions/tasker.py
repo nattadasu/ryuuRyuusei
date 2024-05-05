@@ -18,12 +18,13 @@ class BotTasker(Extension):
 
     def __init__(self, bot: Client | AutoShardedClient) -> None:
         """Initialize the tasks"""
-        self.bot = bot
+        self.bot: Client = bot
         # pylint: disable=no-member
         self.delete_cache.start()
         self.delete_error_logs.start()
         self.poll_stats.start()
         self.update_bot_activity.start()
+        self.update_deps_database.start()
         # pylint: enable=no-member
 
     @Task.create(IntervalTrigger(minutes=10))
@@ -106,7 +107,8 @@ class BotTasker(Extension):
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to Top.gg: {error}")
             save_traceback_to_file(
-                "tasker_topgg", self.bot.user, error, mute_error=True)
+                "tasker_topgg", self.bot.user, error, mute_error=True
+            )
             show_msg.append("Top.gg")
 
         try:
@@ -117,8 +119,7 @@ class BotTasker(Extension):
                 )
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBots.gg: {error}")
-            save_traceback_to_file(
-                "tasker_dbgg", self.bot.user, error, mute_error=True)
+            save_traceback_to_file("tasker_dbgg", self.bot.user, error, mute_error=True)
             show_msg.append("DiscordBots.gg")
 
         try:
@@ -129,8 +130,7 @@ class BotTasker(Extension):
                 )
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBotList: {error}")
-            save_traceback_to_file(
-                "tasker_dbl", self.bot.user, error, mute_error=True)
+            save_traceback_to_file("tasker_dbl", self.bot.user, error, mute_error=True)
             show_msg.append("DiscordBotList.com")
 
         try:
@@ -142,8 +142,7 @@ class BotTasker(Extension):
                 )
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to InfinityBots: {error}")
-            save_traceback_to_file(
-                "tasker_ibgg", self.bot.user, error, mute_error=True)
+            save_traceback_to_file("tasker_ibgg", self.bot.user, error, mute_error=True)
             show_msg.append("InfinityBots")
 
         print(
@@ -151,8 +150,9 @@ class BotTasker(Extension):
             f"{server_count:,} servers,",
             f"{shard_count:,} shards,",
             f"{users:,} members,",
-            f"failed to poll to {', '.join(show_msg)}" if len(
-                show_msg) > 0 else "successfully polled to all sites",
+            f"failed to poll to {', '.join(show_msg)}"
+            if len(show_msg) > 0
+            else "successfully polled to all sites",
         )
 
     @Task.create(IntervalTrigger(minutes=10))
@@ -205,6 +205,7 @@ class BotTasker(Extension):
         """Update the dependencies database"""
         from modules.oobe.getNekomimi import nk_run
         from modules.oobe.malIndexer import mal_run
+
         await nk_run()
         await mal_run()
 
