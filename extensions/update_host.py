@@ -24,8 +24,8 @@ class UpdateDaemon(Extension):
         """Check if there is any new commit in the upstream"""
         sub_run("git fetch", shell=True)
         upstream_commit = (
-            sub_run("git rev-parse origin", shell=True, check=True)
-            .stdout.decode()
+            chout(["git", "rev-parse", "origin"], shell=True)
+            .decode("utf-8")
             .strip()
         )
         return upstream_commit
@@ -49,9 +49,9 @@ class UpdateDaemon(Extension):
         """Update the pip dependencies"""
         dev = "-dev" if is_dev else ""
         deps = chout(
-            f"pip install -r requirements{dev}.txt", shell=True).decode()
+            f"pip install -r requirements{dev}.txt", shell=True).decode("utf-8")
         # check if the dependencies are updated
-        if "Requirement already satisfied" in deps:
+        if "Successfully installed" in deps:
             return True
         return False
 
