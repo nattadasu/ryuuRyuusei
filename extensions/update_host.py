@@ -78,7 +78,13 @@ class UpdateDaemon(Extension):
 
     def _git_hash_not_matching(self) -> bool:
         """Check if the git hash is not matching"""
-        return self.GITHUB_COMMIT != self._check_upstream_commit()
+        upstream = None
+        try:
+            upstream = self._check_upstream_commit()
+        except Exception:
+            # Force to continue if the upstream is not reachable
+            pass
+        return self.GITHUB_COMMIT != upstream
 
     @Task.create(IntervalTrigger(days=7))
     async def check_for_updates(self) -> None:
