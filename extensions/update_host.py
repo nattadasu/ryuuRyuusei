@@ -24,7 +24,7 @@ class UpdateDaemon(Extension):
         """Check if there is any new commit in the upstream"""
         sub_run("git fetch", shell=True)
         upstream_commit = (
-            sub_run("git rev-parse HEAD", shell=True, capture_output=True)
+            sub_run("git rev-parse origin", shell=True, check=True)
             .stdout.decode()
             .strip()
         )
