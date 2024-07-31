@@ -133,7 +133,7 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
         ),
         title=data.name,
         url=f"https://rawg.io/games/{id}",
-        description=f"*{rte}, {year}, ⭐ {scr}/5 (Metacritic: {mc_scr})*\n\n> {cyno}",
+        description=f"-# {rte}, {year}, ⭐ {scr}/5 (Metacritic: {mc_scr})\n\n> {cyno}",
         color=0x1F1F1F,
         fields=[
             EmbedField(

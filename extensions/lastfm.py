@@ -179,7 +179,7 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
                     # 💿 {tr_album}
                     # {tr_date}, [Link]({tr_url})""",
                     value=f"""{tr_artist}
-{tr_album}
+-# {tr_album}
 {tr_date}, [Link]({tr_url})""",
                     inline=True,
                 )
@@ -221,7 +221,7 @@ Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>
             color=0xF71414,
             description=f"""{pro_user}{real_name}{registered}
 Total scrobbles: {int(profile.playcount):,}
-🧑‍🎤 {int(profile.artist_count):,} 💿 {int(profile.album_count):,} 🎶 {int(profile.track_count):,}""",
+-# 🧑‍🎤 {int(profile.artist_count):,} 💿 {int(profile.album_count):,} 🎶 {int(profile.track_count):,}""",
         )
         embed.set_thumbnail(url=img)
         embed.add_fields(*fields)

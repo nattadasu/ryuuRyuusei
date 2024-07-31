@@ -96,7 +96,7 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER
             "",
             embed=ipy.Embed(
                 title="Ping",
-                description="🏓 Pinging... Please wait till I get the results from my tests!",
+                description="🏓 Pinging...\n-# Please wait till I get the results from my tests!",
                 color=0xDD2288,
             ),
         )
@@ -109,12 +109,12 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER
         fields = [
             ipy.EmbedField(
                 name="🤝 Websocket API",
-                value=f"`{self.bot.latency * 1000:.2f}`ms\n> *Discord's Websocket API latency*",
+                value=f"`{self.bot.latency * 1000:.2f}`ms\n-# *Discord's Websocket API latency*",
                 inline=True,
             ),
             ipy.EmbedField(
                 name="🤖 Bot",
-                value=f"`{duration:.2f}`ms\n> *Compares message timestamp to current timestamp, might not reliable as benchmark per se*",
+                value=f"`{duration:.2f}`ms\n-# *Compares message timestamp to current timestamp, might not reliable as benchmark per se*",
                 inline=True,
             ),
         ]
@@ -129,12 +129,12 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER
         fields += [
             ipy.EmbedField(
                 name="🔎 Database Read Time",
-                value=f"`{(readLat_end - readLat_start) * 1000:.2f}`ms\n> *Read time for CSV database*",
+                value=f"`{(readLat_end - readLat_start) * 1000:.2f}`ms\n-# *Read time for CSV database*",
                 inline=True,
             ),
             ipy.EmbedField(
                 name="🐍 Python `time`",
-                value=f"`{pyPerfCount:.2f}`ms\n> *Based from Python's `time.perf_counter()`; counts before and after command execution*",
+                value=f"`{pyPerfCount:.2f}`ms\n-# *Based from Python's `time.perf_counter()`; counts before and after command execution*",
                 inline=True,
             ),
             ipy.EmbedField(

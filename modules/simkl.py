@@ -238,7 +238,7 @@ async def create_simkl_embed(
         ),
         title=title,
         url=f"https://simkl.com/{media_type}/{media_id}",
-        description=f"""*`{media_id}`, {'TV' if media_type =='tv' else 'Movies'}{status}, {year}, ⭐ {score}/10 by {votes:,} {'people' if votes >= 2 else 'person'}*
+        description=f"""-# `{media_id}`, {'TV' if media_type =='tv' else 'Movies'}{status}, {year}, ⭐ {score}/10 by {votes:,} {'people' if votes >= 2 else 'person'}
 
 > {description}""",
         color=0x0B0F10,

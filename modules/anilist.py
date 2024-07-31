@@ -327,7 +327,7 @@ async def generate_anilist(
         ),
         title=romaji if romaji else native,
         url=media_pg,
-        description=f"""*`{media_id}`*, {format_str}, {year}, ⭐ {average_score}/100, by {people_voted}
+        description=f"""-# `{media_id}`, {format_str}, {year}, ⭐ {average_score}/100, by {people_voted}
 
 > {desc_done}""",
         color=hex_color,

@@ -426,7 +426,7 @@ async def generate_mal(
         ),
         title=rot,
         url=f"https://myanimelist.net/anime/{mal_id}",
-        description=f"""*`{mal_id}`, {jk_dat.type}, {sson} {year}, ⭐ {scr}/10 by {pvd}*
+        description=f"""-# `{mal_id}`, {jk_dat.type}, {sson} {year}, ⭐ {scr}/10 by {pvd}
 
 > {cyno}
 """,
