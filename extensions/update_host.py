@@ -2,8 +2,8 @@ from os import getpid, kill
 from subprocess import check_output as chout
 from subprocess import run as sub_run
 
-from interactions import (Client, Embed, Extension, IntervalTrigger,
-                          SlashContext, Task)
+from interactions import (Activity, ActivityType, Client, Embed, Extension,
+                          IntervalTrigger, SlashContext, Status, Task)
 
 from extensions.hostsettings import hostsettings_head
 from modules.commons import save_traceback_to_file
@@ -55,8 +55,19 @@ class UpdateDaemon(Extension):
             return True
         return False
 
-    def _force_shutdown(self):
+    async def _change_presence(self, context: str = "update") -> None:
+        """Change presence to announce if the bot will do a reboot"""
+        await self.bot.change_presence(
+            activity=Activity(
+                name=f"bot rebooting due to {context}",
+                type=ActivityType.WATCHING,
+            ),
+            status=Status.IDLE
+        )
+
+    async def _force_shutdown(self):
         """Force shutdown the bot"""
+        await self._change_presence()
         pid = getpid()
         try:
             kill(pid, 9)
@@ -92,7 +103,7 @@ class UpdateDaemon(Extension):
         upstream_commit = self._check_upstream_commit()
         if upstream_commit != self.GITHUB_COMMIT:
             self._update_pip_dependencies()
-            self._force_shutdown()
+            await self._force_shutdown()
 
     @hostsettings_head.subcommand(
         sub_cmd_name="update",
@@ -125,7 +136,7 @@ class UpdateDaemon(Extension):
                 embed.title = "Update successful"
                 embed.description = "The bot has been updated successfully"
                 await msg.edit(embed=embed)
-                self._force_shutdown()
+                await self._force_shutdown()
             else:
                 embed.add_field(
                     name="❌ Git",
@@ -152,4 +163,4 @@ class UpdateDaemon(Extension):
             color=0xFF4444,
         )
         await ctx.send(embed=embed)
-        self._force_shutdown()
+        await self._force_shutdown()
