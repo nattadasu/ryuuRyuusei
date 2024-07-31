@@ -1,75 +1,75 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import Literal, TypedDict
 
 import aiohttp
 
 from classes.cache import Caching
 from modules.const import USER_AGENT
 
-Cache = Caching(cache_directory="cache/pronoundb",
-                cache_expiration_time=604800)
+Cache = Caching(cache_directory="cache/pronoundb", cache_expiration_time=604800)
 
 
-class Pronouns(Enum):
-    """The pronouns enum of the user."""
+en_locale = Literal["he", "it", "she", "they", "any", "ask", "avoid", "other"]
 
-    HE_HIM = HEHIM = "hh"
-    """He/Him"""
-    HE_IT = HEIT = "hi"
-    """He/It"""
-    HE_SHE = HESHE = "hs"
-    """He/She"""
-    HE_THEY = HETHEY = "ht"
-    """He/They"""
-    IT_HE = ITHE = "ih"
-    """It/He"""
-    IT_ITS = ITITS = "ii"
-    """It/Its"""
-    IT_SHE = ITSHE = "is"
-    """It/She"""
-    IT_THEY = ITTHEY = "it"
-    """It/They"""
-    SHE_HE = SHEHE = "shh"
-    """She/He"""
-    SHE_HER = SHEHER = "sh"
-    """She/Her"""
-    SHE_IT = SHEIT = "si"
-    """She/It"""
-    SHE_THEY = SHETHEY = "st"
-    """She/They"""
-    THEY_HE = THEYHE = "th"
-    """They/He"""
-    THEY_IT = THEYIT = "ti"
-    """They/It"""
-    THEY_SHE = THEYSHE = "ts"
-    """They/She"""
-    THEY_THEM = THEYTHEM = "tt"
-    """They/Them"""
-    ANY = "any"
-    """Any pronouns"""
-    OTHER = "other"
-    """Other pronouns"""
-    ASK = "ask"
-    """Ask user their pronouns"""
-    AVOID = "avoid"
-    """Avoid using pronouns, use their name instead"""
-    UNSPECIFIED = "unspecified"
-    """Unspecified pronouns"""
+en_define = {
+    "he": "he/him",
+    "it": "it/its",
+    "she": "she/her",
+    "they": "they/them",
+    "any": "any pronouns",
+    "ask": "ask me my pronouns",
+    "avoid": "avoid pronouns, use my name",
+    "other": "other pronouns",
+}
+
+
+class UserSets(TypedDict):
+    """The user sets of the user."""
+
+    en: list[en_locale]
+    """The English locale of the user's pronoun."""
+
+
+class UserId(TypedDict):
+    """The user ID of the user."""
+
+    sets: UserSets
+
+
+@dataclass
+class Pronouns:
+    """The pronouns of the user."""
+
+    en: list[en_locale]
+    """The English locale of the user's pronoun."""
+
+    def __str__(self) -> str:
+        return (
+            ", ".join([en_define[pronoun] for pronoun in self.en])
+            if self.en
+            else "Not set"
+        )
+
+    def __repr__(self) -> str:
+        return f"Pronouns(en={self.en})"
 
 
 @dataclass
 class PronounData:
-    """PronounDB Pronoun Dataclass, for single user"""
+    """The pronoun data of the user."""
 
     pronouns: Pronouns
-    """The pronoun of the user."""
+    """The pronouns of the user."""
+
+    def __str__(self) -> str:
+        return str(self.pronouns)
+
+    def __repr__(self) -> str:
+        return f"PronounData(pronouns={self.pronouns})"
 
 
-pronounBulk = dict[str, Pronouns]
-"""PronounDB Pronoun Bulk Dataclass, for multiple users"""
-
-
-class PronounDB:
+class PronounDBV2:
     """PronounDB API wrapper"""
 
     def __init__(self):
@@ -81,6 +81,7 @@ class PronounDB:
         """
         self.session = None
         self.headers = {"User-Agent": USER_AGENT}
+        self.base_url = "https://pronoundb.org/api/v2"
 
     async def __aenter__(self):
         """Enter the async context manager"""
@@ -93,7 +94,7 @@ class PronounDB:
 
     async def close(self):
         """Close the aiohttp session"""
-        await self.session.close()
+        await self.session.close() if self.session else None
 
     class Platform(Enum):
         """The platform of the user."""
@@ -109,6 +110,35 @@ class PronounDB:
         TWITTER = "twitter"
         """Twitter"""
 
+    async def lookup(
+        self, platform: Platform, ids: list[str] | str
+    ) -> dict[str, UserId]:
+        """
+        Looks up the data saved in PronounDB for one or more (up to 50) account
+        for a given platform.
+
+        The response is a map of IDs to the corresponding data. If an ID is not
+        in our database, it will not be present in the response.
+
+        Args:
+            platform (Platform): The platform of the user
+            ids (list[str] | str): The ID of the user
+
+        Returns:
+            Pronoun: The pronouns of the user
+        """
+        if not self.session:
+            async with self:
+                return await self.lookup(platform, ids)
+        if isinstance(ids, list):
+            if len(ids) > 50:
+                raise ValueError("You can only lookup up to 50 IDs at a time.")
+            ids = ",".join(ids)
+        async with self.session.get(
+            f"{self.base_url}/lookup", params={"platform": platform.value, "ids": ids}
+        ) as r:
+            return await r.json()
+
     async def get_pronouns(self, platform: Platform, user_id: str) -> PronounData:
         """
         Get the pronouns of a user
@@ -120,75 +150,13 @@ class PronounDB:
         Returns:
             Pronoun: The pronouns of the user
         """
-        params = {"platform": platform.value, "id": user_id}
-        cache_file_path = Cache.get_cache_file_path(
-            f"{platform.value}/{user_id}.json")
+        cache_file_path = Cache.get_cache_file_path(f"{platform.value}/{user_id}.json")
         cached_file = Cache.read_cached_data(cache_file_path)
         if cached_file:
-            cached_file["pronouns"] = Pronouns(cached_file["pronouns"])
-            return PronounData(**cached_file)
-        async with self.session.get(
-            "https://pronoundb.org/api/v1/lookup", params=params
-        ) as r:
-            data = await r.json()
-            Cache.write_data_to_cache(data, cache_file_path)
-            data["pronouns"] = Pronouns(data["pronouns"])
-            return PronounData(**data)
-
-    async def get_pronouns_bulk(
-        self, platform: Platform, user_ids: list[str]
-    ) -> pronounBulk:
-        """
-        Get the pronouns of multiple users
-
-        Args:
-            platform (Platform): The platform of the user
-            user_ids (list[str]): The IDs of the users
-
-        Returns:
-            PronounBulk: The pronouns of the users
-        """
-        params = {"platform": platform.value, "ids": ",".join(user_ids)}
-        async with self.session.get(
-            "https://pronoundb.org/api/v1/lookup-bulk", params=params
-        ) as r:
-            data = await r.json()
-            for key, value in data.items():
-                data[key] = Pronouns(value)
-            return data
-
-    @staticmethod
-    def translate_shorthand(pronouns: Pronouns) -> str:
-        """
-        Translate the pronouns into shorthand
-
-        Args:
-            pronouns (Pronouns): The pronouns to translate
-
-        Returns:
-            str: The shorthand of the pronouns
-        """
-        pron: dict[Pronouns, str] = {
-            Pronouns.HE_HIM: "he/him",
-            Pronouns.HE_IT: "he/it",
-            Pronouns.HE_SHE: "he/she",
-            Pronouns.HE_THEY: "he/they",
-            Pronouns.IT_HE: "it/he",
-            Pronouns.IT_ITS: "it/its",
-            Pronouns.IT_SHE: "it/she",
-            Pronouns.IT_THEY: "it/they",
-            Pronouns.SHE_HE: "she/he",
-            Pronouns.SHE_HER: "she/her",
-            Pronouns.SHE_IT: "she/it",
-            Pronouns.SHE_THEY: "she/they",
-            Pronouns.THEY_HE: "they/he",
-            Pronouns.THEY_IT: "they/it",
-            Pronouns.THEY_SHE: "they/she",
-            Pronouns.THEY_THEM: "they/them",
-            Pronouns.ANY: "any",
-            Pronouns.OTHER: "other",
-            Pronouns.ASK: "ask",
-            Pronouns.AVOID: "avoid",
-            Pronouns.UNSPECIFIED: "unspecified",
-        }
-        return pron[pronouns]
+            return PronounData(Pronouns(en=cached_file["sets"]["en"]))
+        data = await self.lookup(platform, user_id)
+        if not data:
+            return PronounData(Pronouns(en=[]))
+        user_data = data[user_id]
+        Cache.write_cache(cache_file_path, user_data)
+        return PronounData(Pronouns(en=user_data["sets"]["en"]))

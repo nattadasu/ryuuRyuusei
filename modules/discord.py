@@ -3,7 +3,7 @@ from datetime import datetime
 import interactions as ipy
 
 from classes.database import UserDatabase
-from classes.pronoundb import PronounDB, Pronouns
+from classes.pronoundb import PronounDBV2, Pronouns
 from modules.commons import sanitize_markdown
 
 
@@ -55,12 +55,9 @@ async def generate_discord_profile_embed(
         color = data.accent_color.value
     else:
         color = 0x000000
-    async with PronounDB() as pdb:
+    async with PronounDBV2() as pdb:
         pronouns = await pdb.get_pronouns(pdb.Platform.DISCORD, userId)
-        if pronouns.pronouns == Pronouns.UNSPECIFIED:
-            pronouns = "Unset"
-        else:
-            pronouns = pdb.translate_shorthand(pronouns.pronouns)
+    pronouns = "Not set" if len(pronouns.pronouns.en) == 0 else str(pronouns)
 
     fields = [
         ipy.EmbedField(
