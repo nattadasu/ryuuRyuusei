@@ -58,6 +58,7 @@ class Platform(Enum):
     FACEBOOK = FB = "facebook"
     FLICKR = "flickr"
     HOYOLAB = HOYO = "hoyolab"
+    IBISPAINT = "ibispaint"
     INSTAGRAM = IG = "instagram"
     LOFTER = "lofter"
     NICONICOSEIGA = NICONICO = SEIGA = NNS = "seiga"
@@ -128,6 +129,7 @@ def get_platform_color(pf: str | Platform) -> int:
             "facebook": 0x3B5998,
             "flickr": 0xFF0084,
             "hoyolab": 0x1B75BB,
+            "ibispaint": 0x1F507B,
             "instagram": 0x833AB4,
             "lofter": 0x335F60,
             "patreon": 0xF96854,
@@ -189,6 +191,7 @@ def get_platform_name(pf: str | Platform) -> str:
         "facebook": "Facebook",
         "flickr": "Flickr",
         "hoyolab": "Hoyolab",
+        "ibispaint": "ibisPaint",
         "instagram": "Instagram",
         "lofter": "Lofter",
         "patreon": "Patreon",
