@@ -372,7 +372,7 @@ async def simkl_submit(
             else:
                 data: dict[str, Any] = await simkl.get_movie(f"{media_id}")
 
-        tmdb_id = data.get("ids", {}).get("tmdb", None)
+        tmdb_id = data.get("ids", {"tmdb": None}).get("tmdb", None)
         if tmdb_id is not None:
             try:
                 async with TheMovieDb() as tmdb:
