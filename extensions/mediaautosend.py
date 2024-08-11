@@ -147,7 +147,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_type = "anime"
                 media_id = ids["mediaid"]
                 source = "kaize"
-            case r"(?:https?://)?(?:www\.)?kitsu\.io/anime/(?P<mediaid>[\w\-]+)" as ids:
+            case r"(?:https?://)?(?:www\.)?kitsu\.(?:io|app)/anime/(?P<mediaid>[\w\-]+)" as ids:
                 media_id: str = ids["mediaid"]
                 if not media_id.isdigit():
                     async with aiohttp.ClientSession() as session, session.get(f"https://kitsu.app/api/edge/anime?filter[slug]={media_id}") as resp:
@@ -158,7 +158,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_to = "mal"
                 send_type = "anime"
                 source = "kitsu"
-            case r"(?:https?://)?(?:www\.)?kitsu\.io/manga/(?P<mediaid>[\w\-]+)" as ids:
+            case r"(?:https?://)?(?:www\.)?kitsu\.(?:io|app)/manga/(?P<mediaid>[\w\-]+)" as ids:
                 # try find AniList ID on Kitsu GraphQL API
                 ids: dict[str, str]
                 media_id: str = ids["mediaid"]
