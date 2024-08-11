@@ -57,12 +57,12 @@ async def kitsu_id_to_other_id(
 ) -> str | None:
     """Convert a Kitsu ID to another ID"""
     if not kitsu_id.isdigit():
-        async with aiohttp.ClientSession() as session, session.get(f"https://kitsu.io/api/edge/{media_kind}?filter[slug]={kitsu_id}") as resp:
+        async with aiohttp.ClientSession() as session, session.get(f"https://kitsu.app/api/edge/{media_kind}?filter[slug]={kitsu_id}") as resp:
             if resp.status != 200:
                 return None
             data = await resp.json()
             kitsu_id = data["data"][0]["id"]
-    async with aiohttp.ClientSession() as session, session.get(f"https://kitsu.io/api/edge/{media_kind}/{kitsu_id}/mappings") as resp:
+    async with aiohttp.ClientSession() as session, session.get(f"https://kitsu.app/api/edge/{media_kind}/{kitsu_id}/mappings") as resp:
         if resp.status != 200:
             return
         data = await resp.json()
@@ -150,7 +150,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
             case r"(?:https?://)?(?:www\.)?kitsu\.io/anime/(?P<mediaid>[\w\-]+)" as ids:
                 media_id: str = ids["mediaid"]
                 if not media_id.isdigit():
-                    async with aiohttp.ClientSession() as session, session.get(f"https://kitsu.io/api/edge/anime?filter[slug]={media_id}") as resp:
+                    async with aiohttp.ClientSession() as session, session.get(f"https://kitsu.app/api/edge/anime?filter[slug]={media_id}") as resp:
                         if resp.status != 200:
                             return
                         data = await resp.json()

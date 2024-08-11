@@ -523,7 +523,7 @@ class ExtenalSitesRelations(ipy.Extension):
             )
             postsrc = "Notify.moe"
         elif anime_api.kitsu is not None:
-            poster = f"https://media.kitsu.io/anime/poster_images/{anime_api.kitsu}/large.jpg"
+            poster = f"https://media.kitsu.app/anime/poster_images/{anime_api.kitsu}/large.jpg"
             postsrc = "Kitsu"
 
         postsrc = f" Poster from {postsrc}" if postsrc else ""

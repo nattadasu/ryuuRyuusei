@@ -282,7 +282,7 @@ def media_id_to_platform(
             "emoid": "1073441859910774784",
         },
         "kitsu": {
-            "uid": f"https://kitsu.io/anime/{media_id}",
+            "uid": f"https://kitsu.app/anime/{media_id}",
             "emoid": "1073439152462368950",
         },
         "myanimelist": {

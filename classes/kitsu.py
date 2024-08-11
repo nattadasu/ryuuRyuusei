@@ -16,7 +16,7 @@ class Kitsu:
     def __init__(self):
         """Initialize the Kitsu API Wrapper"""
         self.session = None
-        self.base_url = "https://kitsu.io/api/edge/"
+        self.base_url = "https://kitsu.app/api/edge/"
         self.params = None
 
     async def __aenter__(self):
