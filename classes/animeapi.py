@@ -178,7 +178,7 @@ class AnimeApi:
             return AnimeApiAnime(**cached_data)
         try:
             async with self.session.get(
-                f"https://aniapi.nattadasu.my.id/{platform}/{media_id}"
+                f"{self.base_url}/{platform}/{media_id}"
             ) as resp:
                 jsonText = await resp.text()
                 jsonText = json.loads(jsonText)
