@@ -4,12 +4,14 @@ import interactions as ipy
 
 from classes.anibrain import AniBrainAI
 from modules.anilist import search_al_anime
-from modules.commons import (generate_search_embed, sanitize_markdown,
-                             save_traceback_to_file)
+from modules.commons import (
+    generate_search_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+)
 from classes.excepts import ProviderHttpError
 from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
-from modules.myanimelist import (lookup_random_anime, mal_submit,
-                                 search_mal_anime)
+from modules.myanimelist import lookup_random_anime, mal_submit, search_mal_anime
 
 
 class Anime(ipy.Extension):
@@ -41,8 +43,7 @@ class Anime(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(
-                        name="AniList (Default)", value="anilist"),
+                    ipy.SlashCommandChoice(name="AniList (Default)", value="anilist"),
                     ipy.SlashCommandChoice(name="MyAnimeList", value="mal"),
                 ],
             ),
@@ -73,29 +74,25 @@ class Anime(ipy.Extension):
             so: list[ipy.StringSelectOption] = []
             for a in res:
                 if a["node"]["start_season"] is None:
-                    a["node"]["start_season"] = {
-                        "season": "Unknown", "year": "Year"}
+                    a["node"]["start_season"] = {"season": "Unknown", "year": "Year"}
                 media_type: str = a["node"]["media_type"] or "Unknown"
                 season: str = a["node"]["start_season"]["season"] or "Unknown"
-                year: str = (
-                    a["node"]["start_season"]["year"]
-                    or "Unknown Year"
-                )
+                year: str = a["node"]["start_season"]["year"] or "Unknown Year"
                 title: str = a["node"]["title"]
                 if len(title) >= 256:
                     title = title[:253] + "..."
                 mdTitle: str = sanitize_markdown(title)
                 alt = a["node"]["alternative_titles"]
                 native: str = (
-                    sanitize_markdown(alt["ja"]) +
-                    "\n" if alt and alt["ja"] else ""
+                    sanitize_markdown(alt["ja"]) + "\n" if alt and alt["ja"] else ""
                 )
                 f.append(
                     ipy.EmbedField(
                         name=mdTitle,
                         value=f"{native}`{a['node']['id']}`, {media_type}, {season} {year}",
                         inline=False,
-                    ))
+                    )
+                )
                 so.append(
                     ipy.StringSelectOption(
                         label=title[:77] + ("..." if len(title) > 77 else ""),
@@ -134,28 +131,30 @@ class Anime(ipy.Extension):
         except Exception as e:
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             al_notice = "Ryuusei uses AniList as the default anime search provider for best match experience, although the media info will be fetched from MyAnimeList."
-            err_msg = f"I couldn't able to find any results for {query} on {platform}. Please check your query and try again."
+            err_msg = f"I couldn't able to find any results for `{query}` on `{platform}`. Please check your query and try again."
             err_msg += f"\n-# {al_notice}" if provider == "anilist" else ""
             foo_msg = STR_RECOMMEND_NATIVE_TITLE
             embed = ipy.Embed(
                 title="Error",
-                description=err_msg.replace("\n", ""),
+                description=err_msg,
                 color=0xFF0000,
-                footer=ipy.EmbedFooter(foo_msg.replace("\n", "")))
+                footer=ipy.EmbedFooter(foo_msg.replace("\n", "")),
+            )
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
             )
             # if err type is ProviderHttpError and from AniList, embed the error message
-            if provider == "anilist" and isinstance(e, ProviderHttpError):
-                embed.add_field(
-                    name="Error Message",
-                    value=e.message,
-                    inline=False,
-                )
+            if provider == "anilist":
+                if isinstance(e, ProviderHttpError):
+                    embed.add_field(
+                        name="Error Message",
+                        value=e.message,
+                        inline=False,
+                    )
                 embed.add_field(
                     name="Futher Information",
                     value=f"If you think the title is exist on MyAnimeList, use this command instead:```elixir\n/anime search provider:MyAnimeList query:{query}\n```",
-                    inline=False
+                    inline=False,
                 )
             await send.edit(
                 embed=embed,
@@ -163,10 +162,10 @@ class Anime(ipy.Extension):
                     style=ipy.ButtonStyle.DANGER,
                     label="Delete",
                     custom_id="message_delete",
-                    emoji="🗑️"
+                    emoji="🗑️",
                 ),
             )
-            save_traceback_to_file("anime_search", ctx.author, _)
+            save_traceback_to_file("anime_search", ctx.author, e)
 
     @ipy.component_callback("mal_search")
     async def anime_search_data(self, ctx: ipy.ComponentContext) -> None:
@@ -217,8 +216,7 @@ class Anime(ipy.Extension):
                 choices=[
                     ipy.SlashCommandChoice(name="Any (default)", value="any"),
                     ipy.SlashCommandChoice(name="Japan", value="Japan"),
-                    ipy.SlashCommandChoice(
-                        name="South Korea", value="South Korea"),
+                    ipy.SlashCommandChoice(name="South Korea", value="South Korea"),
                     ipy.SlashCommandChoice(name="China", value="China"),
                     ipy.SlashCommandChoice(name="Taiwan", value="Taiwan"),
                 ],
@@ -245,16 +243,16 @@ class Anime(ipy.Extension):
                 type=ipy.OptionType.NUMBER,
                 required=False,
                 min_value=1930,
-            )
+            ),
         ],
     )
     async def anime_random(
         self,
         ctx: ipy.SlashContext,
-        media_type: Literal["any", "TV", "Movie", "OVA",
-                            "ONA", "Special", "TV Short"] = "any",
-        country: Literal["any", "Japan",
-                         "South Korea", "China", "Taiwan"] = "any",
+        media_type: Literal[
+            "any", "TV", "Movie", "OVA", "ONA", "Special", "TV Short"
+        ] = "any",
+        country: Literal["any", "Japan", "South Korea", "China", "Taiwan"] = "any",
         min_score: int = 0,
         release_from: int = 1930,
         release_to: int | None = None,
@@ -272,17 +270,22 @@ class Anime(ipy.Extension):
         )
         try:
             async with AniBrainAI() as ai:
-                countries = [i for i in ai.CountryOfOrigin] if country == "any" else [
-                    ai.CountryOfOrigin(country)]
+                countries = (
+                    [i for i in ai.CountryOfOrigin]
+                    if country == "any"
+                    else [ai.CountryOfOrigin(country)]
+                )
                 if media_type != "any":
                     target_media_type = [ai.AnimeMediaType(media_type.lower())]
                 else:
                     target_media_type = "[]"
-                media_data = await ai.get_anime(filter_country=countries,
-                                                filter_format=target_media_type,
-                                                filter_score=min_score,
-                                                filter_release_from=release_from,
-                                                filter_release_to=release_to)
+                media_data = await ai.get_anime(
+                    filter_country=countries,
+                    filter_format=target_media_type,
+                    filter_score=min_score,
+                    filter_release_from=release_from,
+                    filter_release_to=release_to,
+                )
                 # find the first anime with a valid MAL ID
                 for ani in media_data:
                     if ani.myanimelistId:
@@ -321,9 +324,7 @@ class Anime(ipy.Extension):
                 value=f"AnimeAPI doesn't support filtering.\nIgnores the following filters:\n{errs_str}",
                 inline=False,
             )
-        await send.edit(
-            embed=found
-        )
+        await send.edit(embed=found)
         await mal_submit(ctx, anime)
 
 

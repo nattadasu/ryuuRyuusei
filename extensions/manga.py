@@ -130,7 +130,7 @@ class Manga(ipy.Extension):
         # pylint: disable-next=broad-except
         except Exception as e:
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
-            embed_description: str = f"I couldn't find any manga with the title {query} on AniList. Please check your query and try again."
+            embed_description: str = f"I couldn't find any manga with the title `{query}` on `AniList`. Please check your query and try again."
             embed = ipy.Embed(
                 title="Error",
                 description=embed_description,
@@ -155,7 +155,7 @@ class Manga(ipy.Extension):
                     emoji="🗑️"
                 ),
             )
-            save_traceback_to_file("manga_search", ctx.author, _)
+            save_traceback_to_file("manga_search", ctx.author, e)
 
     @ipy.component_callback("anilist_manga_search")
     async def anilist_manga_search(self, ctx: ipy.ComponentContext) -> None:
