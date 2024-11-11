@@ -5,6 +5,7 @@ import interactions as ipy
 from classes.anibrain import AniBrainAI, AniBrainAiMedia
 from classes.anilist import AniList
 from modules.anilist import anilist_submit
+from classes.excepts import ProviderHttpError
 from modules.commons import (generate_search_embed, platform_exception_embed,
                              sanitize_markdown, save_traceback_to_file)
 from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
@@ -127,7 +128,7 @@ class Manga(ipy.Extension):
                 components=components,
             )
         # pylint: disable-next=broad-except
-        except Exception as _:
+        except Exception as e:
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             embed_description: str = f"I couldn't find any manga with the title {query} on AniList. Please check your query and try again."
             embed = ipy.Embed(
@@ -139,6 +140,12 @@ class Manga(ipy.Extension):
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
             )
+            if isinstance(e, ProviderHttpError):
+                embed.add_field(
+                    name="Errors",
+                    value=e.message,
+                    inline=False,
+                )
             await send.edit(
                 embed=embed,
                 components=ipy.Button(

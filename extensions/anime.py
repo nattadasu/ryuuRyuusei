@@ -6,6 +6,7 @@ from classes.anibrain import AniBrainAI
 from modules.anilist import search_al_anime
 from modules.commons import (generate_search_embed, sanitize_markdown,
                              save_traceback_to_file)
+from classes.excepts import ProviderHttpError
 from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
 from modules.myanimelist import (lookup_random_anime, mal_submit,
                                  search_mal_anime)
@@ -130,9 +131,11 @@ class Anime(ipy.Extension):
                 embed=result,
                 components=components,
             )
-        except Exception as _:
+        except Exception as e:
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
+            al_notice = "Ryuusei uses AniList as the default anime search provider for best match experience, although the media info will be fetched from MyAnimeList."
             err_msg = f"I couldn't able to find any results for {query} on {platform}. Please check your query and try again."
+            err_msg += f"\n-# {al_notice}" if provider == "anilist" else ""
             foo_msg = STR_RECOMMEND_NATIVE_TITLE
             embed = ipy.Embed(
                 title="Error",
@@ -142,6 +145,18 @@ class Anime(ipy.Extension):
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
             )
+            # if err type is ProviderHttpError and from AniList, embed the error message
+            if provider == "anilist" and isinstance(e, ProviderHttpError):
+                embed.add_field(
+                    name="Error Message",
+                    value=e.message,
+                    inline=False,
+                )
+                embed.add_field(
+                    name="Futher Information",
+                    value=f"If you think the title is exist on MyAnimeList, use this command instead:```elixir\n/anime search provider:MyAnimeList query:{query}\n```",
+                    inline=False
+                )
             await send.edit(
                 embed=embed,
                 components=ipy.Button(
