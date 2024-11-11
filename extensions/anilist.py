@@ -98,7 +98,7 @@ class AniListCog(ipy.Extension):
             if anilist_username is None:
                 embed = platform_exception_embed(
                     description=f"""{user.mention} haven't linked the AniList account to the bot yet!
-Use `/platform link` to link, or `/profile anilist anilist_username:<anilist_username>` to get the profile information directly""",
+Use `/platform link` to link, or `/anilist profile anilist_username:<anilist_username>` to get the profile information directly""",
                     error_type=PlatformErrType.USER,
                     error="User hasn't link their account yet",
                 )

@@ -96,7 +96,7 @@ class ShikimoriCog(ipy.Extension):
             if shikimori_username is None:
                 embed = platform_exception_embed(
                     description=f"""{user.mention} haven't linked the Shikimori account to the bot yet!
-Use `/platform link` to link, or `/profile shikimori shikimori_username:<shikimori_username>` to get the profile information directly""",
+Use `/platform link` to link, or `/shikimori profile shikimori_username:<shikimori_username>` to get the profile information directly""",
                     error_type=PlatformErrType.USER,
                     error="User hasn't link their account yet",
                 )

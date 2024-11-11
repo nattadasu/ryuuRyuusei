@@ -99,7 +99,7 @@ class LastFmCog(ipy.Extension):
         if lfm_username is None:
             embed = platform_exception_embed(
                 description=f"""{user.mention} haven't linked the Last.fm account to the bot yet!
-Use `/platform link` to link, or `/profile lastfm lfm_username:<lastfm_username>` to get the profile information directly""",
+Use `/platform link` to link, or `/lastfm profile lfm_username:<lastfm_username>` to get the profile information directly""",
                 error_type=PlatformErrType.USER,
                 error="User hasn't link their account yet",
             )

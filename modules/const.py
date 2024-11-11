@@ -186,10 +186,10 @@ DECLINED_GDPR: Final[
 Unfortunately, we cannot register you without your consent. However, you can still use the bot albeit limited.
 
 Allowed commands:
-- `/profile myanimelist mal_username:<str>`
-- `/profile anilist anilist_username:<str>`
-- `/profile shikimori shikimori_username:<str>`
-- `/profile lastfm lastfm_username:<str>`
+- `/myanimelist profile mal_username:<str>`
+- `/anilist profile anilist_username:<str>`
+- `/shikimori profile shikimori_username:<str>`
+- `/lastfm profile lastfm_username:<str>`
 
 If you want to register, please use the command `/register` again and accept the consent by set the `accept_privacy_policy` option to `true`!
 

@@ -132,7 +132,7 @@ class MyAnimeListCog(ipy.Extension):
         if mal_username is None:
             embed = platform_exception_embed(
                 description=f"""{user.mention} haven't registered the MyAnimeList account to the bot yet!
-Use `/register` to register, or use `/profile myanimelist mal_username:<username>` to get the profile information of a user without registering their account to the bot""",
+Use `/register` to register, or use `/myanimelist profile mal_username:<username>` to get the profile information of a user without registering their account to the bot""",
                 error_type=PlatformErrType.USER,
                 error="User hasn't registered their MAL account yet",
             )
