@@ -4,8 +4,8 @@ import interactions as ipy
 
 from classes.anibrain import AniBrainAI, AniBrainAiMedia
 from classes.anilist import AniList
-from modules.anilist import anilist_submit
 from classes.excepts import ProviderHttpError
+from modules.anilist import anilist_submit
 from modules.commons import (generate_search_embed, platform_exception_embed,
                              sanitize_markdown, save_traceback_to_file)
 from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE

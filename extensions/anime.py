@@ -3,10 +3,10 @@ from typing import Literal
 import interactions as ipy
 
 from classes.anibrain import AniBrainAI
+from classes.excepts import ProviderHttpError
 from modules.anilist import search_al_anime
 from modules.commons import (generate_search_embed, sanitize_markdown,
                              save_traceback_to_file)
-from classes.excepts import ProviderHttpError
 from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
 from modules.myanimelist import (lookup_random_anime, mal_submit,
                                  search_mal_anime)
