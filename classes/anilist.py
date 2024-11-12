@@ -583,6 +583,7 @@ class AniList:
             gqlquery = f"""query {{
     User(name: "{username}") {{
         id
+        name
     }}
 }}"""
         else:
