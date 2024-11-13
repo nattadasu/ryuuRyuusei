@@ -66,7 +66,8 @@ SHIKIMORI_CLIENT_ID: Final[str] = cast(str, ge("SHIKIMORI_CLIENT_ID"))
 """Shikimori client ID"""
 SHIKIMORI_CLIENT_SECRET: Final[str] = cast(str, ge("SHIKIMORI_CLIENT_SECRET"))
 """Shikimori client secret"""
-SHIKIMORI_APPLICATION_NAME: Final[str] = cast(str, ge("SHIKIMORI_APPLICATION_NAME"))
+SHIKIMORI_APPLICATION_NAME: Final[str] = cast(
+    str, ge("SHIKIMORI_APPLICATION_NAME"))
 """Shikimori application name"""
 SIMKL_CLIENT_ID: Final[str] = cast(str, ge("SIMKL_CLIENT_ID"))
 """SIMKL client ID"""
