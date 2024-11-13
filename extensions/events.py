@@ -2,38 +2,13 @@ import re
 from time import time
 
 import interactions as ipy
-from interactions.api.events import (CommandError, GuildJoin, GuildLeft,
-                                     MemberAdd, MemberRemove)
+from interactions.api.events import CommandError
 
-from modules.const import BOT_DATA, EMOJI_FORBIDDEN
+from modules.const import EMOJI_FORBIDDEN
 
 
 class BotEvents(ipy.Extension):
     """Bot events"""
-
-    # increment BOT_DATA["member_count"] when a member joins
-    @ipy.listen()
-    async def on_member_add(self, event: MemberAdd):
-        """When a member joins"""
-        BOT_DATA["server_members"][f"{event.guild.id}"] += 1
-
-    # decrement BOT_DATA["member_count"] when a member leaves
-    @ipy.listen()
-    async def on_member_remove(self, event: MemberRemove):
-        """When a member leaves"""
-        if event.guild is None:  # type: ignore
-            return
-        BOT_DATA["server_members"][f"{event.guild.id}"] -= 1
-
-    @ipy.listen()
-    async def on_guild_join(self, event: GuildJoin):
-        """When the bot joins a guild"""
-        BOT_DATA["server_members"][f"{event.guild.id}"] = event.guild.member_count
-
-    @ipy.listen()
-    async def on_guild_leave(self, event: GuildLeft):
-        """When the bot leaves a guild"""
-        del BOT_DATA["server_members"][f"{event.guild.id}"]
 
     @ipy.listen(disable_default_listeners=True)
     async def on_command_error(self, event: CommandError):

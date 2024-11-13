@@ -11,7 +11,7 @@ This module also contains some mutable variables/constant that are used oftenly 
 
 from os import getenv as ge
 from subprocess import check_output as chout
-from typing import Any, Final, cast
+from typing import Final, cast
 
 from dotenv import load_dotenv as ld
 
@@ -66,8 +66,7 @@ SHIKIMORI_CLIENT_ID: Final[str] = cast(str, ge("SHIKIMORI_CLIENT_ID"))
 """Shikimori client ID"""
 SHIKIMORI_CLIENT_SECRET: Final[str] = cast(str, ge("SHIKIMORI_CLIENT_SECRET"))
 """Shikimori client secret"""
-SHIKIMORI_APPLICATION_NAME: Final[str] = cast(
-    str, ge("SHIKIMORI_APPLICATION_NAME"))
+SHIKIMORI_APPLICATION_NAME: Final[str] = cast(str, ge("SHIKIMORI_APPLICATION_NAME"))
 """Shikimori application name"""
 SIMKL_CLIENT_ID: Final[str] = cast(str, ge("SIMKL_CLIENT_ID"))
 """SIMKL client ID"""
@@ -121,8 +120,7 @@ def get_git_revision_short_hash() -> str:
     Returns:
         str: The current git revision short hash
     """
-    return chout(["git", "rev-parse", "--short", "HEAD"]
-                 ).decode("ascii").strip()
+    return chout(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()
 
 
 def get_git_remote_url() -> str:
@@ -161,9 +159,9 @@ GIT_COMMIT_HASH = get_git_revision_hash()
 GT_HSH = get_git_revision_short_hash()
 """The git revision short hash"""
 
-USER_AGENT: Final[
-    str
-] = f"RyuuzakiRyuusei/1.0 ({GIT_REMOTE}/{GT_HSH}; branch:{GIT_BRANCH}; author:{AUTHOR_USERNAME}:{AUTHOR_USERID}; https://discord.com/users/{BOT_CLIENT_ID})"
+USER_AGENT: Final[str] = (
+    f"RyuuzakiRyuusei/1.0 ({GIT_REMOTE}/{GT_HSH}; branch:{GIT_BRANCH}; author:{AUTHOR_USERNAME}:{AUTHOR_USERID}; https://discord.com/users/{BOT_CLIENT_ID})"
+)
 """The user agent"""
 
 # =============================================================================
@@ -172,17 +170,10 @@ USER_AGENT: Final[
 AUTHOR_USER_URL = f"https://discord.com/users/{AUTHOR_USERID}"
 """The bot author's user URL"""
 
-BOT_DATA: dict[str, Any] = {
-    "server_members": {}
-}
-"""Dynamic bot data"""
-
 # =============================================================================
 # Declined GDPR notice
 
-DECLINED_GDPR: Final[
-    str
-] = """## You have not accepted the Privacy Policy!
+DECLINED_GDPR: Final[str] = """## You have not accepted the Privacy Policy!
 Unfortunately, we cannot register you without your consent. However, you can still use the bot albeit limited.
 
 Allowed commands:
@@ -207,14 +198,12 @@ For more info what do we collect and use, use `/privacy`.
 
 # Common errors and messages
 
-MESSAGE_INVITE: Final[
-    str
-] = 'To invite me, simply press "**Invite me!**" button below!\nFor any questions, please join my support server!'
+MESSAGE_INVITE: Final[str] = (
+    'To invite me, simply press "**Invite me!**" button below!\nFor any questions, please join my support server!'
+)
 """The invite message"""
 
-MESSAGE_WARN_CONTENTS: Final[
-    str
-] = """
+MESSAGE_WARN_CONTENTS: Final[str] = """
 
 If you invoked this command outside (public or private) forum thread channel or regular text channel and **Age Restriction** is enabled, please contact developer of this bot as the feature only tested in forum thread and text channel.
 

@@ -18,8 +18,7 @@ from classes.stats.dbl import DiscordBotList
 from classes.stats.infinity import InfinityBots
 from classes.stats.topgg import TopGG
 from modules.commons import save_traceback_to_file
-from modules.const import (BOT_DATA, GIT_COMMIT_HASH, GT_HSH, USER_AGENT,
-                           VERIFICATION_SERVER)
+from modules.const import GIT_COMMIT_HASH, GT_HSH, USER_AGENT, VERIFICATION_SERVER
 
 
 @dataclass
@@ -56,6 +55,7 @@ class ProviderVoteStruct:
 @dataclass
 class DiskInfo:
     """Disk Information"""
+
     mountpoint: str
     disk_total: str | None
     disk_used: str | None
@@ -66,6 +66,7 @@ class DiskInfo:
 @dataclass
 class SystemInfo:
     """System Information"""
+
     system: str
     release: str
     version: str
@@ -94,6 +95,7 @@ class SystemInfo:
 @dataclass
 class PackageInfo:
     """Package Information"""
+
     name: str
     version: str
     license: str
@@ -140,7 +142,7 @@ def get_disk_info() -> list[DiskInfo]:
                 disk_total=disk_total,
                 disk_used=disk_used,
                 disk_free=disk_free,
-                disk_percentage=disk_percentage
+                disk_percentage=disk_percentage,
             )
         )
     return disks
@@ -181,20 +183,20 @@ def get_system_info() -> SystemInfo:
         swap_used=get_size(swap.used),
         swap_free=get_size(swap.free),
         swap_percentage=swap.percent,
-        disks=disks
+        disks=disks,
     )
 
 
 def get_pkg_license(pkg: pipkg.Distribution) -> str:
     try:
-        lines = pkg.get_metadata_lines('METADATA')
-    except:
-        lines = pkg.get_metadata_lines('PKG-INFO')
+        lines = pkg.get_metadata_lines("METADATA")
+    except Exception as _:
+        lines = pkg.get_metadata_lines("PKG-INFO")
 
     for line in lines:
-        if line.startswith('License:'):
+        if line.startswith("License:"):
             return line[9:]
-    return '*Licence not found*'
+    return "*Licence not found*"
 
 
 def get_pip_pkgs() -> list[PackageInfo]:
@@ -206,11 +208,9 @@ def get_pip_pkgs() -> list[PackageInfo]:
     """
     final: list[PackageInfo] = []
     for pkg in pipkg.working_set:
-        final.append(PackageInfo(
-            name=pkg.key,
-            version=pkg.version,
-            license=get_pkg_license(pkg)
-        ))
+        final.append(
+            PackageInfo(name=pkg.key, version=pkg.version, license=get_pkg_license(pkg))
+        )
     # sort by name
     final.sort(key=lambda x: x.name)
     return final
@@ -222,9 +222,10 @@ class Stats(ipy.Extension):
     """Common commands"""
 
     def __init__(
-            self,
-            bot: ipy.Client | ipy.AutoShardedClient,
-            now: datetime = datetime.now(tz=timezone.utc)):
+        self,
+        bot: ipy.Client | ipy.AutoShardedClient,
+        now: datetime = datetime.now(tz=timezone.utc),
+    ):
         """
         Initialize the extension
 
@@ -232,7 +233,7 @@ class Stats(ipy.Extension):
             bot (ipy.Client | ipy.AutoShardedClient): The bot client
             now (datetime, optional): The current time. Defaults to datetime.now(tz=tz.utc).
         """
-        self.bot = bot
+        self.bot: ipy.Client | ipy.AutoShardedClient = bot
         self.now = now
 
     base = ipy.SlashCommand(
@@ -244,12 +245,10 @@ class Stats(ipy.Extension):
         name="deepstats",
         description="Show more information about bot",
         scopes=[VERIFICATION_SERVER],
-        default_member_permissions=ipy.Permissions.ADMINISTRATOR
+        default_member_permissions=ipy.Permissions.ADMINISTRATOR,
     )
 
-    @base.subcommand(
-        sub_cmd_name="general",
-        sub_cmd_description="Show bot stats")
+    @base.subcommand(sub_cmd_name="general", sub_cmd_description="Show bot stats")
     async def stats_general(self, ctx: ipy.SlashContext):
         """
         Show bot stats
@@ -261,19 +260,18 @@ class Stats(ipy.Extension):
         bot_id = self.bot.user.id
         msg = await ctx.send(
             embed=ipy.Embed(
-                title="Stats",
-                description="Getting stats...",
-                color=0x771921
+                title="Stats", description="Getting stats...", color=0x771921
             )
         )
         # count guilds
         guilds = len(self.bot.guilds)
-        members = sum([g.member_count for g in self.bot.guilds])
-        server_members: dict[str, int] = BOT_DATA["server_members"]
-        true_members = sum(server_members.values())
         shards = self.bot.total_shards
         commands = self.bot.application_commands
-        scopes = [[0], [ctx.author_id], [ctx.channel_id]]
+        scopes: list[list[int | ipy.Snowflake]] = [
+            [0],
+            [ctx.author_id],
+            [ctx.channel_id],
+        ]
         if ctx.guild_id is not None:
             scopes.append([ctx.guild_id])
         scopes = tuple(scopes)
@@ -281,7 +279,8 @@ class Stats(ipy.Extension):
         commands = [
             command
             for command in commands
-            if list(map(int, command.scopes)) in scopes and isinstance(command, ipy.SlashCommand)
+            if list(map(int, command.scopes)) in scopes
+            and isinstance(command, ipy.SlashCommand)
         ]
         # count commands
         command_count = len(commands)
@@ -321,7 +320,7 @@ class Stats(ipy.Extension):
                         base_url="https://discordbotlist.com/bots/",
                         upvote_path="/upvotes",
                         total_votes=dbl_stats.total,
-                        time_limit=12
+                        time_limit=12,
                     )
                 )
         except Exception as err:
@@ -342,56 +341,31 @@ class Stats(ipy.Extension):
             save_traceback_to_file("stats_general-ibl", ctx.author, err, True)
 
         provider_votes.sort(key=lambda x: x.name)
-        votes_str = "\n".join(
-            [vt.as_text for vt in provider_votes]) or "No reports"
+        votes_str = "\n".join([vt.as_text for vt in provider_votes]) or "No reports"
 
         embed = ipy.Embed(
             title="General stats for bot",
             color=0x771921,
-            timestamp=ipy.Timestamp.now(tz=timezone.utc)
+            timestamp=ipy.Timestamp.now(tz=timezone.utc),
         )
 
         embed.add_fields(
-            ipy.EmbedField(
-                name="🏠 Guilds",
-                value=f"{guilds:,}",
-                inline=True),
-            ipy.EmbedField(
-                name="👥 Members, cached",
-                value=f"{members:,}",
-                inline=True),
-            ipy.EmbedField(
-                name="👥 Members, current",
-                value=f"{true_members:,}",
-                inline=True),
-            ipy.EmbedField(
-                name="🔗 Shards",
-                value=f"{shards:,}",
-                inline=True),
-            ipy.EmbedField(
-                name="📝 Commands",
-                value=f"{command_count:,}",
-                inline=True),
-            ipy.EmbedField(
-                name="🕒 Uptime",
-                value=f"<t:{uptime}:R>",
-                inline=True),
-            ipy.EmbedField(
-                name="🐍 Python Version",
-                value=py_ver,
-                inline=True),
+            ipy.EmbedField(name="🏠 Guilds", value=f"{guilds:,}", inline=True),
+            ipy.EmbedField(name="🔗 Shards", value=f"{shards:,}", inline=True),
+            ipy.EmbedField(name="📝 Commands", value=f"{command_count:,}", inline=True),
+            ipy.EmbedField(name="🕒 Uptime", value=f"<t:{uptime}:R>", inline=True),
+            ipy.EmbedField(name="🐍 Python Version", value=py_ver, inline=True),
             ipy.EmbedField(
                 name="🤖 Bot Version",
                 value=f"[{GT_HSH}](https://github.com/nattadasu/ryuuRyuusei/commit/{GIT_COMMIT_HASH})",
-                inline=True),
-            ipy.EmbedField(
-                name="📈 Upvotes",
-                value=votes_str,
-                inline=False),
+                inline=True,
+            ),
+            ipy.EmbedField(name="📈 Upvotes", value=votes_str, inline=False),
             ipy.EmbedField(
                 name="🌐 User Agent",
                 value=f'```http\nUser-Agent: "{USER_AGENT}"\n```',
-                inline=False),
+                inline=False,
+            ),
         )
         embed.set_thumbnail(self.bot.user.avatar.url)
         await msg.edit(embed=embed)
@@ -407,9 +381,7 @@ class Stats(ipy.Extension):
         await ctx.defer()
         msg = await ctx.send(
             embed=ipy.Embed(
-                title="System Stats",
-                description="Getting stats...",
-                color=0x771921
+                title="System Stats", description="Getting stats...", color=0x771921
             )
         )
 
@@ -422,7 +394,7 @@ class Stats(ipy.Extension):
         embed = ipy.Embed(
             title="System stats for bot",
             color=0x771921,
-            timestamp=ipy.Timestamp.now(tz=timezone.utc)
+            timestamp=ipy.Timestamp.now(tz=timezone.utc),
         )
         embed.add_fields(
             ipy.EmbedField(
@@ -432,7 +404,8 @@ class Stats(ipy.Extension):
 * Architecture: {sys_info.machine}
 * Processor: {sys_info.processor}
 * Uptime: <t:{int(sys_info.uptime.timestamp())}:R>""",
-                inline=True),
+                inline=True,
+            ),
             ipy.EmbedField(
                 name="🧠 CPU",
                 value=f"""* Physical Cores: {sys_info.cpu_physical_cores}
@@ -442,7 +415,8 @@ class Stats(ipy.Extension):
 * Current Frequency: {sys_info.cpu_current_frequency}
 * Usage:
 {cores}""",
-                inline=True),
+                inline=True,
+            ),
             ipy.EmbedField(
                 name="💾 RAM",
                 value=f"""* Total: {sys_info.ram_total}
@@ -450,17 +424,21 @@ class Stats(ipy.Extension):
 * Used: {sys_info.ram_used}
 * Free: {sys_info.ram_free}
 * Percentage: {sys_info.ram_percentage}%""",
-                inline=True),
+                inline=True,
+            ),
             ipy.EmbedField(
                 name="📦 Swap/Virtual Memory",
                 value=f"""* Total: {sys_info.swap_total}
 * Used: {sys_info.swap_used}
 * Free: {sys_info.swap_free}
 * Percentage: {sys_info.swap_percentage}%""",
-                inline=True),
+                inline=True,
+            ),
         )
         for disk in sys_info.disks:
-            if disk.mountpoint.startswith("/snap/") or disk.mountpoint.startswith("/boot"):
+            if disk.mountpoint.startswith("/snap/") or disk.mountpoint.startswith(
+                "/boot"
+            ):
                 continue
             embed.add_field(
                 name=f"💿 Storage ({disk.mountpoint})",
@@ -468,14 +446,14 @@ class Stats(ipy.Extension):
 * Used: {disk.disk_used}
 * Free: {disk.disk_free}
 * Percentage: {disk.disk_percentage}%""",
-                inline=True
+                inline=True,
             )
         embed.set_thumbnail(self.bot.user.avatar.url)
         await msg.edit(embed=embed)
 
     @deepstats.subcommand(
-        sub_cmd_name="packages",
-        sub_cmd_description="Show installed PIP packages")
+        sub_cmd_name="packages", sub_cmd_description="Show installed PIP packages"
+    )
     async def deepstats_packages(self, ctx: ipy.SlashContext):
         """
         Show installed PIP packages
@@ -490,7 +468,7 @@ class Stats(ipy.Extension):
                 embed=ipy.Embed(
                     title="Error",
                     description="You are not allowed to use this command",
-                    color=0x771921
+                    color=0x771921,
                 )
             )
             return
@@ -500,16 +478,16 @@ class Stats(ipy.Extension):
 
         for page in range(0, len(packages), 15):
             listed: list[ipy.EmbedField] = []
-            for pkg in packages[page:page + 15]:
-                listed.append(ipy.EmbedField(
-                    name=pkg.name,
-                    value=f"Version: {pkg.version}\nLicense: {pkg.license}",
-                    inline=True
-                ))
+            for pkg in packages[page : page + 15]:
+                listed.append(
+                    ipy.EmbedField(
+                        name=pkg.name,
+                        value=f"Version: {pkg.version}\nLicense: {pkg.license}",
+                        inline=True,
+                    )
+                )
             embed = ipy.Embed(
-                title="Installed PIP Packages",
-                color=0x771921,
-                timestamp=now
+                title="Installed PIP Packages", color=0x771921, timestamp=now
             )
             embed.add_fields(*listed)
             embed.set_thumbnail(self.bot.user.avatar.url)

@@ -1,8 +1,15 @@
 import os
 import time
 
-from interactions import (Activity, ActivityType, AutoShardedClient, Client,
-                          Extension, IntervalTrigger, Task)
+from interactions import (
+    Activity,
+    ActivityType,
+    AutoShardedClient,
+    Client,
+    Extension,
+    IntervalTrigger,
+    Task,
+)
 
 from classes.excepts import ProviderHttpError
 from classes.stats.dbgg import DiscordBotsGG
@@ -10,7 +17,7 @@ from classes.stats.dbl import DiscordBotList
 from classes.stats.infinity import InfinityBots
 from classes.stats.topgg import TopGG
 from modules.commons import save_traceback_to_file
-from modules.const import BOT_DATA
+from typing import Union
 
 
 class BotTasker(Extension):
@@ -37,7 +44,7 @@ class BotTasker(Extension):
         a_week = a_day * 7
         a_month = a_day * 30
 
-        known_caches = {
+        known_caches: dict[str, Union[dict[str, int], int]] = {
             "anilist": {"base": a_day, "user": half_day, "nsfw": a_week},
             "animeapi": a_day,
             "exchangerateapi": a_day,
@@ -95,8 +102,6 @@ class BotTasker(Extension):
         """Poll bot statistic to 3rd party listing sites"""
         server_count = len(self.bot.guilds)
         shard_count = self.bot.total_shards
-        server_members: dict[str, int] = BOT_DATA["server_members"]
-        users = sum(server_members.values())
         show_msg: list[str] = []
         try:
             async with TopGG() as top:
@@ -119,20 +124,18 @@ class BotTasker(Extension):
                 )
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBots.gg: {error}")
-            save_traceback_to_file(
-                "tasker_dbgg", self.bot.user, error, mute_error=True)
+            save_traceback_to_file("tasker_dbgg", self.bot.user, error, mute_error=True)
             show_msg.append("DiscordBots.gg")
 
         try:
             async with DiscordBotList() as dbl:
                 await dbl.post_bot_stats(
                     guild_count=server_count,
-                    members=users,
+                    members=0,
                 )
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBotList: {error}")
-            save_traceback_to_file(
-                "tasker_dbl", self.bot.user, error, mute_error=True)
+            save_traceback_to_file("tasker_dbl", self.bot.user, error, mute_error=True)
             show_msg.append("DiscordBotList.com")
 
         try:
@@ -140,19 +143,17 @@ class BotTasker(Extension):
                 await ibgg.post_bot_stats(
                     guild_count=server_count,
                     shard_count=shard_count,
-                    members=users,
+                    members=0,
                 )
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to InfinityBots: {error}")
-            save_traceback_to_file(
-                "tasker_ibgg", self.bot.user, error, mute_error=True)
+            save_traceback_to_file("tasker_ibgg", self.bot.user, error, mute_error=True)
             show_msg.append("InfinityBots")
 
         print(
             "[Tsk] [Stats] Polled stats.",
             f"{server_count:,} servers,",
             f"{shard_count:,} shards,",
-            f"{users:,} members,",
             f"failed to poll to {', '.join(show_msg)}"
             if len(show_msg) > 0
             else "successfully polled to all sites",
@@ -162,9 +163,8 @@ class BotTasker(Extension):
     async def update_bot_activity(self) -> None:
         """Update the bot's activity to show the number of guilds and members it is in"""
         old_activity = self.bot.activity.name
-        server_members: dict[str, int] = BOT_DATA["server_members"]
-        users = sum(server_members.values())
-        final = f"{len(self.bot.guilds)} guilds, {users:,} members"
+        shards = self.bot.total_shards
+        final = f"{len(self.bot.guilds)} guild{'s' if len(self.bot.guilds) > 1 else ''}, {shards:,} shard{'s' if shards > 1 else ''}"
         if old_activity == final:
             return
         await self.bot.change_presence(

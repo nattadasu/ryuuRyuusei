@@ -10,7 +10,7 @@ from aiohttp import ClientConnectorError
 from interactions.client import const as ipy_const
 
 from modules.commons import convert_float_to_time
-from modules.const import BOT_DATA, BOT_TOKEN, SENTRY_DSN, USER_AGENT
+from modules.const import BOT_TOKEN, SENTRY_DSN, USER_AGENT
 from modules.oobe.commons import UnsupportedVersion
 
 py_ver = sys.version_info
@@ -40,7 +40,7 @@ bot = ipy.AutoShardedClient(
     delete_unused_application_cmds=True,
     sync_interactions=True,
     send_command_tracebacks=False,
-    intents=ipy.Intents.DEFAULT | ipy.Intents.MESSAGE_CONTENT | ipy.Intents.GUILD_MEMBERS
+    intents=ipy.Intents.DEFAULT | ipy.Intents.MESSAGE_CONTENT,
 )
 """The bot client"""
 
@@ -63,10 +63,6 @@ async def on_ready():
     print(f"{sp} Guilds       : {guilds}")
     print(f"{sp} Shards       : {bot.total_shards}")
     print(f"{sp} User Agent   : {USER_AGENT}")
-    for guild in bot.guilds:
-        member_count += guild.member_count
-        BOT_DATA["server_members"][f"{guild.id}"] = guild.member_count
-    print(f"{sp} Total members: {member_count}")
     # set bot status
     await asyncio.sleep(2.5)
     await bot.change_presence(
@@ -95,10 +91,10 @@ async def main():
         sp = " " * lpg
         print(f"{pg} Loading core/bot extension: {ext}")
         try:
-            if ext == "interactions.ext.sentry" and SENTRY_DSN not in [
-                    "", None]:
-                bot.load_extension(ext, token=SENTRY_DSN, filter=None,
-                                   traces_sample_rate=0.3)
+            if ext == "interactions.ext.sentry" and SENTRY_DSN not in ["", None]:
+                bot.load_extension(
+                    ext, token=SENTRY_DSN, filter=None, traces_sample_rate=0.3
+                )
             else:
                 bot.load_extension(ext)
         except Exception as ea:
@@ -147,8 +143,9 @@ def uptime() -> None:
     print("[Bcm] Date: " + bot_stop.strftime("%d/%m/%Y %H:%M:%S"))
     differences = bot_stop - bot_run
     total_seconds = differences.total_seconds()
-    total_time = convert_float_to_time(total_seconds, use_seconds=True,
-                                       show_milliseconds=True)
+    total_time = convert_float_to_time(
+        total_seconds, use_seconds=True, show_milliseconds=True
+    )
     print(f"      Uptime: {total_time}")
     return
 
