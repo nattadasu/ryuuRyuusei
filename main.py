@@ -56,7 +56,6 @@ async def on_ready():
     bg = "[Sys]"
     lbg = len(bg)
     sp = " " * lbg
-    member_count = 0
     print("[Sys] Bot is ready!")
     print(f"{sp} Logged in as : {bot.user.display_name}")
     print(f"{sp} User ID      : {bot.user.id}")
@@ -67,7 +66,7 @@ async def on_ready():
     await asyncio.sleep(2.5)
     await bot.change_presence(
         activity=ipy.Activity(
-            name=f"{guilds} guilds, {member_count:,} members",
+            name=f"{guilds} guilds, {bot.total_shards:,} shards",
             type=ipy.ActivityType.WATCHING,
         ),
         status=ipy.Status.ONLINE,
