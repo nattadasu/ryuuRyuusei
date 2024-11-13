@@ -1,3 +1,4 @@
+audioop-lts; python_version >= "3.13"
 aiohttp
 beautifulsoup4
 # install only on windows
@@ -11,8 +12,8 @@ html5lib
 interactions-py==5.13.1
 pandas
 plusminus
-pykakasi
 psutil
+pykakasi
 python-dotenv
 python-Levenshtein
 pyyaml
@@ -21,9 +22,9 @@ sentry_sdk
 tzdata
 unidic
 validators
-numpy>=1.22.2 # not directly required, pinned by Snyk to avoid a vulnerability
-setuptools>=70.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
 certifi>=2023.7.22 # not directly required, pinned by Snyk to avoid a vulnerability
+numpy>=1.22.2 # not directly required, pinned by Snyk to avoid a vulnerability
 requests>=2.32.0 # not directly required, pinned by Snyk to avoid a vulnerability
-zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
+setuptools>=70.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
 urllib3>=2.2.2 # not directly required, pinned by Snyk to avoid a vulnerability
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
