@@ -13,7 +13,7 @@
 <img title="Python Version" src="https://img.shields.io/badge/Python-3.10_and_above-blue?logo=python&logoColor=white&style=for-the-badge">
 <a title="interactions.py Version" href="https://pypi.org/project/discord-py-interactions"><img src="https://img.shields.io/badge/interactions--py-5.8.0-blue?logo=python&logoColor=white&style=for-the-badge"></a>
 <a title="Discord Server" href="https://discord.gg/UKvMEZvaXc"><img alt="Discord" src="https://img.shields.io/discord/589128995501637655?color=%235865F2&logo=discord&logoColor=white&style=for-the-badge"></a>
-<a href="https://discord.com/api/oauth2/authorize?client_id=811887256368840744&permissions=274878221376&scope=bot%20applications.commands"><img src="https://img.shields.io/badge/Invite%20to%20your%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Shield"></a><br><br>
+<a href="https://discord.com/api/oauth2/authorize?client_id=811887256368840744&permissions=274878286912&scope=bot%20applications.commands"><img src="https://img.shields.io/badge/Invite%20to%20your%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Shield"></a><br><br>
 <a title="Codacy" href="https://app.codacy.com/gh/nattadasu/ryuuRyuusei/dashboard"><img alt="Codacy grade" src="https://img.shields.io/codacy/grade/8109d97c7cca49ef9dbc96a82796ad66?logo=codacy&style=for-the-badge"> <img alt="Codacy coverage" src="https://img.shields.io/codacy/coverage/8109d97c7cca49ef9dbc96a82796ad66?logo=codacy&style=for-the-badge"></a><br>
 <a href="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei/" target="_blank"><img alt="DeepSource" title="DeepSource" src="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei.svg/?label=active+issues&show_trend=true&token=e6p1rkAiFj4re6lheVEBPfd5"/></a>
 <a href="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei/" target="_blank"><img alt="DeepSource" title="DeepSource" src="https://app.deepsource.com/gh/nattadasu/ryuuRyuusei.svg/?label=resolved+issues&show_trend=true&token=e6p1rkAiFj4re6lheVEBPfd5"/></a>
@@ -130,7 +130,7 @@ By inviting this bot to your server or using it, you agree to the
 To use the bot, invite it to your server by pressing this button:
 
 <!-- markdownlint-disable MD013 -->
-<p align=center><a href="https://discord.com/api/oauth2/authorize?client_id=811887256368840744&permissions=274878221376&scope=bot%20applications.commands"><img src="https://img.shields.io/badge/Invite%20to%20your%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Shield" height="45"></a></p>
+<p align=center><a href="https://discord.com/api/oauth2/authorize?client_id=811887256368840744&permissions=274878286912&scope=bot%20applications.commands"><img src="https://img.shields.io/badge/Invite%20to%20your%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Shield" height="45"></a></p>
 <!-- markdownlint-enable MD013 -->
 
 Next, go to the channel you want to use the bot in and type `/` to see the list
