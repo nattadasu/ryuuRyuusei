@@ -105,6 +105,9 @@ def prepare_database():
         "lastfmUsername",
         "shikimoriId",
         "shikimoriUsername",
+        "userBirthdate",
+        "userTimezone",
+        "userBirthdayPermission",
     ]
     database_header = "\t".join(database_cells)
     files = [

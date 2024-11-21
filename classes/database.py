@@ -11,6 +11,62 @@ from modules.const import DATABASE_PATH, EMOJI_UNEXPECTED_ERROR
 from modules.jikan import check_club_membership
 
 
+class UserBirthdayPermission:
+    def __init__(self, indentifier: int):
+        self.identifier = indentifier
+
+    def __repr__(self):
+        di = self.to_dict()
+        # convert to str: Show key name if True, else don't show
+        di = ",".join([k for k, v in di.items() if v])
+        return f"<UserBirthdayPermission identifier={self.identifier}:{di}>"
+
+    def __str__(self):
+        return f"{self.identifier}"
+
+    def __hash__(self):
+        return hash(self.identifier)
+
+    @property
+    def show_year(self) -> bool:
+        return bool(int(self.identifier) & 1)
+
+    @show_year.setter
+    def show_year(self, value: bool):
+        self.identifier = self.identifier | 1 if value else self.identifier & 6
+
+    @property
+    def show_age(self) -> bool:
+        return bool(int(self.identifier) & 2)
+
+    @show_age.setter
+    def show_age(self, value: bool):
+        self.identifier = self.identifier | 2 if value else self.identifier & 5
+
+    @property
+    def use_korean_age(self) -> bool:
+        return bool(int(self.identifier) & 4)
+
+    @use_korean_age.setter
+    def use_korean_age(self, value: bool):
+        self.identifier = self.identifier | 4 if value else self.identifier & 3
+
+    @classmethod
+    def from_dict(cls, data: dict[str, bool]) -> "UserBirthdayPermission":
+        return cls(
+            int(data["show_year"])
+            | (int(data["show_age"]) << 1)
+            | (int(data["use_korean_age"]) << 2)
+        )
+
+    def to_dict(self) -> dict[str, bool]:
+        return {
+            "show_year": self.show_year,
+            "show_age": self.show_age,
+            "use_korean_age": self.use_korean_age,
+        }
+
+
 @dataclass
 class UserDatabaseClass:
     """User Database Class"""
@@ -43,6 +99,12 @@ class UserDatabaseClass:
     """User's Shikimori ID"""
     shikimori_username: Optional[str] = None
     """User's Shikimori username, as a fallback if ID is unreachable"""
+    user_birthdate: Optional[datetime] = None
+    """User's birthdate"""
+    user_timezone: Optional[str] = None
+    """User's timezone"""
+    birthday_permissions: Optional[UserBirthdayPermission] = None
+    """User's birthday permissions"""
 
 
 class UserDatabase:
@@ -84,9 +146,7 @@ class UserDatabase:
         return val
 
     async def check_if_platform_registered(
-        self,
-        platform: Literal["mal", "anilist", "lastfm", "shikimori"],
-        value: Any
+        self, platform: Literal["mal", "anilist", "lastfm", "shikimori"], value: Any
     ) -> bool:
         """
         Check if user is registered on Database, so the bot can prevent duplicate registration
@@ -131,6 +191,13 @@ class UserDatabase:
             "lastfmUsername": user_data.lastfm_username,
             "shikimoriId": user_data.shikimori_id,
             "shikimoriUsername": user_data.shikimori_username,
+            "userBirthdate": user_data.user_birthdate.strftime("%Y-%m-%d")
+            if user_data.user_birthdate
+            else None,
+            "userTimezone": user_data.user_timezone,
+            "userBirthdayPermission": user_data.birthday_permissions.identifier
+            if user_data.birthday_permissions
+            else None,
         }
         for k, v in data.items():
             if isinstance(v, int):
@@ -158,6 +225,9 @@ class UserDatabase:
             "lastfmUsername",
             "shikimoriId",
             "shikimoriUsername",
+            "userBirthdate",
+            "userTimezone",
+            "userBirthdayPermission",
         ],
         modified_input: Any,
     ) -> bool:
@@ -272,6 +342,21 @@ class UserDatabase:
                     "key": "shikimoriUsername",
                     "default": None,
                 },
+                "user_birthdate": {
+                    "type": lambda x: datetime.strptime(x, "%Y-%m-%d"),
+                    "key": "userBirthdate",
+                    "default": None,
+                },
+                "user_timezone": {
+                    "type": str,
+                    "key": "userTimezone",
+                    "default": None,
+                },
+                "birthday_permissions": {
+                    "type": lambda x: UserBirthdayPermission(int(x)),
+                    "key": "userBirthdayPermission",
+                    "default": None,
+                },
             }
             for key, value in migration.items():
                 setattr(user, key, value["default"])
@@ -338,6 +423,8 @@ class UserDatabase:
         if os.path.exists(f"database/allowlist_autoembed/{discord_id}"):
             data["has_user_settings"] = True
             data["settings_allowlist_autoembed"] = True
+        if data["userBirthdate"]:
+            data["has_user_settings"] = True
         for key, value in data.items():
             value = str(value)
             if value.isdigit():
@@ -348,6 +435,8 @@ class UserDatabase:
                 data[key] = False
             elif value.lower() in ["null", "", "None", '""']:
                 data[key] = None
+            elif key == "userBirthdayPermission":
+                data[key] = UserBirthdayPermission(int(value)).to_dict()
             else:
                 data[key] = str(value)
         return json.dumps(data)

@@ -87,6 +87,10 @@ TRAKT_CLIENT_ID: Final[str] = cast(str, ge("TRAKT_CLIENT_ID"))
 """Trakt client ID"""
 VERIFICATION_SERVER: Final[int] = cast(int, ge("VERIFICATION_SERVER"))
 """Verification server ID"""
+BIRTHDAY_SERVER: Final[int] = cast(int, ge("BIRTHDAY_SERVER"))
+"""Secondary server ID"""
+BIRTHDAY_WEBHOOK: Final[str] = cast(str, ge("BIRTHDAY_WEBHOOK"))
+"""Birthday webhook URL"""
 VERIFIED_ROLE: Final[int] = cast(int, ge("VERIFIED_ROLE"))
 """Verified role ID"""
 

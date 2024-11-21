@@ -57,6 +57,7 @@ class BotTasker(Extension):
             "trakt": a_day,
             "usrbg": two_and_a_half_days,
             "verify": half_day,
+            "birthday": a_day,
         }
 
         cache_folder = "cache"
