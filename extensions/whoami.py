@@ -4,6 +4,7 @@ import interactions as ipy
 
 from classes.database import UserDatabase
 from modules.discord import generate_discord_profile_embed
+from extensions.birthday import generate_birthday_embed
 
 
 class WhoAmI(ipy.Extension):
@@ -121,8 +122,11 @@ class WhoAmI(ipy.Extension):
         )
         linked_platforms_embed.set_thumbnail(
             url="https://3.bp.blogspot.com/-qlSGpgl64rI/Wqih4jf-CuI/AAAAAAABK20/aoPMsqSqO_EEXE4d39WUqSc0nbwTGoV-wCLcBGAs/s0/mark_chain_kusari.png")
+        birthday, err = await generate_birthday_embed(ctx)
         embeds = [discord_embed, database_embed,
                   mal_embed, linked_platforms_embed]
+        if err == 0:
+            embeds.append(birthday)
 
         await ctx.send(embeds=embeds)
 

@@ -77,6 +77,59 @@ def lookup_timezone(query: str) -> Iterable[dict[str, str]]:
     return result[:25]
 
 
+async def generate_birthday_embed(ctx: ipy.SlashContext) -> tuple[ipy.Embed, int]:
+    async with UserDatabase() as udb:
+        if not await udb.check_if_registered(ctx.author.id):
+            pfembed = platform_exception_embed(
+                description="You are not registered in the database! Please register first with `/register`",
+                error="User not registered",
+                error_type=PlatformErrType.USER,
+            )
+            return (pfembed, 1)
+        usrdata = await udb.get_user_data(ctx.author.id)
+        bday = usrdata.user_birthdate
+        if bday is None:
+            pfembed = platform_exception_embed(
+                description="You have not set your birthday yet!",
+                error="Birthday not set",
+                error_type=PlatformErrType.USER,
+            )
+            return (pfembed, 1)
+        tz = usrdata.user_timezone
+    embed = ipy.Embed(
+        title="Your birthday information",
+        description="-# To unset your birthday, use `/birthday unset`",
+    )
+    embed.set_thumbnail("https://i.imgur.com/5wu9zcy.png")
+    embed.add_field(
+        name="Birthday",
+        value=bday.strftime("%Y-%m-%d"),
+        inline=True,
+    )
+    embed.add_field(
+        name="Timezone",
+        value=str(tz),
+        inline=True,
+    )
+    perm = usrdata.birthday_permissions or UserBirthdayPermission(0)
+    embed.add_field(
+        name="Show year to others",
+        value="Yes" if perm.show_year else "No",
+        inline=True,
+    )
+    embed.add_field(
+        name="Show age to others",
+        value="Yes" if perm.show_age else "No",
+        inline=True,
+    )
+    embed.add_field(
+        name="Use Korean age system instead",
+        value="Yes" if perm.use_korean_age else "No",
+        inline=True,
+    )
+    return (embed, 0)
+
+
 birthday_head = ipy.SlashCommand(
     name="birthday",
     description="Manage your birthday information",
@@ -368,56 +421,7 @@ class Birthday(ipy.Extension):
     async def birthday_get(self, ctx: ipy.SlashContext):
         """Get your birthday"""
         await ctx.defer(ephemeral=True)
-        async with UserDatabase() as udb:
-            if not await udb.check_if_registered(ctx.author.id):
-                pfembed = platform_exception_embed(
-                    description="You are not registered in the database! Please register first with `/register`",
-                    error="User not registered",
-                    error_type=PlatformErrType.USER,
-                )
-                await ctx.send(embed=pfembed)
-                return
-            usrdata = await udb.get_user_data(ctx.author.id)
-            bday = usrdata.user_birthdate
-            if bday is None:
-                pfembed = platform_exception_embed(
-                    description="You have not set your birthday yet!",
-                    error="Birthday not set",
-                    error_type=PlatformErrType.USER,
-                )
-                await ctx.send(embed=pfembed)
-                return
-            tz = usrdata.user_timezone
-        embed = ipy.Embed(
-            title="Your birthday information",
-            description="-# To unset your birthday, use `/birthday unset`",
-        )
-        embed.add_field(
-            name="Birthday",
-            value=bday.strftime("%Y-%m-%d"),
-            inline=True,
-        )
-        embed.add_field(
-            name="Timezone",
-            value=str(tz),
-            inline=True,
-        )
-        perm = usrdata.birthday_permissions or UserBirthdayPermission(0)
-        embed.add_field(
-            name="Show year to others",
-            value="Yes" if perm.show_year else "No",
-            inline=True,
-        )
-        embed.add_field(
-            name="Show age to others",
-            value="Yes" if perm.show_age else "No",
-            inline=True,
-        )
-        embed.add_field(
-            name="Use Korean age system instead",
-            value="Yes" if perm.use_korean_age else "No",
-            inline=True,
-        )
+        embed, _ = await generate_birthday_embed(ctx=ctx)
         await ctx.send(embed=embed)
 
     @birthday_head.subcommand(
