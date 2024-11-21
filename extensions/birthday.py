@@ -13,7 +13,7 @@ from interactions.ext.paginators import Paginator
 
 from classes.cache import Caching
 from classes.database import UserBirthdayPermission, UserDatabase
-from modules.commons import PlatformErrType, platform_exception_embed
+from modules.commons import PlatformErrType, platform_exception_embed, save_traceback_to_file
 from modules.const import BIRTHDAY_SERVER, BIRTHDAY_WEBHOOK
 
 Cache = Caching("cache/birthday", 86400)
@@ -247,6 +247,10 @@ class Birthday(ipy.Extension):
             if perm.use_korean_age:
                 age += 1
             usr = await self.bot.fetch_user(user.discord_id)
+            usr_http = await self.bot.http.get_user(user.discord_id)
+            http_data = None
+            if usr:
+                http_data = ipy.User.from_dict(usr_http, self.bot)  # type: ignore
             unnecessary_greet = np.random.choice(greets)
             msg_embed = ipy.Embed(
                 title="Happy Birthday!",
@@ -259,6 +263,8 @@ class Birthday(ipy.Extension):
                 color=np.random.randint(0, 0xFFFFFF),
                 timestamp=ipy.Timestamp.fromdatetime(datetime.now()),
             )
+            if http_data and http_data.accent_color:
+                msg_embed.color = http_data.accent_color.value
             if usr is not None and usr.avatar_url:
                 msg_embed.set_thumbnail(url=usr.avatar_url)
             if perm.show_age:
@@ -276,19 +282,22 @@ class Birthday(ipy.Extension):
             # cancel webhook if none
             if BIRTHDAY_WEBHOOK in ["", '""']:
                 continue
-            async with ClientSession() as session:
-                await session.post(
-                    BIRTHDAY_WEBHOOK,
-                    json={
-                        "embeds": [msg_embed.to_dict()],
-                        "content": f"<@{user.discord_id}>",
-                        # use bot's avatar
-                        "avatar_url": self.bot.user.avatar_url,
-                        # use bot's username
-                        "username": self.bot.user.username,
-                    },
-                )
+            try:
+                async with ClientSession() as session:
+                    await session.post(
+                        BIRTHDAY_WEBHOOK,
+                        json={
+                            "embeds": [msg_embed.to_dict()],
+                            "content": f"<@{user.discord_id}>",
+                            # use bot's avatar
+                            "avatar_url": self.bot.user.avatar_url,
+                            # use bot's username
+                            "username": self.bot.user.username,
+                        },
+                    )
                 await sleep(1)
+            except Exception as ex:
+                save_traceback_to_file("tasker_birthday", self.bot, ex)
             announced.append(int(user.discord_id))
         # Remove yesterday_cached entries from announced
         if yesterday_cached is not None:
