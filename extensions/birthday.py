@@ -1,3 +1,4 @@
+import zoneinfo as zinf
 from asyncio import sleep
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -6,14 +7,14 @@ from typing import Iterable, Optional
 import interactions as ipy
 import numpy as np
 import pandas as pd
-import zoneinfo as zinf
 from aiohttp import ClientSession
 from fuzzywuzzy import fuzz  # type: ignore
 from interactions.ext.paginators import Paginator
 
 from classes.cache import Caching
 from classes.database import UserBirthdayPermission, UserDatabase
-from modules.commons import PlatformErrType, platform_exception_embed, save_traceback_to_file
+from modules.commons import (PlatformErrType, platform_exception_embed,
+                             save_traceback_to_file)
 from modules.const import BIRTHDAY_SERVER, BIRTHDAY_WEBHOOK
 
 Cache = Caching("cache/birthday", 86400)
@@ -250,7 +251,8 @@ class Birthday(ipy.Extension):
             usr_http = await self.bot.http.get_user(user.discord_id)
             http_data = None
             if usr:
-                http_data = ipy.User.from_dict(usr_http, self.bot)  # type: ignore
+                http_data = ipy.User.from_dict(
+                    usr_http, self.bot)  # type: ignore
             unnecessary_greet = np.random.choice(greets)
             msg_embed = ipy.Embed(
                 title="Happy Birthday!",
@@ -564,7 +566,8 @@ class Birthday(ipy.Extension):
                 [f"{k}={'Yes' if v else 'No'}" for k, v in old.to_dict().items()]
             )
             new_str = ", ".join(
-                [f"{k}={'Yes' if v else 'No'}" for k, v in perms.to_dict().items()]
+                [f"{k}={'Yes' if v else 'No'}" for k,
+                    v in perms.to_dict().items()]
             )
             if show_year or show_age or korean_age:
                 configured.append(
@@ -722,7 +725,8 @@ class Birthday(ipy.Extension):
                 day_from = i + 1
                 day_limit = i + 7
                 # use last day of the month if the day limit exceeds
-                mnend = datetime(today.year, today.month + 1, 1) - timedelta(days=1)
+                mnend = datetime(today.year, today.month +
+                                 1, 1) - timedelta(days=1)
                 if day_limit > mnend.day:
                     day_limit = mnend.day
                 index = f"{day_from} to {day_limit}" if day_from < day_limit else f"{day_from}"

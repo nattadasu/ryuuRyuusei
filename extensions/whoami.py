@@ -1,8 +1,8 @@
 import interactions as ipy
 
 from classes.database import UserDatabase
-from modules.discord import generate_discord_profile_embed
 from extensions.birthday import generate_birthday_embed
+from modules.discord import generate_discord_profile_embed
 
 
 class WhoAmI(ipy.Extension):
@@ -32,7 +32,8 @@ class WhoAmI(ipy.Extension):
             title="Database Data",
             description="Below is your database data",
             color=ctx.author.accent_color,
-            timestamp=ipy.Timestamp.fromtimestamp(resp.registered_at.timestamp()),
+            timestamp=ipy.Timestamp.fromtimestamp(
+                resp.registered_at.timestamp()),
         )
         database_embed.add_fields(
             *[
@@ -99,7 +100,8 @@ class WhoAmI(ipy.Extension):
             title="Linked Platforms Data",
             description="Below is your linked platforms data\nTo link a platform, use `/platform link`",
             color=0x9B1288,
-            timestamp=ipy.Timestamp.fromtimestamp(resp.registered_at.timestamp()),
+            timestamp=ipy.Timestamp.fromtimestamp(
+                resp.registered_at.timestamp()),
         )
         linked_platforms_embed.add_fields(
             *[
@@ -132,7 +134,8 @@ class WhoAmI(ipy.Extension):
 
         birthday, err = await generate_birthday_embed(ctx)
 
-        embeds = [discord_embed, database_embed, mal_embed, linked_platforms_embed]
+        embeds = [discord_embed, database_embed,
+                  mal_embed, linked_platforms_embed]
         if err == 0:
             embeds.append(birthday)
 
