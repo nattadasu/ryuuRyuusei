@@ -34,6 +34,9 @@ class TimeZoneInfo:
 def iana_to_dataclass(iana: str) -> TimeZoneInfo:
     tzinfo = zinf.ZoneInfo(iana)
     rn = datetime.now(tzinfo)
+    offset = rn.strftime("%z")
+    # split digit into ±HH:MM format
+    offset = f"{offset[:3]}:{offset[3:]}"
     return TimeZoneInfo(
         iana=iana,
         aka=rn.strftime("%Z"),
