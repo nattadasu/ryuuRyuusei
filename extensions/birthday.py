@@ -1,6 +1,6 @@
 from asyncio import sleep
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Iterable, Optional
 
 import interactions as ipy
@@ -631,6 +631,7 @@ class Birthday(ipy.Extension):
         async with UserDatabase() as udb:
             users = await udb.get_all_users()
         result: dict[str, list[dict[str, str | int]]] = {}
+        today = datetime.now()
         # automatically generate value-empty months
         for month in range(1, 13):
             result[datetime(2000, month, 1).strftime("%B")] = []
@@ -654,9 +655,19 @@ class Birthday(ipy.Extension):
                     "userid": str(user.discord_id),
                     # no leading zero
                     "birthdate": int(user.user_birthdate.strftime("%-d")),
+                    "timezone": str(user.user_timezone),
                     "age": str(age) if perm.show_age else "??",
                 }
             )
+        # add today marker
+        result[today.strftime("%B")].append(
+            {
+                "userid": "TODAY",
+                "birthdate": today.day,
+                "timezone": "Etc/UTC",
+                "age": "??",
+            }
+        )
         embeds: list[ipy.Embed] = []
         irasutoya: dict[str, str] = {
             "January": "https://i.imgur.com/jOiBUHP.png",
@@ -684,19 +695,41 @@ class Birthday(ipy.Extension):
             for i in range(0, 31, 7):
                 listed: list[str] = []
                 for user in data:
+                    usr_month = datetime.strptime(
+                        f"{user['birthdate']} {month} {today.year}", "%d %B %Y"
+                    )
+                    if user["userid"] == "TODAY" and i < today.day <= i + 7:
+                        context = f"* {today.strftime('%d')}: **\\>\\>\\> TODAY \\<\\<\\<**"
+                        listed.append(context)
+                        continue
                     if i < int(user["birthdate"]) <= i + 7:
                         context = f"* {user['birthdate']}: <@{user['userid']}>"
-                        if user["age"] != "??":
-                            context += f" (age {user['age']})"
+                        age = user["age"]
+                        if user["age"] == "??":
+                            listed.append(context)
+                            continue
+                        context += f" (age {age}"
+                        if today.month > usr_month.month:
+                            context += f", next year {int(age)+1})"
+                        else:
+                            context += ")"
                         listed.append(context)
                 if not listed:
                     continue
                 # sort the listed
                 listed.sort()
+                final = "\n".join(listed)
+                day_from = i + 1
+                day_limit = i + 7
+                # use last day of the month if the day limit exceeds
+                mnend = datetime(today.year, today.month + 1, 1) - timedelta(days=1)
+                if day_limit > mnend.day:
+                    day_limit = mnend.day
+                index = f"{day_from} to {day_limit}" if day_from < day_limit else f"{day_from}"
                 fields.append(
                     ipy.EmbedField(
-                        name=f"Day {i + 1} to {i + 7}",
-                        value="\n".join(listed),
+                        name=f"Day {index}",
+                        value=final,
                         inline=True,
                     )
                 )
