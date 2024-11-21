@@ -3,6 +3,7 @@ Allow migrates database/database.csv to new schema when there's any db changes
 """
 
 from pathlib import Path
+
 from classes.database import UserDatabase
 # from modules.oobe.commons import prepare_database
 # import pandas as pd

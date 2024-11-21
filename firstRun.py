@@ -14,7 +14,8 @@ import os
 import shlex
 import subprocess
 
-from modules.oobe.commons import check_termux, current_os, prepare_database, py_bin_path
+from modules.oobe.commons import (check_termux, current_os, prepare_database,
+                                  py_bin_path)
 from modules.oobe.getNekomimi import nk_run
 from modules.oobe.malIndexer import mal_run
 from modules.oobe.migrate import migrate
