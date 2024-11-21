@@ -14,10 +14,10 @@ import os
 import shlex
 import subprocess
 
-from modules.oobe.commons import (check_termux, current_os, prepare_database,
-                                  py_bin_path)
+from modules.oobe.commons import check_termux, current_os, prepare_database, py_bin_path
 from modules.oobe.getNekomimi import nk_run
 from modules.oobe.malIndexer import mal_run
+from modules.oobe.migrate import migrate
 
 
 class FirstRunError(Exception):
@@ -90,7 +90,8 @@ async def first_run(py_bin: str = py_bin_path()):
                 file.write("")
         except subprocess.CalledProcessError:
             print(
-                "\033[31mError installing unidic dictionary, please run frollowing command:")
+                "\033[31mError installing unidic dictionary, please run frollowing command:"
+            )
             print(f"{py_bin} -m unidic download\033[0m")
 
     # Prepare the database
@@ -104,6 +105,10 @@ async def first_run(py_bin: str = py_bin_path()):
     # Index MyAnimeList data from AnimeAPI
     print("Indexing MyAnimeList data from AnimeAPI...")
     await mal_run()
+
+    # Migrate the database
+    print("Migrating database to new schema...")
+    await migrate()
 
     # Check if .env exists, if not, copy .env.example
     if not os.path.exists(".env"):

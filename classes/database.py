@@ -115,7 +115,7 @@ class UserDatabase:
         Args:
             user_data (UserDatabaseClass): Dataclass contains information about an user
         """
-        data = {
+        data: dict[str, Any] = {
             "discordId": user_data.discord_id,
             "discordUsername": user_data.discord_username,
             "discordJoined": user_data.discord_id.created_at.timestamp(),
@@ -219,6 +219,70 @@ class UserDatabase:
         verified = await check_club_membership(username)
         return verified
 
+    async def get_all_users(self) -> list[UserDatabaseClass]:
+        """
+        Get all users from the database
+
+        Returns:
+            list[UserDatabaseClass]: List of dataclasses contains information about an user
+        """
+        df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        df.fillna("", inplace=True)
+        data = df.to_dict(orient="records")
+        users: list[UserDatabaseClass] = []
+        for row in data:
+            user = UserDatabaseClass(
+                discord_id=Snowflake(row["discordId"]),
+                discord_username=row["discordUsername"],
+                mal_id=int(row["malId"]),
+                mal_username=row["malUsername"],
+                mal_joined=datetime.fromtimestamp(
+                    int(row["malJoined"]), tz=timezone.utc
+                ),
+                registered_at=datetime.fromtimestamp(
+                    int(row["registeredAt"]), tz=timezone.utc
+                ),
+                registered_guild_id=Snowflake(row["registeredGuildId"]),
+                registered_guild_name=row["registeredGuildName"],
+                registered_by=Snowflake(row["registeredBy"]),
+            )
+            migration: dict[str, dict[str, Any]] = {
+                "anilist_id": {
+                    "type": int,
+                    "key": "anilistId",
+                    "default": None,
+                },
+                "anilist_username": {
+                    "type": str,
+                    "key": "anilistUsername",
+                    "default": None,
+                },
+                "lastfm_username": {
+                    "type": str,
+                    "key": "lastfmUsername",
+                    "default": None,
+                },
+                "shikimori_id": {
+                    "type": int,
+                    "key": "shikimoriId",
+                    "default": None,
+                },
+                "shikimori_username": {
+                    "type": str,
+                    "key": "shikimoriUsername",
+                    "default": None,
+                },
+            }
+            for key, value in migration.items():
+                setattr(user, key, value["default"])
+                try:
+                    if row[value["key"]]:
+                        setattr(user, key, value["type"](row[value["key"]]))
+                except Exception as _:
+                    ...
+            users.append(user)
+        return users
+
     async def get_user_data(self, discord_id: Snowflake) -> UserDatabaseClass:
         """
         Get user data from the database. Similar to `export_user_data`, but with dataclass
@@ -229,37 +293,12 @@ class UserDatabase:
         Returns:
             UserDatabaseClass: Dataclass contains information about an user
         """
-        df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        df.fillna("", inplace=True)
-        row = df[df["discordId"] == str(discord_id)]
-        if row.empty:
-            raise DatabaseException(
-                f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error"
-            )
-        data = row.to_dict(orient="records")[0]
-        return UserDatabaseClass(
-            discord_id=Snowflake(data["discordId"]),
-            discord_username=data["discordUsername"],
-            mal_id=int(data["malId"]),
-            mal_username=data["malUsername"],
-            mal_joined=datetime.fromtimestamp(
-                int(data["malJoined"]), tz=timezone.utc),
-            anilist_id=data["anilistId"] if data["anilistId"] else None,
-            anilist_username=data["anilistUsername"]
-            if data["anilistUsername"]
-            else None,
-            lastfm_username=data["lastfmUsername"] if data["lastfmUsername"] else None,
-            registered_at=datetime.fromtimestamp(
-                int(data["registeredAt"]), tz=timezone.utc
-            ),
-            registered_guild_id=Snowflake(data["registeredGuildId"]),
-            registered_guild_name=data["registeredGuildName"],
-            registered_by=Snowflake(data["registeredBy"]),
-            shikimori_id=int(data["shikimoriId"]
-                             ) if data["shikimoriId"] else None,
-            shikimori_username=data["shikimoriUsername"]
-            if data["shikimoriUsername"]
-            else None,
+        dbs = await self.get_all_users()
+        for db in dbs:
+            if db.discord_id == discord_id:
+                return db
+        raise DatabaseException(
+            f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error"
         )
 
     async def export_user_data(self, discord_id: int) -> str:
@@ -314,10 +353,9 @@ class UserDatabase:
         """Check if database exists"""
         try:
             pd.read_csv(self.database_path, sep="\t", dtype=str, nrows=0)
-        except pd.errors.EmptyDataError:
+        except Exception as _:
             return False
-        else:
-            return True
+        return True
 
     __all__ = [
         "check_if_registered",
