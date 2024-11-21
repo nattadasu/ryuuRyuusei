@@ -321,15 +321,18 @@ class UserDatabase:
         data = row.to_dict(orient="records")[0]
         data["has_user_settings"] = False
         # Check if user exist in database/member.csv
-        df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
-        df2.fillna("", inplace=True)
-        row2 = df2[df2["discordId"] == str(discord_id)]
-        if not row2.empty:
-            data2 = row2.to_dict(orient="records")[0]
-            data2.pop("discordId")
-            data2 = {f"settings_{key}": value for key, value in data2.items()}
-            data["has_user_settings"] = True
-            data.update(data2)
+        try:
+            df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
+            df2.fillna("", inplace=True)
+            row2 = df2[df2["discordId"] == str(discord_id)]
+            if not row2.empty:
+                data2 = row2.to_dict(orient="records")[0]
+                data2.pop("discordId")
+                data2 = {f"settings_{key}": value for key, value in data2.items()}
+                data["has_user_settings"] = True
+                data.update(data2)
+        except Exception as _:
+            ...
         # if user exist as a file in database/allowlist_autoembed/ directory
         # then add it to the data
         if os.path.exists(f"database/allowlist_autoembed/{discord_id}"):
