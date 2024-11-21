@@ -40,7 +40,7 @@ def iana_to_dataclass(iana: str) -> TimeZoneInfo:
     return TimeZoneInfo(
         iana=iana,
         aka=rn.strftime("%Z"),
-        offset=rn.strftime("%:z"),
+        offset=offset,
     )
 
 
