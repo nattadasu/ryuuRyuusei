@@ -213,7 +213,7 @@ class Birthday(ipy.Extension):
         self.bot: ipy.Client = bot
         self.birthday_announcer.start()
 
-    @ipy.Task.create(ipy.CronTrigger("*/1 * * * *"))
+    @ipy.Task.create(ipy.CronTrigger("*/10 * * * *"))
     async def birthday_announcer(self) -> None:
         """Announce birthdays to the target channel"""
         async with UserDatabase() as udb:
@@ -221,7 +221,7 @@ class Birthday(ipy.Extension):
 
         announced: list[int] = []
         now = datetime.now(tz=zinf.ZoneInfo("UTC"))
-        yesterday = now.replace(day=now.day - 1)
+        yesterday = now - timedelta(days=1)
         now = now.strftime("%Y-%m-%d")
         yesterday = yesterday.strftime("%Y-%m-%d")
         cache_path = Cache.get_cache_path(now)
