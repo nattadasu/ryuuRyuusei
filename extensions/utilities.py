@@ -11,11 +11,8 @@ from plusminus import BaseArithmeticParser as BAP  # type: ignore
 from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
 from classes.thecolorapi import Color, TheColorApi
 from classes.userpfp import UserPFP
-from modules.commons import (
-    generate_utils_except_embed,
-    save_traceback_to_file,
-    snowflake_to_datetime,
-)
+from modules.commons import (generate_utils_except_embed,
+                             save_traceback_to_file, snowflake_to_datetime)
 
 
 class Utilities(ipy.Extension):
@@ -116,8 +113,10 @@ class Utilities(ipy.Extension):
                     title=f"Base64 {mode.title()}",
                     color=0x996422,
                     fields=[
-                        ipy.EmbedField(name="String", value=strVal, inline=False),
-                        ipy.EmbedField(name="Result", value=resVal, inline=False),
+                        ipy.EmbedField(
+                            name="String", value=strVal, inline=False),
+                        ipy.EmbedField(
+                            name="Result", value=resVal, inline=False),
                     ],
                 )
             )
@@ -212,7 +211,8 @@ class Utilities(ipy.Extension):
                     value=f"```css\n{res.cmyk.value}\n```",
                     inline=True,
                 ),
-                ipy.EmbedField(name="DEC", value=f"```py\n{col}\n```", inline=True),
+                ipy.EmbedField(
+                    name="DEC", value=f"```py\n{col}\n```", inline=True),
             ]
             embed = ipy.Embed(
                 title="Color Information",
@@ -251,7 +251,8 @@ class Utilities(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(name="Low (~7%, default)", value="L"),
+                    ipy.SlashCommandChoice(
+                        name="Low (~7%, default)", value="L"),
                     ipy.SlashCommandChoice(name="Medium (~15%)", value="M"),
                     ipy.SlashCommandChoice(name="Quality (~25%)", value="Q"),
                     ipy.SlashCommandChoice(name="High (~30%)", value="H"),
@@ -284,7 +285,8 @@ class Utilities(ipy.Extension):
                 ],
                 footer=ipy.EmbedFooter(text="Powered by goQR.me"),
             )
-            embed.set_image(url=f"https://api.qrserver.com/v1/create-qr-code/?{params}")
+            embed.set_image(
+                url=f"https://api.qrserver.com/v1/create-qr-code/?{params}")
             await ctx.send(
                 embed=embed,
             )
@@ -320,7 +322,8 @@ class Utilities(ipy.Extension):
                 raise ValueError("Invalid snowflake")
             # else, check for the bits size should be 64 from binary
             elif bin_len > 64:
-                raise ValueError("Snowflake is too big, did you randomly generate it?")
+                raise ValueError(
+                    "Snowflake is too big, did you randomly generate it?")
             elif bin_len < 60:
                 raise ValueError(
                     "Snowflake is too small, did you randomly generate it?"
@@ -350,11 +353,13 @@ class Utilities(ipy.Extension):
                     ipy.EmbedField(
                         name="Timestamp", value=f"```py\n{tmsp}\n```", inline=False
                     ),
-                    ipy.EmbedField(name="Date", value=f"<t:{tmsp}:D>", inline=True),
+                    ipy.EmbedField(
+                        name="Date", value=f"<t:{tmsp}:D>", inline=True),
                     ipy.EmbedField(
                         name="Full Date", value=f"<t:{tmsp}:F>", inline=True
                     ),
-                    ipy.EmbedField(name="Relative", value=f"<t:{tmsp}:R>", inline=True),
+                    ipy.EmbedField(name="Relative",
+                                   value=f"<t:{tmsp}:R>", inline=True),
                 ],
             )
         )

@@ -5,11 +5,9 @@ import interactions as ipy
 
 from classes.userpfp import UserPFP
 from classes.usrbg import UsrBg
-from modules.commons import (
-    generate_commons_except_embed,
-    generate_utils_except_embed,
-    save_traceback_to_file,
-)
+from modules.commons import (generate_commons_except_embed,
+                             generate_utils_except_embed,
+                             save_traceback_to_file)
 from modules.discord import generate_discord_profile_embed
 
 GIF_ISSUE = (
@@ -96,7 +94,8 @@ class DiscordCog(ipy.Extension):
         if not user:
             user = ctx.author
 
-        udata: dict[str, Any] = await self.bot.http.get_user(user.id)  # type: ignore
+        # type: ignore
+        udata: dict[str, Any] = await self.bot.http.get_user(user.id)
         udict = ipy.User.from_dict(udata, self.bot)  # type: ignore
 
         if scope == "usrbg":
@@ -153,7 +152,8 @@ class DiscordCog(ipy.Extension):
                     ipy.SlashCommandChoice(
                         name="Discord Profile (Default)", value="user"
                     ),
-                    ipy.SlashCommandChoice(name="Server Profile", value="server"),
+                    ipy.SlashCommandChoice(
+                        name="Server Profile", value="server"),
                     ipy.SlashCommandChoice(name="UserPFP", value="userpfp"),
                 ],
             ),
