@@ -11,9 +11,11 @@ from plusminus import BaseArithmeticParser as BAP  # type: ignore
 from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
 from classes.thecolorapi import Color, TheColorApi
 from classes.userpfp import UserPFP
-from classes.usrbg import UserBackground
-from modules.commons import (generate_utils_except_embed,
-                             save_traceback_to_file, snowflake_to_datetime)
+from modules.commons import (
+    generate_utils_except_embed,
+    save_traceback_to_file,
+    snowflake_to_datetime,
+)
 
 
 class Utilities(ipy.Extension):
@@ -114,10 +116,8 @@ class Utilities(ipy.Extension):
                     title=f"Base64 {mode.title()}",
                     color=0x996422,
                     fields=[
-                        ipy.EmbedField(
-                            name="String", value=strVal, inline=False),
-                        ipy.EmbedField(
-                            name="Result", value=resVal, inline=False),
+                        ipy.EmbedField(name="String", value=strVal, inline=False),
+                        ipy.EmbedField(name="Result", value=resVal, inline=False),
                     ],
                 )
             )
@@ -162,8 +162,10 @@ class Utilities(ipy.Extension):
         await ctx.defer()
         res: dict = {}
         try:
-            if (color_format == "hex" and re.match(
-                    r"^#?(?:[0-9a-fA-F]{3}){1,2}$", color_value) is None):
+            if (
+                color_format == "hex"
+                and re.match(r"^#?(?:[0-9a-fA-F]{3}){1,2}$", color_value) is None
+            ):
                 raise ValueError("Invalid hex color")
             if color_format == "hex" and re.match(r"^#", color_value) is None:
                 color_value = f"#{color_value}"
@@ -210,8 +212,7 @@ class Utilities(ipy.Extension):
                     value=f"```css\n{res.cmyk.value}\n```",
                     inline=True,
                 ),
-                ipy.EmbedField(
-                    name="DEC", value=f"```py\n{col}\n```", inline=True),
+                ipy.EmbedField(name="DEC", value=f"```py\n{col}\n```", inline=True),
             ]
             embed = ipy.Embed(
                 title="Color Information",
@@ -250,8 +251,7 @@ class Utilities(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(
-                        name="Low (~7%, default)", value="L"),
+                    ipy.SlashCommandChoice(name="Low (~7%, default)", value="L"),
                     ipy.SlashCommandChoice(name="Medium (~15%)", value="M"),
                     ipy.SlashCommandChoice(name="Quality (~25%)", value="Q"),
                     ipy.SlashCommandChoice(name="High (~30%)", value="H"),
@@ -284,8 +284,7 @@ class Utilities(ipy.Extension):
                 ],
                 footer=ipy.EmbedFooter(text="Powered by goQR.me"),
             )
-            embed.set_image(
-                url=f"https://api.qrserver.com/v1/create-qr-code/?{params}")
+            embed.set_image(url=f"https://api.qrserver.com/v1/create-qr-code/?{params}")
             await ctx.send(
                 embed=embed,
             )
@@ -321,11 +320,11 @@ class Utilities(ipy.Extension):
                 raise ValueError("Invalid snowflake")
             # else, check for the bits size should be 64 from binary
             elif bin_len > 64:
-                raise ValueError(
-                    "Snowflake is too big, did you randomly generate it?")
+                raise ValueError("Snowflake is too big, did you randomly generate it?")
             elif bin_len < 60:
                 raise ValueError(
-                    "Snowflake is too small, did you randomly generate it?")
+                    "Snowflake is too small, did you randomly generate it?"
+                )
             tmsp = int(snowflake_to_datetime(int(snowflake)))
         except Exception as e:
             await ctx.send(
@@ -351,14 +350,11 @@ class Utilities(ipy.Extension):
                     ipy.EmbedField(
                         name="Timestamp", value=f"```py\n{tmsp}\n```", inline=False
                     ),
-                    ipy.EmbedField(name="Date",
-                                   value=f"<t:{tmsp}:D>", inline=True),
+                    ipy.EmbedField(name="Date", value=f"<t:{tmsp}:D>", inline=True),
                     ipy.EmbedField(
                         name="Full Date", value=f"<t:{tmsp}:F>", inline=True
                     ),
-                    ipy.EmbedField(
-                        name="Relative", value=f"<t:{tmsp}:R>", inline=True
-                    ),
+                    ipy.EmbedField(name="Relative", value=f"<t:{tmsp}:R>", inline=True),
                 ],
             )
         )
@@ -412,171 +408,28 @@ class Utilities(ipy.Extension):
                 title=status.website_name,
                 fields=[
                     ipy.EmbedField(
-                        name="Status",
-                        value=status.status_message.title(),
-                        inline=True),
+                        name="Status", value=status.status_message.title(), inline=True
+                    ),
                     ipy.EmbedField(
-                        name="Response Time",
-                        value=status.response_time,
-                        inline=True),
+                        name="Response Time", value=status.response_time, inline=True
+                    ),
                     ipy.EmbedField(
-                        name="Last Down",
-                        value=status.last_down,
-                        inline=True),
+                        name="Last Down", value=status.last_down, inline=True
+                    ),
                 ],
                 color=0x566A82,
-                footer=ipy.EmbedFooter(
-                    text="Powered by IsItDownRightNow"),
-                timestamp=datetime.now(
-                    tz=timezone.utc),
+                footer=ipy.EmbedFooter(text="Powered by IsItDownRightNow"),
+                timestamp=datetime.now(tz=timezone.utc),
             )
 
             embed.set_thumbnail(
-                url=f"https://www.isitdownrightnow.com/screenshot/{lt}/{domain}.jpg")
+                url=f"https://www.isitdownrightnow.com/screenshot/{lt}/{domain}.jpg"
+            )
             # embed.set_image(
             #     url=f"https://www.isitdownrightnow.com/data/{domain}.png")
             # Data was out-of-date, so I'm not using it
 
             await ctx.send(embed=embed)
-
-    @utilities_head.subcommand(
-        sub_cmd_name="banner",
-        sub_cmd_description="Fetch user's banner",
-        options=[
-            ipy.SlashCommandOption(
-                name="user",
-                description="The user to fetch the banner from",
-                required=False,
-                type=ipy.OptionType.USER,
-            ),
-            ipy.SlashCommandOption(
-                name="scope",
-                description="Whether to fetch the banner from the user or usrbg",
-                required=False,
-                type=ipy.OptionType.STRING,
-                choices=[
-                    ipy.SlashCommandChoice(
-                        name="Discord Profile (Default)",
-                        value="user"),
-                    ipy.SlashCommandChoice(
-                        name="Usrbg",
-                        value="usrbg"),
-                ],
-            ),
-        ],
-    )
-    async def utilities_banner(
-        self,
-        ctx: ipy.SlashContext,
-        user: ipy.Member | ipy.User | None = None,
-        scope: Literal["user", "usrbg"] = "user",
-    ):
-        await ctx.defer()
-
-        if not user:
-            user = ctx.author
-
-        if scope == "user":
-            user_data = await self.bot.http.get_user(user.id)
-            user_data = ipy.User.from_dict(user_data, self.bot)
-            try:
-                banner = user_data.banner.url
-            except AttributeError:
-                banner = None
-            title = "Discord Profile"
-        else:
-            async with UserBackground() as usrbg:
-                try:
-                    banner = await usrbg.get_background(user.id)
-                    banner = banner.img
-                except AttributeError:
-                    banner = None
-            title = "Usrbg"
-
-        if banner:
-            embed = ipy.Embed(
-                title=f"{user.display_name}'s {title} banner",
-                color=0x566A82,
-                timestamp=datetime.now(tz=timezone.utc),
-            )
-            embed.set_thumbnail(url=user.display_avatar.url)
-            embed.set_image(url=banner)
-            await ctx.send(embed=embed)
-        else:
-            embed = generate_utils_except_embed(
-                description="Failed to fetch the banner",
-                field_name="User",
-                field_value=f"```{user}```",
-                error="User has no banner",
-            )
-            await ctx.send(embed=embed)
-
-    @utilities_head.subcommand(
-        sub_cmd_name="avatar",
-        sub_cmd_description="Fetch user's avatar",
-        options=[
-            ipy.SlashCommandOption(
-                name="user",
-                description="The user to fetch the avatar from",
-                required=False,
-                type=ipy.OptionType.USER,
-            ),
-            ipy.SlashCommandOption(
-                name="scope",
-                description="Whether to fetch the avatar from the global profile or server profile",
-                required=False,
-                type=ipy.OptionType.STRING,
-                choices=[
-                    ipy.SlashCommandChoice(
-                        name="Discord Profile (Default)",
-                        value="user"),
-                    ipy.SlashCommandChoice(
-                        name="Server Profile",
-                        value="server"),
-                    ipy.SlashCommandChoice(
-                        name="UserPFP",
-                        value="userpfp"),
-                ],
-            ),
-        ],
-    )
-    async def utilities_avatar(
-        self,
-        ctx: ipy.SlashContext,
-        user: ipy.Member | ipy.User | None = None,
-        scope: Literal["user", "server", "userpfp"] = "user",
-    ):
-        await ctx.defer()
-
-        if not user:
-            user = ctx.author
-
-        match scope:
-            case "user":
-                avatar = user.avatar.url
-            case "server":
-                avatar = user.display_avatar.url
-            case "userpfp":
-                async with UserPFP() as pfp:
-                    avatar = await pfp.get_picture(user.id)
-
-        if not avatar:
-            embed = generate_utils_except_embed(
-                description="Failed to fetch the avatar",
-                field_name="User",
-                field_value=f"```{user}```",
-                error="User has no avatar",
-            )
-            await ctx.send(embed=embed)
-            return
-
-        embed = ipy.Embed(
-            title=f"{user.display_name}'s avatar",
-            color=0x566A82,
-            timestamp=datetime.now(tz=timezone.utc),
-        )
-        embed.set_image(url=avatar)
-        await ctx.send(embed=embed)
 
 
 def setup(bot: ipy.Client):
