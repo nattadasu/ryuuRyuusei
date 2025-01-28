@@ -728,7 +728,8 @@ class Birthday(ipy.Extension):
                 day_from = i + 1
                 day_limit = i + 7
                 # use last day of the month if the day limit exceeds
-                mnend = today.replace(day=1, month=today.month % 12 + 1) - timedelta(days=1)
+                mnend = today.replace(day=1, month=today.month %
+                                      12 + 1) - timedelta(days=1)
                 if day_limit > mnend.day:
                     day_limit = mnend.day
                 index = f"{day_from} to {day_limit}" if day_from < day_limit else f"{day_from}"
