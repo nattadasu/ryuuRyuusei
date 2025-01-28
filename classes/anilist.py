@@ -555,6 +555,54 @@ class AniList:
                 cache_file_path)
             return from_dict(AniListMediaStruct, data["data"]["Media"])
 
+    async def user_by_id(self, user_id: int, return_as_is: bool = False) -> AniListUserStruct:
+        """
+        Get user information by their ID
+
+        Args:
+            user_id (int): The ID of the user
+            return_as_is (bool, optional): Whether to return the data as is or further processed. Defaults to False.
+
+        Raises:
+            ProviderHttpError: Raised when the HTTP request fails
+
+        Returns:
+            AniListUserStruct: The user information
+        """
+        config = Config(
+            type_hooks={
+                datetime: lambda value: datetime.fromtimestamp(
+                    value, timezone.utc)
+            }
+        )
+        gqlquery = f"""query {{
+    User (id: {user_id}) {{
+        id
+        name
+    }}
+}}"""
+        async with self.session.post(
+            self.base_url, json={"query": gqlquery}
+        ) as response:
+            try:
+                response.raise_for_status()
+                data: dict[str, Any] = await response.json()
+            except Exception as err:
+                raise ProviderHttpError(str(err), response.status) from err
+            errors: list[dict[str, Any]] | None = data.get("errors", None)
+            if errors:
+                err_strings: str = "\n".join(
+                    [
+                        f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
+                        for err in errors
+                    ]
+                )
+                raise ProviderHttpError(err_strings, response.status)
+            user_data = data["data"]["User"]
+        if return_as_is:
+            return from_dict(AniListUserStruct, user_data, config=config)
+        return await self.user(user_data["name"])
+
     async def user(self, username: str, return_id: bool = False) -> AniListUserStruct:
         """
         Get user information by their username
