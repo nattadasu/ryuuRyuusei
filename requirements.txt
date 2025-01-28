@@ -1,9 +1,9 @@
 audioop-lts; python_version >= "3.13"
 aiohttp
 beautifulsoup4
-# install only on windows
-git+https://github.com/ryuuRyuusei/cutlet-pure@master; sys_platform == "win32"
-cutlet; sys_platform != "win32"
+# install only on windows or for 3.13
+git+https://github.com/ryuuRyuusei/cutlet-pure@master; sys_platform == "win32" or python_version >= "3.13"
+cutlet; sys_platform != "win32" and python_version < "3.13" 
 dacite
 defusedxml
 fake-useragent
