@@ -222,6 +222,7 @@ class UserDatabase:
         row: Literal[
             "anilistId",
             "anilistUsername",
+            "malUsername",
             "lastfmUsername",
             "shikimoriId",
             "shikimoriUsername",
