@@ -125,7 +125,8 @@ class UserSettings(ipy.Extension):
             final += f"* Not modified: {', '.join(not_modified)}\n"
         plurals = [*fails, *unsupported]
         f_p = "s" if len(plurals) > 1 else ""
-        final += f"For {' or '.join(remarks)} account{f_p}, please relink them by `/platform unlink` then `/platform link`"
+        if remarks:
+            final += f"For {' or '.join(remarks)} account{f_p}, please relink them by `/platform unlink` then `/platform link`"
         if unsupported:
             final += "\n-# \\* Database only stores modifiable identifier, not permanent one like ID number."
         Cache.write_cache(cfp, final)
