@@ -49,12 +49,15 @@ class Caching:
     def read_cache(
             self,
             cache_path: str,
-            override_expiration_time: int | float | None = None) -> Any:
+            override_expiration_time: int | float | None = None,
+            as_raw: bool = False) -> Any | None:
         """
         Read a cache file
 
         Args:
             cache_path (str): The cache file path
+            override_expiration_time (int | float | None): The time in seconds before a cache file is considered expired
+            as_raw (bool): Return the raw cache model
 
         Returns:
             any: The data in the cache file
@@ -70,7 +73,7 @@ class Caching:
                 model = CacheModel(**data)
                 age = time.time() - model.timestamp
                 if age < expirate_time:
-                    return model.data
+                    return model.data if not as_raw else model
         return None
 
     @staticmethod
