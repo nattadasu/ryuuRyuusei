@@ -49,6 +49,7 @@ class BotTasker(Extension):
             "mangadex": a_day,
             "pronoundb": a_week,
             "rawg": a_day,
+            "refresh": a_day,
             "shikimori": {"base": a_day, "user": half_day},
             "simkl": a_day,
             "spotify": a_week * 2,
