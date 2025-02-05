@@ -9,7 +9,7 @@ defusedxml
 fake-useragent
 fuzzywuzzy
 html5lib
-interactions-py==5.13.1
+interactions-py==5.14.0
 pandas
 plusminus
 psutil
