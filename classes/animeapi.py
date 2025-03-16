@@ -48,6 +48,8 @@ class AnimeApiAnime:
     """Notify.moe Base64 ID"""
     otakotaku: int | None = None
     """Otak Otaku ID"""
+    simkl: int | none = None
+    """SIMKL ID"""
     shikimori: int | None = None
     """Shikimori ID, basically prefixless MyAnimeList ID"""
     shoboi: int | None = None
@@ -104,6 +106,7 @@ class AnimeApi:
         NAUTILJON = NJ = "nautiljon"
         NOTIFY = "notify"
         OTAKOTAKU = "otakotaku"
+        SIMKL = "simkl"
         SHIKIMORI = SHIKI = "shikimori"
         SHOBOI = SYOBOI = "shoboi"
         SILVERYASHA = "silveryasha"
@@ -153,6 +156,7 @@ class AnimeApi:
             "nautiljon",
             "notify",
             "otakotaku",
+            "simkl",
             "shikimori",
             "shoboi",
             "silveryasha",
