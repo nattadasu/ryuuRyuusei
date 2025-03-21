@@ -48,7 +48,7 @@ class AnimeApiAnime:
     """Notify.moe Base64 ID"""
     otakotaku: int | None = None
     """Otak Otaku ID"""
-    simkl: int | none = None
+    simkl: int | None = None
     """SIMKL ID"""
     shikimori: int | None = None
     """Shikimori ID, basically prefixless MyAnimeList ID"""
