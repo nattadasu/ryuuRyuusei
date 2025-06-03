@@ -22,6 +22,8 @@ class AnimeApiAnime:
     """AniDB ID"""
     anilist: int | None = None
     """AniList ID"""
+    animenewsnetwork: int | None = None
+    """Anime News Network ID"""
     animeplanet: str | None = None
     """Anime-Planet slug"""
     anisearch: int | None = None
@@ -97,6 +99,7 @@ class AnimeApi:
         ANI_SEARCH = ANISEARCH = AS = "anisearch"
         ANIDB = "anidb"
         ANILIST = AL = "anilist"
+        ANIMENEWSNETWORK = AN = ANN = "animenewsnetwork"
         ANIME_PLANET = ANIMEPLANET = AP = "animeplanet"
         ANNICT = "annict"
         KAIZE = "kaize"
@@ -147,6 +150,7 @@ class AnimeApi:
             "anisearch",
             "anidb",
             "anilist",
+            "animenewsnetwork",
             "animeplanet",
             "annict",
             "kaize",

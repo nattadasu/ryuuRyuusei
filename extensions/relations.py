@@ -104,6 +104,8 @@ class ExtenalSitesRelations(ipy.Extension):
                     ipy.SlashCommandChoice(name="aniDB", value="anidb"),
                     ipy.SlashCommandChoice(name="AniList", value="anilist"),
                     ipy.SlashCommandChoice(
+                        name="ANN", value="animenewsnetwork"),
+                    ipy.SlashCommandChoice(
                         name="Anime-Planet", value="animeplanet"),
                     ipy.SlashCommandChoice(
                         name="aniSearch", value="anisearch"),
@@ -156,6 +158,7 @@ class ExtenalSitesRelations(ipy.Extension):
         platform: Literal[
             "anidb",
             "anilist",
+            "animenewsnetwork",
             "animeplanet",
             "anisearch",
             "annict",
@@ -469,7 +472,7 @@ class ExtenalSitesRelations(ipy.Extension):
             allcin=simkl_dat.allcin,
             anidb=anime_api.anidb,
             anilist=anime_api.anilist,
-            ann=simkl_dat.ann,
+            ann=anime_api.ann or simkl_dat.ann,
             animeplanet=anime_api.animeplanet,
             anisearch=anime_api.anisearch,
             annict=anime_api.annict,
