@@ -488,7 +488,8 @@ async def generate_mal(
                 Button(
                     style=ButtonStyle.URL,
                     url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="animenewsnetwork")
+                    emoji=PartialEmoji(
+                        id=ext_id.emoid, name="animenewsnetwork")
                 )
             )
         if anime_api.simkl is not None:
