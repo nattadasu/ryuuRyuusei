@@ -472,7 +472,7 @@ class ExtenalSitesRelations(ipy.Extension):
             allcin=simkl_dat.allcin,
             anidb=anime_api.anidb,
             anilist=anime_api.anilist,
-            ann=anime_api.ann or simkl_dat.ann,
+            ann=anime_api.animenewsnetwork or simkl_dat.ann,
             animeplanet=anime_api.animeplanet,
             anisearch=anime_api.anisearch,
             annict=anime_api.annict,
