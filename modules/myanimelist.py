@@ -472,24 +472,33 @@ async def generate_mal(
                     emoji=PartialEmoji(id=ext_id.emoid, name="kitsu"),
                 )
             )
-        # SIMKL uses AniDB as source database, not MAL
         if anime_api.anidb is not None:
-            ext_id = media_id_to_platform(f"{mal_id}", Platform.SIMKL, "tv")
+            ext_id = media_id_to_platform(f"{anime_api.anidb}", Platform.ANIDB)
             buttons.append(
                 Button(
                     style=ButtonStyle.URL,
-                    url=f"https://api.simkl.com/redirect?to=Simkl&mal={mal_id}",
-                    emoji=PartialEmoji(id=ext_id.emoid, name="simkl"),
+                    url=ext_id.uid,
+                    emoji=PartialEmoji(id=ext_id.emoid, name="anidb"),
                 )
             )
-        if anime_api.annict is not None:
+        if anime_api.animenewsnetwork is not None:
             ext_id = media_id_to_platform(
-                f"{anime_api.annict}", Platform.ANNICT)
+                f"{anime_api.animenewsnetwork}", Platform.ANIMENEWSNETWORK)
             buttons.append(
                 Button(
                     style=ButtonStyle.URL,
-                    url=ext_id.uid.replace("://en.", "://"),
-                    emoji=PartialEmoji(id=ext_id.emoid, name="annict")
+                    url=ext_id.uid,
+                    emoji=PartialEmoji(id=ext_id.emoid, name="animenewsnetwork")
+                )
+            )
+        if anime_api.simkl is not None:
+            ext_id = media_id_to_platform(
+                f"{anime_api.simkl}", Platform.SIMKL, "anime")
+            buttons.append(
+                Button(
+                    style=ButtonStyle.URL,
+                    url=ext_id.uid,
+                    emoji=PartialEmoji(id=ext_id.emoid, name="simkl")
                 )
             )
     anime_stats: Button = Button(
