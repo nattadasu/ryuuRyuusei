@@ -1,3 +1,4 @@
+animeapi-py
 audioop-lts; python_version >= "3.13"
 aiohttp
 beautifulsoup4
