@@ -140,6 +140,7 @@ class Utilities(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=True,
                 choices=[
+                    ipy.SlashCommandChoice(name="ASS/SSA", value="ass"),
                     ipy.SlashCommandChoice(name="Hex", value="hex"),
                     ipy.SlashCommandChoice(name="RGB", value="rgb"),
                     ipy.SlashCommandChoice(name="HSL", value="hsl"),
@@ -165,8 +166,21 @@ class Utilities(ipy.Extension):
                 and re.match(r"^#?(?:[0-9a-fA-F]{3}){1,2}$", color_value) is None
             ):
                 raise ValueError("Invalid hex color")
+            if (
+                color_format == "ass"
+                and re.match(r"^&H[0-9a-fA-F]{6,8}&?$", color_value, re.IGNORECASE) is None
+            ):
+                raise ValueError("Invalid ASS color (expected &HBBGGRR& or &HAABBGGRR&)")
             if color_format == "hex" and re.match(r"^#", color_value) is None:
                 color_value = f"#{color_value}"
+            if color_format == "ass":
+                ass_hex = color_value.strip("&").replace("H", "").replace("h", "")
+                if len(ass_hex) == 6:
+                    b, g, r = ass_hex[0:2], ass_hex[2:4], ass_hex[4:6]
+                else:
+                    b, g, r = ass_hex[2:4], ass_hex[4:6], ass_hex[6:8]
+                color_value = f"#{r}{g}{b}"
+                color_format = "hex"
             async with TheColorApi() as tca:
                 match color_format:
                     case "hex":
@@ -179,11 +193,17 @@ class Utilities(ipy.Extension):
                         res: Color = await tca.color(cmyk=color_value)
             rgb = res.rgb
             col: int = (rgb.r << 16) + (rgb.g << 8) + rgb.b
+            ass_color = f"&H{rgb.b:02X}{rgb.g:02X}{rgb.r:02X}&"
             fields = [
                 ipy.EmbedField(
                     name="Color name",
                     value=f"{res.name.value}",
                     inline=False,
+                ),
+                ipy.EmbedField(
+                    name="ASS/SSA",
+                    value=f"```\n{ass_color}\n```",
+                    inline=True,
                 ),
                 ipy.EmbedField(
                     name="HEX",
