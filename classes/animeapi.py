@@ -72,21 +72,29 @@ class AnimeApi:
             "shikimori",
             "shoboi",
             "silveryasha",
+            "themoviedb",
+            "thetvdb",
             "trakt",
         ],
+        media_type: str | None = None,
+        title_season: int | None = None,
     ) -> AnimeRelation:
         """
         Get a relation between anime and other platform via Natsu's AniAPI
         Args:
             media_id (str | int): Anime ID
-            platform (Platform | Literal["anisearch", "anidb", "anilist", "animeplanet", "annict", "kaize", "kitsu", "livechart", "myanimelist", "notify", "otakotaku", "shikimori", "shoboi", "silveryasha", "trakt" ]): Platform to get the relation
+            platform (Platform | Literal["anisearch", "anidb", "anilist", "animeplanet", "annict", "kaize", "kitsu", "livechart", "myanimelist", "notify", "otakotaku", "shikimori", "shoboi", "silveryasha", "themoviedb", "thetvdb", "trakt" ]): Platform to get the relation
+            media_type (str | None): Media type for TMDB ("movie"/"tv") or Trakt ("movies"/"shows")
+            title_season (int | None): Season number for Trakt
         Returns:
             AnimeRelation: Relation between anime and other platform
         """
         if not isinstance(platform, Platform):
             platform = Platform(platform)
         try:
-            return await self.api.get_anime_relations(media_id, platform)
+            return await self.api.get_anime_relations(
+                media_id, platform, media_type, title_season
+            )
         except BaseException as e:
             save_traceback_to_file(
                 f"animeapi_{platform.value}_{media_id}",

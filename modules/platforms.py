@@ -1,9 +1,7 @@
-from collections import defaultdict
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Union
 
-from dacite import from_dict
 from interactions import EmbedField
 
 
@@ -37,6 +35,7 @@ class Platform(Enum):
         KAIZE (str): Kaize.
         KITSU (str): Kitsu.
         LASTFM | LAST | LFM (str): Last.fm.
+        LETTERBOXD | LB (str): Letterboxd.
         LIVECHART | LC (str): LiveChart.me.
         MYANIMELIST | MAL (str): MyAnimeList.
         NOTIFYMOE | NOTIFY (str): Notify.moe.
@@ -72,7 +71,7 @@ class Platform(Enum):
     ALLCINEMA = ALLCIN = "allcin"
     ANIDB = "anidb"
     ANILIST = AL = "anilist"
-    ANIMENEWSNETWORK = ANN = "ann"
+    ANIMENEWSNETWORK = ANN = "animenewsnetwork"
     ANIMEPLANET = AP = "animeplanet"
     ANISEARCH = AS = "anisearch"
     ANNICT = "annict"
@@ -80,6 +79,7 @@ class Platform(Enum):
     KAIZE = "kaize"
     KITSU = "kitsu"
     LASTFM = LAST = LFM = "lastfm"
+    LETTERBOXD = LB = "letterboxd"
     LIVECHART = LC = "livechart"
     MYANIMELIST = MAL = "myanimelist"
     NAUTILJON = NJ = "nautiljon"
@@ -107,6 +107,196 @@ class PlatformLink:
     """Discord Emoji snowflake ID"""
 
 
+@dataclass
+class PlatformConfig:
+    """Configuration for a platform"""
+
+    name: str
+    """Display name of the platform"""
+    color: int
+    """Color code for the platform"""
+    emoji_id: str
+    """Discord emoji snowflake ID"""
+    url_template: str
+    """URL template with {media_id} or {simkl_type} placeholders"""
+
+
+# Centralized platform configuration
+PLATFORM_CONFIGS = {
+    # SNS
+    "artstation": PlatformConfig(
+        "ArtStation", 0x0F0F0F, "0", "https://www.artstation.com/artwork/{media_id}"
+    ),
+    "deviantart": PlatformConfig(
+        "DeviantArt", 0x05CC47, "0", "https://www.deviantart.com/{media_id}"
+    ),
+    "discord": PlatformConfig(
+        "Discord", 0x7289DA, "0", "https://discord.com/users/{media_id}"
+    ),
+    "facebook": PlatformConfig(
+        "Facebook", 0x3B5998, "0", "https://www.facebook.com/{media_id}"
+    ),
+    "flickr": PlatformConfig(
+        "Flickr", 0xFF0084, "0", "https://www.flickr.com/photos/{media_id}"
+    ),
+    "hoyolab": PlatformConfig(
+        "Hoyolab",
+        0x1B75BB,
+        "0",
+        "https://www.hoyolab.com/accountCenter/postList?id={media_id}",
+    ),
+    "ibispaint": PlatformConfig(
+        "ibisPaint", 0x1F507B, "0", "https://ibispaint.com/art/{media_id}"
+    ),
+    "instagram": PlatformConfig(
+        "Instagram", 0x833AB4, "0", "https://www.instagram.com/{media_id}"
+    ),
+    "lofter": PlatformConfig("Lofter", 0x335F60, "0", "https://{media_id}.lofter.com"),
+    "patreon": PlatformConfig(
+        "Patreon", 0xF96854, "0", "https://www.patreon.com/{media_id}"
+    ),
+    "pixiv": PlatformConfig(
+        "Pixiv", 0x0096FA, "0", "https://www.pixiv.net/users/{media_id}"
+    ),
+    "reddit": PlatformConfig(
+        "Reddit", 0xFF4500, "0", "https://www.reddit.com/user/{media_id}"
+    ),
+    "seiga": PlatformConfig(
+        "NicoNico Seiga",
+        0xEDA715,
+        "0",
+        "https://seiga.nicovideo.jp/user/illust/{media_id}",
+    ),
+    "tumblr": PlatformConfig("Tumblr", 0x35465C, "0", "https://{media_id}.tumblr.com"),
+    "twitter": PlatformConfig(
+        "Twitter", 0x15202B, "0", "https://twitter.com/{media_id}"
+    ),
+    "weibo": PlatformConfig("Weibo", 0xE6162D, "0", "https://weibo.com/{media_id}"),
+    # Media tracking
+    "allcin": PlatformConfig(
+        "AllCinema",
+        0xEC0A0A,
+        "1079493870326403123",
+        "https://www.allcinema.net/prog/show_c.php?num_c={media_id}",
+    ),
+    "anidb": PlatformConfig(
+        "AniDB", 0x2A2F46, "1073439145067806801", "https://anidb.net/anime/{media_id}"
+    ),
+    "anilist": PlatformConfig(
+        "AniList",
+        0x2F80ED,
+        "1073445700689465374",
+        "https://anilist.co/anime/{media_id}",
+    ),
+    "animeplanet": PlatformConfig(
+        "Anime-Planet",
+        0xE75448,
+        "1073446927447891998",
+        "https://www.anime-planet.com/anime/{media_id}",
+    ),
+    "anisearch": PlatformConfig(
+        "AniSearch",
+        0xFDA37C,
+        "1073439148100300810",
+        "https://anisearch.com/anime/{media_id}",
+    ),
+    "animenewsnetwork": PlatformConfig(
+        "Anime News Network",
+        0x2D50A7,
+        "1079377192951230534",
+        "https://www.animenewsnetwork.com/encyclopedia/anime.php?id={media_id}",
+    ),
+    "annict": PlatformConfig(
+        "Annict (アニクト)",
+        0xF65B73,
+        "1088801941469012050",
+        "https://en.annict.com/works/{media_id}",
+    ),
+    "imdb": PlatformConfig(
+        "IMDb", 0xF5C518, "1079376998880784464", "https://www.imdb.com/title/{media_id}"
+    ),
+    "kaize": PlatformConfig(
+        "Kaize", 0x692FC2, "1073441859910774784", "https://kaize.io/anime/{media_id}"
+    ),
+    "kitsu": PlatformConfig(
+        "Kitsu", 0xF85235, "1073439152462368950", "https://kitsu.app/anime/{media_id}"
+    ),
+    "lastfm": PlatformConfig(
+        "Last.fm", 0xD51007, "0", "https://www.last.fm/user/{media_id}"
+    ),
+    "letterboxd": PlatformConfig(
+        "Letterboxd", 0x202830, "0", "https://letterboxd.com/film/{media_id}"
+    ),
+    "livechart": PlatformConfig(
+        "LiveChart",
+        0x67A427,
+        "1073439158883844106",
+        "https://livechart.me/anime/{media_id}",
+    ),
+    "myanimelist": PlatformConfig(
+        "MyAnimeList",
+        0x2F51A3,
+        "1073442204921643048",
+        "https://myanimelist.net/anime/{media_id}",
+    ),
+    "nautiljon": PlatformConfig(
+        "Nautiljon",
+        0xECB253,
+        "1144533712818667640",
+        "https://www.nautiljon.com/animes/{media_id}.html",
+    ),
+    "notify": PlatformConfig(
+        "Notify.moe",
+        0xDEA99E,
+        "1073439161194905690",
+        "https://notify.moe/anime/{media_id}",
+    ),
+    "otakotaku": PlatformConfig(
+        "Otak Otaku",
+        0xBE2222,
+        "1088801946313429013",
+        "https://otakotaku.com/anime/view/{media_id}",
+    ),
+    "shikimori": PlatformConfig(
+        "Shikimori (Шикимори)",
+        0x2E2E2E,
+        "1073441855645155468",
+        "https://shikimori.one/animes/{media_id}",
+    ),
+    "shoboi": PlatformConfig(
+        "Shoboi Calendar (しょぼいカレンダー)",
+        0xE3F0FD,
+        "1088801950751015005",
+        "https://cal.syoboi.jp/tid/{media_id}",
+    ),
+    "silveryasha": PlatformConfig(
+        "SilverYasha",
+        0x0172BB,
+        "1079380182059733052",
+        "https://db.silveryasha.web.id/anime/{media_id}",
+    ),
+    "simkl": PlatformConfig(
+        "SIMKL",
+        0x0B0F10,
+        "1073630754275348631",
+        "https://simkl.com/{simkl_type}/{media_id}",
+    ),
+    "tmdb": PlatformConfig(
+        "The Movie Database",
+        0x09B4E2,
+        "1079379319920529418",
+        "https://www.themoviedb.org/{media_id}",
+    ),
+    "trakt": PlatformConfig(
+        "Trakt", 0xED1C24, "1081612822175305788", "https://trakt.tv/{media_id}"
+    ),
+    "tvdb": PlatformConfig("The TVDB", 0x6CD491, "1079378495064510504", "{media_id}"),
+    "tvtime": PlatformConfig(
+        "TV Time", 0xFFD80A, "1091550459023605790", "https://tvtime.com/en/{media_id}"
+    ),
+}
+
+
 def get_platform_color(pf: str | Platform) -> int:
     """
     Get a color code for a specific platform
@@ -119,56 +309,8 @@ def get_platform_color(pf: str | Platform) -> int:
     """
     if isinstance(pf, str):
         pf = Platform(pf)
-    pfDict = defaultdict(
-        lambda: 0x000000,
-        {
-            # SNS
-            "artstation": 0x0F0F0F,
-            "deviantart": 0x05CC47,
-            "discord": 0x7289DA,
-            "facebook": 0x3B5998,
-            "flickr": 0xFF0084,
-            "hoyolab": 0x1B75BB,
-            "ibispaint": 0x1F507B,
-            "instagram": 0x833AB4,
-            "lofter": 0x335F60,
-            "patreon": 0xF96854,
-            "pixiv": 0x0096FA,
-            "reddit": 0xFF4500,
-            "seiga": 0xEDA715,
-            "tumblr": 0x35465C,
-            "twitter": 0x15202B,
-            "weibo": 0xE6162D,
-            # Media tracking
-            "allcin": 0xEC0A0A,
-            "anidb": 0x2A2F46,
-            "anilist": 0x2F80ED,
-            "animeplanet": 0xE75448,
-            "anisearch": 0xFDA37C,
-            "ann": 0x2D50A7,
-            "annict": 0xF65B73,
-            "imdb": 0xF5C518,
-            "kaize": 0x692FC2,
-            "kitsu": 0xF85235,
-            "lastfm": 0xD51007,
-            "livechart": 0x67A427,
-            "myanimelist": 0x2F51A3,
-            "nautiljon": 0xECB253,
-            "notify": 0xDEA99E,
-            "otakotaku": 0xBE2222,
-            "shikimori": 0x2E2E2E,
-            "shoboi": 0xE3F0FD,
-            "silveryasha": 0x0172BB,
-            "simkl": 0x0B0F10,
-            "syoboi": 0xE3F0FD,
-            "tmdb": 0x09B4E2,
-            "trakt": 0xED1C24,
-            "tvdb": 0x6CD491,
-            "tvtime": 0xFBD737,
-        },
-    )
-
-    return pfDict[pf.value]
+    config = PLATFORM_CONFIGS.get(pf.value)
+    return config.color if config else 0x000000
 
 
 def get_platform_name(pf: str | Platform) -> str:
@@ -183,52 +325,8 @@ def get_platform_name(pf: str | Platform) -> str:
     """
     if isinstance(pf, str):
         pf = Platform(pf)
-    pfDict = {
-        # SNS
-        "artstation": "ArtStation",
-        "deviantart": "DeviantArt",
-        "discord": "Discord",
-        "facebook": "Facebook",
-        "flickr": "Flickr",
-        "hoyolab": "Hoyolab",
-        "ibispaint": "ibisPaint",
-        "instagram": "Instagram",
-        "lofter": "Lofter",
-        "patreon": "Patreon",
-        "pixiv": "Pixiv",
-        "reddit": "Reddit",
-        "seiga": "NicoNico Seiga",
-        "tumblr": "Tumblr",
-        "twitter": "Twitter",
-        "weibo": "Weibo",
-        # Media tracking
-        "allcin": "AllCinema",
-        "anidb": "AniDB",
-        "anilist": "AniList",
-        "animeplanet": "Anime-Planet",
-        "anisearch": "AniSearch",
-        "ann": "Anime News Network",
-        "annict": "Annict (アニクト)",
-        "imdb": "IMDb",
-        "kaize": "Kaize",
-        "kitsu": "Kitsu",
-        "lastfm": "Last.fm",
-        "livechart": "LiveChart",
-        "myanimelist": "MyAnimeList",
-        "nautiljon": "Nautiljon",
-        "notify": "Notify.moe",
-        "otakotaku": "Otak Otaku",
-        "shikimori": "Shikimori (Шикимори)",
-        "shoboi": "Shoboi Calendar (しょぼいカレンダー)",
-        "silveryasha": "SilverYasha",
-        "simkl": "SIMKL",
-        "tmdb": "The Movie Database",
-        "trakt": "Trakt",
-        "tvdb": "The TVDB",
-        "tvtime": "TV Time",
-    }
-
-    return pfDict.get(pf.value, "Unknown")
+    config = PLATFORM_CONFIGS.get(pf.value)
+    return config.name if config else "Unknown"
 
 
 def media_id_to_platform(
@@ -250,105 +348,14 @@ def media_id_to_platform(
     """
     if isinstance(platform, str):
         platform = Platform(platform)
-    platform_dict = {
-        "anidb": {
-            "uid": f"https://anidb.net/anime/{media_id}",
-            "emoid": "1073439145067806801",
-        },
-        "anilist": {
-            "uid": f"https://anilist.co/anime/{media_id}",
-            "emoid": "1073445700689465374",
-        },
-        "animeplanet": {
-            "uid": f"https://www.anime-planet.com/anime/{media_id}",
-            "emoid": "1073446927447891998",
-        },
-        "anisearch": {
-            "uid": f"https://anisearch.com/anime/{media_id}",
-            "emoid": "1073439148100300810",
-        },
-        "annict": {
-            "uid": f"https://en.annict.com/works/{media_id}",
-            "emoid": "1088801941469012050",
-        },
-        "imdb": {
-            "uid": f"https://www.imdb.com/title/{media_id}",
-            "emoid": "1079376998880784464",
-        },
-        "kaize": {
-            "uid": f"https://kaize.io/anime/{media_id}",
-            "emoid": "1073441859910774784",
-        },
-        "kitsu": {
-            "uid": f"https://kitsu.app/anime/{media_id}",
-            "emoid": "1073439152462368950",
-        },
-        "myanimelist": {
-            "uid": f"https://myanimelist.net/anime/{media_id}",
-            "emoid": "1073442204921643048",
-        },
-        "nautiljon": {
-            "uid": f"https://www.nautiljon.com/animes/{media_id}.html",
-            "emoid": "1144533712818667640",
-        },
-        "shikimori": {
-            "uid": f"https://shikimori.one/animes/{media_id}",
-            "emoid": "1073441855645155468",
-        },
-        "livechart": {
-            "uid": f"https://livechart.me/anime/{media_id}",
-            "emoid": "1073439158883844106",
-        },
-        "notify": {
-            "uid": f"https://notify.moe/anime/{media_id}",
-            "emoid": "1073439161194905690",
-        },
-        "otakotaku": {
-            "uid": f"https://otakotaku.com/anime/view/{media_id}",
-            "emoid": "1088801946313429013",
-        },
-        "simkl": {
-            "uid": f"https://simkl.com/{simkl_type}/{media_id}",
-            "emoid": "1073630754275348631",
-        },
-        "shoboi": {
-            "uid": f"https://cal.syoboi.jp/tid/{media_id}",
-            "emoid": "1088801950751015005",
-        },
-        "tmdb": {
-            "uid": f"https://www.themoviedb.org/{media_id}",
-            "emoid": "1079379319920529418",
-        },
-        "silveryasha": {
-            "uid": f"https://db.silveryasha.web.id/anime/{media_id}",
-            "emoid": "1079380182059733052",
-        },
-        "trakt": {
-            "uid": f"https://trakt.tv/{media_id}",
-            "emoid": "1081612822175305788",
-        },
-        "tvdb": {"uid": media_id, "emoid": "1079378495064510504"},
-        "allcin": {
-            "uid": f"https://www.allcinema.net/prog/show_c.php?num_c={media_id}",
-            "emoid": "1079493870326403123",
-        },
-        "ann": {
-            "uid": f"https://www.animenewsnetwork.com/encyclopedia/anime.php?id={media_id}",
-            "emoid": "1079377192951230534",
-        },
-        "tvtime": {
-            "uid": f"https://tvtime.com/en/{media_id}",
-            "emoid": "1091550459023605790",
-        },
-    }
 
-    try:
-        data = platform_dict[platform.value]
-        data["pf"] = get_platform_name(platform.value)
-
-        return from_dict(data_class=PlatformLink, data=data)
-    except KeyError:
+    config = PLATFORM_CONFIGS.get(platform.value)
+    if not config:
         raise ValueError(f"Invalid platform: {platform}")
+
+    url = config.url_template.format(media_id=media_id, simkl_type=simkl_type)
+
+    return PlatformLink(pf=config.name, uid=url, emoid=config.emoji_id)
 
 
 def platforms_to_fields(currPlatform: str, **k: str | None) -> list[EmbedField]:
@@ -367,6 +374,7 @@ def platforms_to_fields(currPlatform: str, **k: str | None) -> list[EmbedField]:
         "imdb": "imdb",
         "kaize": "kaize",
         "kitsu": "kitsu",
+        "letterboxd": "letterboxd",
         "livechart": "livechart",
         "myanimelist": "myanimelist",
         "nautiljon": "nautiljon",

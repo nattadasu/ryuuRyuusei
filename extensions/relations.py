@@ -41,11 +41,19 @@ class RelationsFetcher:
 
     @staticmethod
     async def get_anime_api(
-        media_id: str, platform: AnimeApi.AnimeApiPlatforms
+        media_id: str,
+        platform: AnimeApi.AnimeApiPlatforms,
+        media_type: Optional[str] = None,
+        title_season: Optional[int] = None,
     ) -> AnimeApiAnime:
         """Fetch AnimeAPI relation data"""
         async with AnimeApi() as api:
-            return await api.get_relation(media_id=media_id, platform=platform)
+            return await api.get_relation(
+                media_id=media_id,
+                platform=platform,
+                media_type=media_type,
+                title_season=title_season,
+            )
 
     @staticmethod
     async def get_simkl_by_id(simkl_id: int) -> SimklRelations:
@@ -106,7 +114,7 @@ class PlatformHandler:
     ) -> AnimeApiAnime:
         """Handle standard anime platforms (MAL, AniList, etc.)"""
         platform_map = {
-            "myanimelist": AnimeApi.AnimeApiPlatforms.MAL,
+            "myanimelist": AnimeApi.AnimeApiPlatforms.MYANIMELIST,
             "anilist": AnimeApi.AnimeApiPlatforms.ANILIST,
             "anidb": AnimeApi.AnimeApiPlatforms.ANIDB,
             "kitsu": AnimeApi.AnimeApiPlatforms.KITSU,
@@ -117,7 +125,7 @@ class PlatformHandler:
             "kaize": AnimeApi.AnimeApiPlatforms.KAIZE,
             "livechart": AnimeApi.AnimeApiPlatforms.LIVECHART,
             "nautiljon": AnimeApi.AnimeApiPlatforms.NAUTILJON,
-            "notify": AnimeApi.AnimeApiPlatforms.NOTIFY,
+            "notify": AnimeApi.AnimeApiPlatforms.NOTIFYMOE,
             "otakotaku": AnimeApi.AnimeApiPlatforms.OTAKOTAKU,
             "shikimori": AnimeApi.AnimeApiPlatforms.SHIKIMORI,
             "shoboi": AnimeApi.AnimeApiPlatforms.SHOBOI,
@@ -143,12 +151,17 @@ class PlatformHandler:
         simkl_data = await self.fetcher.get_simkl_by_id(int(media_id))
         simkl_id = int(media_id)
 
-        # Try to get AnimeAPI data via MAL
+        # Try to get AnimeAPI data via SIMKL directly, then MAL as fallback
         anime_api = AnimeApiAnime(title="")
-        if simkl_data.mal:
+        try:
             anime_api = await self.fetcher.get_anime_api(
-                str(simkl_data.mal), AnimeApi.AnimeApiPlatforms.MAL
+                media_id, AnimeApi.AnimeApiPlatforms.SIMKL
             )
+        except Exception:
+            if simkl_data.mal:
+                anime_api = await self.fetcher.get_anime_api(
+                    str(simkl_data.mal), AnimeApi.AnimeApiPlatforms.MAL
+                )
 
         return anime_api, simkl_data, simkl_id
 
@@ -161,22 +174,52 @@ class PlatformHandler:
             if not media_type:
                 raise ValueError("media_type required for TMDB")
 
-        # Search SIMKL
-        simkl_id = await self.fetcher.search_simkl(
-            Simkl.Provider(platform), media_id, media_type=media_type
-        )
+        # Map platform names to AnimeAPI platform enum
+        platform_map = {
+            "tmdb": AnimeApi.AnimeApiPlatforms.THEMOVIEDB,
+            "tvdb": AnimeApi.AnimeApiPlatforms.THETVDB,
+            "imdb": AnimeApi.AnimeApiPlatforms.IMDB,
+        }
 
-        if not simkl_id:
-            raise SimklTypeError(f"Could not find {platform.upper()} ID in SIMKL")
-
-        simkl_data = await self.fetcher.get_simkl_by_id(simkl_id)
-
-        # Try to get AnimeAPI data via MAL
+        # Try to get AnimeAPI data directly with media_type for TMDB
         anime_api = AnimeApiAnime(title="")
-        if simkl_data.mal:
-            anime_api = await self.fetcher.get_anime_api(
-                str(simkl_data.mal), AnimeApi.AnimeApiPlatforms.MAL
+        try:
+            if platform == "tmdb":
+                anime_api = await self.fetcher.get_anime_api(
+                    media_id, platform_map[platform], media_type=media_type
+                )
+            else:
+                anime_api = await self.fetcher.get_anime_api(
+                    media_id, platform_map[platform]
+                )
+        except Exception:
+            pass
+
+        # Try to get SIMKL data from AnimeAPI first, then search SIMKL
+        simkl_id = None
+        simkl_data = SimklRelations()
+
+        if anime_api.simkl:
+            simkl_id = anime_api.simkl
+            simkl_data = await self.fetcher.get_simkl_by_id(simkl_id)
+        else:
+            # Search SIMKL as fallback
+            simkl_id = await self.fetcher.search_simkl(
+                Simkl.Provider(platform), media_id, media_type=media_type
             )
+
+            if not simkl_id:
+                raise SimklTypeError(
+                    f"Could not find {platform.upper()} ID in SIMKL or AnimeAPI"
+                )
+
+            simkl_data = await self.fetcher.get_simkl_by_id(simkl_id)
+
+            # Try to get AnimeAPI data via MAL if not already fetched
+            if not anime_api.title and simkl_data.mal:
+                anime_api = await self.fetcher.get_anime_api(
+                    str(simkl_data.mal), AnimeApi.AnimeApiPlatforms.MAL
+                )
 
         return anime_api, simkl_data, simkl_id
 
@@ -219,8 +262,14 @@ class RelationsBuilder:
     async def enrich_with_simkl(
         self, anime_api: AnimeApiAnime, simkl_id: Optional[int] = None
     ) -> tuple[SimklRelations, Optional[int]]:
-        """Enrich data by searching SIMKL via MAL or AniDB"""
+        """Enrich data by searching SIMKL via AnimeAPI, MAL or AniDB"""
         if simkl_id:
+            simkl_data = await self.fetcher.get_simkl_by_id(simkl_id)
+            return simkl_data, simkl_id
+
+        # First, check if AnimeAPI already has SIMKL ID
+        if anime_api.simkl:
+            simkl_id = anime_api.simkl
             simkl_data = await self.fetcher.get_simkl_by_id(simkl_id)
             return simkl_data, simkl_id
 
@@ -248,21 +297,34 @@ class RelationsBuilder:
         """Enrich data with Trakt information"""
         # If already have Trakt data from anime_api
         if anime_api.trakt:
-            trakt_type = anime_api.trakt_type
+            # Convert enum to string value if needed
+            trakt_type = (
+                anime_api.trakt_type.value
+                if hasattr(anime_api.trakt_type, "value")
+                else str(anime_api.trakt_type)
+            )
             trakt_season = anime_api.trakt_season
             trakt_id = f"{trakt_type}/{anime_api.trakt}/seasons/{trakt_season}"
             return trakt_id, trakt_type, trakt_season
 
-        # Try to lookup Trakt via IMDb or TMDB
-        imdb_id = simkl_data.imdb
-        tmdb_id = simkl_data.tmdb
+        # Try to lookup Trakt via IMDb or TMDB from AnimeAPI first
+        imdb_id = anime_api.imdb or simkl_data.imdb
+        tmdb_id = anime_api.themoviedb or simkl_data.tmdb
 
         if imdb_id or tmdb_id:
             lookup_id = imdb_id or tmdb_id
             lookup_platform = "imdb" if imdb_id else "tmdb"
 
-            # Determine media type
-            if simkl_data.anitype == "movie" or simkl_data.type == "movie":
+            # Determine media type from AnimeAPI or SIMKL
+            if anime_api.themoviedb_type:
+                # Convert enum to string value if needed
+                tmdb_type_str = (
+                    anime_api.themoviedb_type.value
+                    if hasattr(anime_api.themoviedb_type, "value")
+                    else str(anime_api.themoviedb_type)
+                )
+                media_type = "movies" if tmdb_type_str == "movie" else "shows"
+            elif simkl_data.anitype == "movie" or simkl_data.type == "movie":
                 media_type = "movies"
             else:
                 media_type = "shows"
@@ -282,10 +344,22 @@ class RelationsBuilder:
         return None, None, None
 
     def build_media_type_info(
-        self, simkl_data: SimklRelations, trakt_type: Optional[str] = None
+        self,
+        anime_api: AnimeApiAnime,
+        simkl_data: SimklRelations,
+        trakt_type: Optional[str] = None,
     ) -> tuple[str, str]:
         """Determine TVDB and TMDB media type strings"""
-        if simkl_data.anitype:
+        # Try AnimeAPI data first
+        if anime_api.themoviedb_type:
+            # Convert enum to string value if needed
+            tmtyp = (
+                anime_api.themoviedb_type.value
+                if hasattr(anime_api.themoviedb_type, "value")
+                else str(anime_api.themoviedb_type)
+            )
+            tvtyp = "series" if tmtyp == "tv" else "movies"
+        elif simkl_data.anitype:
             tvtyp = "series" if simkl_data.anitype == "tv" else "movies"
             tmtyp = "tv" if simkl_data.anitype == "tv" else "movie"
         elif simkl_data.type:
@@ -302,6 +376,7 @@ class RelationsBuilder:
 
     def build_external_urls(
         self,
+        anime_api: AnimeApiAnime,
         simkl_data: SimklRelations,
         trakt_data: TraktMediaStruct,
         trakt_season: Optional[int],
@@ -310,35 +385,29 @@ class RelationsBuilder:
         tmdb_id: Optional[str] = None,
     ) -> tuple[Optional[str], Optional[str], Optional[str]]:
         """Build TVDB, TVTime, and TMDB URLs"""
-        # TVDB URL
+        # TVDB URL - use AnimeAPI data first, then SIMKL, then Trakt
         tvdb_id = None
+        tvdb_raw = (
+            anime_api.thetvdb
+            or simkl_data.tvdb
+            or (trakt_data.ids.tvdb if trakt_data.ids else None)
+        )
+
         if trakt_season:
             if simkl_data.tvdbslug:
                 tvdb_id = f"https://www.thetvdb.com/{tvtyp}/{simkl_data.tvdbslug}/seasons/official/{trakt_season}"
-            elif simkl_data.tvdb:
-                tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{simkl_data.tvdb}"
-            elif trakt_data.ids.tvdb:
-                tvdb_id = (
-                    f"https://www.thetvdb.com/deferrer/{tvtyp}/{trakt_data.ids.tvdb}"
-                )
+            elif tvdb_raw:
+                tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{tvdb_raw}"
         else:
             if simkl_data.tvdbslug:
                 tvdb_id = f"https://www.thetvdb.com/{tvtyp}/{simkl_data.tvdbslug}"
-            elif simkl_data.tvdb:
-                tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{simkl_data.tvdb}"
-            elif trakt_data.ids.tvdb:
-                tvdb_id = (
-                    f"https://www.thetvdb.com/deferrer/{tvtyp}/{trakt_data.ids.tvdb}"
-                )
+            elif tvdb_raw:
+                tvdb_id = f"https://www.thetvdb.com/deferrer/{tvtyp}/{tvdb_raw}"
 
-        # TVTime ID
+        # TVTime ID - use AnimeAPI data first, then SIMKL, then Trakt
         tvtime_id = None
-        if simkl_data.tvdb:
-            tvtime_id = f"{'show' if tvtyp == 'series' else 'movie'}/{simkl_data.tvdb}"
-        elif trakt_data.ids.tvdb:
-            tvtime_id = (
-                f"{'show' if tvtyp == 'series' else 'movie'}/{trakt_data.ids.tvdb}"
-            )
+        if tvdb_raw:
+            tvtime_id = f"{'show' if tvtyp == 'series' else 'movie'}/{tvdb_raw}"
 
         # TMDB URL
         tmdb_url = None
@@ -351,7 +420,7 @@ class RelationsBuilder:
         return tvdb_id, tvtime_id, tmdb_url
 
 
-class ExtenalSitesRelations(ipy.Extension):
+class ExternalSitesRelations(ipy.Extension):
     """Extension class for /relations"""
 
     relations = ipy.SlashCommand(
@@ -365,7 +434,7 @@ class ExtenalSitesRelations(ipy.Extension):
     )
 
     def __init__(self, bot: ipy.AutoShardedClient):
-        super().__init__(bot)
+        self.bot = bot
         self.fetcher = RelationsFetcher()
         self.handler = PlatformHandler(self.fetcher)
         self.builder = RelationsBuilder(self.fetcher)
@@ -566,28 +635,33 @@ class ExtenalSitesRelations(ipy.Extension):
 
         # For Trakt platform, also fetch SIMKL data
         if platform == "trakt" and not simkl_id:
-            # Try to find SIMKL via MAL, IMDb, TMDB, or TVDB
-            search_sources = [
-                (anime_api.myanimelist, Simkl.Provider.MYANIMELIST, None),
-                (trakt_data.ids.imdb, Simkl.Provider.IMDB, None),
-                (
-                    trakt_data.ids.tmdb,
-                    Simkl.Provider.TMDB,
-                    Simkl.TmdbMediaTypes.MOVIE
-                    if trakt_info["type"] == "movie"
-                    else Simkl.TmdbMediaTypes.TV,
-                ),
-                (trakt_data.ids.tvdb, Simkl.Provider.TVDB, None),
-            ]
+            # First check if AnimeAPI has SIMKL ID
+            if anime_api.simkl:
+                simkl_id = anime_api.simkl
+                simkl_data = await self.fetcher.get_simkl_by_id(simkl_id)
+            else:
+                # Try to find SIMKL via MAL, IMDb, TMDB, or TVDB
+                search_sources = [
+                    (anime_api.myanimelist, Simkl.Provider.MYANIMELIST, None),
+                    (trakt_data.ids.imdb, Simkl.Provider.IMDB, None),
+                    (
+                        trakt_data.ids.tmdb,
+                        Simkl.Provider.TMDB,
+                        Simkl.TmdbMediaTypes.MOVIE
+                        if trakt_info["type"] == "movie"
+                        else Simkl.TmdbMediaTypes.TV,
+                    ),
+                    (trakt_data.ids.tvdb, Simkl.Provider.TVDB, None),
+                ]
 
-            for source_id, provider, media_type in search_sources:
-                if source_id:
-                    simkl_id = await self.fetcher.search_simkl(
-                        provider, str(source_id), media_type
-                    )
-                    if simkl_id:
-                        simkl_data = await self.fetcher.get_simkl_by_id(simkl_id)
-                        break
+                for source_id, provider, media_type in search_sources:
+                    if source_id:
+                        simkl_id = await self.fetcher.search_simkl(
+                            provider, str(source_id), media_type
+                        )
+                        if simkl_id:
+                            simkl_data = await self.fetcher.get_simkl_by_id(simkl_id)
+                            break
 
     async def _build_and_send_embed(
         self,
@@ -606,19 +680,58 @@ class ExtenalSitesRelations(ipy.Extension):
 
         # Build media type info
         tvtyp, tmtyp = self.builder.build_media_type_info(
-            simkl_data, trakt_info["type"]
+            anime_api, simkl_data, trakt_info["type"]
         )
 
-        # Build external URLs
-        tmdb_id = simkl_data.tmdb if platform != "tmdb" else media_id
-        imdb_id = simkl_data.imdb if platform != "imdb" else media_id
+        # Build external URLs - use AnimeAPI data first, then SIMKL as fallback
+        if platform == "tmdb":
+            tmdb_id = media_id
+        else:
+            tmdb_id = anime_api.themoviedb or simkl_data.tmdb
+
+        if platform == "imdb":
+            imdb_id = media_id
+        else:
+            imdb_id = anime_api.imdb or simkl_data.imdb
 
         tvdb_id, tvtime_id, tmdb_url = self.builder.build_external_urls(
-            simkl_data, trakt_data, trakt_info["season"], tvtyp, tmtyp, tmdb_id
+            anime_api,
+            simkl_data,
+            trakt_data,
+            trakt_info["season"],
+            tvtyp,
+            tmtyp,
+            tmdb_id,
         )
 
-        # Build trakt_id string
-        trakt_id_str = trakt_info["id"] if trakt_info["id"] else None
+        # Build trakt_id string - use AnimeAPI data first
+        if trakt_info["id"]:
+            trakt_id_str = trakt_info["id"]
+        elif anime_api.trakt:
+            # Build full Trakt URL with type and season from AnimeAPI
+            trakt_type_str = (
+                anime_api.trakt_type.value
+                if hasattr(anime_api.trakt_type, "value")
+                else str(anime_api.trakt_type)
+            )
+
+            # Only add season for shows, not movies
+            if trakt_type_str == "shows":
+                trakt_season = anime_api.trakt_season or 1
+                trakt_id_str = (
+                    f"{trakt_type_str}/{anime_api.trakt}/seasons/{trakt_season}"
+                )
+            else:
+                trakt_id_str = f"{trakt_type_str}/{anime_api.trakt}"
+        else:
+            trakt_id_str = None
+
+        # Build letterboxd link: use slug if available, otherwise use TMDB redirect
+        letterboxd_link = None
+        if anime_api.letterboxd_slug:
+            letterboxd_link = anime_api.letterboxd_slug
+        elif tmdb_id and tmtyp == "movie":
+            letterboxd_link = f"tmdb/{tmdb_id}"
 
         # Generate fields
         fields = platforms_to_fields(
@@ -633,6 +746,7 @@ class ExtenalSitesRelations(ipy.Extension):
             imdb=imdb_id,
             kaize=anime_api.kaize,
             kitsu=anime_api.kitsu,
+            letterboxd=letterboxd_link,
             livechart=anime_api.livechart,
             myanimelist=anime_api.myanimelist,
             nautiljon=anime_api.nautiljon,
@@ -641,7 +755,7 @@ class ExtenalSitesRelations(ipy.Extension):
             shikimori=anime_api.shikimori,
             shoboi=anime_api.shoboi,
             silveryasha=anime_api.silveryasha,
-            simkl=simkl_id,
+            simkl=simkl_id or anime_api.simkl,
             simkl_type=simkl_data.type,
             trakt=trakt_id_str,
             tvdb=tvdb_id,
@@ -718,4 +832,4 @@ class ExtenalSitesRelations(ipy.Extension):
 
 
 def setup(bot: ipy.AutoShardedClient) -> None:
-    ExtenalSitesRelations(bot)
+    ExternalSitesRelations(bot)
