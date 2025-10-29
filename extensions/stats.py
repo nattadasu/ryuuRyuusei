@@ -8,9 +8,9 @@ import platform as pfm
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from importlib.metadata import distributions
 
 import interactions as ipy
-import pkg_resources as pipkg
 import psutil
 from interactions.ext.paginators import Paginator
 
@@ -187,16 +187,13 @@ def get_system_info() -> SystemInfo:
     )
 
 
-def get_pkg_license(pkg: pipkg.Distribution) -> str:
+def get_pkg_license(pkg_name: str) -> str:
     try:
-        lines = pkg.get_metadata_lines("METADATA")
-    except Exception as _:
-        lines = pkg.get_metadata_lines("PKG-INFO")
-
-    for line in lines:
-        if line.startswith("License:"):
-            return line[9:]
-    return "*Licence not found*"
+        from importlib.metadata import metadata
+        meta = metadata(pkg_name)
+        return meta.get("License", "*Licence not found*")
+    except Exception:
+        return "*Licence not found*"
 
 
 def get_pip_pkgs() -> list[PackageInfo]:
@@ -207,9 +204,10 @@ def get_pip_pkgs() -> list[PackageInfo]:
         list[PackageInfo]: List of pip packages
     """
     final: list[PackageInfo] = []
-    for pkg in pipkg.working_set:
+    for pkg in distributions():
+        pkg_name = pkg.name
         final.append(
-            PackageInfo(name=pkg.key, version=pkg.version, license=get_pkg_license(pkg))
+            PackageInfo(name=pkg_name, version=pkg.version, license=get_pkg_license(pkg_name))
         )
     # sort by name
     final.sort(key=lambda x: x.name)
