@@ -168,9 +168,12 @@ class Utilities(ipy.Extension):
                 raise ValueError("Invalid hex color")
             if (
                 color_format == "ass"
-                and re.match(r"^&H[0-9a-fA-F]{6,8}&?$", color_value, re.IGNORECASE) is None
+                and re.match(r"^&H[0-9a-fA-F]{6,8}&?$", color_value, re.IGNORECASE)
+                is None
             ):
-                raise ValueError("Invalid ASS color (expected &HBBGGRR& or &HAABBGGRR&)")
+                raise ValueError(
+                    "Invalid ASS color (expected &HBBGGRR& or &HAABBGGRR&)"
+                )
             if color_format == "hex" and re.match(r"^#", color_value) is None:
                 color_value = f"#{color_value}"
             if color_format == "ass":
