@@ -111,7 +111,7 @@ class BotTasker(Extension):
                     guild_count=server_count,
                     shard_count=shard_count,
                 )
-        except ProviderHttpError as error:
+        except Exception as error:
             print(f"[Tsk] [Stats] Failed to poll to Top.gg: {error}")
             save_traceback_to_file(
                 "tasker_topgg", self.bot.user, error, mute_error=True
@@ -124,7 +124,7 @@ class BotTasker(Extension):
                     guild_count=server_count,
                     shard_count=shard_count,
                 )
-        except ProviderHttpError as error:
+        except Exception as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBots.gg: {error}")
             save_traceback_to_file("tasker_dbgg", self.bot.user, error, mute_error=True)
             show_msg.append("DiscordBots.gg")
@@ -135,7 +135,7 @@ class BotTasker(Extension):
                     guild_count=server_count,
                     members=0,
                 )
-        except ProviderHttpError as error:
+        except Exception as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBotList: {error}")
             save_traceback_to_file("tasker_dbl", self.bot.user, error, mute_error=True)
             show_msg.append("DiscordBotList.com")
@@ -147,7 +147,7 @@ class BotTasker(Extension):
                     shard_count=shard_count,
                     members=0,
                 )
-        except ProviderHttpError as error:
+        except Exception as error:
             print(f"[Tsk] [Stats] Failed to poll to InfinityBots: {error}")
             save_traceback_to_file("tasker_ibgg", self.bot.user, error, mute_error=True)
             show_msg.append("InfinityBots")
@@ -164,17 +164,21 @@ class BotTasker(Extension):
     @Task.create(IntervalTrigger(minutes=10))
     async def update_bot_activity(self) -> None:
         """Update the bot's activity to show the number of guilds and members it is in"""
-        old_activity = self.bot.activity.name
-        shards = self.bot.total_shards
-        final = f"{len(self.bot.guilds)} guild{'s' if len(self.bot.guilds) > 1 else ''}, {shards:,} shard{'s' if shards > 1 else ''}"
-        if old_activity == final:
-            return
-        await self.bot.change_presence(
-            activity=Activity(
-                name=final,
-                type=ActivityType.WATCHING,
-            ),
-        )
+        try:
+            old_activity = self.bot.activity.name
+            shards = self.bot.total_shards
+            final = f"{len(self.bot.guilds)} guild{'s' if len(self.bot.guilds) > 1 else ''}, {shards:,} shard{'s' if shards > 1 else ''}"
+            if old_activity == final:
+                return
+            await self.bot.change_presence(
+                activity=Activity(
+                    name=final,
+                    type=ActivityType.WATCHING,
+                ),
+            )
+        except Exception as error:
+            print(f"[Tsk] [Activity] Failed to update bot activity: {error}")
+            save_traceback_to_file("tasker_activity", self.bot.user, error, mute_error=True)
 
     @staticmethod
     def _delete_old_files(folder_path: str, duration: int) -> int:
@@ -208,11 +212,15 @@ class BotTasker(Extension):
     @Task.create(IntervalTrigger(days=1))
     async def update_deps_database(self) -> None:
         """Update the dependencies database"""
-        from modules.oobe.getNekomimi import nk_run
-        from modules.oobe.malIndexer import mal_run
+        try:
+            from modules.oobe.getNekomimi import nk_run
+            from modules.oobe.malIndexer import mal_run
 
-        await nk_run()
-        await mal_run()
+            await nk_run()
+            await mal_run()
+        except Exception as error:
+            print(f"[Tsk] [Database] Failed to update dependencies database: {error}")
+            save_traceback_to_file("tasker_update_deps", self.bot.user, error, mute_error=True)
 
 
 def setup(bot: Client | AutoShardedClient) -> None:
