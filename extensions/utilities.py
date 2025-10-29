@@ -22,42 +22,48 @@ class Utilities(ipy.Extension):
     """Utilities commands"""
 
     @staticmethod
-    def generate_color_swatch(rgb_tuple: tuple[int, int, int], color_name: str) -> BytesIO:
+    def generate_color_swatch(
+        rgb_tuple: tuple[int, int, int], color_name: str
+    ) -> BytesIO:
         """
         Generate a color swatch image with the color name
-        
+
         Args:
             rgb_tuple: RGB values as tuple (r, g, b)
             color_name: Name of the color to display
-            
+
         Returns:
             BytesIO: PNG image data
         """
         width, height = 400, 400
-        img = Image.new('RGB', (width, height), color=rgb_tuple)
+        img = Image.new("RGB", (width, height), color=rgb_tuple)
         draw = ImageDraw.Draw(img)
-        
+
         # Add color name text with contrasting color
-        brightness = (rgb_tuple[0] * 299 + rgb_tuple[1] * 587 + rgb_tuple[2] * 114) / 1000
+        brightness = (
+            rgb_tuple[0] * 299 + rgb_tuple[1] * 587 + rgb_tuple[2] * 114
+        ) / 1000
         text_color = (0, 0, 0) if brightness > 128 else (255, 255, 255)
-        
+
         try:
-            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 32)
-        except:
+            font = ImageFont.truetype(
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 32
+            )
+        except (OSError, IOError):
             font = ImageFont.load_default()
-        
+
         # Calculate text position to center it
         bbox = draw.textbbox((0, 0), color_name, font=font)
         text_width = bbox[2] - bbox[0]
         text_height = bbox[3] - bbox[1]
         text_x = (width - text_width) // 2
         text_y = (height - text_height) // 2
-        
+
         draw.text((text_x, text_y), color_name, fill=text_color, font=font)
-        
+
         # Save to BytesIO
         buffer = BytesIO()
-        img.save(buffer, format='PNG')
+        img.save(buffer, format="PNG")
         buffer.seek(0)
         return buffer
 
@@ -210,9 +216,12 @@ class Utilities(ipy.Extension):
                 raise ValueError("Invalid hex color")
             if (
                 color_format == "ass"
-                and re.match(r"^&H[0-9a-fA-F]{6,8}&?$", color_value, re.IGNORECASE) is None
+                and re.match(r"^&H[0-9a-fA-F]{6,8}&?$", color_value, re.IGNORECASE)
+                is None
             ):
-                raise ValueError("Invalid ASS color (expected &HBBGGRR& or &HAABBGGRR&)")
+                raise ValueError(
+                    "Invalid ASS color (expected &HBBGGRR& or &HAABBGGRR&)"
+                )
             if color_format == "hex" and re.match(r"^#", color_value) is None:
                 color_value = f"#{color_value}"
             if color_format == "ass":
@@ -274,10 +283,12 @@ class Utilities(ipy.Extension):
                 ),
                 ipy.EmbedField(name="DEC", value=f"```py\n{col}\n```", inline=True),
             ]
-            
+
             # Generate color swatch locally
-            color_swatch = self.generate_color_swatch((rgb.r, rgb.g, rgb.b), res.name.value)
-            
+            color_swatch = self.generate_color_swatch(
+                (rgb.r, rgb.g, rgb.b), res.name.value
+            )
+
             embed = ipy.Embed(
                 title="Color Information",
                 color=col,

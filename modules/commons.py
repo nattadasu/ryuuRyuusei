@@ -29,9 +29,8 @@ from interactions import (
 )
 
 from classes.anilist import AniListTrailerStruct
-from modules.const import EMOJI_FORBIDDEN
+from modules.const import EMOJI_FORBIDDEN, EMOJI_USER_ERROR
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
-from modules.const import EMOJI_USER_ERROR
 
 
 def snowflake_to_datetime(snowflake: int) -> int:

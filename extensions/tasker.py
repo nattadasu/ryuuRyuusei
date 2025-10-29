@@ -12,7 +12,6 @@ from interactions import (
     Task,
 )
 
-from classes.excepts import ProviderHttpError
 from classes.stats.dbgg import DiscordBotsGG
 from classes.stats.dbl import DiscordBotList
 from classes.stats.infinity import InfinityBots
@@ -178,7 +177,9 @@ class BotTasker(Extension):
             )
         except Exception as error:
             print(f"[Tsk] [Activity] Failed to update bot activity: {error}")
-            save_traceback_to_file("tasker_activity", self.bot.user, error, mute_error=True)
+            save_traceback_to_file(
+                "tasker_activity", self.bot.user, error, mute_error=True
+            )
 
     @staticmethod
     def _delete_old_files(folder_path: str, duration: int) -> int:
@@ -220,7 +221,9 @@ class BotTasker(Extension):
             await mal_run()
         except Exception as error:
             print(f"[Tsk] [Database] Failed to update dependencies database: {error}")
-            save_traceback_to_file("tasker_update_deps", self.bot.user, error, mute_error=True)
+            save_traceback_to_file(
+                "tasker_update_deps", self.bot.user, error, mute_error=True
+            )
 
 
 def setup(bot: Client | AutoShardedClient) -> None:

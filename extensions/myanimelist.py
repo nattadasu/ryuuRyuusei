@@ -18,9 +18,8 @@ from classes.database import DatabaseException, UserDatabase
 from classes.excepts import ProviderHttpError
 from classes.html.myanimelist import HtmlMyAnimeList
 from classes.jikan import JikanApi, JikanException, JikanUserStruct
-from classes.rss.myanimelist import MediaStatus
+from classes.rss.myanimelist import MediaStatus, RssItem
 from classes.rss.myanimelist import MyAnimeListRss as Rss
-from classes.rss.myanimelist import RssItem
 from modules.commons import (
     PlatformErrType,
     convert_float_to_time,
