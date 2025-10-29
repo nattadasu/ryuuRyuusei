@@ -1,10 +1,12 @@
 import re
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
+from io import BytesIO
 from urllib.parse import urlencode as urlenc
 
 import interactions as ipy
 import validators  # type: ignore
+from PIL import Image, ImageDraw, ImageFont
 from plusminus import BaseArithmeticParser as BAP  # type: ignore
 
 from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
@@ -18,6 +20,46 @@ from modules.commons import (
 
 class Utilities(ipy.Extension):
     """Utilities commands"""
+
+    @staticmethod
+    def generate_color_swatch(rgb_tuple: tuple[int, int, int], color_name: str) -> BytesIO:
+        """
+        Generate a color swatch image with the color name
+        
+        Args:
+            rgb_tuple: RGB values as tuple (r, g, b)
+            color_name: Name of the color to display
+            
+        Returns:
+            BytesIO: PNG image data
+        """
+        width, height = 400, 400
+        img = Image.new('RGB', (width, height), color=rgb_tuple)
+        draw = ImageDraw.Draw(img)
+        
+        # Add color name text with contrasting color
+        brightness = (rgb_tuple[0] * 299 + rgb_tuple[1] * 587 + rgb_tuple[2] * 114) / 1000
+        text_color = (0, 0, 0) if brightness > 128 else (255, 255, 255)
+        
+        try:
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 32)
+        except:
+            font = ImageFont.load_default()
+        
+        # Calculate text position to center it
+        bbox = draw.textbbox((0, 0), color_name, font=font)
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+        text_x = (width - text_width) // 2
+        text_y = (height - text_height) // 2
+        
+        draw.text((text_x, text_y), color_name, fill=text_color, font=font)
+        
+        # Save to BytesIO
+        buffer = BytesIO()
+        img.save(buffer, format='PNG')
+        buffer.seek(0)
+        return buffer
 
     utilities_head = ipy.SlashCommand(
         name="utilities",
@@ -232,15 +274,20 @@ class Utilities(ipy.Extension):
                 ),
                 ipy.EmbedField(name="DEC", value=f"```py\n{col}\n```", inline=True),
             ]
+            
+            # Generate color swatch locally
+            color_swatch = self.generate_color_swatch((rgb.r, rgb.g, rgb.b), res.name.value)
+            
             embed = ipy.Embed(
                 title="Color Information",
                 color=col,
                 fields=fields,
                 footer=ipy.EmbedFooter(text="Powered by TheColorApi"),
             )
-            embed.set_thumbnail(url=res.image.bare)
+            embed.set_thumbnail(url="attachment://color_swatch.png")
             await ctx.send(
                 embed=embed,
+                file=ipy.File(color_swatch, file_name="color_swatch.png"),
             )
         except Exception as e:
             await ctx.send(
