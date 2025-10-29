@@ -13,10 +13,7 @@ name = "python"
 name = "secrets"
 
 [[transformers]]
-name = "autopep8"
-
-[[transformers]]
-name = "isort"
+name = "ruff"
 
 [[analyzers]]
 name = "test-coverage"
