@@ -6,10 +6,12 @@ import interactions as ipy
 
 from classes.database import DatabaseException, UserDatabase, UserDatabaseClass
 from classes.excepts import ProviderHttpError
-from classes.shikimori import (Shikimori, ShikimoriUserGender,
-                               ShikimoriUserStruct)
-from modules.commons import (PlatformErrType, platform_exception_embed,
-                             save_traceback_to_file)
+from classes.shikimori import Shikimori, ShikimoriUserGender, ShikimoriUserStruct
+from modules.commons import (
+    PlatformErrType,
+    platform_exception_embed,
+    save_traceback_to_file,
+)
 
 
 class ShikimoriCog(ipy.Extension):
@@ -18,11 +20,7 @@ class ShikimoriCog(ipy.Extension):
     shikimori_head = ipy.SlashCommand(
         name="shikimori",
         description="Get useful information from Shikimori",
-        cooldown=ipy.Cooldown(
-            cooldown_bucket=ipy.Buckets.USER,
-            rate=1,
-            interval=5
-        )
+        cooldown=ipy.Cooldown(cooldown_bucket=ipy.Buckets.USER, rate=1, interval=5),
     )
 
     @shikimori_head.subcommand(
@@ -47,15 +45,9 @@ class ShikimoriCog(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(
-                            name="Minimal (default)",
-                            value="minimal"),
-                    ipy.SlashCommandChoice(
-                        name="Classic",
-                        value="old"),
-                    ipy.SlashCommandChoice(
-                        name="Highly Detailed",
-                        value="new"),
+                    ipy.SlashCommandChoice(name="Minimal (default)", value="minimal"),
+                    ipy.SlashCommandChoice(name="Classic", value="old"),
+                    ipy.SlashCommandChoice(name="Highly Detailed", value="new"),
                 ],
             ),
         ],
@@ -276,11 +268,12 @@ Use `/platform link` to link, or `/shikimori profile shikimori_username:<shikimo
                     for index, fav in enumerate(ani_favs_top):
                         if len(fav.name) >= 100:
                             fav.name = fav.name[:97] + "..."
-                        ani_favs_str += f"{index + 1}. [{fav.name}]({base_url}/animes/{fav.id})\n"
+                        ani_favs_str += (
+                            f"{index + 1}. [{fav.name}]({base_url}/animes/{fav.id})\n"
+                        )
                 embed.add_field(
                     name="🌟 Top 5 Favorite Anime",
-                    value=ani_favs_str if ani_favs_str not in [
-                        "", None] else "Unset",
+                    value=ani_favs_str if ani_favs_str not in ["", None] else "Unset",
                     inline=True,
                 )
             embed.add_field(
@@ -306,11 +299,12 @@ Use `/platform link` to link, or `/shikimori profile shikimori_username:<shikimo
                     for index, fav in enumerate(man_favs_top):
                         if len(fav.name) >= 100:
                             fav.name = fav.name[:97] + "..."
-                        man_favs_str += f"{index + 1}. [{fav.name}]({base_url}/animes/{fav.id})\n"
+                        man_favs_str += (
+                            f"{index + 1}. [{fav.name}]({base_url}/animes/{fav.id})\n"
+                        )
                 embed.add_field(
                     name="🌟 Top 5 Favorite Manga",
-                    value=man_favs_str if man_favs_str not in [
-                        "", None] else "Unset",
+                    value=man_favs_str if man_favs_str not in ["", None] else "Unset",
                     inline=True,
                 )
         else:

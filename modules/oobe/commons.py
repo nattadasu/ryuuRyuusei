@@ -58,9 +58,7 @@ def py_bin_path() -> str:
     if py_version >= (3, 10):
         return sys.executable
     # if python version is < 3.10, raise an exception
-    raise UnsupportedVersion(
-        version=sys.version,
-        message="Python version is too old.")
+    raise UnsupportedVersion(version=sys.version, message="Python version is too old.")
 
 
 pf = py_bin_path()

@@ -13,8 +13,11 @@ from interactions.ext.paginators import Paginator
 
 from classes.cache import Caching
 from classes.database import UserBirthdayPermission, UserDatabase
-from modules.commons import (PlatformErrType, platform_exception_embed,
-                             save_traceback_to_file)
+from modules.commons import (
+    PlatformErrType,
+    platform_exception_embed,
+    save_traceback_to_file,
+)
 from modules.const import BIRTHDAY_SERVER, BIRTHDAY_WEBHOOK
 
 Cache = Caching("cache/birthday", 86400)
@@ -187,7 +190,7 @@ greets = [
     "another year older? don’t worry, the wrinkles are just wisdom stretch marks",
     "congrats, you’ve survived another 365 days of adulting. barely, but hey, it counts!",
     "happy birthday! if you feel a draft, that's just the grim reaper breathing down your neck",
-    'birthday candles are just tiny fire hazards screaming "you' 're ancient"',
+    'birthday candles are just tiny fire hazards screaming "youre ancient"',
     "they say with age comes wisdom. how’s that working out for you?",
     "happy birthday! at least you're not as old as you'll be next year",
     "if birthdays were achievements, yours would be 'seasoned pro at breathing'",
@@ -254,8 +257,7 @@ class Birthday(ipy.Extension):
             usr_http = await self.bot.http.get_user(user.discord_id)
             http_data = None
             if usr:
-                http_data = ipy.User.from_dict(
-                    usr_http, self.bot)  # type: ignore
+                http_data = ipy.User.from_dict(usr_http, self.bot)  # type: ignore
             unnecessary_greet = np.random.choice(greets)
             msg_embed = ipy.Embed(
                 title="Happy Birthday!",
@@ -569,8 +571,7 @@ class Birthday(ipy.Extension):
                 [f"{k}={'Yes' if v else 'No'}" for k, v in old.to_dict().items()]
             )
             new_str = ", ".join(
-                [f"{k}={'Yes' if v else 'No'}" for k,
-                    v in perms.to_dict().items()]
+                [f"{k}={'Yes' if v else 'No'}" for k, v in perms.to_dict().items()]
             )
             if show_year or show_age or korean_age:
                 configured.append(
@@ -705,7 +706,9 @@ class Birthday(ipy.Extension):
                         f"{user['birthdate']} {month} {today.year}", "%d %B %Y"
                     )
                     if user["userid"] == "TODAY" and i < today.day <= i + 7:
-                        context = f"* {today.strftime('%d')}: **\\>\\>\\> TODAY \\<\\<\\<**"
+                        context = (
+                            f"* {today.strftime('%d')}: **\\>\\>\\> TODAY \\<\\<\\<**"
+                        )
                         listed.append(context)
                         continue
                     if i < int(user["birthdate"]) <= i + 7:
@@ -716,7 +719,7 @@ class Birthday(ipy.Extension):
                             continue
                         context += f" (age {age}"
                         if today.month > usr_month.month:
-                            context += f", next year {int(age)+1})"
+                            context += f", next year {int(age) + 1})"
                         else:
                             context += ")"
                         listed.append(context)
@@ -728,11 +731,16 @@ class Birthday(ipy.Extension):
                 day_from = i + 1
                 day_limit = i + 7
                 # use last day of the month if the day limit exceeds
-                mnend = today.replace(day=1, month=today.month %
-                                      12 + 1) - timedelta(days=1)
+                mnend = today.replace(day=1, month=today.month % 12 + 1) - timedelta(
+                    days=1
+                )
                 if day_limit > mnend.day:
                     day_limit = mnend.day
-                index = f"{day_from} to {day_limit}" if day_from < day_limit else f"{day_from}"
+                index = (
+                    f"{day_from} to {day_limit}"
+                    if day_from < day_limit
+                    else f"{day_from}"
+                )
                 fields.append(
                     ipy.EmbedField(
                         name=f"Day {index}",

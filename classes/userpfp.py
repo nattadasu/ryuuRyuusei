@@ -15,7 +15,9 @@ class UserPFP:
 
     def __init__(self):
         """Initialize the UserBackground class."""
-        self.raw_url = "https://raw.githubusercontent.com/UserPFP/UserPFP/main/source/data.json"
+        self.raw_url = (
+            "https://raw.githubusercontent.com/UserPFP/UserPFP/main/source/data.json"
+        )
         self.session = None
         self.headers = None
 

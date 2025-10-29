@@ -272,10 +272,7 @@ class BotStruct(BaseBotStruct):
 class InfinityBots:
     """# Infinity Bots API Wrapper"""
 
-    def __init__(
-            self,
-            token: str = INFINITY_API_TOKEN,
-            bot_id: int = BOT_CLIENT_ID):
+    def __init__(self, token: str = INFINITY_API_TOKEN, bot_id: int = BOT_CLIENT_ID):
         """
         ## Infinity Bots API Wrapper
 
@@ -292,8 +289,10 @@ class InfinityBots:
     async def __aenter__(self):
         """Enter async context"""
         self.session = aiohttp.ClientSession()
-        self.headers = {"Authorization": f"Bot {self.token}",
-                        "Content-Type": "application/json"}
+        self.headers = {
+            "Authorization": f"Bot {self.token}",
+            "Content-Type": "application/json",
+        }
         return self
 
     async def __aexit__(self, exc_type, exc, tb):  # type: ignore
@@ -339,7 +338,7 @@ class InfinityBots:
                         # convert str to UUID
                         UUID: UUID,
                     }
-                )
+                ),
             )
 
     async def post_bot_stats(

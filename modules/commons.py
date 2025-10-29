@@ -12,9 +12,21 @@ from re import sub as rSub
 from typing import Any
 from uuid import uuid4 as id4
 
-from interactions import (Button, ButtonStyle, ChannelType, ClientUser,
-                          ComponentContext, Embed, EmbedAuthor, EmbedField,
-                          Member, Message, PartialEmoji, SlashContext, User)
+from interactions import (
+    Button,
+    ButtonStyle,
+    ChannelType,
+    ClientUser,
+    ComponentContext,
+    Embed,
+    EmbedAuthor,
+    EmbedField,
+    Member,
+    Message,
+    PartialEmoji,
+    SlashContext,
+    User,
+)
 
 from classes.anilist import AniListTrailerStruct
 from modules.const import EMOJI_FORBIDDEN
@@ -224,13 +236,10 @@ def generate_utils_except_embed(
         description=description,
         fields=[
             EmbedField(name=field_name, value=field_value, inline=False),
-            EmbedField(
-                name="Reason", value=f"```md\n{error}\n```", inline=False
-            ),
+            EmbedField(name="Reason", value=f"```md\n{error}\n```", inline=False),
         ],  # type: ignore
     )
-    embed.set_thumbnail(
-        url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
+    embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return embed
 
@@ -265,19 +274,15 @@ def generate_commons_except_embed(
         title="Error",
         description=description,
     )
-    embed.add_field(
-        name="Reason",
-        value=f"{sanitize_markdown(error)}",
-        inline=False)
-    embed.set_thumbnail(
-        url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
+    embed.add_field(name="Reason", value=f"{sanitize_markdown(error)}", inline=False)
+    embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return embed
 
 
 def generate_trailer(
-        data: dict[str, Any] | AniListTrailerStruct,
-        is_mal: bool = False) -> Button:
+    data: dict[str, Any] | AniListTrailerStruct, is_mal: bool = False
+) -> Button:
     """
     Generate a button for playing the trailer of a given anime.
 
@@ -310,7 +315,7 @@ def generate_trailer(
 
 
 async def get_nsfw_status(
-    context: ComponentContext | SlashContext | Message
+    context: ComponentContext | SlashContext | Message,
 ) -> bool | None:
     """
     Check if a channel is NSFW or not
@@ -329,7 +334,10 @@ async def get_nsfw_status(
 
     if channel.type in [ChannelType.DM, ChannelType.GROUP_DM]:
         return True
-    elif channel.type in [ChannelType.GUILD_PUBLIC_THREAD, ChannelType.GUILD_PRIVATE_THREAD]:
+    elif channel.type in [
+        ChannelType.GUILD_PUBLIC_THREAD,
+        ChannelType.GUILD_PRIVATE_THREAD,
+    ]:
         nsfw_bool = channel.parent_channel.nsfw  # type: ignore
     else:
         nsfw_bool = channel.nsfw  # type: ignore
@@ -349,7 +357,7 @@ def pluralize(amount: float | int, word: str | None = None):
     """
     if amount == 1:
         return "" if not word else word
-    return 's' if not word else f"{word}s" if not word.endswith("s") else f"{word}es"
+    return "s" if not word else f"{word}s" if not word.endswith("s") else f"{word}es"
 
 
 def convert_float_to_time(
@@ -449,12 +457,8 @@ def platform_exception_embed(
         title="Error",
         description=description,
     )
-    embed.add_field(
-        name="Reason",
-        value=error,
-        inline=False)
-    embed.set_thumbnail(
-        url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
+    embed.add_field(name="Reason", value=error, inline=False)
+    embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
 
     return embed
 
@@ -531,9 +535,9 @@ def custom_datetime_converter(time: str, zone: str = "Z", remove_millis: bool = 
     Returns:
         datetime: formatted datetime
     """
-    time = time.replace(zone, '+00:00')
+    time = time.replace(zone, "+00:00")
     if remove_millis:
-        time = re.sub(r'\.[\d]+', '', time)
+        time = re.sub(r"\.[\d]+", "", time)
     return datetime.fromisoformat(time)
 
 

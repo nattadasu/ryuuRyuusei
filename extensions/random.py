@@ -4,8 +4,12 @@ import interactions as ipy
 
 from classes.randomorg import ProviderHttpError, RandomOrg
 from modules.commons import save_traceback_to_file
-from modules.const import (EMOJI_DOUBTING, EMOJI_FORBIDDEN, EMOJI_SUCCESS,
-                           EMOJI_UNEXPECTED_ERROR)
+from modules.const import (
+    EMOJI_DOUBTING,
+    EMOJI_FORBIDDEN,
+    EMOJI_SUCCESS,
+    EMOJI_UNEXPECTED_ERROR,
+)
 
 
 class Random(ipy.Extension):
@@ -46,10 +50,8 @@ class Random(ipy.Extension):
                 color=0xFF0000,
             )
             embed.set_footer(text="Please try again later")
-            emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>",
-                           r"\1", EMOJI_UNEXPECTED_ERROR)
-            embed.set_thumbnail(
-                url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
+            emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", EMOJI_UNEXPECTED_ERROR)
+            embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
             await ctx.send(embed=embed)
             save_traceback_to_file("random_8ball", ctx.author, e)
 
@@ -106,7 +108,8 @@ class Random(ipy.Extension):
         )
         embed.set_thumbnail(url=emoji_url)
         embed.set_footer(
-            text="Please do not take this seriously, it's for fun purposes only")
+            text="Please do not take this seriously, it's for fun purposes only"
+        )
         await ctx.send(embed=embed)
 
     @randomize.subcommand(
@@ -190,10 +193,8 @@ class Random(ipy.Extension):
                 color=0xFF0000,
             )
             embed.set_footer(text="Please try again later")
-            emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>",
-                           r"\1", EMOJI_UNEXPECTED_ERROR)
-            embed.set_thumbnail(
-                url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
+            emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", EMOJI_UNEXPECTED_ERROR)
+            embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
             await ctx.send(embed=embed)
             save_traceback_to_file("random_number", ctx.author, e)
 
@@ -273,10 +274,8 @@ class Random(ipy.Extension):
                 color=0xFF0000,
             )
             embed.set_footer(text="Please try again later")
-            emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>",
-                           r"\1", EMOJI_UNEXPECTED_ERROR)
-            embed.set_thumbnail(
-                url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
+            emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", EMOJI_UNEXPECTED_ERROR)
+            embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png")
             await ctx.send(embed=embed)
             save_traceback_to_file("random_string", ctx.author, e)
 

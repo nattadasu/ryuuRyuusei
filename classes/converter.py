@@ -115,20 +115,24 @@ class Length:
         """
         if from_unit in Length.imperial_units and to_unit in Length.imperial_units:
             base_value = evaluate.evaluate(
-                f"{value} * {Length.imperial_units[from_unit]}")
+                f"{value} * {Length.imperial_units[from_unit]}"
+            )
             converted_value = base_value / Length.imperial_units[to_unit]
         elif from_unit in Length.metric_units and to_unit in Length.metric_units:
             base_value = evaluate.evaluate(
-                f"{value} * {Length.metric_units[from_unit]}")
+                f"{value} * {Length.metric_units[from_unit]}"
+            )
             converted_value = base_value / Length.metric_units[to_unit]
         elif from_unit in Length.imperial_units and to_unit in Length.metric_units:
             total_inches = evaluate.evaluate(
-                f"{value} * {Length.imperial_units[from_unit]}")
+                f"{value} * {Length.imperial_units[from_unit]}"
+            )
             total_meters = total_inches * Length.inch_to_meter
             converted_value = total_meters / Length.metric_units[to_unit]
         elif from_unit in Length.metric_units and to_unit in Length.imperial_units:
             total_meters = evaluate.evaluate(
-                f"{value} * {Length.metric_units[from_unit]}")
+                f"{value} * {Length.metric_units[from_unit]}"
+            )
             total_inches = total_meters / Length.inch_to_meter
             converted_value = total_inches / Length.imperial_units[to_unit]
 
@@ -145,7 +149,7 @@ class Temperature:
             "reaumur": lambda t: t * 4 / 5,
             "romer": lambda t: (t * 21 / 40) + 7.5,
             "newton": lambda t: t * 33 / 100,
-            "delisle": lambda t: (100 - t) * 3 / 2
+            "delisle": lambda t: (100 - t) * 3 / 2,
         },
         "kelvin": {
             "celsius": lambda t: t - 273.15,
@@ -153,7 +157,7 @@ class Temperature:
             "reaumur": lambda t: (t - 273.15) * 4 / 5,
             "romer": lambda t: ((t - 273.15) * 21 / 40) + 7.5,
             "newton": lambda t: (t - 273.15) * 33 / 100,
-            "delisle": lambda t: (373.15 - t) * 3 / 2
+            "delisle": lambda t: (373.15 - t) * 3 / 2,
         },
         "fahrenheit": {
             "celsius": lambda t: (t - 32) * 5 / 9,
@@ -161,7 +165,7 @@ class Temperature:
             "reaumur": lambda t: (t - 32) * 4 / 9,
             "romer": lambda t: ((t - 32) * 7 / 24) + 7.5,
             "newton": lambda t: (t - 32) * 11 / 60,
-            "delisle": lambda t: (212 - t) * 5 / 6
+            "delisle": lambda t: (212 - t) * 5 / 6,
         },
         "reaumur": {
             "celsius": lambda t: t * 5 / 4,
@@ -169,7 +173,7 @@ class Temperature:
             "fahrenheit": lambda t: (t * 9 / 4) + 32,
             "romer": lambda t: (t * 21 / 32) + 7.5,
             "newton": lambda t: (t * 33 / 80),
-            "delisle": lambda t: (80 - t) * 15 / 8
+            "delisle": lambda t: (80 - t) * 15 / 8,
         },
         "romer": {
             "celsius": lambda t: (t - 7.5) * 40 / 21,
@@ -177,7 +181,7 @@ class Temperature:
             "fahrenheit": lambda t: ((t - 7.5) * 24 / 7) + 32,
             "reaumur": lambda t: (t - 7.5) * 32 / 21,
             "newton": lambda t: (t - 7.5) * 22 / 35,
-            "delisle": lambda t: (60 - t) * 20 / 7
+            "delisle": lambda t: (60 - t) * 20 / 7,
         },
         "newton": {
             "celsius": lambda t: t * 100 / 33,
@@ -185,7 +189,7 @@ class Temperature:
             "fahrenheit": lambda t: (t * 60 / 11) + 32,
             "reaumur": lambda t: t * 80 / 33,
             "romer": lambda t: (t * 35 / 22) + 7.5,
-            "delisle": lambda t: (33 - t) * 50 / 11
+            "delisle": lambda t: (33 - t) * 50 / 11,
         },
         "delisle": {
             "celsius": lambda t: 100 - (t * 2 / 3),
@@ -193,8 +197,8 @@ class Temperature:
             "fahrenheit": lambda t: 212 - (t * 6 / 5),
             "reaumur": lambda t: (80 - t) * 8 / 15,
             "romer": lambda t: (60 - t) * 7 / 20,
-            "newton": lambda t: (33 - t) * 11 / 50
-        }
+            "newton": lambda t: (33 - t) * 11 / 50,
+        },
     }
     """The temperature conversion table"""
 
@@ -223,8 +227,10 @@ class Temperature:
         Returns:
             float: The converted temperature
         """
-        if from_unit in Temperature.conversions and to_unit in Temperature.conversions[
-                from_unit]:
+        if (
+            from_unit in Temperature.conversions
+            and to_unit in Temperature.conversions[from_unit]
+        ):
             conversion_fn = Temperature.conversions[from_unit][to_unit]
             return conversion_fn(value)
         raise ValueError("Invalid temperature conversion units")
@@ -295,20 +301,22 @@ class Mass:
         """
         if from_unit in Mass.imperial_units and to_unit in Mass.imperial_units:
             base_value = evaluate.evaluate(
-                f"{value} * {Mass.imperial_units[from_unit]}")
+                f"{value} * {Mass.imperial_units[from_unit]}"
+            )
             converted_value = base_value / Mass.imperial_units[to_unit]
         elif from_unit in Mass.metric_units and to_unit in Mass.metric_units:
-            base_value = evaluate.evaluate(
-                f"{value} * {Mass.metric_units[from_unit]}")
+            base_value = evaluate.evaluate(f"{value} * {Mass.metric_units[from_unit]}")
             converted_value = base_value / Mass.metric_units[to_unit]
         elif from_unit in Mass.imperial_units and to_unit in Mass.metric_units:
             total_pounds = evaluate.evaluate(
-                f"{value} * {Mass.imperial_units[from_unit]}")
+                f"{value} * {Mass.imperial_units[from_unit]}"
+            )
             total_kilograms = total_pounds * Mass.pound_to_kilogram
             converted_value = total_kilograms / Mass.metric_units[to_unit]
         elif from_unit in Mass.metric_units and to_unit in Mass.imperial_units:
             total_kilograms = evaluate.evaluate(
-                f"{value} * {Mass.metric_units[from_unit]}")
+                f"{value} * {Mass.metric_units[from_unit]}"
+            )
             total_pounds = total_kilograms / Mass.pound_to_kilogram
             converted_value = total_pounds / Mass.imperial_units[to_unit]
 
@@ -381,20 +389,24 @@ class Volume:
         """
         if from_unit in Volume.imperial_units and to_unit in Volume.imperial_units:
             base_value = evaluate.evaluate(
-                f"{value} * {Volume.imperial_units[from_unit]}")
+                f"{value} * {Volume.imperial_units[from_unit]}"
+            )
             converted_value = base_value / Volume.imperial_units[to_unit]
         elif from_unit in Volume.metric_units and to_unit in Volume.metric_units:
             base_value = evaluate.evaluate(
-                f"{value} * {Volume.metric_units[from_unit]}")
+                f"{value} * {Volume.metric_units[from_unit]}"
+            )
             converted_value = base_value / Volume.metric_units[to_unit]
         elif from_unit in Volume.imperial_units and to_unit in Volume.metric_units:
             total_teaspoons = evaluate.evaluate(
-                f"{value} * {Volume.imperial_units[from_unit]}")
+                f"{value} * {Volume.imperial_units[from_unit]}"
+            )
             total_milliliters = total_teaspoons * Volume.teaspoon_to_milliliter
             converted_value = total_milliliters / Volume.metric_units[to_unit]
         elif from_unit in Volume.metric_units and to_unit in Volume.imperial_units:
             total_milliliters = evaluate.evaluate(
-                f"{value} * {Volume.metric_units[from_unit]}")
+                f"{value} * {Volume.metric_units[from_unit]}"
+            )
             total_teaspoons = total_milliliters / Volume.teaspoon_to_milliliter
             converted_value = total_teaspoons / Volume.imperial_units[to_unit]
 
@@ -420,7 +432,16 @@ class Time:
     """Dictionary of time units and their conversion to seconds"""
 
     known_units = Literal[
-        "second", "minute", "hour", "day", "week", "year", "decade", "generation", "century", "millennium"
+        "second",
+        "minute",
+        "hour",
+        "day",
+        "week",
+        "year",
+        "decade",
+        "generation",
+        "century",
+        "millennium",
     ]
     """Literal of known time units"""
 
@@ -442,12 +463,15 @@ class Time:
             list[float | str]: The converted time and the context of the conversion
         """
         days_total = evaluate.evaluate(
-            f"{value} * {(Time.conversion_factors[from_unit] / Time.conversion_factors['day'])}")
-        context = convert_float_to_time(days_total, show_weeks=True,
-                                        show_milliseconds=True)
+            f"{value} * {(Time.conversion_factors[from_unit] / Time.conversion_factors['day'])}"
+        )
+        context = convert_float_to_time(
+            days_total, show_weeks=True, show_milliseconds=True
+        )
         if from_unit in Time.conversion_factors and to_unit in Time.conversion_factors:
             converted_value = evaluate.evaluate(
-                f"{value} * {(Time.conversion_factors[from_unit] / Time.conversion_factors[to_unit])}")
+                f"{value} * {(Time.conversion_factors[from_unit] / Time.conversion_factors[to_unit])}"
+            )
         else:
             converted_value = value  # Conversion between the same units
 
@@ -484,18 +508,33 @@ class Data:
     """Dictionary of metric units and their conversion factors"""
 
     known_units = Literal[
-        "bit", "byte", "kilobit", "kibibit", "kilobyte", "kibibyte", "megabit", "mebibit", "megabyte", "mebibyte",
-        "gigabit", "gibibit", "gigabyte", "gibibyte", "terabit", "tebibit", "terabyte", "tebibyte", "petabit",
-        "pebibit", "petabyte", "pebibyte"
+        "bit",
+        "byte",
+        "kilobit",
+        "kibibit",
+        "kilobyte",
+        "kibibyte",
+        "megabit",
+        "mebibit",
+        "megabyte",
+        "mebibyte",
+        "gigabit",
+        "gibibit",
+        "gigabyte",
+        "gibibyte",
+        "terabit",
+        "tebibit",
+        "terabyte",
+        "tebibyte",
+        "petabit",
+        "pebibit",
+        "petabyte",
+        "pebibyte",
     ]
     """Literal of known data units"""
 
     @staticmethod
-    def convert(
-        value: float,
-        from_unit: known_units,
-        to_unit: known_units
-    ) -> float:
+    def convert(value: float, from_unit: known_units, to_unit: known_units) -> float:
         """
         Converts data from one unit to another.
 
@@ -508,8 +547,7 @@ class Data:
             float: The converted data
         """
         if from_unit in Data.data_units and to_unit in Data.data_units:
-            base_value = evaluate.evaluate(
-                f"{value} * {Data.data_units[from_unit]}")
+            base_value = evaluate.evaluate(f"{value} * {Data.data_units[from_unit]}")
             converted_value = base_value / Data.data_units[to_unit]
         else:
             raise ValueError("Invalid units specified.")
@@ -539,9 +577,13 @@ class Data:
         """
         converted_value = Data.convert(value, from_unit, to_unit)
 
-        if time_from_unit in Time.conversion_factors and time_to_unit in Time.conversion_factors:
+        if (
+            time_from_unit in Time.conversion_factors
+            and time_to_unit in Time.conversion_factors
+        ):
             converted_value, _ = Time.convert(
-                converted_value, time_from_unit, time_to_unit)
+                converted_value, time_from_unit, time_to_unit
+            )
         else:
             raise ValueError("Invalid time units specified.")
 

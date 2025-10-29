@@ -9,7 +9,7 @@ Contains:
 import re
 from datetime import datetime as dtime
 from datetime import timezone as tz
-from typing import Any, Literal
+from typing import Literal
 from urllib.parse import quote
 
 import interactions as ipy
@@ -21,9 +21,13 @@ from classes.jikan import JikanApi, JikanException, JikanUserStruct
 from classes.rss.myanimelist import MediaStatus
 from classes.rss.myanimelist import MyAnimeListRss as Rss
 from classes.rss.myanimelist import RssItem
-from modules.commons import (PlatformErrType, convert_float_to_time,
-                             platform_exception_embed, sanitize_markdown,
-                             save_traceback_to_file)
+from modules.commons import (
+    PlatformErrType,
+    convert_float_to_time,
+    platform_exception_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+)
 
 
 class MyAnimeListCog(ipy.Extension):
@@ -32,11 +36,7 @@ class MyAnimeListCog(ipy.Extension):
     myanimelist_head = ipy.SlashCommand(
         name="myanimelist",
         description="Get useful information from MyAnimeList",
-        cooldown=ipy.Cooldown(
-            cooldown_bucket=ipy.Buckets.USER,
-            rate=1,
-            interval=5
-        )
+        cooldown=ipy.Cooldown(cooldown_bucket=ipy.Buckets.USER, rate=1, interval=5),
     )
 
     @myanimelist_head.subcommand(
@@ -61,21 +61,15 @@ class MyAnimeListCog(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
+                    ipy.SlashCommandChoice(name="Minimal (Default)", value="minimal"),
+                    ipy.SlashCommandChoice(name="Classic", value="old"),
+                    ipy.SlashCommandChoice(name="Highly Detailed", value="new"),
                     ipy.SlashCommandChoice(
-                        name="Minimal (Default)",
-                        value="minimal"),
+                        name="Activities by progress", value="timeline"
+                    ),
                     ipy.SlashCommandChoice(
-                        name="Classic",
-                        value="old"),
-                    ipy.SlashCommandChoice(
-                        name="Highly Detailed",
-                        value="new"),
-                    ipy.SlashCommandChoice(
-                        name="Activities by progress",
-                        value="timeline"),
-                    ipy.SlashCommandChoice(
-                        name="Activities by title",
-                        value="timeline_title"),
+                        name="Activities by title", value="timeline_title"
+                    ),
                 ],
             ),
         ],
@@ -85,8 +79,9 @@ class MyAnimeListCog(ipy.Extension):
         ctx: ipy.SlashContext,
         user: ipy.User | ipy.Member | None = None,
         mal_username: str | None = None,
-        embed_layout: Literal["minimal", "old", "new",
-                              "timeline", "timeline_title"] = "minimal",
+        embed_layout: Literal[
+            "minimal", "old", "new", "timeline", "timeline_title"
+        ] = "minimal",
     ):
         """
         /myanimelist profile [user] [mal_username] [embed_layout]
@@ -107,7 +102,8 @@ class MyAnimeListCog(ipy.Extension):
         await ctx.defer()
         user_data: JikanUserStruct | None = None
         extended: JikanUserStruct = JikanUserStruct(
-            mal_id=0, username="", url="", joined=dtime.now())
+            mal_id=0, username="", url="", joined=dtime.now()
+        )
 
         if mal_username and user:
             embed = platform_exception_embed(
@@ -233,11 +229,7 @@ Use `/register` to register, or use `/myanimelist profile mal_username:<username
                 else "Unset"
             )
         else:
-            birthday_formatted = (
-                f"{birthday_str}"
-                if birthday_str
-                else "Unset"
-            )
+            birthday_formatted = f"{birthday_str}" if birthday_str else "Unset"
 
         if embed_layout == "minimal":
             joined_formatted = f"<t:{joined}:R>"
@@ -289,13 +281,13 @@ Use `/register` to register, or use `/myanimelist profile mal_username:<username
             )
             if embed_layout == "new":
                 embed.add_fields(
-                    ipy.EmbedField(name="🚁 Gender", value=f"{gender}",
-                                   inline=True),  # type: ignore
-                    ipy.EmbedField(name="📍 Location",
-                                   value=location, inline=True),
-                    ipy.EmbedField(name="📅 Last Online",
-                                   value=f"<t:{int(last_online)}:R>",
-                                   inline=True),
+                    ipy.EmbedField(name="🚁 Gender", value=f"{gender}", inline=True),  # type: ignore
+                    ipy.EmbedField(name="📍 Location", value=location, inline=True),
+                    ipy.EmbedField(
+                        name="📅 Last Online",
+                        value=f"<t:{int(last_online)}:R>",
+                        inline=True,
+                    ),
                 )
             anime_value_str = f"""* Total: {anime.total_entries:,}
 * Mean Score: ⭐ {anime.mean_score}/10
@@ -328,11 +320,10 @@ Use `/register` to register, or use `/myanimelist profile mal_username:<username
                         split = ani.url.split("/")
                         if split[-1].isdigit() is False:
                             ani.url = "/".join(split[:-1])
-                        ani_fav_list += f"{index+1}. [{ani.title}]({ani.url})\n"
+                        ani_fav_list += f"{index + 1}. [{ani.title}]({ani.url})\n"
                 embed.add_field(
                     name="🌟 Top 5 Favorite Anime",
-                    value=ani_fav_list if ani_fav_list not in [
-                        "", None] else "Unset",
+                    value=ani_fav_list if ani_fav_list not in ["", None] else "Unset",
                     inline=True,
                 )
             manga_value_str = f"""* Total: {manga.total_entries:,}
@@ -366,11 +357,10 @@ Use `/register` to register, or use `/myanimelist profile mal_username:<username
                         split = man.url.split("/")
                         if split[-1].isdigit() is False:
                             man.url = "/".join(split[:-1])
-                        man_fav_list += f"{index+1}. [{man.title}]({man.url})\n"
+                        man_fav_list += f"{index + 1}. [{man.title}]({man.url})\n"
                 embed.add_field(
                     name="🌟 Top 5 Favorite Manga",
-                    value=man_fav_list if man_fav_list not in [
-                        "", None] else "Unset",
+                    value=man_fav_list if man_fav_list not in ["", None] else "Unset",
                     inline=True,
                 )
         elif embed_layout == "old":
@@ -433,24 +423,30 @@ Use `/register` to register, or use `/myanimelist profile mal_username:<username
                                 status = "🗑️"
                             case MediaStatus.PLAN_TO_WATCH:
                                 status = "⏰"
-                        anime.progress_to = "*Unknown*" if anime.progress_to is None else anime.progress_to
-                        ani_data[index] = f"{index+1}. {status} [{anime.title}]({anime.url}), {anime.progress_from}/{anime.progress_to}, <t:{timestamp}:R>"
-                    ani_data.append(f"And {ani_data_total-5} more...")
+                        anime.progress_to = (
+                            "*Unknown*"
+                            if anime.progress_to is None
+                            else anime.progress_to
+                        )
+                        ani_data[index] = (
+                            f"{index + 1}. {status} [{anime.title}]({anime.url}), {anime.progress_from}/{anime.progress_to}, <t:{timestamp}:R>"
+                        )
+                    ani_data.append(f"And {ani_data_total - 5} more...")
                 else:
                     ani_data = ["No recent activity"]
             except ProviderHttpError as err:
                 if err.status_code == 403:
                     man_data = [
-                        "No recent activity, most likely due to private profile."]
+                        "No recent activity, most likely due to private profile."
+                    ]
                 else:
                     embed = platform_exception_embed(
                         description="MyAnimeList returned an error",
-                        error_type=error.status_code,
-                        error=error.message,
+                        error_type=err.status_code,
+                        error=err.message,
                     )
                 await ctx.send(embed=embed)
-                save_traceback_to_file(
-                    "myanimelist_profile", ctx.author, error)
+                save_traceback_to_file("myanimelist_profile", ctx.author, err)
             try:
                 async with Rss("manga", embed_layout == "timeline") as man:
                     man_data = await man.get_user(username)
@@ -476,24 +472,30 @@ Use `/register` to register, or use `/myanimelist profile mal_username:<username
                                 status = "⏸️"
                             case MediaStatus.DROPPED:
                                 status = "🗑️"
-                        manga.progress_to = "*Unknown*" if manga.progress_to is None else manga.progress_to
-                        man_data[index] = f"{index+1}. {status} [{manga.title}]({manga.url}), {manga.progress_from}/{manga.progress_to}, <t:{timestamp}:R>"
-                    man_data.append(f"And {man_data_total-5} more...")
+                        manga.progress_to = (
+                            "*Unknown*"
+                            if manga.progress_to is None
+                            else manga.progress_to
+                        )
+                        man_data[index] = (
+                            f"{index + 1}. {status} [{manga.title}]({manga.url}), {manga.progress_from}/{manga.progress_to}, <t:{timestamp}:R>"
+                        )
+                    man_data.append(f"And {man_data_total - 5} more...")
                 else:
                     man_data = ["No recent activity"]
             except ProviderHttpError as err:
                 if err.status_code == 403:
                     man_data = [
-                        "No recent activity, most likely due to private profile."]
+                        "No recent activity, most likely due to private profile."
+                    ]
                 else:
                     embed = platform_exception_embed(
                         description="MyAnimeList returned an error",
-                        error_type=error.status_code,
-                        error=error.message,
+                        error_type=err.status_code,
+                        error=err.message,
                     )
                 await ctx.send(embed=embed)
-                save_traceback_to_file(
-                    "myanimelist_profile", ctx.author, error)
+                save_traceback_to_file("myanimelist_profile", ctx.author, err)
             # convert to string
             ani_data = "\n".join(ani_data)
             man_data = "\n".join(man_data)
@@ -514,7 +516,7 @@ Use `/register` to register, or use `/myanimelist profile mal_username:<username
                 ipy.Button(
                     style=ipy.ButtonStyle.URL,
                     label="Statistics",
-                    url=f"https://myanimelist.net/profile/{username}/statistics"
+                    url=f"https://myanimelist.net/profile/{username}/statistics",
                 ),
                 ipy.Button(
                     style=ipy.ButtonStyle.URL,
@@ -527,22 +529,28 @@ Use `/register` to register, or use `/myanimelist profile mal_username:<username
                     url=f"https://mal-badges.com/users/{username}",
                 ),
             ]
-            embed.set_image(
-                url=f"https://malheatmap.com/users/{username}/signature")
+            embed.set_image(url=f"https://malheatmap.com/users/{username}/signature")
 
         foo = ""
         if embed_layout in ["new", "minimal", "old"]:
             if gender:
                 direct_pronoun_match = re.search(
-                    r'\b(?:he|him|she|her|they|them)\b', gender, re.IGNORECASE)
+                    r"\b(?:he|him|she|her|they|them)\b", gender, re.IGNORECASE
+                )
                 if direct_pronoun_match:
                     direct_pronoun = direct_pronoun_match.group().lower()
-                    pronouns = {'he': 'his', 'him': 'his', 'she': 'her',
-                                'her': 'hers', 'they': 'their', 'them': 'theirs'}[direct_pronoun]
+                    pronouns = {
+                        "he": "his",
+                        "him": "his",
+                        "she": "her",
+                        "her": "hers",
+                        "they": "their",
+                        "them": "theirs",
+                    }[direct_pronoun]
                 else:
                     # Define regular expression patterns for each gender and their derivatives
-                    male_pattern = r'\b(?:boy|m(ale)?|man|bro(ther)?)\b'
-                    female_pattern = r'\b(?:girl|f(emale)?|woman|sis(ter)?)\b'
+                    male_pattern = r"\b(?:boy|m(ale)?|man|bro(ther)?)\b"
+                    female_pattern = r"\b(?:girl|f(emale)?|woman|sis(ter)?)\b"
 
                     # Check for gender-sensitive matches using regex with case-insensitive flag
                     if re.search(male_pattern, gender, re.IGNORECASE):

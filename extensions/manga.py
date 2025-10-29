@@ -6,8 +6,12 @@ from classes.anibrain import AniBrainAI, AniBrainAiMedia
 from classes.anilist import AniList
 from classes.excepts import ProviderHttpError
 from modules.anilist import anilist_submit
-from modules.commons import (generate_search_embed, platform_exception_embed,
-                             sanitize_markdown, save_traceback_to_file)
+from modules.commons import (
+    generate_search_embed,
+    platform_exception_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+)
 from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
 
 
@@ -90,11 +94,11 @@ class Manga(ipy.Extension):
                         name=md_title,
                         value=f"{md_native_title}{is_adult}{format_str}, {status}, {year}",
                         inline=False,
-                    ))
+                    )
+                )
                 so.append(
                     ipy.StringSelectOption(
-                        label=title[:77] +
-                        "..." if len(title) > 77 else title,
+                        label=title[:77] + "..." if len(title) > 77 else title,
                         value=str(media_id),
                         description=f"{format_str}, {status}, {year}",
                     )
@@ -120,7 +124,7 @@ class Manga(ipy.Extension):
                     style=ipy.ButtonStyle.DANGER,
                     label="Cancel",
                     custom_id="message_delete",
-                    emoji="🗑️"
+                    emoji="🗑️",
                 ),
             )
             await send.edit(
@@ -152,7 +156,7 @@ class Manga(ipy.Extension):
                     style=ipy.ButtonStyle.DANGER,
                     label="Delete",
                     custom_id="message_delete",
-                    emoji="🗑️"
+                    emoji="🗑️",
                 ),
             )
             save_traceback_to_file("manga_search", ctx.author, e)
@@ -212,8 +216,7 @@ class Manga(ipy.Extension):
                 choices=[
                     ipy.SlashCommandChoice(name="Any (default)", value="any"),
                     ipy.SlashCommandChoice(name="Japan", value="Japan"),
-                    ipy.SlashCommandChoice(
-                        name="South Korea", value="South Korea"),
+                    ipy.SlashCommandChoice(name="South Korea", value="South Korea"),
                     ipy.SlashCommandChoice(name="China", value="China"),
                     ipy.SlashCommandChoice(name="Taiwan", value="Taiwan"),
                 ],
@@ -240,18 +243,17 @@ class Manga(ipy.Extension):
                 type=ipy.OptionType.NUMBER,
                 required=False,
                 min_value=1930,
-            )
+            ),
         ],
     )
     async def random_manga(
         self,
         ctx: ipy.SlashContext,
         media_type: Literal["manga", "one_shot", "light_novel"] = "manga",
-        country: Literal["any", "Japan",
-                         "South Korea", "China", "Taiwan"] = "any",
+        country: Literal["any", "Japan", "South Korea", "China", "Taiwan"] = "any",
         min_score: int = 0,
         release_from: int = 1930,
-        release_to: int | None = None
+        release_to: int | None = None,
     ):
         await ctx.defer()
         send = await ctx.send(
@@ -267,9 +269,11 @@ class Manga(ipy.Extension):
         media_data = list[AniBrainAiMedia]
         try:
             async with AniBrainAI() as anibrain:
-                countries = [
-                    i for i in anibrain.CountryOfOrigin
-                ] if country == "any" else [anibrain.CountryOfOrigin(country)]
+                countries = (
+                    [i for i in anibrain.CountryOfOrigin]
+                    if country == "any"
+                    else [anibrain.CountryOfOrigin(country)]
+                )
                 match media_type:
                     case "manga":
                         media_data = await anibrain.get_manga(

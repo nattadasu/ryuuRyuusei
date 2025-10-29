@@ -9,8 +9,11 @@ from interactions.ext.paginators import Paginator
 
 from classes.urbandictionary import UrbanDictionary as Urban
 from classes.urbandictionary import UrbanDictionaryEntry as Entry
-from modules.commons import (get_nsfw_status, platform_exception_embed,
-                             save_traceback_to_file)
+from modules.commons import (
+    get_nsfw_status,
+    platform_exception_embed,
+    save_traceback_to_file,
+)
 
 
 class TrustModel(TypedDict):
@@ -33,7 +36,9 @@ class UrbanDictionaryCog(ipy.Extension):
         nsfw=True,
     )
 
-    async def _paginator(self, ctx: ipy.SlashContext, pages: list[ipy.Embed]) -> ipy.Message:
+    async def _paginator(
+        self, ctx: ipy.SlashContext, pages: list[ipy.Embed]
+    ) -> ipy.Message:
         """
         Send multiple embeds with pagination.
 
@@ -71,15 +76,18 @@ class UrbanDictionaryCog(ipy.Extension):
             except ZeroDivisionError:
                 trustratio = 0.0
             if trustratio >= 0.7:
-                trusted_list.append({
-                    "entry": e,
-                    "maxratio": e.thumbs_up / max_thumbs_up,
-                    "trustratio": trustratio,
-                })
+                trusted_list.append(
+                    {
+                        "entry": e,
+                        "maxratio": e.thumbs_up / max_thumbs_up,
+                        "trustratio": trustratio,
+                    }
+                )
 
         # Sort trusted entries by thumbs up
         trusted_entries = sorted(
-            trusted_list, key=lambda t: t["entry"].thumbs_up, reverse=True)
+            trusted_list, key=lambda t: t["entry"].thumbs_up, reverse=True
+        )
         trusted_entries = [t["entry"] for t in trusted_entries]
 
         # Sort untrusted entries by thumbs up
@@ -87,7 +95,8 @@ class UrbanDictionaryCog(ipy.Extension):
 
         # If entry is < 70% trusted, put it at the bottom of the list
         untrusted_entries = sorted(
-            untrusted_entries, key=lambda e: e.thumbs_up, reverse=True)
+            untrusted_entries, key=lambda e: e.thumbs_up, reverse=True
+        )
 
         # Merge trusted and untrusted entries
         sorted_entries = trusted_entries + untrusted_entries
@@ -141,17 +150,18 @@ class UrbanDictionaryCog(ipy.Extension):
             async with Urban() as ud:
                 entry = await ud.get_random_word()
         except Exception as e:
-            await ctx.send(embed=platform_exception_embed(
-                description="Failed to get random word from Urban Dictionary.",
-                error=f"{e}",
-            ))
+            await ctx.send(
+                embed=platform_exception_embed(
+                    description="Failed to get random word from Urban Dictionary.",
+                    error=f"{e}",
+                )
+            )
             save_traceback_to_file("urban_random", ctx.author, e)
             return
         pages: list[ipy.Embed] = []
         entry_lim = self._sort_by_thumbs_up(entry[:limit])
         for pg, e in enumerate(entry_lim):
-            embed = self._fix_footer(
-                e.embed, cursor=pg + 1, total=len(entry_lim))
+            embed = self._fix_footer(e.embed, cursor=pg + 1, total=len(entry_lim))
             pages.append(embed)
         await self._paginator(ctx, pages)
 
@@ -186,18 +196,19 @@ class UrbanDictionaryCog(ipy.Extension):
             async with Urban() as ud:
                 entry = await ud.lookup_definition(term)
         except Exception as e:
-            await ctx.send(embed=platform_exception_embed(
-                description=f"Failed to search Urban Dictionary for `{term}`.",
-                error=f"{e}",
-            ))
+            await ctx.send(
+                embed=platform_exception_embed(
+                    description=f"Failed to search Urban Dictionary for `{term}`.",
+                    error=f"{e}",
+                )
+            )
             save_traceback_to_file("urban_random", ctx.author, e)
             return
 
         pages: list[ipy.Embed] = []
         entry_lim = self._sort_by_thumbs_up(entry[:limit])
         for pg, e in enumerate(entry_lim):
-            embed = self._fix_footer(
-                e.embed, cursor=pg + 1, total=len(entry_lim))
+            embed = self._fix_footer(e.embed, cursor=pg + 1, total=len(entry_lim))
             pages.append(embed)
         paginator = Paginator.create_from_embeds(self.bot, *pages, timeout=30)
         await paginator.send(ctx)  # type: ignore
@@ -211,15 +222,19 @@ class UrbanDictionaryCog(ipy.Extension):
         }
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(f"https://api.urbandictionary.com/v0/autocomplete-extra?term={ctx.input_text}") as resp:
+                async with session.get(
+                    f"https://api.urbandictionary.com/v0/autocomplete-extra?term={ctx.input_text}"
+                ) as resp:
                     if resp.status == 200:
                         data = await resp.json()
                         results: list[dict[str, str]] = []
                         for d in data["results"][:25]:
-                            results.append({
-                                "name": d["term"][:80],
-                                "value": d["term"],
-                            })
+                            results.append(
+                                {
+                                    "name": d["term"][:80],
+                                    "value": d["term"],
+                                }
+                            )
                         await ctx.send(choices=results)  # type: ignore
                     else:
                         await ctx.send(choices=[invalid])  # type: ignore
@@ -240,10 +255,12 @@ class UrbanDictionaryCog(ipy.Extension):
             async with Urban() as ud:
                 entry = await ud.get_word_of_the_day()
         except Exception as e:
-            await ctx.send(embed=platform_exception_embed(
-                description="Failed to get Urban Dictionary Word of the Day.",
-                error=f"{e}",
-            ))
+            await ctx.send(
+                embed=platform_exception_embed(
+                    description="Failed to get Urban Dictionary Word of the Day.",
+                    error=f"{e}",
+                )
+            )
             save_traceback_to_file("urban_random", ctx.author, e)
             return
         await ctx.send(embed=entry.embed)  # type: ignore

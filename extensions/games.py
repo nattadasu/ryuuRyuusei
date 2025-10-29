@@ -1,9 +1,11 @@
-
 import interactions as ipy
 
 from classes.rawg import RawgApi
-from modules.commons import (generate_search_embed, sanitize_markdown,
-                             save_traceback_to_file)
+from modules.commons import (
+    generate_search_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+)
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.rawg import rawg_submit
 
@@ -52,13 +54,14 @@ class Games(ipy.Extension):
                 title = sanitize_markdown(title)
                 if len(title) >= 256:
                     title = title[:253] + "..."
-                f += [ipy.EmbedField(name=title,
-                                     value=f"*Released on: {rhel}*",
-                                     inline=False)]
+                f += [
+                    ipy.EmbedField(
+                        name=title, value=f"*Released on: {rhel}*", inline=False
+                    )
+                ]
                 so += [
                     ipy.StringSelectOption(
-                        label=title[:77] +
-                        "..." if len(title) >= 80 else title,
+                        label=title[:77] + "..." if len(title) >= 80 else title,
                         value=r["slug"],
                         description=f"Released: {rhel}",
                     )
@@ -83,7 +86,7 @@ class Games(ipy.Extension):
                     style=ipy.ButtonStyle.DANGER,
                     label="Cancel",
                     custom_id="message_delete",
-                    emoji="🗑️"
+                    emoji="🗑️",
                 ),
             )
             await send.edit(
@@ -97,7 +100,8 @@ class Games(ipy.Extension):
                 description=f"I couldn't able to find any results for {query} on RAWG. Please check your query and try again.",
                 color=0xFF0000,
                 footer=ipy.EmbedFooter(
-                    text="Pro tip: Use native title to get the most accurate result... But I can't guarantee if RAWG has original title, it depends."),
+                    text="Pro tip: Use native title to get the most accurate result... But I can't guarantee if RAWG has original title, it depends."
+                ),
             )
             embed.set_thumbnail(
                 url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1"
@@ -108,7 +112,7 @@ class Games(ipy.Extension):
                     style=ipy.ButtonStyle.DANGER,
                     label="Delete",
                     custom_id="message_delete",
-                    emoji="🗑️"
+                    emoji="🗑️",
                 ),
             )
             save_traceback_to_file("games_search", ctx.author, _)

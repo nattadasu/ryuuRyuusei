@@ -150,9 +150,10 @@ class LastFM:
                     image["size"], image["#text"]
                 )
         data["artist"] = (
-            LastFMReleaseStruct(
-                data["artist"]["#text"],
-                data["artist"]["mbid"]) if data["artist"] else None)
+            LastFMReleaseStruct(data["artist"]["#text"], data["artist"]["mbid"])
+            if data["artist"]
+            else None
+        )
         data["album"] = (
             LastFMReleaseStruct(data["album"]["#text"], data["album"]["mbid"])
             if data["album"]
@@ -213,10 +214,13 @@ class LastFM:
         async with self.session.get(self.base_url, params=params) as resp:
             if resp.status == 404:
                 raise ProviderHttpError(
-                    "User can not be found on Last.fm. Check the name or register?", 404)
+                    "User can not be found on Last.fm. Check the name or register?", 404
+                )
             if resp.status != 200:
                 raise ProviderHttpError(
-                    f"Last.fm API returned {resp.status}. Reason: {resp.text()}", resp.status, )
+                    f"Last.fm API returned {resp.status}. Reason: {resp.text()}",
+                    resp.status,
+                )
             json_text = await resp.text()
             json_final = loads(json_text)
             udb = json_final["user"]
@@ -252,16 +256,19 @@ class LastFM:
                 case 403:
                     raise ProviderHttpError(
                         "Either user's profile or recent track history set to private",
-                        403)
+                        403,
+                    )
                 case 404:
                     raise ProviderHttpError(
                         "User can not be found on Last.fm. Check the name or register?",
-                        404)
+                        404,
+                    )
                 case _:
                     if resp.status != 200:
                         raise ProviderHttpError(
                             f"Last.fm API returned {resp.status}. Reason: {json_text}",
-                            resp.status)
+                            resp.status,
+                        )
             json_final = loads(json_text)
             scb = json_final["recenttracks"]["track"]
             scb = [self.track_dict_to_dataclass(data=track) for track in scb]

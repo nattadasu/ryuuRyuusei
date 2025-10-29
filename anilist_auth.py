@@ -28,15 +28,14 @@ from datetime import datetime, timezone
 
 import aiohttp
 
-from modules.const import (ANILIST_CLIENT_ID, ANILIST_CLIENT_SECRET,
-                           ANILIST_REDIRECT_URI)
+from modules.const import ANILIST_CLIENT_ID, ANILIST_CLIENT_SECRET, ANILIST_REDIRECT_URI
 
 
 async def get_auth_code():
     """Get the authentication code from AniList."""
     auth_endpoint = "https://anilist.co/api/v2/oauth/authorize"
     client_id_param = f"client_id={ANILIST_CLIENT_ID}"
-    redirect_uri_param = f'redirect_uri={urllib.parse.quote(ANILIST_REDIRECT_URI, "")}'
+    redirect_uri_param = f"redirect_uri={urllib.parse.quote(ANILIST_REDIRECT_URI, '')}"
     response_param = "response_type=code"
     url_auth = (
         f"{auth_endpoint}?{client_id_param}&{redirect_uri_param}&{response_param}"
@@ -66,9 +65,10 @@ async def fetch_access_token(auth_code: str):
         f"{token_endpoint}?{client_id_param}&{client_secret_param}&{redirect_uri_param}"
     )
     headers = {"Accept": "application/json"}
-    async with aiohttp.ClientSession() as session, session.post(
-        token_uri, json=json_req, headers=headers
-    ) as response:
+    async with (
+        aiohttp.ClientSession() as session,
+        session.post(token_uri, json=json_req, headers=headers) as response,
+    ):
         token = await response.json()
         now = int(datetime.now(tz=timezone.utc).timestamp())
         token["expires_in"] += now

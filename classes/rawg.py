@@ -32,17 +32,29 @@ class EsrbRating:
     # pylint: disable-next=invalid-name
     id: int
     """ID"""
-    slug: Literal[
-        "everyone",
-        "everyone-10-plus",
-        "teen",
-        "mature",
-        "adults-only",
-        "rating-pending",
-    ] | None = None
+    slug: (
+        Literal[
+            "everyone",
+            "everyone-10-plus",
+            "teen",
+            "mature",
+            "adults-only",
+            "rating-pending",
+        ]
+        | None
+    ) = None
     """Slug"""
-    name: Literal["Everyone", "Everyone 10+", "Teen", "Mature",
-                  "Adults Only", "Rating Pending"] | None = None
+    name: (
+        Literal[
+            "Everyone",
+            "Everyone 10+",
+            "Teen",
+            "Mature",
+            "Adults Only",
+            "Rating Pending",
+        ]
+        | None
+    ) = None
     """Name"""
 
 
@@ -372,7 +384,7 @@ class RawgApi:
                 for x in data["metacritic_platforms"]
             ]
         if data.get("released", None):
-            rel = f'{data["released"]}T00:00:00+0000'
+            rel = f"{data['released']}T00:00:00+0000"
             data["released"] = datetime.strptime(rel, "%Y-%m-%dT%H:%M:%S%z")
         if data.get("updated", None):
             upd = f"{data['updated']}+0000"
@@ -393,7 +405,7 @@ class RawgApi:
                 Platforms(
                     platform=PlatformData(**x["platform"]),
                     released_at=datetime.strptime(
-                        f'{x["released_at"]}T00:00:00+0000', "%Y-%m-%dT%H:%M:%S%z"
+                        f"{x['released_at']}T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
                     )
                     if x["released_at"]
                     else None,
@@ -423,8 +435,7 @@ class RawgApi:
         if data.get("esrb_rating", None):
             data["esrb_rating"] = EsrbRating(**data["esrb_rating"])
         if data.get("description_raw", None):
-            data["description_raw"] = data["description_raw"].replace(
-                "<br>", "\n")
+            data["description_raw"] = data["description_raw"].replace("<br>", "\n")
 
         return RawgGameData(**data)
 
@@ -450,8 +461,8 @@ class RawgApi:
                 rawg_resp = await resp.json()
                 return rawg_resp["results"]
             raise ProviderHttpError(
-                f"RAWG API returned {resp.status}. Reason: {resp.text()}",
-                resp.status)
+                f"RAWG API returned {resp.status}. Reason: {resp.text()}", resp.status
+            )
 
     async def get_data(self, slug: str) -> RawgGameData:
         """

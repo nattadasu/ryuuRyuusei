@@ -8,8 +8,12 @@ from classes.cache import Caching
 from classes.database import UserDatabase, UserDatabaseClass
 from classes.html.myanimelist import HtmlMyAnimeList
 from classes.verificator import Verificator
-from modules.const import (EMOJI_FORBIDDEN, EMOJI_SUCCESS,
-                           EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR)
+from modules.const import (
+    EMOJI_FORBIDDEN,
+    EMOJI_SUCCESS,
+    EMOJI_UNEXPECTED_ERROR,
+    EMOJI_USER_ERROR,
+)
 
 
 class ServerSettings(ipy.Extension):
@@ -18,7 +22,8 @@ class ServerSettings(ipy.Extension):
     serversettings_head = ipy.SlashCommand(
         name="serversettings",
         description="Change the bot settings server-wide",
-        default_member_permissions=ipy.Permissions.MANAGE_GUILD | ipy.Permissions.ADMINISTRATOR,
+        default_member_permissions=ipy.Permissions.MANAGE_GUILD
+        | ipy.Permissions.ADMINISTRATOR,
         dm_permission=False,
     )
 
@@ -57,7 +62,7 @@ class ServerSettings(ipy.Extension):
     async def _check_if_platform_registered(
         self,
         ctx: ipy.ComponentContext | ipy.SlashContext,
-        platform: Literal['mal', 'anilist', 'lastfm', 'shikimori'],
+        platform: Literal["mal", "anilist", "lastfm", "shikimori"],
         value: str,
     ) -> bool:
         """
@@ -72,9 +77,7 @@ class ServerSettings(ipy.Extension):
             bool: Whether the user has registered a platform
         """
         async with UserDatabase() as udb:
-            is_linked = await udb.check_if_platform_registered(
-                platform, value
-            )
+            is_linked = await udb.check_if_platform_registered(platform, value)
             if is_linked is True:
                 embed = self.generate_error_embed(
                     header="Look out!",
@@ -118,7 +121,8 @@ If you have any questions, feel free to contact the developer via `/about`.""",
         )
         if emoji_id is not None:
             embed.set_thumbnail(
-                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1"
+            )
         return embed
 
     @staticmethod
@@ -145,7 +149,8 @@ If you have any questions, feel free to contact the developer via `/about`.""",
         )
         if emoji_id is not None:
             embed.set_thumbnail(
-                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1"
+            )
         return embed
 
     @member.subcommand(
@@ -182,8 +187,7 @@ If you have any questions, feel free to contact the developer via `/about`.""",
         await ctx.defer(ephemeral=True)
         checker = await self._check_if_registered(ctx, user)
         if checker is True:
-            await ctx.send(
-                f"{EMOJI_FORBIDDEN} {user.mention} is already registered!")
+            await ctx.send(f"{EMOJI_FORBIDDEN} {user.mention} is already registered!")
             return
         fields = [
             ipy.EmbedField(
@@ -218,9 +222,11 @@ If you have any questions, feel free to contact the developer via `/about`.""",
                 ipy.EmbedField(
                     name=overwrite_prompt,
                     value=f"```\n{verification.uuid}\n```**Note:** Verification code expires <t:{remaining_time}:R>.",
-                ))
+                )
+            )
             epoch = ipy.Timestamp.fromtimestamp(
-                verification.epoch_time, tz=timezone.utc)
+                verification.epoch_time, tz=timezone.utc
+            )
 
         fields += [
             ipy.EmbedField(
@@ -269,7 +275,8 @@ If you have any questions, feel free to contact the developer via `/about`.""",
 
         if guild is None:
             await ctx.send(
-                f"{EMOJI_FORBIDDEN} This command can only be used in a server!")
+                f"{EMOJI_FORBIDDEN} This command can only be used in a server!"
+            )
             return
 
         guild_id = guild.id

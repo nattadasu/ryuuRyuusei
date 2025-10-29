@@ -2,8 +2,17 @@ from os import getpid, kill
 from subprocess import check_output as chout
 from subprocess import run as sub_run
 
-from interactions import (Activity, ActivityType, Client, Embed, Extension,
-                          IntervalTrigger, SlashContext, Status, Task)
+from interactions import (
+    Activity,
+    ActivityType,
+    Client,
+    Embed,
+    Extension,
+    IntervalTrigger,
+    SlashContext,
+    Status,
+    Task,
+)
 
 from extensions.hostsettings import hostsettings_head
 from modules.commons import save_traceback_to_file
@@ -24,9 +33,7 @@ class UpdateDaemon(Extension):
         """Check if there is any new commit in the upstream"""
         sub_run("git fetch", shell=True)
         upstream_commit = (
-            chout(["git", "rev-parse", "origin"], shell=True)
-            .decode("utf-8")
-            .strip()
+            chout(["git", "rev-parse", "origin"], shell=True).decode("utf-8").strip()
         )
         return upstream_commit
 
@@ -48,8 +55,9 @@ class UpdateDaemon(Extension):
     def _update_pip_dependencies(is_dev: bool = False) -> bool:
         """Update the pip dependencies"""
         dev = "-dev" if is_dev else ""
-        deps = chout(
-            f"pip install -r requirements{dev}.txt", shell=True).decode("utf-8")
+        deps = chout(f"pip install -r requirements{dev}.txt", shell=True).decode(
+            "utf-8"
+        )
         # check if the dependencies are updated
         if "Successfully installed" in deps:
             return True
@@ -62,7 +70,7 @@ class UpdateDaemon(Extension):
                 name=f"bot rebooting due to {context}",
                 type=ActivityType.WATCHING,
             ),
-            status=Status.IDLE
+            status=Status.IDLE,
         )
 
     async def _force_shutdown(self):
@@ -122,8 +130,7 @@ class UpdateDaemon(Extension):
                 name="🔀 Git", value="Pulling the latest changes from the upstream"
             )
             if self._pull_from_upstream():
-                embed.add_field(
-                    name="🔧 Pip", value="Updating the pip dependencies")
+                embed.add_field(name="🔧 Pip", value="Updating the pip dependencies")
                 if self._update_pip_dependencies():
                     await msg.edit(embed=embed)
                 else:

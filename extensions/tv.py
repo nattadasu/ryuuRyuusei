@@ -2,8 +2,11 @@ import interactions as ipy
 
 from classes.excepts import ProviderHttpError
 from classes.simkl import Simkl, SimklMediaTypes
-from modules.commons import (generate_search_embed, sanitize_markdown,
-                             save_traceback_to_file)
+from modules.commons import (
+    generate_search_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+)
 from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
 from modules.simkl import simkl_submit
 
@@ -93,7 +96,7 @@ class TvShow(ipy.Extension):
                     style=ipy.ButtonStyle.DANGER,
                     label="Cancel",
                     custom_id="message_delete",
-                    emoji="🗑️"
+                    emoji="🗑️",
                 ),
             )
             await send.edit(
@@ -117,7 +120,7 @@ class TvShow(ipy.Extension):
                     style=ipy.ButtonStyle.DANGER,
                     label="Delete",
                     custom_id="message_delete",
-                    emoji="🗑️"
+                    emoji="🗑️",
                 ),
             )
             save_traceback_to_file("tv_search", ctx.author, _)
@@ -145,8 +148,7 @@ class TvShow(ipy.Extension):
         await ctx.defer()
         await simkl_submit(ctx, media_id)
 
-    @tv.subcommand(sub_cmd_name="random",
-                   sub_cmd_description="Get a random TV show")
+    @tv.subcommand(sub_cmd_name="random", sub_cmd_description="Get a random TV show")
     async def tv_random(self, ctx: ipy.SlashContext):
         await ctx.defer()
         send = await ctx.send(

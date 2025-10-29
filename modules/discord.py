@@ -3,7 +3,7 @@ from datetime import datetime
 import interactions as ipy
 
 from classes.database import UserDatabase
-from classes.pronoundb import PronounDBV2, Pronouns
+from classes.pronoundb import PronounDBV2
 from modules.commons import sanitize_markdown
 
 
@@ -103,8 +103,7 @@ async def generate_discord_profile_embed(
         else:
             nick = sanitize_markdown(data.username)
             nick += " (*default*)"
-        joined = datetime.strptime(
-            servData["joined_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
+        joined = datetime.strptime(servData["joined_at"], "%Y-%m-%dT%H:%M:%S.%f%z")
         joined = int(joined.timestamp())
         joined = f"<t:{joined}:R>"
         if servData["premium_since"]:  # type: ignore

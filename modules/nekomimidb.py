@@ -70,10 +70,7 @@ def generate_nekomimi_embed(row: NekomimiDbStruct) -> Embed:
             value=f"[{determine_domain(imageSourceUrl)}]({imageSourceUrl})",
             inline=True,
         ),
-        EmbedField(
-            name="Artist",
-            value=f"[{artist}]({artistUrl})",
-            inline=True),
+        EmbedField(name="Artist", value=f"[{artist}]({artistUrl})", inline=True),
     )
     dcEm.set_image(url=img)
 

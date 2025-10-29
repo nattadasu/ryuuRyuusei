@@ -31,8 +31,7 @@ class TheMovieDb:
 
     async def __aenter__(self):
         """Enter the async context manager"""
-        self.session = aiohttp.ClientSession(
-            headers={"User-Agent": USER_AGENT})
+        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -66,16 +65,16 @@ class TheMovieDb:
         """
         if isinstance(media_type, self.MediaType):
             media_type = media_type.value
-        cache_file_path = Cache.get_cache_path(
-            f"{media_type}/{media_id}.json")
+        cache_file_path = Cache.get_cache_path(f"{media_type}/{media_id}.json")
         cached_data = Cache.read_cache(cache_file_path)
         if cached_data is not None:
             return cached_data
         if media_type in ["tv", "movie"]:
             url = f"{self.base_url}{media_type}/{media_id}"
         else:
-            raise ProviderTypeError("Invalid mediaType", [
-                                    "tv", "movie", self.MediaType])
+            raise ProviderTypeError(
+                "Invalid mediaType", ["tv", "movie", self.MediaType]
+            )
         async with self.session.get(url, params=self.params) as resp:
             if resp.status != 200:
                 return False

@@ -11,8 +11,11 @@ import interactions as ipy
 
 from classes.excepts import ProviderHttpError
 from classes.simkl import Simkl, SimklMediaTypes
-from modules.commons import (generate_search_embed, sanitize_markdown,
-                             save_traceback_to_file)
+from modules.commons import (
+    generate_search_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+)
 from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
 from modules.simkl import simkl_submit
 
@@ -111,7 +114,7 @@ class MoviesCog(ipy.Extension):
                     style=ipy.ButtonStyle.DANGER,
                     label="Cancel",
                     custom_id="message_delete",
-                    emoji="🗑️"
+                    emoji="🗑️",
                 ),
             )
             await send.edit(
@@ -136,7 +139,7 @@ class MoviesCog(ipy.Extension):
                     style=ipy.ButtonStyle.DANGER,
                     label="Delete",
                     custom_id="message_delete",
-                    emoji="🗑️"
+                    emoji="🗑️",
                 ),
             )
             save_traceback_to_file("movies_search", ctx.author, _)
@@ -174,8 +177,7 @@ class MoviesCog(ipy.Extension):
         await ctx.defer()
         await simkl_submit(ctx, media_id, "movies")
 
-    @movies.subcommand(sub_cmd_name="random",
-                       sub_cmd_description="Get a random movie")
+    @movies.subcommand(sub_cmd_name="random", sub_cmd_description="Get a random movie")
     async def movie_random(self, ctx: ipy.SlashContext):
         """
         Get a random movie

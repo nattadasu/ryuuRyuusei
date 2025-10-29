@@ -7,9 +7,13 @@ import interactions as ipy
 from classes.anilist import AniList, AniListUserStruct
 from classes.database import DatabaseException, UserDatabase, UserDatabaseClass
 from classes.excepts import ProviderHttpError
-from modules.commons import (PlatformErrType, convert_float_to_time,
-                             platform_exception_embed, sanitize_markdown,
-                             save_traceback_to_file)
+from modules.commons import (
+    PlatformErrType,
+    convert_float_to_time,
+    platform_exception_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+)
 
 
 class AniListCog(ipy.Extension):
@@ -18,11 +22,7 @@ class AniListCog(ipy.Extension):
     anilist_head = ipy.SlashCommand(
         name="anilist",
         description="Get useful information from AniList",
-        cooldown=ipy.Cooldown(
-            cooldown_bucket=ipy.Buckets.USER,
-            rate=1,
-            interval=5
-        )
+        cooldown=ipy.Cooldown(cooldown_bucket=ipy.Buckets.USER, rate=1, interval=5),
     )
 
     @anilist_head.subcommand(
@@ -47,18 +47,10 @@ class AniListCog(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(
-                            name="Card",
-                            value="card"),
-                    ipy.SlashCommandChoice(
-                        name="Minimal (default)",
-                        value="minimal"),
-                    ipy.SlashCommandChoice(
-                        name="Classic",
-                        value="old"),
-                    ipy.SlashCommandChoice(
-                        name="Highly Detailed",
-                        value="new"),
+                    ipy.SlashCommandChoice(name="Card", value="card"),
+                    ipy.SlashCommandChoice(name="Minimal (default)", value="minimal"),
+                    ipy.SlashCommandChoice(name="Classic", value="old"),
+                    ipy.SlashCommandChoice(name="Highly Detailed", value="new"),
                 ],
             ),
         ],
@@ -174,9 +166,7 @@ Use `/platform link` to link, or `/anilist profile anilist_username:<anilist_use
         if embed_layout == "minimal":
             joined_formatted = f"<t:{int(created_at.timestamp())}:R>"
         else:
-            joined_formatted = (
-                f"<t:{int(created_at.timestamp())}:D> (<t:{int(created_at.timestamp())}:R>)"
-            )
+            joined_formatted = f"<t:{int(created_at.timestamp())}:D> (<t:{int(created_at.timestamp())}:R>)"
 
         anime_current = 0
         anime_planning = 0
@@ -187,8 +177,7 @@ Use `/platform link` to link, or `/anilist profile anilist_username:<anilist_use
         anime_stats = user_data.statistics.anime
         anime_mean_score = anime_stats.meanScore if anime_stats else 0
         anime_episodes_watched = anime_stats.episodesWatched if anime_stats else 0
-        anime_minutes_watched = (
-            anime_stats.minutesWatched or 0) if anime_stats else 0
+        anime_minutes_watched = (anime_stats.minutesWatched or 0) if anime_stats else 0
         # convert minutes to days
         anime_float = convert_float_to_time(anime_stats.minutesWatched / 1440)
         for status in anime_stats.statuses:
@@ -226,8 +215,7 @@ Use `/platform link` to link, or `/anilist profile anilist_username:<anilist_use
         manga_mean_score = manga_stats.meanScore if manga_stats else 0
         manga_chapters_read = manga_stats.chaptersRead if manga_stats else 0
         manga_volumes_read = manga_stats.volumesRead if manga_stats else 0
-        manga_minutes_read = 8 * \
-            (manga_stats.chaptersRead or 0) if manga_stats else 0
+        manga_minutes_read = 8 * (manga_stats.chaptersRead or 0) if manga_stats else 0
         manga_float = convert_float_to_time(manga_minutes_read / 1440)
         for status in manga_stats.statuses:
             match status.status:
@@ -311,9 +299,7 @@ Use `/platform link` to link, or `/anilist profile anilist_username:<anilist_use
                     inline=True,
                 ),
                 ipy.EmbedField(
-                    name="👮 Moderation Roles",
-                    value=mod_roles,
-                    inline=False
+                    name="👮 Moderation Roles", value=mod_roles, inline=False
                 ),
             )
             anime_value_str = f"""* Total: {anime_total:,}

@@ -36,8 +36,7 @@ class SpotifyApi:
 
     async def __aenter__(self):
         """Enter the session"""
-        self.session = aiohttp.ClientSession(
-            headers={"User-Agent": USER_AGENT})
+        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
@@ -107,8 +106,7 @@ class SpotifyApi:
             )
         async with self.session.get(
             f"{self.base_url}/v1/search",
-            params={"q": query, "type": media_type,
-                    "limit": limit, "offset": offset},
+            params={"q": query, "type": media_type, "limit": limit, "offset": offset},
             headers={"Authorization": f"Bearer {self.token}"},
         ) as response:
             if response.status == 200:

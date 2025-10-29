@@ -7,8 +7,7 @@ import aiohttp
 from classes.cache import Caching
 from modules.const import USER_AGENT
 
-Cache = Caching(cache_directory="cache/pronoundb",
-                cache_expiration_time=604800)
+Cache = Caching(cache_directory="cache/pronoundb", cache_expiration_time=604800)
 
 
 en_locale = Literal["he", "it", "she", "they", "any", "ask", "avoid", "other"]
@@ -151,8 +150,7 @@ class PronounDBV2:
         Returns:
             Pronoun: The pronouns of the user
         """
-        cache_file_path = Cache.get_cache_file_path(
-            f"{platform.value}/{user_id}.json")
+        cache_file_path = Cache.get_cache_file_path(f"{platform.value}/{user_id}.json")
         cached_file = Cache.read_cached_data(cache_file_path)
         if cached_file:
             return PronounData(Pronouns(en=cached_file["sets"]["en"]))

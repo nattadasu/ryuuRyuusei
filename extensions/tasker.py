@@ -2,8 +2,15 @@ import os
 import time
 from typing import Union
 
-from interactions import (Activity, ActivityType, AutoShardedClient, Client,
-                          Extension, IntervalTrigger, Task)
+from interactions import (
+    Activity,
+    ActivityType,
+    AutoShardedClient,
+    Client,
+    Extension,
+    IntervalTrigger,
+    Task,
+)
 
 from classes.excepts import ProviderHttpError
 from classes.stats.dbgg import DiscordBotsGG
@@ -119,8 +126,7 @@ class BotTasker(Extension):
                 )
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBots.gg: {error}")
-            save_traceback_to_file(
-                "tasker_dbgg", self.bot.user, error, mute_error=True)
+            save_traceback_to_file("tasker_dbgg", self.bot.user, error, mute_error=True)
             show_msg.append("DiscordBots.gg")
 
         try:
@@ -131,8 +137,7 @@ class BotTasker(Extension):
                 )
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to DiscordBotList: {error}")
-            save_traceback_to_file(
-                "tasker_dbl", self.bot.user, error, mute_error=True)
+            save_traceback_to_file("tasker_dbl", self.bot.user, error, mute_error=True)
             show_msg.append("DiscordBotList.com")
 
         try:
@@ -144,8 +149,7 @@ class BotTasker(Extension):
                 )
         except ProviderHttpError as error:
             print(f"[Tsk] [Stats] Failed to poll to InfinityBots: {error}")
-            save_traceback_to_file(
-                "tasker_ibgg", self.bot.user, error, mute_error=True)
+            save_traceback_to_file("tasker_ibgg", self.bot.user, error, mute_error=True)
             show_msg.append("InfinityBots")
 
         print(

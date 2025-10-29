@@ -91,15 +91,18 @@ class TraktExtendedShowStruct(TraktMediaStruct):
     """Show last updated date"""
     homepage: str | None
     """Show homepage"""
-    status: Literal[
-        "returning series",
-        "continuing",
-        "in production",
-        "planned",
-        "canceled",
-        "ended",
-        "pilot",
-    ] | str
+    status: (
+        Literal[
+            "returning series",
+            "continuing",
+            "in production",
+            "planned",
+            "canceled",
+            "ended",
+            "pilot",
+        ]
+        | str
+    )
     """Show status"""
     rating: float | None
     """Show rating"""
@@ -139,8 +142,9 @@ class TraktExtendedMovieStruct(TraktMediaStruct):
     """Movie trailer"""
     homepage: str | None
     """Movie homepage"""
-    status: Literal["released", "in production",
-                    "post production", "planned", "rumored", "canceled"]
+    status: Literal[
+        "released", "in production", "post production", "planned", "rumored", "canceled"
+    ]
     """Movie status"""
     rating: float | None
     """Movie rating"""
@@ -226,9 +230,7 @@ class Trakt:
             #     entry["movie"] = from_dict(TraktMediaStruct, entry["movie"])
             # if entry.get("show", None):
             #     entry["show"] = from_dict(TraktMediaStruct, entry["show"])
-            converted_data.append(
-                from_dict(TraktLookupStruct, entry)
-            )
+            converted_data.append(from_dict(TraktLookupStruct, entry))
         return converted_data
 
     def extended_dict_to_dataclass(
@@ -309,8 +311,7 @@ class Trakt:
         Returns:
             TraktExtendedMovieStruct | TraktExtendedShowStruct: The data of the TV show or movie
         """
-        cache_file_path = Cache.get_cache_path(
-            f"{media_type.value}/{media_id}.json")
+        cache_file_path = Cache.get_cache_path(f"{media_type.value}/{media_id}.json")
         cached_data = Cache.read_cache(cache_file_path)
         if cached_data is not None:
             return self.extended_dict_to_dataclass(cached_data, media_type)

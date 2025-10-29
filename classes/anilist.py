@@ -1,4 +1,5 @@
 """AniList Asynchronous API Wrapper"""
+
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
@@ -9,8 +10,7 @@ from dacite import Config, from_dict
 
 from classes.cache import Caching
 from classes.excepts import ProviderHttpError, ProviderTypeError
-from modules.const import (ANILIST_ACCESS_TOKEN, ANILIST_OAUTH_EXPIRY,
-                           USER_AGENT)
+from modules.const import ANILIST_ACCESS_TOKEN, ANILIST_OAUTH_EXPIRY, USER_AGENT
 
 Cache = Caching(cache_directory="cache/anilist", cache_expiration_time=86400)
 
@@ -97,18 +97,21 @@ class AniListMediaStruct:
     # pylint: disable-next=invalid-name
     isAdult: bool | None = None
     """Whether the media is 18+"""
-    format: Literal[
-        "TV",
-        "TV_SHORT",
-        "MOVIE",
-        "SPECIAL",
-        "OVA",
-        "ONA",
-        "MUSIC",
-        "MANGA",
-        "NOVEL",
-        "ONE_SHOT",
-    ] | None = None
+    format: (
+        Literal[
+            "TV",
+            "TV_SHORT",
+            "MOVIE",
+            "SPECIAL",
+            "OVA",
+            "ONA",
+            "MUSIC",
+            "MANGA",
+            "NOVEL",
+            "ONE_SHOT",
+        ]
+        | None
+    ) = None
     """Media format"""
     description: str | None = None
     """Media description"""
@@ -123,9 +126,10 @@ class AniListMediaStruct:
     # pylint: disable-next=invalid-name
     endDate: AniListDateStruct | None = None
     """Media end date"""
-    status: Literal[
-        "FINISHED", "RELEASING", "NOT_YET_RELEASED", "CANCELLED", "HIATUS"
-    ] | None = None
+    status: (
+        Literal["FINISHED", "RELEASING", "NOT_YET_RELEASED", "CANCELLED", "HIATUS"]
+        | None
+    ) = None
     """Media release status"""
     # pylint: disable-next=invalid-name
     coverImage: AniListImageStruct | None = None
@@ -164,9 +168,10 @@ class AniListMediaStruct:
 class AniListStatusBase:
     """Base AniList status dataclass"""
 
-    status: Literal[
-        "CURRENT", "PLANNING", "COMPLETED", "DROPPED", "PAUSED", "REPEATING"
-    ] | None = None
+    status: (
+        Literal["CURRENT", "PLANNING", "COMPLETED", "DROPPED", "PAUSED", "REPEATING"]
+        | None
+    ) = None
     """Status"""
     count: int | None = None
     """Status count"""
@@ -294,8 +299,7 @@ class AniList:
             "Accept": "application/json",
             "User-Agent": USER_AGENT,
         }
-        if int(ANILIST_OAUTH_EXPIRY) > datetime.now(
-                tz=timezone.utc).timestamp():
+        if int(ANILIST_OAUTH_EXPIRY) > datetime.now(tz=timezone.utc).timestamp():
             self.headers["Authorization"] = f"Bearer {self.access_token}"
         else:
             print(
@@ -342,7 +346,8 @@ class AniList:
             f"nsfw/{media.lower()}/{media_id}.json"
         )
         cached_data = Cache.read_cached_data(
-            cache_file_path, override_expiration_time=604800)
+            cache_file_path, override_expiration_time=604800
+        )
         if cached_data is not None:
             return cached_data
         query = f"""query {{
@@ -361,14 +366,12 @@ class AniList:
             if errors:
                 err_strings: str = "\n".join(
                     [
-                        f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
+                        f"- [{err['status']}] {err['message']}{' Hint:' + err['hint'] if err.get('hint', None) else ''}"
                         for err in errors
                     ]
                 )
                 raise ProviderHttpError(err_strings, response.status)
-            Cache.write_data_to_cache(
-                data["data"]["Media"]["isAdult"],
-                cache_file_path)
+            Cache.write_data_to_cache(data["data"]["Media"]["isAdult"], cache_file_path)
             return data["data"]["Media"]["isAdult"]
 
     async def anime(self, media_id: int) -> AniListMediaStruct:
@@ -453,14 +456,12 @@ class AniList:
             if errors:
                 err_strings: str = "\n".join(
                     [
-                        f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
+                        f"- [{err['status']}] {err['message']}{' Hint:' + err['hint'] if err.get('hint', None) else ''}"
                         for err in errors
                     ]
                 )
                 raise ProviderHttpError(err_strings, response.status)
-            Cache.write_data_to_cache(
-                data["data"]["Media"],
-                cache_file_path)
+            Cache.write_data_to_cache(data["data"]["Media"], cache_file_path)
             return from_dict(AniListMediaStruct, data["data"]["Media"])
 
     async def manga(self, media_id: int, from_mal: bool = False) -> AniListMediaStruct:
@@ -545,17 +546,17 @@ class AniList:
             if errors:
                 err_strings: str = "\n".join(
                     [
-                        f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
+                        f"- [{err['status']}] {err['message']}{' Hint:' + err['hint'] if err.get('hint', None) else ''}"
                         for err in errors
                     ]
                 )
                 raise ProviderHttpError(err_strings, response.status)
-            Cache.write_data_to_cache(
-                data["data"]["Media"],
-                cache_file_path)
+            Cache.write_data_to_cache(data["data"]["Media"], cache_file_path)
             return from_dict(AniListMediaStruct, data["data"]["Media"])
 
-    async def user_by_id(self, user_id: int, return_as_is: bool = False) -> AniListUserStruct:
+    async def user_by_id(
+        self, user_id: int, return_as_is: bool = False
+    ) -> AniListUserStruct:
         """
         Get user information by their ID
 
@@ -571,8 +572,7 @@ class AniList:
         """
         config = Config(
             type_hooks={
-                datetime: lambda value: datetime.fromtimestamp(
-                    value, timezone.utc)
+                datetime: lambda value: datetime.fromtimestamp(value, timezone.utc)
             }
         )
         gqlquery = f"""query {{
@@ -593,7 +593,7 @@ class AniList:
             if errors:
                 err_strings: str = "\n".join(
                     [
-                        f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
+                        f"- [{err['status']}] {err['message']}{' Hint:' + err['hint'] if err.get('hint', None) else ''}"
                         for err in errors
                     ]
                 )
@@ -621,8 +621,7 @@ class AniList:
         cached_data = Cache.read_cached_data(cache_file_path, 43200)
         config = Config(
             type_hooks={
-                datetime: lambda value: datetime.fromtimestamp(
-                    value, timezone.utc)
+                datetime: lambda value: datetime.fromtimestamp(value, timezone.utc)
             }
         )
         if cached_data is not None and not return_id:
@@ -709,7 +708,7 @@ class AniList:
             if errors:
                 err_strings: str = "\n".join(
                     [
-                        f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
+                        f"- [{err['status']}] {err['message']}{' Hint:' + err['hint'] if err.get('hint', None) else ''}"
                         for err in errors
                     ]
                 )
@@ -741,8 +740,7 @@ class AniList:
             list[dict[str, Any]]: The search results
         """
         if limit > 10:
-            raise ProviderTypeError(
-                "limit must be less than or equal to 10", "int")
+            raise ProviderTypeError("limit must be less than or equal to 10", "int")
         if isinstance(media_type, self.MediaType):
             media_type = media_type.value
         gqlquery = """query ($search: String, $mediaType: MediaType, $limit: Int) {
@@ -781,7 +779,7 @@ class AniList:
             if errors:
                 err_strings: str = "\n".join(
                     [
-                        f"- [{err['status']}] {err['message']}{' Hint:'+ err['hint'] if err.get('hint', None) else ''}"
+                        f"- [{err['status']}] {err['message']}{' Hint:' + err['hint'] if err.get('hint', None) else ''}"
                         for err in errors
                     ]
                 )

@@ -49,7 +49,7 @@ class HSLFractions:
     """Hue fraction in HSL"""
     s: float | None = None
     """Saturation fraction in HSL"""
-    l: float | None = None
+    lightness: float | None = None
     """Lightness fraction in HSL"""
 
 
@@ -111,7 +111,7 @@ class HSLValue(BaseValue):
     """Hue value"""
     s: int
     """Saturation value"""
-    l: int
+    lightness: int
     """Lightness value"""
 
 
@@ -238,8 +238,7 @@ class TheColorApi:
 
     async def __aenter__(self):
         """Create a session if class invoked with `with` statement"""
-        self.session = aiohttp.ClientSession(
-            headers={"User-Agent": USER_AGENT})
+        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -254,13 +253,19 @@ class TheColorApi:
     def dict_to_dataclass(data: dict) -> Color:
         """Convert data dict to dataclass"""
         data["rgb"]["fraction"] = RGBFractions(**data["rgb"]["fraction"])
-        data["hsl"]["fraction"] = HSLFractions(**data["hsl"]["fraction"])
+        hsl_fraction = data["hsl"]["fraction"]
+        if "l" in hsl_fraction:
+            hsl_fraction["lightness"] = hsl_fraction.pop("l")
+        data["hsl"]["fraction"] = HSLFractions(**hsl_fraction)
         data["hsv"]["fraction"] = HSVFractions(**data["hsv"]["fraction"])
         data["cmyk"]["fraction"] = CMYKFractions(**data["cmyk"]["fraction"])
         data["XYZ"]["fraction"] = XYZFractions(**data["XYZ"]["fraction"])
         data["hex"] = HexValue(**data["hex"])
         data["rgb"] = RGBValue(**data["rgb"])
-        data["hsl"] = HSLValue(**data["hsl"])
+        hsl_value = data["hsl"]
+        if "l" in hsl_value:
+            hsl_value["lightness"] = hsl_value.pop("l")
+        data["hsl"] = HSLValue(**hsl_value)
         data["hsv"] = HSVValue(**data["hsv"])
         data["cmyk"] = CMYKValue(**data["cmyk"])
         data["XYZ"] = XYZValue(**data["XYZ"])

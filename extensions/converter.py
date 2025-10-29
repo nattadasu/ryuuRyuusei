@@ -8,8 +8,11 @@ from fuzzywuzzy import fuzz
 from classes.converter import Length, Mass, Temperature, Time, Volume
 from classes.excepts import ProviderHttpError
 from classes.exchangerateapi import ExchangeRateAPI, accepted_currencies
-from modules.commons import (PlatformErrType, platform_exception_embed,
-                             save_traceback_to_file)
+from modules.commons import (
+    PlatformErrType,
+    platform_exception_embed,
+    save_traceback_to_file,
+)
 from modules.const import EMOJI_SUCCESS, EMOJI_UNEXPECTED_ERROR
 
 emoji_err = re.sub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_UNEXPECTED_ERROR)
@@ -28,23 +31,16 @@ def overflow_embed(value: float, from_unit: str, to_unit: str) -> ipy.Embed:
             url=f"https://cdn.discordapp.com/emojis/{emoji_err}.png?v=1"
         ),
         fields=[
-            ipy.EmbedField(
-                name="Value",
-                value=f"{value} {from_unit}",
-                inline=True
-            ),
-            ipy.EmbedField(
-                name="Unit",
-                value=to_unit,
-                inline=True
-            )
-        ]
+            ipy.EmbedField(name="Value", value=f"{value} {from_unit}", inline=True),
+            ipy.EmbedField(name="Unit", value=to_unit, inline=True),
+        ],
     )
     return embed
 
 
-def result_embed(value: float, from_unit: str, to_unit: str,
-                 result: int | list[float | str]) -> ipy.Embed:
+def result_embed(
+    value: float, from_unit: str, to_unit: str, result: int | list[float | str]
+) -> ipy.Embed:
     """Returns an embed for when the result is too large to be displayed"""
     from_unit = from_unit.replace("_", " ")
     to_unit = to_unit.replace("_", " ")
@@ -58,12 +54,8 @@ def result_embed(value: float, from_unit: str, to_unit: str,
             url=f"https://cdn.discordapp.com/emojis/{emoji_success}.png?v=1"
         ),
         fields=[
-            ipy.EmbedField(
-                name="Value",
-                value=f"{value} {from_unit}",
-                inline=True
-            ),
-        ]
+            ipy.EmbedField(name="Value", value=f"{value} {from_unit}", inline=True),
+        ],
     )
 
     if isinstance(result, list):
@@ -71,26 +63,14 @@ def result_embed(value: float, from_unit: str, to_unit: str,
             result[0] = int(result[0])
         result[0] = f"{result[0]:,}"
         embed.add_fields(
-            ipy.EmbedField(
-                name="Result",
-                value=f"{result[0]} {to_unit}",
-                inline=True
-            ),
-            ipy.EmbedField(
-                name="Context",
-                value=f"{result[1]}",
-                inline=False
-            ),
+            ipy.EmbedField(name="Result", value=f"{result[0]} {to_unit}", inline=True),
+            ipy.EmbedField(name="Context", value=f"{result[1]}", inline=False),
         )
     else:
         if str(result).endswith(".0"):
             result = int(result)
         result = f"{result:,}"
-        embed.add_field(
-            name="Result",
-            value=f"{result} {to_unit}",
-            inline=True
-        )
+        embed.add_field(name="Result", value=f"{result} {to_unit}", inline=True)
 
     return embed
 
@@ -105,8 +85,7 @@ def search_currency(query: str) -> list[dict[str, str]]:
     Returns:
         list[dict[str, str]]: The list of currencies that match the query
     """
-    currencies = pd.read_csv(
-        "database/supported_currencies.tsv", delimiter="\t")
+    currencies = pd.read_csv("database/supported_currencies.tsv", delimiter="\t")
     results = []
     for _, currency in currencies.iterrows():
         code_ratio = fuzz.token_set_ratio(query, currency["Currency Code"])
@@ -114,10 +93,12 @@ def search_currency(query: str) -> list[dict[str, str]]:
         country_ratio = fuzz.token_set_ratio(query, currency["Country Name"])
         max_ratio = max(code_ratio, name_ratio, country_ratio)
         if max_ratio >= 70:  # minimum similarity threshold of 70%
-            results.append({
-                "name": f'{currency["Currency Name"]} ({currency["Currency Code"]})',
-                "value": currency["Currency Code"],
-            })
+            results.append(
+                {
+                    "name": f"{currency['Currency Name']} ({currency['Currency Code']})",
+                    "value": currency["Currency Code"],
+                }
+            )
     return results[:25]
 
 
@@ -184,9 +165,11 @@ class ConverterCog(ipy.Extension):
                 required=True,
                 choices=length_units,
             ),
-        ]
+        ],
     )
-    async def convert_length(self, ctx: ipy.SlashContext, value: float, from_unit: str, to_unit: str):
+    async def convert_length(
+        self, ctx: ipy.SlashContext, value: float, from_unit: str, to_unit: str
+    ):
         await ctx.defer()
         try:
             convert = Length.convert(value, from_unit, to_unit)
@@ -237,9 +220,11 @@ class ConverterCog(ipy.Extension):
                 required=True,
                 choices=mass_units,
             ),
-        ]
+        ],
     )
-    async def convert_mass(self, ctx: ipy.SlashContext, value: float, from_unit: str, to_unit: str):
+    async def convert_mass(
+        self, ctx: ipy.SlashContext, value: float, from_unit: str, to_unit: str
+    ):
         await ctx.defer()
         try:
             convert = Mass.convert(value, from_unit, to_unit)
@@ -285,9 +270,11 @@ class ConverterCog(ipy.Extension):
                 required=True,
                 choices=temperature_units,
             ),
-        ]
+        ],
     )
-    async def convert_temperature(self, ctx: ipy.SlashContext, value: float, from_unit: str, to_unit: str):
+    async def convert_temperature(
+        self, ctx: ipy.SlashContext, value: float, from_unit: str, to_unit: str
+    ):
         await ctx.defer()
         try:
             convert = Temperature.convert(value, from_unit, to_unit)
@@ -300,8 +287,7 @@ class ConverterCog(ipy.Extension):
 
     volume_units: list[ipy.SlashCommandChoice] = [
         ipy.SlashCommandChoice("Centiliter (cl)", "centiliter"),
-        ipy.SlashCommandChoice(
-            "Milliliter (ml)/Cubic centimeter (cm³)", "milliliter"),
+        ipy.SlashCommandChoice("Milliliter (ml)/Cubic centimeter (cm³)", "milliliter"),
         ipy.SlashCommandChoice("Deciliter (dl)", "deciliter"),
         ipy.SlashCommandChoice("Liter (l)/Cubic decimeter (dm³)", "liter"),
         ipy.SlashCommandChoice("Hectoliter (hl)", "hectoliter"),
@@ -339,9 +325,11 @@ class ConverterCog(ipy.Extension):
                 required=True,
                 choices=volume_units,
             ),
-        ]
+        ],
     )
-    async def convert_volume(self, ctx: ipy.SlashContext, value: float, from_unit: str, to_unit: str):
+    async def convert_volume(
+        self, ctx: ipy.SlashContext, value: float, from_unit: str, to_unit: str
+    ):
         await ctx.defer()
         try:
             convert = Volume.convert(value, from_unit, to_unit)
@@ -390,9 +378,11 @@ class ConverterCog(ipy.Extension):
                 required=True,
                 choices=time_units,
             ),
-        ]
+        ],
     )
-    async def convert_time(self, ctx: ipy.SlashContext, value: float, from_unit: str, to_unit: str):
+    async def convert_time(
+        self, ctx: ipy.SlashContext, value: float, from_unit: str, to_unit: str
+    ):
         await ctx.defer()
         try:
             convert = Time.convert(value, from_unit, to_unit)
@@ -444,19 +434,20 @@ class ConverterCog(ipy.Extension):
                 )
                 # only 2 decimal places
                 convert = round(convert_raw.conversion_result, 3)
-                embed = result_embed(value, from_currency,
-                                     to_currency, convert)
+                embed = result_embed(value, from_currency, to_currency, convert)
                 embed.set_footer(
                     text="Powered by ExchangeRate-API, data last fetched on"
                 )
                 embed.timestamp = datetime.fromtimestamp(
-                    convert_raw.time_last_update_unix, tz=timezone.utc)
+                    convert_raw.time_last_update_unix, tz=timezone.utc
+                )
                 await ctx.send(embed=embed)
         except ProviderHttpError as e:
             embed = platform_exception_embed(
                 description="An error occurred while trying to get exchange rates from ExchangeRate-API.",
                 error=f"{e}",
-                error_type=PlatformErrType.SYSTEM)
+                error_type=PlatformErrType.SYSTEM,
+            )
             await ctx.send(embed=embed)
             save_traceback_to_file("convert_currency", ctx.author, e)
         except OverflowError as e:

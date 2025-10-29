@@ -18,8 +18,7 @@ from classes.stats.dbl import DiscordBotList
 from classes.stats.infinity import InfinityBots
 from classes.stats.topgg import TopGG
 from modules.commons import save_traceback_to_file
-from modules.const import (GIT_COMMIT_HASH, GT_HSH, USER_AGENT,
-                           VERIFICATION_SERVER)
+from modules.const import GIT_COMMIT_HASH, GT_HSH, USER_AGENT, VERIFICATION_SERVER
 
 
 @dataclass
@@ -210,8 +209,7 @@ def get_pip_pkgs() -> list[PackageInfo]:
     final: list[PackageInfo] = []
     for pkg in pipkg.working_set:
         final.append(
-            PackageInfo(name=pkg.key, version=pkg.version,
-                        license=get_pkg_license(pkg))
+            PackageInfo(name=pkg.key, version=pkg.version, license=get_pkg_license(pkg))
         )
     # sort by name
     final.sort(key=lambda x: x.name)
@@ -343,8 +341,7 @@ class Stats(ipy.Extension):
             save_traceback_to_file("stats_general-ibl", ctx.author, err, True)
 
         provider_votes.sort(key=lambda x: x.name)
-        votes_str = "\n".join(
-            [vt.as_text for vt in provider_votes]) or "No reports"
+        votes_str = "\n".join([vt.as_text for vt in provider_votes]) or "No reports"
 
         embed = ipy.Embed(
             title="General stats for bot",
@@ -355,10 +352,8 @@ class Stats(ipy.Extension):
         embed.add_fields(
             ipy.EmbedField(name="🏠 Guilds", value=f"{guilds:,}", inline=True),
             ipy.EmbedField(name="🔗 Shards", value=f"{shards:,}", inline=True),
-            ipy.EmbedField(name="📝 Commands",
-                           value=f"{command_count:,}", inline=True),
-            ipy.EmbedField(name="🕒 Uptime",
-                           value=f"<t:{uptime}:R>", inline=True),
+            ipy.EmbedField(name="📝 Commands", value=f"{command_count:,}", inline=True),
+            ipy.EmbedField(name="🕒 Uptime", value=f"<t:{uptime}:R>", inline=True),
             ipy.EmbedField(name="🐍 Python Version", value=py_ver, inline=True),
             ipy.EmbedField(
                 name="🤖 Bot Version",
@@ -483,7 +478,7 @@ class Stats(ipy.Extension):
 
         for page in range(0, len(packages), 15):
             listed: list[ipy.EmbedField] = []
-            for pkg in packages[page: page + 15]:
+            for pkg in packages[page : page + 15]:
                 listed.append(
                     ipy.EmbedField(
                         name=pkg.name,

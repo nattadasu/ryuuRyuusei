@@ -63,8 +63,7 @@ class HtmlMyAnimeList:
                 raise ProviderHttpError(resp.reason, resp.status)
             html = await resp.text()
         soup = BeautifulSoup(html, "html5lib")
-        report_link = soup.find(
-            "a", {"class": "header-right mt4 mr0"})
+        report_link = soup.find("a", {"class": "header-right mt4 mr0"})
         if not isinstance(report_link, Tag):
             raise RuntimeError("Could not find user information")
         report_link = report_link.get("href")
@@ -87,14 +86,9 @@ class HtmlMyAnimeList:
             image = image[0]
 
         # Extract the relevant information
-        last_online = soup.find(
-            "span",
-            class_="user-status-title",
-            text="Last Online")
+        last_online = soup.find("span", class_="user-status-title", text="Last Online")
         if last_online:
-            last_online = last_online.find_next(
-                "span", class_="user-status-data"
-            )
+            last_online = last_online.find_next("span", class_="user-status-data")
             if not last_online:
                 raise RuntimeError("Could not find user information")
             last_online = last_online.text.strip()
@@ -106,8 +100,7 @@ class HtmlMyAnimeList:
                 date_format = "%b %d, %Y %H:%M %p %z"
                 match activity[0]:
                     case "Today":
-                        today_str = datetime.now(
-                            timezone.utc).strftime("%b %d, %Y")
+                        today_str = datetime.now(timezone.utc).strftime("%b %d, %Y")
                         last_online = datetime.strptime(
                             f"{today_str} {activity[1]}", date_format
                         )
@@ -132,15 +125,14 @@ class HtmlMyAnimeList:
                                 current_year = datetime.now(timezone.utc).year
                                 last_online = datetime.strptime(
                                     f"{activity[0]}, {current_year} {activity[1]}",
-                                    date_format
+                                    date_format,
                                 )
                         else:
                             # handle relative time like 1 hour ago
                             regex = r"(\d+) (\w+) ago"
                             matching = re.search(regex, activity[0])
                             # get time
-                            time_value: int = int(
-                                matching.group(1))  # type: ignore
+                            time_value: int = int(matching.group(1))  # type: ignore
                             # get unit
                             time_unit: str = matching.group(2)  # type: ignore
                             # add s to the unit if it is not already there
@@ -155,25 +147,16 @@ class HtmlMyAnimeList:
             last_online = None
 
         gender: str | None = None
-        gender_find = soup.find(
-            "span",
-            class_="user-status-title",
-            text="Gender")
+        gender_find = soup.find("span", class_="user-status-title", text="Gender")
         if gender_find:
-            gender_find = gender_find.find_next(
-                "span", class_="user-status-data")
+            gender_find = gender_find.find_next("span", class_="user-status-data")
             if gender_find:
                 gender = gender_find.text.strip()
 
         birthday: datetime | None = None
-        birthday_find = soup.find(
-            "span",
-            class_="user-status-title",
-            text="Birthday")
+        birthday_find = soup.find("span", class_="user-status-title", text="Birthday")
         if birthday_find:
-            birthday_find = birthday_find.find_next(
-                "span", class_="user-status-data"
-            )
+            birthday_find = birthday_find.find_next("span", class_="user-status-data")
             if birthday_find:
                 birthday_str = birthday_find.text.strip()
                 try:
@@ -184,28 +167,21 @@ class HtmlMyAnimeList:
                     birthday = None
 
         location = None
-        location_find = soup.find(
-            "span",
-            class_="user-status-title",
-            text="Location")
+        location_find = soup.find("span", class_="user-status-title", text="Location")
         if location_find:
-            location_find = location_find.find_next(
-                "span", class_="user-status-data"
-            )
+            location_find = location_find.find_next("span", class_="user-status-data")
             if location_find:
                 location = location_find.text.strip()
 
         joined = None
-        joined_find = soup.find(
-            "span", class_="user-status-title", text="Joined")
+        joined_find = soup.find("span", class_="user-status-title", text="Joined")
         if joined_find:
-            joined_find = joined_find.find_next(
-                "span", class_="user-status-data")
+            joined_find = joined_find.find_next("span", class_="user-status-data")
             if joined_find:
                 joined_find = joined_find.text.strip()
-                joined = datetime.strptime(
-                    joined_find, "%b %d, %Y").replace(
-                    tzinfo=timezone.utc)
+                joined = datetime.strptime(joined_find, "%b %d, %Y").replace(
+                    tzinfo=timezone.utc
+                )
 
         user = JikanUserStruct(
             mal_id=int(user_id),

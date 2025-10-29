@@ -3,9 +3,14 @@ import re
 import interactions as ipy
 
 from classes.database import UserDatabase
-from modules.const import (AUTHOR_USERID, EMOJI_SUCCESS,
-                           EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR,
-                           VERIFICATION_SERVER, VERIFIED_ROLE)
+from modules.const import (
+    AUTHOR_USERID,
+    EMOJI_SUCCESS,
+    EMOJI_UNEXPECTED_ERROR,
+    EMOJI_USER_ERROR,
+    VERIFICATION_SERVER,
+    VERIFIED_ROLE,
+)
 from modules.discord import format_username
 
 hostsettings_head = ipy.SlashCommand(
@@ -23,8 +28,8 @@ class HostSettings(ipy.Extension):
     """Host Settings commands"""
 
     member = hostsettings_head.group(
-        name="member",
-        description="Manage member settings, for self-hosted bot only")
+        name="member", description="Manage member settings, for self-hosted bot only"
+    )
 
     @member.subcommand(
         sub_cmd_name="verify",
@@ -63,8 +68,7 @@ class HostSettings(ipy.Extension):
                 return
             status = await ud.verify_user(ctx.author.id)
 
-        user_roles = [str(role.id)
-                      for role in ctx.author.roles]  # type: ignore
+        user_roles = [str(role.id) for role in ctx.author.roles]  # type: ignore
 
         # check if verified role exists
         if status is True and str(VERIFIED_ROLE) not in user_roles:
@@ -117,7 +121,8 @@ class HostSettings(ipy.Extension):
         )
         if emoji_id is not None:
             embed.set_thumbnail(
-                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1"
+            )
         return embed
 
     @staticmethod
@@ -144,7 +149,8 @@ class HostSettings(ipy.Extension):
         )
         if emoji_id is not None:
             embed.set_thumbnail(
-                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1"
+            )
         return embed
 
 

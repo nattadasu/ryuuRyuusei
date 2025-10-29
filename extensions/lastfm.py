@@ -6,11 +6,19 @@ import interactions as ipy
 
 from classes.database import DatabaseException, UserDatabase
 from classes.excepts import ProviderHttpError
-from classes.lastfm import (LastFM, LastFMReleaseStruct, LastFMTrackStruct,
-                            LastFMUserStruct)
-from modules.commons import (PlatformErrType, generate_commons_except_embed,
-                             platform_exception_embed, sanitize_markdown,
-                             save_traceback_to_file)
+from classes.lastfm import (
+    LastFM,
+    LastFMReleaseStruct,
+    LastFMTrackStruct,
+    LastFMUserStruct,
+)
+from modules.commons import (
+    PlatformErrType,
+    generate_commons_except_embed,
+    platform_exception_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+)
 
 
 class LastFmCog(ipy.Extension):
@@ -19,11 +27,7 @@ class LastFmCog(ipy.Extension):
     lastfm_head = ipy.SlashCommand(
         name="lastfm",
         description="Get useful information from Last.FM",
-        cooldown=ipy.Cooldown(
-            cooldown_bucket=ipy.Buckets.USER,
-            rate=1,
-            interval=5
-        )
+        cooldown=ipy.Cooldown(cooldown_bucket=ipy.Buckets.USER, rate=1, interval=5),
     )
 
     @lastfm_head.subcommand(
@@ -130,10 +134,10 @@ Use `/platform link` to link, or `/lastfm profile lfm_username:<lastfm_username>
 
         for lfm_track in tracks:
             tr_title = (
-                '▶️ '
+                "▶️ "
                 # '<a:currentlyPlaying:1135604484362477738> '
                 if lfm_track.nowplaying
-                else ''
+                else ""
             )
             tr_title += self.trim_lastfm_title(lfm_track.name)
 
@@ -166,7 +170,11 @@ Use `/platform link` to link, or `/lastfm profile lfm_username:<lastfm_username>
                 tr_album = "*Unknown album*"
 
             if lfm_track.date is not None:
-                tr_date = f"<t:{lfm_track.date.epoch}:R>" if not lfm_track.nowplaying else "*Currently playing*"
+                tr_date = (
+                    f"<t:{lfm_track.date.epoch}:R>"
+                    if not lfm_track.nowplaying
+                    else "*Currently playing*"
+                )
             else:
                 tr_date = "Unknown date"
 

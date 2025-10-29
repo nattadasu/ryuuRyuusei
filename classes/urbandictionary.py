@@ -57,7 +57,7 @@ class UrbanDictionaryEntry:
             title=self.word,
             url=self.permalink,
             description=f"{self.definition}",
-            color=0x1b2936,
+            color=0x1B2936,
         )
         if self.example:
             embed.add_field(
@@ -151,21 +151,25 @@ class UrbanDictionary:
         Returns:
             str: Replaced text
         """
-        ud_link_pattern = re.compile(r'\[([^\]]+)\]')
+        ud_link_pattern = re.compile(r"\[([^\]]+)\]")
 
         # Find all matches in the text
         matches = ud_link_pattern.findall(text)
 
         # Replace each Urban Dictionary hyperlink with Markdown format
         for match in matches:
-            urban_dictionary_link = f'https://www.urbandictionary.com/define.php?term={quote(match)}'
-            markdown_link = f'[{match}]({urban_dictionary_link})'
-            text = text.replace(f'[{match}]', markdown_link)
+            urban_dictionary_link = (
+                f"https://www.urbandictionary.com/define.php?term={quote(match)}"
+            )
+            markdown_link = f"[{match}]({urban_dictionary_link})"
+            text = text.replace(f"[{match}]", markdown_link)
 
         return text
 
     @staticmethod
-    def _iterate_entries(data: list[UrbanDictionaryRawEntry]) -> list[UrbanDictionaryEntry]:
+    def _iterate_entries(
+        data: list[UrbanDictionaryRawEntry],
+    ) -> list[UrbanDictionaryEntry]:
         """
         Iterate entries to UrbanDictionaryEntry object
 
@@ -180,12 +184,12 @@ class UrbanDictionary:
         total_data = len(data)
         for entry in data:
             # convert wiki markup to markdown
-            entry["definition"] = UrbanDictionary._add_hyperlinks(
-                entry["definition"])
-            entry["example"] = UrbanDictionary._add_hyperlinks(
-                entry["example"])
-            date: datetime = datetime.strptime(entry["written_on"],  # type: ignore
-                                               "%Y-%m-%dT%H:%M:%S.%fZ")
+            entry["definition"] = UrbanDictionary._add_hyperlinks(entry["definition"])
+            entry["example"] = UrbanDictionary._add_hyperlinks(entry["example"])
+            date: datetime = datetime.strptime(
+                entry["written_on"],  # type: ignore
+                "%Y-%m-%dT%H:%M:%S.%fZ",
+            )
             # fix timezone to UTC
             date = date.replace(tzinfo=timezone.utc)
             entry["written_on"] = date
@@ -219,8 +223,7 @@ class UrbanDictionary:
                 )
             data = await resp.json()
             if len(data["list"]) == 0:
-                raise ProviderHttpError(
-                    f"{term} not found in Urban Dictionary", 404)
+                raise ProviderHttpError(f"{term} not found in Urban Dictionary", 404)
             return self._iterate_entries(data["list"])
 
     async def _fetch_raw_html(self, path: str = "") -> str:
@@ -260,8 +263,7 @@ class UrbanDictionary:
             word = word_element.text.strip()
             definition = await self.lookup_definition(word)
             return definition[0]
-        raise ProviderHttpError(
-            "Urban Dictionary unable to fetch word of the day", 404)
+        raise ProviderHttpError("Urban Dictionary unable to fetch word of the day", 404)
 
     async def get_word_of_the_day(self) -> UrbanDictionaryEntry:
         """

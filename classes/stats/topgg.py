@@ -78,10 +78,7 @@ class TopGGBotStruct:
 class TopGG:
     """# Top.gg API Wrapper"""
 
-    def __init__(
-            self,
-            token: str = TOPGG_API_TOKEN,
-            bot_id: int = BOT_CLIENT_ID):
+    def __init__(self, token: str = TOPGG_API_TOKEN, bot_id: int = BOT_CLIENT_ID):
         """
         ## Top.gg API Wrapper
 
@@ -127,12 +124,10 @@ class TopGG:
             data = await resp.json()
             dacite_config = Config(
                 type_hooks={
-                    datetime: lambda x: datetime.strptime(
-                        x, "%Y-%m-%dT%H:%M:%S.%fZ")
+                    datetime: lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ")
                 }
             )
-            return from_dict(
-                data_class=TopGGBotStruct, data=data, config=dacite_config)
+            return from_dict(data_class=TopGGBotStruct, data=data, config=dacite_config)
 
     async def post_bot_stats(
         self,

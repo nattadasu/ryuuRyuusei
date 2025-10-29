@@ -1,4 +1,3 @@
-import csv
 import re
 from datetime import datetime as dtime
 from datetime import timezone as tz
@@ -7,18 +6,25 @@ from time import perf_counter as pc
 import interactions as ipy
 from aiohttp import __version__ as aiohttp_version
 
-from modules.const import (AUTHOR_USER_URL, AUTHOR_USERNAME, BOT_CLIENT_ID,
-                           BOT_SUPPORT_SERVER, DATABASE_PATH, EMOJI_SUCCESS,
-                           GIT_COMMIT_HASH, GT_HSH, USER_AGENT)
+from modules.const import (
+    AUTHOR_USER_URL,
+    AUTHOR_USERNAME,
+    BOT_CLIENT_ID,
+    BOT_SUPPORT_SERVER,
+    DATABASE_PATH,
+    EMOJI_SUCCESS,
+    GIT_COMMIT_HASH,
+    GT_HSH,
+    USER_AGENT,
+)
 
 
 class CommonCommands(ipy.Extension):
     """Common commands"""
 
     def __init__(
-            self,
-            bot: ipy.Client | ipy.AutoShardedClient,
-            now: dtime = dtime.now(tz=tz.utc)):
+        self, bot: ipy.Client | ipy.AutoShardedClient, now: dtime = dtime.now(tz=tz.utc)
+    ):
         """
         Initialize the extension
 
@@ -30,8 +36,7 @@ class CommonCommands(ipy.Extension):
         self.now = now
 
     @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
-    @ipy.slash_command(name="about",
-                       description="Get information about the bot")
+    @ipy.slash_command(name="about", description="Get information about the bot")
     async def about(self, ctx: ipy.SlashContext):
         authors = ""
         for u in self.bot.owners:
@@ -119,9 +124,8 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER
             ),
         ]
         readLat_start = pc()
-        with open(DATABASE_PATH, "r", encoding="utf-8") as f:
-            # skipcq: PYL-W0612
-            reader = csv.reader(f, delimiter="\t")  # pyright: ignore
+        with open(DATABASE_PATH, "r", encoding="utf-8"):
+            pass
         readLat_end = pc()
         # uptime = dtime.now(tz=tz.utc) - self.bot.start_time
         # uptime_epoch = uptime.total_seconds()
@@ -150,8 +154,7 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER
         )
         embed.add_fields(*fields)
         emoji = re.sub(r"<:[a-zA-Z0-9_]+:([0-9]+)>", r"\1", EMOJI_SUCCESS)
-        embed.set_thumbnail(
-            url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
+        embed.set_thumbnail(url=f"https://cdn.discordapp.com/emojis/{emoji}.png?v=1")
         await send.edit(
             embed=embed,
         )
@@ -162,7 +165,7 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER
         invLink = f"https://discord.com/api/oauth2/authorize?client_id={BOT_CLIENT_ID}&permissions=274878221376&scope=bot%20applications.commands"
         dcEm = ipy.Embed(
             title="Thanks for your interest in inviting me to your server!",
-            description=f"To invite me, simply press \"**Invite Me!**\" button below!\nFor any questions, please join my support server!",
+            description='To invite me, simply press "**Invite Me!**" button below!\nFor any questions, please join my support server!',
             color=0x996422,
         )
         dcEm.add_fields(
@@ -194,8 +197,9 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER
         )
 
     @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
-    @ipy.slash_command(name="privacy",
-                       description="Get the bot's tl;dr version of privacy policy")
+    @ipy.slash_command(
+        name="privacy", description="Get the bot's tl;dr version of privacy policy"
+    )
     async def privacy(self, ctx: ipy.SlashContext):
         butt = ipy.Button(
             label="Read the full version",

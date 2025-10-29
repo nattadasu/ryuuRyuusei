@@ -24,25 +24,171 @@ from classes.excepts import ProviderHttpError
 from modules.const import EXCHANGERATE_API_KEY, USER_AGENT
 
 accepted_currencies = Literal[
-    "AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN", "BAM", "BBD",
-    "BDT", "BGN", "BHD", "BIF", "BMD", "BND", "BOB", "BRL", "BSD", "BTN", "BWP", "BYN",
-    "BZD", "CAD", "CDF", "CHF", "CLP", "CNY", "COP", "CRC", "CUP", "CVE", "CZK", "DJF",
-    "DKK", "DOP", "DZD", "EGP", "ERN", "ETB", "EUR", "FJD", "FKP", "FOK", "GBP", "GEL",
-    "GGP", "GHS", "GIP", "GMD", "GNF", "GTQ", "GYD", "HKD", "HNL", "HRK", "HTG", "HUF",
-    "IDR", "ILS", "IMP", "INR", "IQD", "IRR", "ISK", "JEP", "JMD", "JOD", "JPY", "KES",
-    "KGS", "KHR", "KID", "KMF", "KRW", "KWD", "KYD", "KZT", "LAK", "LBP", "LKR", "LRD",
-    "LSL", "LYD", "MAD", "MDL", "MGA", "MKD", "MMK", "MNT", "MOP", "MRU", "MUR", "MVR",
-    "MWK", "MXN", "MYR", "MZN", "NAD", "NGN", "NIO", "NOK", "NPR", "NZD", "OMR", "PAB",
-    "PEN", "PGK", "PHP", "PKR", "PLN", "PYG", "QAR", "RON", "RSD", "RUB", "RWF", "SAR",
-    "SBD", "SCR", "SDG", "SEK", "SGD", "SHP", "SLE", "SOS", "SRD", "SSP", "STN", "SYP",
-    "SZL", "THB", "TJS", "TMT", "TND", "TOP", "TRY", "TTD", "TVD", "TWD", "TZS", "UAH",
-    "UGX", "USD", "UYU", "UZS", "VES", "VND", "VUV", "WST", "XAF", "XCD", "XDR", "XOF",
-    "XPF", "YER", "ZAR", "ZMW", "ZWL"
+    "AED",
+    "AFN",
+    "ALL",
+    "AMD",
+    "ANG",
+    "AOA",
+    "ARS",
+    "AUD",
+    "AWG",
+    "AZN",
+    "BAM",
+    "BBD",
+    "BDT",
+    "BGN",
+    "BHD",
+    "BIF",
+    "BMD",
+    "BND",
+    "BOB",
+    "BRL",
+    "BSD",
+    "BTN",
+    "BWP",
+    "BYN",
+    "BZD",
+    "CAD",
+    "CDF",
+    "CHF",
+    "CLP",
+    "CNY",
+    "COP",
+    "CRC",
+    "CUP",
+    "CVE",
+    "CZK",
+    "DJF",
+    "DKK",
+    "DOP",
+    "DZD",
+    "EGP",
+    "ERN",
+    "ETB",
+    "EUR",
+    "FJD",
+    "FKP",
+    "FOK",
+    "GBP",
+    "GEL",
+    "GGP",
+    "GHS",
+    "GIP",
+    "GMD",
+    "GNF",
+    "GTQ",
+    "GYD",
+    "HKD",
+    "HNL",
+    "HRK",
+    "HTG",
+    "HUF",
+    "IDR",
+    "ILS",
+    "IMP",
+    "INR",
+    "IQD",
+    "IRR",
+    "ISK",
+    "JEP",
+    "JMD",
+    "JOD",
+    "JPY",
+    "KES",
+    "KGS",
+    "KHR",
+    "KID",
+    "KMF",
+    "KRW",
+    "KWD",
+    "KYD",
+    "KZT",
+    "LAK",
+    "LBP",
+    "LKR",
+    "LRD",
+    "LSL",
+    "LYD",
+    "MAD",
+    "MDL",
+    "MGA",
+    "MKD",
+    "MMK",
+    "MNT",
+    "MOP",
+    "MRU",
+    "MUR",
+    "MVR",
+    "MWK",
+    "MXN",
+    "MYR",
+    "MZN",
+    "NAD",
+    "NGN",
+    "NIO",
+    "NOK",
+    "NPR",
+    "NZD",
+    "OMR",
+    "PAB",
+    "PEN",
+    "PGK",
+    "PHP",
+    "PKR",
+    "PLN",
+    "PYG",
+    "QAR",
+    "RON",
+    "RSD",
+    "RUB",
+    "RWF",
+    "SAR",
+    "SBD",
+    "SCR",
+    "SDG",
+    "SEK",
+    "SGD",
+    "SHP",
+    "SLE",
+    "SOS",
+    "SRD",
+    "SSP",
+    "STN",
+    "SYP",
+    "SZL",
+    "THB",
+    "TJS",
+    "TMT",
+    "TND",
+    "TOP",
+    "TRY",
+    "TTD",
+    "TVD",
+    "TWD",
+    "TZS",
+    "UAH",
+    "UGX",
+    "USD",
+    "UYU",
+    "UZS",
+    "VES",
+    "VND",
+    "VUV",
+    "WST",
+    "XAF",
+    "XCD",
+    "XDR",
+    "XOF",
+    "XPF",
+    "YER",
+    "ZAR",
+    "ZMW",
+    "ZWL",
 ]
 """The accepted currencies for the ExchangeRate-API"""
 
-Cache = Caching(cache_directory="cache/exchangerateapi",
-                cache_expiration_time=86400)
+Cache = Caching(cache_directory="cache/exchangerateapi", cache_expiration_time=86400)
 
 
 @dataclass
@@ -134,7 +280,9 @@ class ExchangeRateAPI:
             case _:
                 return "An unknown error has occurred."
 
-    async def _get_base_currency_rates(self, base_currency: accepted_currencies) -> SingleExchangeRate:
+    async def _get_base_currency_rates(
+        self, base_currency: accepted_currencies
+    ) -> SingleExchangeRate:
         """
         Get the exchange rates for a base currency
 
@@ -147,9 +295,10 @@ class ExchangeRateAPI:
         Returns:
             SingleExchangeRate: The exchange rates for the base currency
         """
-        async with self.session.get(f"{self.base_url}/{self.api_key}/latest/{base_currency}") as resp:
-            cache_file_path = Cache.get_cache_file_path(
-                f"{base_currency}.json")
+        async with self.session.get(
+            f"{self.base_url}/{self.api_key}/latest/{base_currency}"
+        ) as resp:
+            cache_file_path = Cache.get_cache_file_path(f"{base_currency}.json")
             cached_data = Cache.read_cached_data(cache_file_path)
             if cached_data is not None:
                 return SingleExchangeRate(**cached_data)
@@ -167,7 +316,12 @@ class ExchangeRateAPI:
             Cache.write_data_to_cache(data, cache_file_path)
             return SingleExchangeRate(**data)
 
-    async def get_exchange_rate(self, base_currency: accepted_currencies, target_currency: accepted_currencies, amount: float) -> PairConversionExchangeRate:
+    async def get_exchange_rate(
+        self,
+        base_currency: accepted_currencies,
+        target_currency: accepted_currencies,
+        amount: float,
+    ) -> PairConversionExchangeRate:
         """
         Get the exchange rate for a pair conversion
 
@@ -199,6 +353,6 @@ class ExchangeRateAPI:
             base_code=base_currency_rates.base_code,
             target_code=target_currency,
             conversion_rate=base_currency_rates.conversion_rates[target_currency],
-            conversion_result=amount *
-            base_currency_rates.conversion_rates[target_currency],
+            conversion_result=amount
+            * base_currency_rates.conversion_rates[target_currency],
         )

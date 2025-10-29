@@ -25,9 +25,14 @@ from classes.lastfm import LastFM
 from classes.shikimori import Shikimori
 from classes.verificator import Verificator
 from modules.commons import save_traceback_to_file
-from modules.const import (DECLINED_GDPR, EMOJI_SUCCESS,
-                           EMOJI_UNEXPECTED_ERROR, EMOJI_USER_ERROR,
-                           VERIFICATION_SERVER, VERIFIED_ROLE)
+from modules.const import (
+    DECLINED_GDPR,
+    EMOJI_SUCCESS,
+    EMOJI_UNEXPECTED_ERROR,
+    EMOJI_USER_ERROR,
+    VERIFICATION_SERVER,
+    VERIFIED_ROLE,
+)
 
 
 class DataControl(ipy.Extension):
@@ -65,7 +70,8 @@ class DataControl(ipy.Extension):
         )
         if emoji_id is not None:
             embed.set_thumbnail(
-                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1"
+            )
         return embed
 
     @staticmethod
@@ -92,7 +98,8 @@ class DataControl(ipy.Extension):
         )
         if emoji_id is not None:
             embed.set_thumbnail(
-                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1")
+                url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1"
+            )
         return embed
 
     async def _check_if_registered(
@@ -122,7 +129,7 @@ class DataControl(ipy.Extension):
     async def _check_if_platform_registered(
         self,
         ctx: ipy.ComponentContext | ipy.SlashContext,
-        platform: Literal['mal', 'anilist', 'lastfm', 'shikimori'],
+        platform: Literal["mal", "anilist", "lastfm", "shikimori"],
         value: str,
     ) -> bool:
         """
@@ -137,9 +144,7 @@ class DataControl(ipy.Extension):
             bool: Whether the user has registered a platform
         """
         async with UserDatabase() as udb:
-            is_linked = await udb.check_if_platform_registered(
-                platform, value
-            )
+            is_linked = await udb.check_if_platform_registered(platform, value)
             if is_linked is True:
                 embed = self.generate_error_embed(
                     header="Look out!",
@@ -192,7 +197,8 @@ If you have any questions, feel free to contact the developer via `/about`.""",
         if checker is True:
             return
         link_checker = await self._check_if_platform_registered(
-            ctx, 'mal', mal_username)
+            ctx, "mal", mal_username
+        )
         if link_checker is True:
             return
         fields = [
@@ -220,16 +226,17 @@ If you have any questions, feel free to contact the developer via `/about`.""",
             if verification is not None:
                 remaining_time = verification.epoch_time + 43200
             else:
-                verification = verify.save_user_uuid(
-                    ctx.author.id, mal_username)
+                verification = verify.save_user_uuid(ctx.author.id, mal_username)
                 remaining_time = verification.epoch_time + 43200
             fields.append(
                 ipy.EmbedField(
                     name=overwrite_prompt,
                     value=f"```\n{verification.uuid}\n```**Note:** Verification code expires <t:{remaining_time}:R>.",
-                ))
+                )
+            )
             epoch = ipy.Timestamp.fromtimestamp(
-                verification.epoch_time, tz=timezone.utc)
+                verification.epoch_time, tz=timezone.utc
+            )
 
         fields += [
             ipy.EmbedField(
@@ -378,8 +385,7 @@ To complete your registration, please follow the instructions below:""",
             if is_registered is False:
                 await ctx.send("You are not registered!")
                 return
-        link_checker = await self._check_if_platform_registered(
-            ctx, platform, username)
+        link_checker = await self._check_if_platform_registered(ctx, platform, username)
         if link_checker is True:
             return
         try:
@@ -616,7 +622,8 @@ To complete your registration, please follow the instructions below:""",
                     index=False,
                     sep="\t",
                     encoding="utf-8",
-                    header=True)
+                    header=True,
+                )
             case "yaml":
                 with open(f"{filename}.yaml", "w", encoding="utf-8") as file:
                     yaml.dump(user_data, file, indent=4)
@@ -625,12 +632,15 @@ To complete your registration, please follow the instructions below:""",
 
         embed = self.generate_success_embed(
             header="Success!",
-            message=f"Your data has been exported to `{filename_formatted.replace('cache/','')}`!\nFeel free to download the file!",
+            message=f"Your data has been exported to `{filename_formatted.replace('cache/', '')}`!\nFeel free to download the file!",
         )
 
         await ctx.send(
-            embed=embed, file=ipy.File(
-                f"{filename_formatted}", file_name=f"{filename_formatted}".replace("cache/", ""))
+            embed=embed,
+            file=ipy.File(
+                f"{filename_formatted}",
+                file_name=f"{filename_formatted}".replace("cache/", ""),
+            ),
         )
 
         # Delete the file
@@ -670,7 +680,11 @@ To complete your registration, please follow the instructions below:""",
         )
 
         # check if verified role exists
-        if status is True and str(VERIFIED_ROLE) not in user_roles and isinstance(ctx.member, ipy.Member):
+        if (
+            status is True
+            and str(VERIFIED_ROLE) not in user_roles
+            and isinstance(ctx.member, ipy.Member)
+        ):
             await ctx.member.add_role(
                 VERIFIED_ROLE, reason="User verified via slash command"
             )

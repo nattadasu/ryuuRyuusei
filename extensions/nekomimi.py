@@ -1,5 +1,12 @@
-from interactions import (AutoShardedClient, Buckets, Client, Cooldown,
-                          Extension, SlashCommand, SlashContext)
+from interactions import (
+    AutoShardedClient,
+    Buckets,
+    Client,
+    Cooldown,
+    Extension,
+    SlashCommand,
+    SlashContext,
+)
 
 from classes.nekomimidb import NekomimiGender
 from modules.nekomimidb import submit_nekomimi

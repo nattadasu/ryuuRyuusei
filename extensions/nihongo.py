@@ -5,8 +5,11 @@ import cutlet
 import interactions as ipy
 import pykakasi
 
-from modules.commons import (generate_commons_except_embed, sanitize_markdown,
-                             save_traceback_to_file)
+from modules.commons import (
+    generate_commons_except_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+)
 
 
 class JapaneseCog(ipy.Extension):
@@ -54,7 +57,7 @@ class JapaneseCog(ipy.Extension):
                         name="Passport",
                         value="passport",
                     ),
-                ]
+                ],
             ),
             ipy.SlashCommandOption(
                 name="use_foreign",
@@ -68,8 +71,7 @@ class JapaneseCog(ipy.Extension):
         self,
         ctx: ipy.SlashContext,
         source: str,
-        spelling_type: Literal["hepburn", "kunrei",
-                               "nihon", "passport"] = "hepburn",
+        spelling_type: Literal["hepburn", "kunrei", "nihon", "passport"] = "hepburn",
         use_foreign: bool = True,
     ) -> None:
         """Convert kana to romaji"""
@@ -145,18 +147,10 @@ class JapaneseCog(ipy.Extension):
                 title="Kana to Romaji",
                 color=0x168821,
                 fields=[
-                    ipy.EmbedField(name="Source",
-                                   value=source,
-                                   inline=False),
-                    ipy.EmbedField(name="Romaji",
-                                   value=romaji,
-                                   inline=False),
-                    ipy.EmbedField(name="Hiragana",
-                                   value=hira,
-                                   inline=False),
-                    ipy.EmbedField(name="Katakana",
-                                   value=kata,
-                                   inline=False),
+                    ipy.EmbedField(name="Source", value=source, inline=False),
+                    ipy.EmbedField(name="Romaji", value=romaji, inline=False),
+                    ipy.EmbedField(name="Hiragana", value=hira, inline=False),
+                    ipy.EmbedField(name="Katakana", value=kata, inline=False),
                 ],
                 footer=ipy.EmbedFooter(
                     text=footer.replace("  ", " "),

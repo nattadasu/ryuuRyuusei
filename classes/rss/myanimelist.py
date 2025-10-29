@@ -34,7 +34,7 @@ from fake_useragent import FakeUserAgent
 
 from classes.excepts import ProviderHttpError
 
-user_agent = FakeUserAgent(browsers=['chrome', 'firefox', "opera"]).random
+user_agent = FakeUserAgent(browsers=["chrome", "firefox", "opera"]).random
 
 
 class MediaStatus(Enum):
@@ -71,9 +71,10 @@ class MyAnimeListRss:
     """MyAnimeList RSS Feed Parser"""
 
     def __init__(
-            self,
-            media_type: Literal["anime", "manga"] = "anime",
-            fetch_individual: bool = False):
+        self,
+        media_type: Literal["anime", "manga"] = "anime",
+        fetch_individual: bool = False,
+    ):
         """
         Initialize the class
 
@@ -97,8 +98,7 @@ class MyAnimeListRss:
 
     async def __aenter__(self):
         """Create a new session"""
-        self.session = aiohttp.ClientSession(
-            headers={"User-Agent": self.user_agent})
+        self.session = aiohttp.ClientSession(headers={"User-Agent": self.user_agent})
         return self
 
     async def __aexit__(self, exc_type, exc_value, traceback):
@@ -170,8 +170,9 @@ class MyAnimeListRss:
             status = self._parse_status(description.split(" - ")[0])
             progress_from, progress_to = self._parse_progress(description)
             updated = self._parse_date(data.find("pubDate").text)
-            item.append(RssItem(title, url, status,
-                        progress_from, progress_to, updated))
+            item.append(
+                RssItem(title, url, status, progress_from, progress_to, updated)
+            )
 
         return item
 
@@ -189,7 +190,9 @@ class MyAnimeListRss:
             list[RssItem]: The RSS feeds
         """
         self.username = username
-        async with self.session.get(f"https://myanimelist.net/rss.php?type={self.media_type}&u={self.username}") as resp:
+        async with self.session.get(
+            f"https://myanimelist.net/rss.php?type={self.media_type}&u={self.username}"
+        ) as resp:
             if resp.status != 200:
                 raise ProviderHttpError("Failed to get RSS feed", resp.status)
             xml = await resp.text()

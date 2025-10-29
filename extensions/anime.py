@@ -5,11 +5,13 @@ import interactions as ipy
 from classes.anibrain import AniBrainAI
 from classes.excepts import ProviderHttpError
 from modules.anilist import search_al_anime
-from modules.commons import (generate_search_embed, sanitize_markdown,
-                             save_traceback_to_file)
+from modules.commons import (
+    generate_search_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+)
 from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
-from modules.myanimelist import (lookup_random_anime, mal_submit,
-                                 search_mal_anime)
+from modules.myanimelist import lookup_random_anime, mal_submit, search_mal_anime
 
 
 class Anime(ipy.Extension):
@@ -41,8 +43,7 @@ class Anime(ipy.Extension):
                 type=ipy.OptionType.STRING,
                 required=False,
                 choices=[
-                    ipy.SlashCommandChoice(
-                        name="AniList (Default)", value="anilist"),
+                    ipy.SlashCommandChoice(name="AniList (Default)", value="anilist"),
                     ipy.SlashCommandChoice(name="MyAnimeList", value="mal"),
                 ],
             ),
@@ -73,8 +74,7 @@ class Anime(ipy.Extension):
             so: list[ipy.StringSelectOption] = []
             for a in res:
                 if a["node"]["start_season"] is None:
-                    a["node"]["start_season"] = {
-                        "season": "Unknown", "year": "Year"}
+                    a["node"]["start_season"] = {"season": "Unknown", "year": "Year"}
                 media_type: str = a["node"]["media_type"] or "Unknown"
                 season: str = a["node"]["start_season"]["season"] or "Unknown"
                 year: str = a["node"]["start_season"]["year"] or "Unknown Year"
@@ -84,8 +84,7 @@ class Anime(ipy.Extension):
                 mdTitle: str = sanitize_markdown(title)
                 alt = a["node"]["alternative_titles"]
                 native: str = (
-                    sanitize_markdown(alt["ja"]) +
-                    "\n" if alt and alt["ja"] else ""
+                    sanitize_markdown(alt["ja"]) + "\n" if alt and alt["ja"] else ""
                 )
                 f.append(
                     ipy.EmbedField(
@@ -217,8 +216,7 @@ class Anime(ipy.Extension):
                 choices=[
                     ipy.SlashCommandChoice(name="Any (default)", value="any"),
                     ipy.SlashCommandChoice(name="Japan", value="Japan"),
-                    ipy.SlashCommandChoice(
-                        name="South Korea", value="South Korea"),
+                    ipy.SlashCommandChoice(name="South Korea", value="South Korea"),
                     ipy.SlashCommandChoice(name="China", value="China"),
                     ipy.SlashCommandChoice(name="Taiwan", value="Taiwan"),
                 ],
@@ -254,8 +252,7 @@ class Anime(ipy.Extension):
         media_type: Literal[
             "any", "TV", "Movie", "OVA", "ONA", "Special", "TV Short"
         ] = "any",
-        country: Literal["any", "Japan",
-                         "South Korea", "China", "Taiwan"] = "any",
+        country: Literal["any", "Japan", "South Korea", "China", "Taiwan"] = "any",
         min_score: int = 0,
         release_from: int = 1930,
         release_to: int | None = None,

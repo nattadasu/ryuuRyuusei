@@ -242,11 +242,11 @@ class Simkl:
         self.client_id = client_id
         if client_id == "":
             raise ProviderHttpError(
-                "Unauthorized, please fill Client ID before using this module", 401)
+                "Unauthorized, please fill Client ID before using this module", 401
+            )
         self.base_url = "https://api.simkl.com"
         self.params = {"client_id": self.client_id}
-        self.session = aiohttp.ClientSession(
-            headers={"User-Agent": USER_AGENT})
+        self.session = aiohttp.ClientSession(headers={"User-Agent": USER_AGENT})
 
     async def __aenter__(self):
         """Enter the async context manager"""
@@ -352,8 +352,7 @@ class Simkl:
             params["extended"] = "full"
         params["page"] = page
         params["limit"] = limit
-        media_type = media_type.value if isinstance(
-            media_type, Enum) else media_type
+        media_type = media_type.value if isinstance(media_type, Enum) else media_type
         async with self.session.get(
             f"{self.base_url}/search/{media_type}", params=params
         ) as response:
@@ -377,8 +376,7 @@ class Simkl:
         Returns:
             dict: Response from Simkl API
         """
-        cache_file_path = Cache.get_cache_file_path(
-            f"show/{media_id}/data.json")
+        cache_file_path = Cache.get_cache_file_path(f"show/{media_id}/data.json")
         cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -394,7 +392,9 @@ class Simkl:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
-    async def get_show_episodes(self, media_id: int | str) -> list[dict[str, str | int | dict[str, str | int]]]:
+    async def get_show_episodes(
+        self, media_id: int | str
+    ) -> list[dict[str, str | int | dict[str, str | int]]]:
         """
         Get show episodes by ID
 
@@ -408,8 +408,7 @@ class Simkl:
         Returns:
             list[dict[str, str | int | dict[str, str | int]]]: Response from Simkl API
         """
-        cache_file_path = Cache.get_cache_file_path(
-            f"show/{media_id}/episodes.json")
+        cache_file_path = Cache.get_cache_file_path(f"show/{media_id}/episodes.json")
         cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
             return cached_data
@@ -573,8 +572,7 @@ class Simkl:
         """
         if isinstance(media_type, SimklMediaTypes):
             media_type = media_type.value
-        cache_file_path = Cache.get_cache_file_path(
-            f"ids/{media_type}/{media_id}.json")
+        cache_file_path = Cache.get_cache_file_path(f"ids/{media_type}/{media_id}.json")
         cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
             cached_data = SimklRelations(

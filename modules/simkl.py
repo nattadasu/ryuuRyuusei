@@ -1,14 +1,19 @@
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Literal
+from typing import Any, Literal
 
 import interactions as ipy
 
 from classes.excepts import MediaIsNsfw, ProviderHttpError
 from classes.simkl import Simkl
 from classes.tmdb import TheMovieDb
-from modules.commons import (PlatformErrType, generate_trailer,
-                             get_nsfw_status, platform_exception_embed,
-                             save_traceback_to_file, trim_synopsis)
+from modules.commons import (
+    PlatformErrType,
+    generate_trailer,
+    get_nsfw_status,
+    platform_exception_embed,
+    save_traceback_to_file,
+    trim_synopsis,
+)
 from modules.const import MESSAGE_WARN_CONTENTS
 from modules.platforms import Platform, media_id_to_platform
 
@@ -47,8 +52,7 @@ async def create_simkl_embed(
             status = ", To Be Announced"
         case _:
             status = f", {status.capitalize()}"
-    scores: dict[str, dict[str, int | float]
-                 ] | None = data.get("ratings", None)
+    scores: dict[str, dict[str, int | float]] | None = data.get("ratings", None)
     certification = data.get("certification", None)
     country = data.get("country", None)
     network = data.get("network", None)
@@ -131,7 +135,9 @@ async def create_simkl_embed(
     if media_type == "tv":
         try:
             async with Simkl() as simkl:
-                eps_data: list[dict[str, str | int | dict[str, str | int]]] = await simkl.get_show_episodes(media_id)
+                eps_data: list[
+                    dict[str, str | int | dict[str, str | int]]
+                ] = await simkl.get_show_episodes(media_id)
             eps_data = [x for x in eps_data if x["type"] != "special"]
             eps_data.reverse()
             if len(eps_data) > 0:
@@ -143,7 +149,12 @@ async def create_simkl_embed(
 
     # Process end date
     # take episode information if its a show and haven't ended yet
-    if episodes != "*??*" and airing_date is not None and len(eps_data) > 0 and end_date is not None:
+    if (
+        episodes != "*??*"
+        and airing_date is not None
+        and len(eps_data) > 0
+        and end_date is not None
+    ):
         # grab "date", and format it
         guess_date = datetime.fromisoformat(end_date)
         end_date = f"<t:{int(guess_date.timestamp())}:D>"
@@ -206,8 +217,7 @@ async def create_simkl_embed(
     votes = 0
     if scores is not None:
         mock = {"rating": 0, "votes": 0}
-        simkl_score: dict[str, int | float] = scores.get(
-            "simkl", mock)  # type: ignore
+        simkl_score: dict[str, int | float] = scores.get("simkl", mock)  # type: ignore
         score = simkl_score.get("rating", 0)
         votes = simkl_score.get("votes", 0)
 
@@ -238,7 +248,7 @@ async def create_simkl_embed(
         ),
         title=title,
         url=f"https://simkl.com/{media_type}/{media_id}",
-        description=f"""-# `{media_id}`, {'TV' if media_type =='tv' else 'Movies'}{status}, {year}, ⭐ {score}/10 by {votes:,} {'people' if votes >= 2 else 'person'}
+        description=f"""-# `{media_id}`, {"TV" if media_type == "tv" else "Movies"}{status}, {year}, ⭐ {score}/10 by {votes:,} {"people" if votes >= 2 else "person"}
 
 > {description}""",
         color=0x0B0F10,
@@ -254,8 +264,7 @@ async def create_simkl_embed(
     embed.add_field(name="Genres", value=genres, inline=False)
     if media_type == "tv":
         embed.add_field(name="Network", value=network or "*None*", inline=True)
-    embed.add_field(name="Certification",
-                    value=certification or "*None*", inline=True)
+    embed.add_field(name="Certification", value=certification or "*None*", inline=True)
     embed.add_field(name="Country", value=country, inline=True)
     embed.add_field(
         name="Episodes and Duration" if media_type == "tv" else "Duration",
@@ -272,7 +281,8 @@ async def create_simkl_embed(
 
     if end_date.endswith("\\*"):
         embed.set_footer(
-            text="* This is estimated end date (as SIMKL didn't provide end date well), please take the info with a pinch of salt")
+            text="* This is estimated end date (as SIMKL didn't provide end date well), please take the info with a pinch of salt"
+        )
 
     buttons: list[ipy.Button] = []
 
@@ -309,7 +319,7 @@ async def create_simkl_embed(
             "url": f"search/imdb/{ids.get('imdb', '')}?type={'shows' if media_type == 'tv' else 'movies'}"
             if ids.get("imdb", None)
             else None,
-        }
+        },
     ]
     # if tvdbslug's url is not available, use tvdb's url instead
     if platforms[2]["url"] is not None:
@@ -334,8 +344,7 @@ async def create_simkl_embed(
             ipy.Button(
                 style=ipy.ButtonStyle.LINK,
                 url=pf.uid,
-                emoji=ipy.PartialEmoji(
-                    id=pf.emoid, name=pfn[platform_name]),
+                emoji=ipy.PartialEmoji(id=pf.emoid, name=pfn[platform_name]),
             )
         )
 

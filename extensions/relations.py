@@ -11,8 +11,11 @@ from classes.simkl import Simkl, SimklMediaTypes, SimklRelations
 from classes.trakt import Trakt, TraktIdsStruct, TraktMediaStruct
 from modules.commons import save_traceback_to_file
 from modules.const import EMOJI_UNEXPECTED_ERROR
-from modules.platforms import (PlatformLink, get_platform_color,
-                               media_id_to_platform, platforms_to_fields)
+from modules.platforms import (
+    get_platform_color,
+    media_id_to_platform,
+    platforms_to_fields,
+)
 
 
 class ExtenalSitesRelations(ipy.Extension):
@@ -103,34 +106,25 @@ class ExtenalSitesRelations(ipy.Extension):
                 choices=[
                     ipy.SlashCommandChoice(name="aniDB", value="anidb"),
                     ipy.SlashCommandChoice(name="AniList", value="anilist"),
-                    ipy.SlashCommandChoice(
-                        name="ANN", value="animenewsnetwork"),
-                    ipy.SlashCommandChoice(
-                        name="Anime-Planet", value="animeplanet"),
-                    ipy.SlashCommandChoice(
-                        name="aniSearch", value="anisearch"),
+                    ipy.SlashCommandChoice(name="ANN", value="animenewsnetwork"),
+                    ipy.SlashCommandChoice(name="Anime-Planet", value="animeplanet"),
+                    ipy.SlashCommandChoice(name="aniSearch", value="anisearch"),
                     ipy.SlashCommandChoice(name="Annict", value="annict"),
                     ipy.SlashCommandChoice(name="IMDb", value="imdb"),
                     ipy.SlashCommandChoice(name="Kaize", value="kaize"),
                     ipy.SlashCommandChoice(name="Kitsu", value="kitsu"),
-                    ipy.SlashCommandChoice(
-                        name="LiveChart", value="livechart"),
-                    ipy.SlashCommandChoice(
-                        name="MyAnimeList", value="myanimelist"),
-                    ipy.SlashCommandChoice(
-                        name="Nautiljon", value="nautiljon"),
+                    ipy.SlashCommandChoice(name="LiveChart", value="livechart"),
+                    ipy.SlashCommandChoice(name="MyAnimeList", value="myanimelist"),
+                    ipy.SlashCommandChoice(name="Nautiljon", value="nautiljon"),
                     ipy.SlashCommandChoice(name="Notify.moe", value="notify"),
-                    ipy.SlashCommandChoice(
-                        name="Otak Otaku", value="otakotaku"),
-                    ipy.SlashCommandChoice(
-                        name="Shikimori", value="shikimori"),
+                    ipy.SlashCommandChoice(name="Otak Otaku", value="otakotaku"),
+                    ipy.SlashCommandChoice(name="Shikimori", value="shikimori"),
                     ipy.SlashCommandChoice(name="Shoboi", value="shoboi"),
                     ipy.SlashCommandChoice(
                         name="Silver Yasha: DB Tontonan Indonesia", value="silveryasha"
                     ),
                     ipy.SlashCommandChoice(name="SIMKL", value="simkl"),
-                    ipy.SlashCommandChoice(
-                        name="The Movie Database", value="tmdb"),
+                    ipy.SlashCommandChoice(name="The Movie Database", value="tmdb"),
                     ipy.SlashCommandChoice(name="The TVDB", value="tvdb"),
                     ipy.SlashCommandChoice(
                         name="Trakt (requires <type>/<slug>/seasons/<season>)",
@@ -236,11 +230,11 @@ class ExtenalSitesRelations(ipy.Extension):
                     if mal_id
                     else AnimeApiAnime()
                 )
-            except SimklTypeError:
+            except SimklTypeError as exc:
                 await ctx.send(
                     f"❌ We can't find the {platform.upper()} ID on SIMKL! It's possible that the show is not on SIMKL or that the ID is invalid!"
                 )
-                save_traceback_to_file("relations_show", ctx.author, phe)
+                save_traceback_to_file("relations_show", ctx.author, exc)
             except ProviderHttpError as phe:
                 await ctx.send(
                     f"❌ We can't connect to SIMKL to get data from {platform.upper()} ID! Please try again later!\nReason: `{phe}`"
@@ -310,7 +304,7 @@ class ExtenalSitesRelations(ipy.Extension):
                 await ctx.send(
                     f"❌ We can't connect to Trakt right now! Please try again later! Reason: {eht.message}"
                 )
-                save_traceback_to_file("relations_show", ctx.author, phe)
+                save_traceback_to_file("relations_show", ctx.author, eht)
         elif platform == "kitsu":
             if not re.match(r"^\d+$", media_id):
                 try:
@@ -411,8 +405,9 @@ class ExtenalSitesRelations(ipy.Extension):
                         media_type=trakt.MediaType(media_type_),
                     )
                 trakt_type = trakt_data.type
-                trakt_data = (trakt_data.show if trakt_data.type ==
-                              "show" else trakt_data.movie)
+                trakt_data = (
+                    trakt_data.show if trakt_data.type == "show" else trakt_data.movie
+                )
                 trakt_id = trakt_data.ids.trakt
             except ProviderHttpError:
                 # silence error
@@ -546,7 +541,8 @@ class ExtenalSitesRelations(ipy.Extension):
                 color=col,
                 fields=relsEm,
                 footer=ipy.EmbedFooter(
-                    text=f"Powered by nattadasu's AnimeAPI, Trakt, and SIMKL.{postsrc}"),
+                    text=f"Powered by nattadasu's AnimeAPI, Trakt, and SIMKL.{postsrc}"
+                ),
             )
             dcEm.set_thumbnail(url=poster)
         else:
@@ -556,12 +552,12 @@ class ExtenalSitesRelations(ipy.Extension):
                 color=0xFF0000,
                 timestamp=datetime.utcnow(),
             )
-            emoji_error = re.search(
-                r"\<(a?)\:(\w+)\:(\d+)\>", EMOJI_UNEXPECTED_ERROR)
+            emoji_error = re.search(r"\<(a?)\:(\w+)\:(\d+)\>", EMOJI_UNEXPECTED_ERROR)
             if emoji_error:
                 emoji_error = emoji_error.group(2)
                 dcEm.set_thumbnail(
-                    url=f"https://cdn.discordapp.com/emojis/{emoji_error}.png?v=1")
+                    url=f"https://cdn.discordapp.com/emojis/{emoji_error}.png?v=1"
+                )
 
         await ctx.send(embed=dcEm)
 

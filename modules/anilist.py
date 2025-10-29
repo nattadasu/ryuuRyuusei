@@ -3,16 +3,31 @@ import re
 from datetime import datetime, timezone
 from typing import Any, Literal
 
-from interactions import (Button, ButtonStyle, ComponentContext, Embed,
-                          EmbedAuthor, EmbedField, Message, PartialEmoji,
-                          SlashContext, Timestamp)
+from interactions import (
+    Button,
+    ButtonStyle,
+    ComponentContext,
+    Embed,
+    EmbedAuthor,
+    EmbedField,
+    Message,
+    PartialEmoji,
+    SlashContext,
+    Timestamp,
+)
 
 from classes.anilist import AniList, AniListMediaStruct
 from classes.excepts import MediaIsNsfw, ProviderHttpError
-from modules.commons import (PlatformErrType, convert_html_to_markdown,
-                             generate_trailer, get_nsfw_status,
-                             platform_exception_embed, sanitize_markdown,
-                             save_traceback_to_file, trim_synopsis)
+from modules.commons import (
+    PlatformErrType,
+    convert_html_to_markdown,
+    generate_trailer,
+    get_nsfw_status,
+    platform_exception_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+    trim_synopsis,
+)
 from modules.const import BANNED_TAGS, MESSAGE_WARN_CONTENTS
 from modules.platforms import Platform, media_id_to_platform
 
@@ -53,7 +68,8 @@ async def search_al_anime(title: str) -> list[dict[str, Any]]:
                     "season": item["season"].lower() if item["season"] else None,
                 },
                 "media_type": item["format"].lower() if item["format"] else None,
-            }}
+            }
+        }
         # Append the formatted data to the list
         formatted_data.append(formatted_item)
 
@@ -112,8 +128,7 @@ async def generate_anilist(
             (
                 sys
                 for sys in alm.synonyms or []
-                if sys
-                and re.match(r"([0-9a-zA-Z][:0-9a-zA-Z ]+)(?= )", sys)
+                if sys and re.match(r"([0-9a-zA-Z][:0-9a-zA-Z ]+)(?= )", sys)
             ),
             romaji,
         )
@@ -128,8 +143,11 @@ async def generate_anilist(
         english_note = False
 
     original_titles = [romaji, native, english]
-    synonyms = [
-        val for val in synonyms if val not in original_titles and val is not None] if synonyms else []
+    synonyms = (
+        [val for val in synonyms if val not in original_titles and val is not None]
+        if synonyms
+        else []
+    )
     fixed_syns: list[str] = []
     synonyms = sorted(set(fixed_syns), key=str.casefold)
     synonyms_len = len(synonyms)
@@ -152,8 +170,7 @@ async def generate_anilist(
         desc_done = html.unescape(description)
         desc_done = sanitize_markdown(desc_done)
         desc_done = (
-            desc_done.replace("\\<", "<").replace(
-                "\\>", ">").replace("\\/", "/")
+            desc_done.replace("\\<", "<").replace("\\>", ">").replace("\\/", "/")
         )
         desc_done = convert_html_to_markdown(desc_done)
         descs = desc_done.split("\n")
@@ -238,9 +255,10 @@ async def generate_anilist(
         case _:
             format_str = format_raw.capitalize()
 
-    status_raw: Literal[
-        "FINISHED", "RELEASING", "NOT_YET_RELEASED", "CANCELLED", "HIATUS"
-    ] | None = alm.status
+    status_raw: (
+        Literal["FINISHED", "RELEASING", "NOT_YET_RELEASED", "CANCELLED", "HIATUS"]
+        | None
+    ) = alm.status
     # lowercase the status
     match status_raw:
         case "NOT_YET_RELEASED":
@@ -393,7 +411,7 @@ async def generate_anilist(
 async def anilist_submit(
     ctx: SlashContext | ComponentContext | Message,
     media_id: int,
-    from_mal: bool = False
+    from_mal: bool = False,
 ) -> None:
     """
     Submit a query to AniList API and send the result to the channel.

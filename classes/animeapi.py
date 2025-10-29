@@ -9,6 +9,7 @@ from modules.commons import save_traceback_to_file
 
 class _SystemUser:
     """Mock user object for system-level errors"""
+
     id = 0
 
 
@@ -91,7 +92,7 @@ class AnimeApi:
                 f"animeapi_{platform.value}_{media_id}",
                 _SystemUser(),
                 e,
-                mute_error=True
+                mute_error=True,
             )
             return AnimeRelation(title="")
 

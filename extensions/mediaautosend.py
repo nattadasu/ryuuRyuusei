@@ -2,6 +2,7 @@
 Automatically send a media (anime, manga, games, movie, tv) embed info
 to a channel when a message is sent with a link to a supported site.
 """
+
 import os
 import re
 from typing import Literal
@@ -53,16 +54,26 @@ def intepret_mdx(data: Manga) -> tuple[str, str, str, str]:
 async def kitsu_id_to_other_id(
     kitsu_id: str,
     media_kind: Literal["anime", "manga"],
-    destination: Literal["anilist", "myanimelist"]
+    destination: Literal["anilist", "myanimelist"],
 ) -> str | None:
     """Convert a Kitsu ID to another ID"""
     if not kitsu_id.isdigit():
-        async with aiohttp.ClientSession() as session, session.get(f"https://kitsu.app/api/edge/{media_kind}?filter[slug]={kitsu_id}") as resp:
+        async with (
+            aiohttp.ClientSession() as session,
+            session.get(
+                f"https://kitsu.app/api/edge/{media_kind}?filter[slug]={kitsu_id}"
+            ) as resp,
+        ):
             if resp.status != 200:
                 return None
             data = await resp.json()
             kitsu_id = data["data"][0]["id"]
-    async with aiohttp.ClientSession() as session, session.get(f"https://kitsu.app/api/edge/{media_kind}/{kitsu_id}/mappings") as resp:
+    async with (
+        aiohttp.ClientSession() as session,
+        session.get(
+            f"https://kitsu.app/api/edge/{media_kind}/{kitsu_id}/mappings"
+        ) as resp,
+    ):
         if resp.status != 200:
             return
         data = await resp.json()
@@ -85,10 +96,13 @@ class MessageListen(ipy.Extension):
 
         msg_content = ctx.content
         mentioned = msg_content.startswith(
-            f'<@!{self.bot.user.id}>') or msg_content.startswith(f'<@{self.bot.user.id}>')
+            f"<@!{self.bot.user.id}>"
+        ) or msg_content.startswith(f"<@{self.bot.user.id}>")
 
         # do not process if the message explicitly says not to
-        if re.search(r"no bot", msg_content, re.IGNORECASE) or msg_content.startswith("!!"):
+        if re.search(r"no bot", msg_content, re.IGNORECASE) or msg_content.startswith(
+            "!!"
+        ):
             return
 
         # if the message mentions the bot, send warning
@@ -105,8 +119,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
             return
 
         send_to: Literal["anilist", "mal", "simkl", "rawg"] | None = None
-        send_type: Literal["anime", "manga",
-                           "game", "movie", "tv"] | None = None
+        send_type: Literal["anime", "manga", "game", "movie", "tv"] | None = None
         media_id: str | None = None
         source: str | None = None
         mdx: Manga | None = None
@@ -122,22 +135,30 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_type = "manga"
                 media_id = ids["mediaid"]
                 source = "anilist"
-            case r"(?:https?://)?(?:www\.)?anidb\.net/(?:anime/|a)(?P<mediaid>\d+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?anidb\.net/(?:anime/|a)(?P<mediaid>\d+)" as ids
+            ):
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
                 source = "anidb"
-            case r"(?:https?://)?(?:www\.)?anime-planet\.com/anime/(?P<mediaid>[\w\-]+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?anime-planet\.com/anime/(?P<mediaid>[\w\-]+)" as ids
+            ):
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
                 source = "animeplanet"
-            case r"(?:https?://)?(?:www\.)?anisearch\.com/anime/(?P<mediaid>\d+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?anisearch\.com/anime/(?P<mediaid>\d+)" as ids
+            ):
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
                 source = "anisearch"
-            case r"(?:https?://)?(?:en\.|www\.)?annict\.com/works/(?P<mediaid>\d+)" as ids:
+            case (
+                r"(?:https?://)?(?:en\.|www\.)?annict\.com/works/(?P<mediaid>\d+)" as ids
+            ):
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
@@ -147,10 +168,17 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_type = "anime"
                 media_id = ids["mediaid"]
                 source = "kaize"
-            case r"(?:https?://)?(?:www\.)?kitsu\.(?:io|app)/anime/(?P<mediaid>[\w\-]+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?kitsu\.(?:io|app)/anime/(?P<mediaid>[\w\-]+)" as ids
+            ):
                 media_id: str = ids["mediaid"]
                 if not media_id.isdigit():
-                    async with aiohttp.ClientSession() as session, session.get(f"https://kitsu.app/api/edge/anime?filter[slug]={media_id}") as resp:
+                    async with (
+                        aiohttp.ClientSession() as session,
+                        session.get(
+                            f"https://kitsu.app/api/edge/anime?filter[slug]={media_id}"
+                        ) as resp,
+                    ):
                         if resp.status != 200:
                             return
                         data = await resp.json()
@@ -158,7 +186,9 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_to = "mal"
                 send_type = "anime"
                 source = "kitsu"
-            case r"(?:https?://)?(?:www\.)?kitsu\.(?:io|app)/manga/(?P<mediaid>[\w\-]+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?kitsu\.(?:io|app)/manga/(?P<mediaid>[\w\-]+)" as ids
+            ):
                 # try find AniList ID on Kitsu GraphQL API
                 ids: dict[str, str]
                 media_id: str = ids["mediaid"]
@@ -169,12 +199,16 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_type = "manga"
                 media_id = anilist_id
                 source = "anilist"
-            case r"(?:https?://)?(?:www\.)?livechart\.me/anime/(?P<mediaid>[\w\-]+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?livechart\.me/anime/(?P<mediaid>[\w\-]+)" as ids
+            ):
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
                 source = "livechart"
-            case r"(?:https?://)?(?:www\.)?myanimelist\.net/anime/(?P<mediaid>\d+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?myanimelist\.net/anime/(?P<mediaid>\d+)" as ids
+            ):
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
@@ -184,22 +218,30 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_type = "anime"
                 media_id = ids["mediaid"]
                 source = "myanimelist"
-            case r"(?:https?://)?(?:www\.)?myanimelist\.net/manga/(?P<mediaid>\d+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?myanimelist\.net/manga/(?P<mediaid>\d+)" as ids
+            ):
                 send_to = "anilist"
                 send_type = "manga"
                 media_id = ids["mediaid"]
                 source = "myanimelist"
-            case r"(?:https?://)?(?:www\.)?nautiljon\.com/animes/(?P<mediaid>[\w\W]).html" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?nautiljon\.com/animes/(?P<mediaid>[\w\W]).html" as ids
+            ):
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
                 source = "nautiljon"
-            case r"(?:https?://)?(?:www\.)?notify\.moe/anime/(?P<mediaid>[\w\-_]+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?notify\.moe/anime/(?P<mediaid>[\w\-_]+)" as ids
+            ):
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
                 source = "notify"
-            case r"(?:https?://)?(?:www\.)?otakotaku\.com/anime/view/(?P<mediaid>[\w\-]+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?otakotaku\.com/anime/view/(?P<mediaid>[\w\-]+)" as ids
+            ):
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
@@ -209,7 +251,9 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 send_type = "game"
                 media_id = ids["mediaid"]
                 source = "rawg"
-            case r"(?:https?://)?(?:www\.)?shikimori\.(one|me|org)/animes/(?P<mediaid>\d+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?shikimori\.(one|me|org)/animes/(?P<mediaid>\d+)" as ids
+            ):
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
@@ -217,7 +261,9 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                     # remove prefix
                     media_id = media_id[1:]
                 source = "myanimelist"
-            case r"(?:https?://)?(?:www\.)?shikimori\.(one|me|org)/ranobe/(?P<mediaid>\d+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?shikimori\.(one|me|org)/ranobe/(?P<mediaid>\d+)" as ids
+            ):
                 send_to = "anilist"
                 send_type = "manga"
                 media_id = ids["mediaid"]
@@ -225,7 +271,9 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                     # remove prefix
                     media_id = media_id[1:]
                 source = "myanimelist"
-            case r"(?:https?://)?(?:www\.)?shikimori\.(one|me|org)/mangas/(?P<mediaid>\d+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?shikimori\.(one|me|org)/mangas/(?P<mediaid>\d+)" as ids
+            ):
                 send_to = "anilist"
                 send_type = "manga"
                 media_id = ids["mediaid"]
@@ -233,7 +281,9 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                     # remove prefix
                     media_id = media_id[1:]
                 source = "myanimelist"
-            case r"(?:https?://)?db.silveryasha\.web\.id/anime/(?P<mediaid>[\w\-]+)" as ids:
+            case (
+                r"(?:https?://)?db.silveryasha\.web\.id/anime/(?P<mediaid>[\w\-]+)" as ids
+            ):
                 send_to = "mal"
                 send_type = "anime"
                 media_id = ids["mediaid"]
@@ -256,12 +306,16 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 media_id = ids["mediaid"]
                 source = "simkl"
             # mangadex manga
-            case r"(?:https?://)?(?:www\.)?mangadex\.org/title/(?P<mediaid>[\w\-]+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?mangadex\.org/title/(?P<mediaid>[\w\-]+)" as ids
+            ):
                 async with Mangadex() as mdex:
                     mdx = await mdex.get_manga(ids["mediaid"])
                     send_to, send_type, media_id, source = intepret_mdx(mdx)
             # mangadex chapter
-            case r"(?:https?://)?(?:www\.)?mangadex\.org/chapter/(?P<chapterid>[\w\-]+)" as ids:
+            case (
+                r"(?:https?://)?(?:www\.)?mangadex\.org/chapter/(?P<chapterid>[\w\-]+)" as ids
+            ):
                 async with Mangadex() as mdex:
                     mdx = await mdex.get_manga_from_chapter(ids["chapterid"])
                     send_to, send_type, media_id, source = intepret_mdx(mdx)
@@ -297,11 +351,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                     return
         # pylint: disable=broad-exception-caught
         except Exception as err:
-            save_traceback_to_file(
-                "message_listen",
-                ctx.author,
-                err
-            )
+            save_traceback_to_file("message_listen", ctx.author, err)
         return
 
 

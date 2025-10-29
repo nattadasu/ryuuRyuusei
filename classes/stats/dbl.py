@@ -43,10 +43,7 @@ class UpvoteStruct:
 class DiscordBotList:
     """# Discord Bot List API Wrapper"""
 
-    def __init__(
-            self,
-            token: str = DBL_API_TOKEN,
-            bot_id: int = BOT_CLIENT_ID):
+    def __init__(self, token: str = DBL_API_TOKEN, bot_id: int = BOT_CLIENT_ID):
         """
         ## Discord Bot List API Wrapper
 
@@ -63,8 +60,7 @@ class DiscordBotList:
     async def __aenter__(self):
         """Enter async context"""
         self.session = aiohttp.ClientSession()
-        self.headers = {"Authorization": self.token,
-                        "Content-Type": "application/json"}
+        self.headers = {"Authorization": self.token, "Content-Type": "application/json"}
         return self
 
     async def __aexit__(self, exc_type, exc, tb):  # type: ignore
@@ -96,9 +92,10 @@ class DiscordBotList:
                 config=Config(
                     type_hooks={
                         datetime: lambda x: datetime.strptime(
-                            x, "%Y-%m-%dT%H:%M:%S.%fZ")
+                            x, "%Y-%m-%dT%H:%M:%S.%fZ"
+                        )
                     }
-                )
+                ),
             )
 
     async def post_bot_stats(

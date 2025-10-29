@@ -1,7 +1,6 @@
 import re
 from base64 import b64decode, b64encode
 from datetime import datetime, timezone
-from typing import Literal
 from urllib.parse import urlencode as urlenc
 
 import interactions as ipy
@@ -10,7 +9,6 @@ from plusminus import BaseArithmeticParser as BAP  # type: ignore
 
 from classes.isitdownrightnow import WebsiteChecker, WebsiteStatus
 from classes.thecolorapi import Color, TheColorApi
-from classes.userpfp import UserPFP
 from modules.commons import (
     generate_utils_except_embed,
     save_traceback_to_file,

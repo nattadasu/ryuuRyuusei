@@ -232,9 +232,7 @@ def get_platform_name(pf: str | Platform) -> str:
 
 
 def media_id_to_platform(
-    media_id: str,
-    platform: str | Platform,
-    simkl_type: Union[str, None] = None
+    media_id: str, platform: str | Platform, simkl_type: Union[str, None] = None
 ) -> PlatformLink:
     """
     Convert a media ID to a platform-specific ID
@@ -353,9 +351,7 @@ def media_id_to_platform(
         raise ValueError(f"Invalid platform: {platform}")
 
 
-def platforms_to_fields(
-        currPlatform: str,
-        **k: str | None) -> list[EmbedField]:
+def platforms_to_fields(currPlatform: str, **k: str | None) -> list[EmbedField]:
     """Convert a platform to a dictionary of fields"""
     relsEm: list[dict[str, Any]] = []
 
@@ -389,7 +385,8 @@ def platforms_to_fields(
         try:
             if value is not None and currPlatform != platform:
                 pin = media_id_to_platform(
-                    value, platform_mappings[platform], simkl_type=k["simkl_type"])
+                    value, platform_mappings[platform], simkl_type=k["simkl_type"]
+                )
                 if platform == "tvdb":
                     value = str(value).removeprefix("https://www.thetvdb.com/")
                 relsEm.append(
@@ -397,7 +394,8 @@ def platforms_to_fields(
                         "name": f"<:{platform_mappings[platform]}:{pin.emoid}> {pin.pf}",
                         "value": f"[{value}](<{pin.uid}>)",
                         "inline": True,
-                    })
+                    }
+                )
         except KeyError:
             continue
 

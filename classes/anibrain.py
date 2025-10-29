@@ -40,18 +40,21 @@ class AniBrainAiMedia:
     imgURLs: List[str] | None
     """Image URLs"""
     backgroundImgURLs: List[str] | None
-    format: Literal[
-        "tv",
-        "tv short",
-        "movie",
-        "special",
-        "ova",
-        "ona",
-        "music",
-        "MANGA",
-        "ONE_SHOT",
-        "NOVEL",
-    ] | None
+    format: (
+        Literal[
+            "tv",
+            "tv short",
+            "movie",
+            "special",
+            "ova",
+            "ona",
+            "music",
+            "MANGA",
+            "ONE_SHOT",
+            "NOVEL",
+        ]
+        | None
+    )
     """Format"""
     genres: List[str] | None
     """Genres"""
@@ -293,8 +296,10 @@ class AniBrainAI:
         del self.params["filterFranchiseCount"]
 
         async with self.session.get(
-            f"{self.base_url}/anime" if media_type == "ANIME" else f"{self.base_url}/manga",
-            params=self.params
+            f"{self.base_url}/anime"
+            if media_type == "ANIME"
+            else f"{self.base_url}/manga",
+            params=self.params,
         ) as resp:
             if resp.status != 200:
                 raise ProviderHttpError(resp.reason, resp.status)

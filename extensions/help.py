@@ -25,13 +25,11 @@ class Help(ipy.Extension):
     """Help command"""
 
     @ipy.cooldown(ipy.Buckets.USER, 1, 10)
-    @ipy.slash_command(name="help",
-                       description="Get a list of all available commands")
+    @ipy.slash_command(name="help", description="Get a list of all available commands")
     async def help(self, ctx: ipy.SlashContext) -> None:
         """Get a list of all available commands."""
         help_list: list[ipy.Embed] = []
-        commands = sorted(self.bot.application_commands,
-                          key=lambda x: str(x.name))
+        commands = sorted(self.bot.application_commands, key=lambda x: str(x.name))
 
         scopes = [[0], [ctx.author_id], [ctx.channel_id]]
 
@@ -41,14 +39,12 @@ class Help(ipy.Extension):
         scopes = tuple(scopes)
 
         commands = [
-            command
-            for command in commands
-            if list(map(int, command.scopes)) in scopes
+            command for command in commands if list(map(int, command.scopes)) in scopes
         ]
 
         for i in range(0, len(commands), 9):
             listed: list[ipy.EmbedField] = []
-            for command in commands[i: i + 9]:
+            for command in commands[i : i + 9]:
                 if not isinstance(command, ipy.SlashCommand):
                     continue
                 cmd_name = f"/{command.name}"
@@ -64,8 +60,7 @@ class Help(ipy.Extension):
                 )
                 description = sanitize_markdown(f"{description}")
                 listed.append(
-                    ipy.EmbedField(
-                        name=f"{name}", value=f"{description}", inline=True)
+                    ipy.EmbedField(name=f"{name}", value=f"{description}", inline=True)
                 )
 
             help_list.append(
@@ -74,15 +69,13 @@ class Help(ipy.Extension):
                     description=f"""Total commands: {(len(commands)):,}
 *To see more info about bot, use `/about` command*""",
                     color=0x7CB7D3,
-                    thumbnail=ipy.EmbedAttachment(
-                        url=self.bot.user.avatar.url),
+                    thumbnail=ipy.EmbedAttachment(url=self.bot.user.avatar.url),
                     fields=listed,  # type: ignore
                     timestamp=ipy.Timestamp.now(timezone.utc),
                 )
             )
 
-        paginator = Paginator.create_from_embeds(
-            self.bot, *help_list, timeout=60)
+        paginator = Paginator.create_from_embeds(self.bot, *help_list, timeout=60)
         await paginator.send(ctx)  # type: ignore
 
 

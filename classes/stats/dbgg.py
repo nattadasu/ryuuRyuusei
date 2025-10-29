@@ -95,10 +95,7 @@ class DiscordBotsGGBotStruct:
 class DiscordBotsGG:
     """# Discord Bots API Wrapper"""
 
-    def __init__(
-            self,
-            token: str = DBGG_API_TOKEN,
-            bot_id: int = BOT_CLIENT_ID):
+    def __init__(self, token: str = DBGG_API_TOKEN, bot_id: int = BOT_CLIENT_ID):
         """
         ## Discord Bots API Wrapper
 
@@ -115,8 +112,7 @@ class DiscordBotsGG:
     async def __aenter__(self):
         """Enter async context"""
         self.session = aiohttp.ClientSession()
-        self.headers = {"Authorization": self.token,
-                        "Content-Type": "application/json"}
+        self.headers = {"Authorization": self.token, "Content-Type": "application/json"}
         return self
 
     async def __aexit__(self, exc_type, exc, tb):  # type: ignore
@@ -136,7 +132,7 @@ class DiscordBotsGG:
         """
         if self.session is None:
             raise RuntimeError("Session is not initialized")
-        param = "?sanitized=true" if sanitize == True else ""
+        param = "?sanitized=true" if sanitize else ""
         async with self.session.get(
             f"{self.base_url}/bots/{self.bot_id}{param}",
             headers=self.headers,

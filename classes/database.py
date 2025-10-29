@@ -414,8 +414,7 @@ class UserDatabase:
             if not row2.empty:
                 data2 = row2.to_dict(orient="records")[0]
                 data2.pop("discordId")
-                data2 = {f"settings_{key}": value for key,
-                         value in data2.items()}
+                data2 = {f"settings_{key}": value for key, value in data2.items()}
                 data["has_user_settings"] = True
                 data.update(data2)
         except Exception as _:

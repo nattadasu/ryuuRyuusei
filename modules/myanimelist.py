@@ -12,9 +12,19 @@ from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
 import pandas as pd
-from interactions import (ActionRow, Button, ButtonStyle, ComponentContext,
-                          Embed, EmbedAuthor, EmbedField, EmbedFooter, Message,
-                          PartialEmoji, SlashContext)
+from interactions import (
+    ActionRow,
+    Button,
+    ButtonStyle,
+    ComponentContext,
+    Embed,
+    EmbedAuthor,
+    EmbedField,
+    EmbedFooter,
+    Message,
+    PartialEmoji,
+    SlashContext,
+)
 
 from classes.anilist import AniList, AniListMediaStruct
 from classes.animeapi import AnimeApi, AnimeApiAnime
@@ -22,11 +32,17 @@ from classes.excepts import MediaIsNsfw, ProviderHttpError
 from classes.jikan import JikanApi
 from classes.kitsu import Kitsu
 from classes.myanimelist import MyAnimeList
-from modules.commons import (PlatformErrType, generate_commons_except_embed,
-                             generate_trailer, get_nsfw_status,
-                             get_random_seed, platform_exception_embed,
-                             sanitize_markdown, save_traceback_to_file,
-                             trim_synopsis)
+from modules.commons import (
+    PlatformErrType,
+    generate_commons_except_embed,
+    generate_trailer,
+    get_nsfw_status,
+    get_random_seed,
+    platform_exception_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+    trim_synopsis,
+)
 from modules.const import MESSAGE_WARN_CONTENTS, MYANIMELIST_CLIENT_ID
 from modules.platforms import Platform, media_id_to_platform
 
@@ -163,9 +179,7 @@ async def generate_mal(
         j_spl = jdata.split("\n")
         synl = len(j_spl)
         cynoin = j_spl[0]
-        cynmo = (
-            f"\n> \n> Read more on [MyAnimeList](<https://myanimelist.net/anime/{mal_id}>)"
-        )
+        cynmo = f"\n> \n> Read more on [MyAnimeList](<https://myanimelist.net/anime/{mal_id}>)"
 
         if len(str(cynoin)) <= 150:
             cyno = sanitize_markdown(cynoin)
@@ -193,16 +207,11 @@ async def generate_mal(
         al_post = alist.coverImage.extraLarge
     al_bg = alist.bannerImage
 
-    if anime_api is not None and anime_api.kitsu and (
-            (not al_post and not al_bg)):
+    if anime_api is not None and anime_api.kitsu and (not al_post and not al_bg):
         async with Kitsu() as kts:
             kts = await kts.get_anime(anime_api.kitsu)
     else:
-        kts = {
-            "data": {
-                "attributes": {
-                    "posterImage": None,
-                    "coverImage": None}}}
+        kts = {"data": {"attributes": {"posterImage": None, "coverImage": None}}}
 
     kts_post = kts["data"]["attributes"].get("posterImage")
     kts_post: str | None = kts_post.get("original") if kts_post else None
@@ -212,20 +221,10 @@ async def generate_mal(
     mal_post = jjpg.large_image_url or jjpg.image_url
     mal_bg = ""
 
-    poster = next(
-        (img for img in (al_post, kts_post, mal_post) if img), None)
-    post_note = (
-        "AniList"
-        if al_post
-        else "Kitsu"
-        if kts_post
-        else "MyAnimeList"
-    )
-    background = next(
-        (img for img in (al_bg, kts_bg, mal_bg) if img), None)
-    bg_note = (
-        "AniList" if al_bg else "Kitsu" if kts_bg else "MyAnimeList"
-    )
+    poster = next((img for img in (al_post, kts_post, mal_post) if img), None)
+    post_note = "AniList" if al_post else "Kitsu" if kts_post else "MyAnimeList"
+    background = next((img for img in (al_bg, kts_bg, mal_bg) if img), None)
+    bg_note = "AniList" if al_bg else "Kitsu" if kts_bg else "MyAnimeList"
 
     if post_note == bg_note:
         note += f"{post_note} for poster and background."
@@ -257,8 +256,7 @@ async def generate_mal(
     bcast = jk_dat.broadcast
 
     # Grab studio names on jk_dat['studios'][n]['name']
-    studio_names = [
-        stud.name for stud in jk_dat.studios] if jk_dat.studios else None
+    studio_names = [stud.name for stud in jk_dat.studios] if jk_dat.studios else None
     stdio = ", ".join(studio_names) if studio_names else "*None*"
 
     # start date logic
@@ -352,8 +350,15 @@ async def generate_mal(
     english_note = False
 
     # Create a synonyms list
-    syns = [name.title for name in jk_dat.titles if name.type not in [
-        "Default", "English"]] if jk_dat.titles else []
+    syns = (
+        [
+            name.title
+            for name in jk_dat.titles
+            if name.type not in ["Default", "English"]
+        ]
+        if jk_dat.titles
+        else []
+    )
     if not ent or (ent == ""):
         # Set ent to a synonym in ASCII or the original title
         for name in syns:
@@ -414,9 +419,7 @@ async def generate_mal(
     if str(eps) in ["1", "0", None]:
         eps_field = EmbedField(name="Duration", value=f"{dur}", inline=True)
     else:
-        eps_field = EmbedField(
-            name="Eps/Duration", value=f"{eps} ({dur})", inline=True
-        )
+        eps_field = EmbedField(name="Eps/Duration", value=f"{eps} ({dur})", inline=True)
 
     embed = Embed(
         author=EmbedAuthor(
@@ -454,8 +457,7 @@ async def generate_mal(
     buttons: list[Button] = []
     if anime_api is not None:
         if anime_api.anilist is not None:
-            ext_id = media_id_to_platform(
-                f"{anime_api.anilist}", Platform.ANILIST)
+            ext_id = media_id_to_platform(f"{anime_api.anilist}", Platform.ANILIST)
             buttons.append(
                 Button(
                     style=ButtonStyle.URL,
@@ -483,23 +485,22 @@ async def generate_mal(
             )
         if anime_api.animenewsnetwork is not None:
             ext_id = media_id_to_platform(
-                f"{anime_api.animenewsnetwork}", Platform.ANIMENEWSNETWORK)
+                f"{anime_api.animenewsnetwork}", Platform.ANIMENEWSNETWORK
+            )
             buttons.append(
                 Button(
                     style=ButtonStyle.URL,
                     url=ext_id.uid,
-                    emoji=PartialEmoji(
-                        id=ext_id.emoid, name="animenewsnetwork")
+                    emoji=PartialEmoji(id=ext_id.emoid, name="animenewsnetwork"),
                 )
             )
         if anime_api.simkl is not None:
-            ext_id = media_id_to_platform(
-                f"{anime_api.simkl}", Platform.SIMKL, "anime")
+            ext_id = media_id_to_platform(f"{anime_api.simkl}", Platform.SIMKL, "anime")
             buttons.append(
                 Button(
                     style=ButtonStyle.URL,
                     url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="simkl")
+                    emoji=PartialEmoji(id=ext_id.emoid, name="simkl"),
                 )
             )
     anime_stats: Button = Button(
@@ -523,7 +524,9 @@ async def generate_mal(
     return (embed, buttons)
 
 
-async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int) -> None:
+async def mal_submit(
+    ctx: SlashContext | ComponentContext | Message, ani_id: int
+) -> None:
     """
     Send anime information from MAL to the channel
 
@@ -574,9 +577,9 @@ async def mal_submit(ctx: SlashContext | ComponentContext | Message, ani_id: int
             else:
                 labeled_buttons.append(button)
         for i in range(0, len(unlabeled_buttons), 5):
-            final_buttons.append(ActionRow(*unlabeled_buttons[i:i + 5]))
+            final_buttons.append(ActionRow(*unlabeled_buttons[i : i + 5]))
         for i in range(0, len(labeled_buttons), 5):
-            final_buttons.append(ActionRow(*labeled_buttons[i:i + 5]))
+            final_buttons.append(ActionRow(*labeled_buttons[i : i + 5]))
         if isinstance(ctx, Message):
             # type: ignore
             # type: ignore

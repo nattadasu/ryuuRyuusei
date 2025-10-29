@@ -1,13 +1,25 @@
 import re
 
-from interactions import (Button, ButtonStyle, ComponentContext, Embed,
-                          EmbedAuthor, EmbedField, Message, SlashContext)
+from interactions import (
+    Button,
+    ButtonStyle,
+    ComponentContext,
+    Embed,
+    EmbedAuthor,
+    EmbedField,
+    Message,
+    SlashContext,
+)
 
 from classes.excepts import ProviderHttpError
 from classes.rawg import RawgApi, RawgGameData
-from modules.commons import (PlatformErrType, platform_exception_embed,
-                             sanitize_markdown, save_traceback_to_file,
-                             trim_synopsis)
+from modules.commons import (
+    PlatformErrType,
+    platform_exception_embed,
+    sanitize_markdown,
+    save_traceback_to_file,
+    trim_synopsis,
+)
 
 
 async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
@@ -24,8 +36,10 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
     id = data.slug
 
     # Process alternative names
-    syns = sorted(set(data.alternative_names or []) -
-                  {data.name, data.name_original}, key=str.casefold)
+    syns = sorted(
+        set(data.alternative_names or []) - {data.name, data.name_original},
+        key=str.casefold,
+    )
     syns = syns[:8] if len(syns) > 8 else syns
     syns_text = ", ".join(syns) if syns else "*None*"
     if len(syns) < len(data.alternative_names or []):
@@ -83,11 +97,9 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
             cyno += desc_attr
 
     # Process genres and tags
-    tgs = sorted({g.name.title()
-                 for g in data.genres + data.tags}, key=str.casefold)
+    tgs = sorted({g.name.title() for g in data.genres + data.tags}, key=str.casefold)
     tgs_text = (
-        ", ".join(tgs[:20]) if len(tgs) > 20 else ", ".join(
-            tgs) if tgs else "*None*"
+        ", ".join(tgs[:20]) if len(tgs) > 20 else ", ".join(tgs) if tgs else "*None*"
     )
     if len(tgs) > 20:
         lefties = len(tgs) - 20
@@ -119,10 +131,8 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
 
     # Create button components
     components = [
-        Button(
-            style=ButtonStyle.URL,
-            label=p["name"],
-            url=p["value"]) for p in pdt]
+        Button(style=ButtonStyle.URL, label=p["name"], url=p["value"]) for p in pdt
+    ]
 
     # Create the embed
     embed = Embed(
@@ -136,45 +146,23 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
         description=f"-# {rte}, {year}, ⭐ {scr}/5 (Metacritic: {mc_scr})\n\n> {cyno}",
         color=0x1F1F1F,
         fields=[
-            EmbedField(
-                name="English Title",
-                value=data.name,
-                inline=True),
-            EmbedField(
-                name="Native Title",
-                value=data.name_original,
-                inline=True),
-            EmbedField(
-                name="Synonyms",
-                value=syns_text,
-                inline=False),
-            EmbedField(
-                name="Genres and Tags",
-                value=tgs_text,
-                inline=False),
-            EmbedField(
-                name="Platforms",
-                value=pfs_text,
-                inline=False),
-            EmbedField(
-                name="Developers",
-                value=devs_text,
-                inline=True),
-            EmbedField(
-                name="Publishers",
-                value=pubs_text,
-                inline=True),
-            EmbedField(
-                name="Release Date",
-                value=rel,
-                inline=True),
+            EmbedField(name="English Title", value=data.name, inline=True),
+            EmbedField(name="Native Title", value=data.name_original, inline=True),
+            EmbedField(name="Synonyms", value=syns_text, inline=False),
+            EmbedField(name="Genres and Tags", value=tgs_text, inline=False),
+            EmbedField(name="Platforms", value=pfs_text, inline=False),
+            EmbedField(name="Developers", value=devs_text, inline=True),
+            EmbedField(name="Publishers", value=pubs_text, inline=True),
+            EmbedField(name="Release Date", value=rel, inline=True),
         ],
     )
     embed.set_image(url=data.background_image)
     return [embed, components]
 
 
-async def rawg_submit(ctx: SlashContext | ComponentContext | Message, slug: str) -> None:
+async def rawg_submit(
+    ctx: SlashContext | ComponentContext | Message, slug: str
+) -> None:
     """
     Submit a query to the RAWG API and return the result as an embed.
 
