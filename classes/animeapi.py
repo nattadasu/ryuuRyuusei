@@ -4,6 +4,13 @@ from typing import Literal
 from animeapi import AsyncAnimeAPI, Platform
 from animeapi.models import AnimeRelation
 
+from modules.commons import save_traceback_to_file
+
+
+class _SystemUser:
+    """Mock user object for system-level errors"""
+    id = 0
+
 
 class AnimeApi:
     """AnimeAPI API Wrapper"""
@@ -79,7 +86,13 @@ class AnimeApi:
             platform = Platform(platform)
         try:
             return await self.api.get_anime_relations(media_id, platform)
-        except BaseException:
+        except BaseException as e:
+            save_traceback_to_file(
+                f"animeapi_{platform.value}_{media_id}",
+                _SystemUser(),
+                e,
+                mute_error=True
+            )
             return AnimeRelation(title="")
 
 
