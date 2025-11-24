@@ -12,14 +12,14 @@ jobs:
     steps:
       - if: github.event_name == 'pull_request'
         name: Checkout to Pull Request Branch
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
       - if: github.event_name != 'pull_request'
         name: Checkout to Push Branch
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
           fetch-depth: 0
