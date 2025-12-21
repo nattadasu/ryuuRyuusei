@@ -139,7 +139,12 @@ class UserDatabase:
         Returns:
             bool: True if user is registered, False if not
         """
-        df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        if not os.path.exists(self.database_path):
+            return False
+        try:
+            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        except (FileNotFoundError, pd.errors.EmptyDataError):
+            return False
         val = False
         if str(discord_id) in df["discordId"].values:
             val = True
@@ -160,7 +165,12 @@ class UserDatabase:
         """
         column_name = f"{platform}Username"
         # check if column exists
-        df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        if not os.path.exists(self.database_path):
+            return False
+        try:
+            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        except (FileNotFoundError, pd.errors.EmptyDataError):
+            return False
         if column_name not in df.columns:
             return False
         # check if value exists
@@ -243,7 +253,12 @@ class UserDatabase:
         Returns:
             bool: True if user is updated, False if not
         """
-        df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        if not os.path.exists(self.database_path):
+            return False
+        try:
+            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        except (FileNotFoundError, pd.errors.EmptyDataError):
+            return False
         df.loc[df["discordId"] == str(discord_id), row] = modified_input
         df.to_csv(self.database_path, sep="\t", index=False)
         return True
@@ -258,13 +273,22 @@ class UserDatabase:
         Returns:
             bool: True if user is dropped, False if not
         """
-        df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        df.drop(df[df["discordId"] == str(discord_id)].index, inplace=True)
-        df.to_csv(self.database_path, sep="\t", index=False)
+        if not os.path.exists(self.database_path):
+            return False
+        try:
+            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+            df.drop(df[df["discordId"] == str(discord_id)].index, inplace=True)
+            df.to_csv(self.database_path, sep="\t", index=False)
+        except (FileNotFoundError, pd.errors.EmptyDataError):
+            pass
         # drop from member settings
-        df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
-        df2.drop(df2[df2["discordId"] == str(discord_id)].index, inplace=True)
-        df2.to_csv("database/member.csv", sep="\t", index=False)
+        if os.path.exists("database/member.csv"):
+            try:
+                df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
+                df2.drop(df2[df2["discordId"] == str(discord_id)].index, inplace=True)
+                df2.to_csv("database/member.csv", sep="\t", index=False)
+            except (FileNotFoundError, pd.errors.EmptyDataError):
+                pass
         # verify if its success
         verify = await self.check_if_registered(discord_id)
         return not verify
@@ -279,7 +303,16 @@ class UserDatabase:
         Returns:
             bool: True if user is verified, False if not
         """
-        df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        if not os.path.exists(self.database_path):
+            raise DatabaseException(
+                f"{EMOJI_UNEXPECTED_ERROR} Database file not found"
+            )
+        try:
+            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        except (FileNotFoundError, pd.errors.EmptyDataError):
+            raise DatabaseException(
+                f"{EMOJI_UNEXPECTED_ERROR} Database is empty or corrupted"
+            )
         row = df[df["discordId"] == str(discord_id)]
         if row.empty:
             raise DatabaseException(
@@ -297,7 +330,12 @@ class UserDatabase:
         Returns:
             list[UserDatabaseClass]: List of dataclasses contains information about an user
         """
-        df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        if not os.path.exists(self.database_path):
+            return []
+        try:
+            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        except (FileNotFoundError, pd.errors.EmptyDataError):
+            return []
         df.fillna("", inplace=True)
         data = df.to_dict(orient="records")
         users: list[UserDatabaseClass] = []
@@ -397,7 +435,16 @@ class UserDatabase:
         Returns:
             str: JSON string of the user data
         """
-        df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        if not os.path.exists(self.database_path):
+            raise DatabaseException(
+                f"{EMOJI_UNEXPECTED_ERROR} Database file not found"
+            )
+        try:
+            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        except (FileNotFoundError, pd.errors.EmptyDataError):
+            raise DatabaseException(
+                f"{EMOJI_UNEXPECTED_ERROR} Database is empty or corrupted"
+            )
         df.fillna("", inplace=True)
         row = df[df["discordId"] == str(discord_id)]
         if row.empty:
@@ -407,18 +454,19 @@ class UserDatabase:
         data = row.to_dict(orient="records")[0]
         data["has_user_settings"] = False
         # Check if user exist in database/member.csv
-        try:
-            df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
-            df2.fillna("", inplace=True)
-            row2 = df2[df2["discordId"] == str(discord_id)]
-            if not row2.empty:
-                data2 = row2.to_dict(orient="records")[0]
-                data2.pop("discordId")
-                data2 = {f"settings_{key}": value for key, value in data2.items()}
-                data["has_user_settings"] = True
-                data.update(data2)
-        except Exception as _:
-            ...
+        if os.path.exists("database/member.csv"):
+            try:
+                df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
+                df2.fillna("", inplace=True)
+                row2 = df2[df2["discordId"] == str(discord_id)]
+                if not row2.empty:
+                    data2 = row2.to_dict(orient="records")[0]
+                    data2.pop("discordId")
+                    data2 = {f"settings_{key}": value for key, value in data2.items()}
+                    data["has_user_settings"] = True
+                    data.update(data2)
+            except Exception as _:
+                ...
         # if user exist as a file in database/allowlist_autoembed/ directory
         # then add it to the data
         if os.path.exists(f"database/allowlist_autoembed/{discord_id}"):

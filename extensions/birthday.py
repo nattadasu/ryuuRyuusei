@@ -221,6 +221,9 @@ class Birthday(ipy.Extension):
         """Announce birthdays to the target channel"""
         async with UserDatabase() as udb:
             users = await udb.get_all_users()
+        
+        if not users:
+            return
 
         announced: list[int] = []
         now = datetime.now(tz=zinf.ZoneInfo("UTC"))
