@@ -1,7 +1,7 @@
 import json
-import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Literal, Optional
 
 import pandas as pd
@@ -116,7 +116,55 @@ class UserDatabase:
         Args:
             database_path (str, optional): Path to the database. Defaults to database.
         """
-        self.database_path = database_path
+        self.database_path = Path(database_path)
+
+    def _read_csv_safe(self, filepath: Path | str, **kwargs) -> pd.DataFrame | None:
+        """
+        Safely read CSV file with error handling
+
+        Args:
+            filepath: Path to the CSV file
+            **kwargs: Additional arguments to pass to pd.read_csv
+
+        Returns:
+            DataFrame if successful, None if file doesn't exist or is empty
+        """
+        filepath = Path(filepath)
+        if not filepath.exists():
+            return None
+        try:
+            return pd.read_csv(filepath, sep="\t", dtype=str, **kwargs)
+        except (FileNotFoundError, pd.errors.EmptyDataError):
+            return None
+
+    def _database_exists_check(self, raise_on_missing: bool = False) -> bool:
+        """
+        Check if database exists and optionally raise exception
+
+        Args:
+            raise_on_missing: Whether to raise DatabaseException if missing
+
+        Returns:
+            True if database exists, False otherwise
+
+        Raises:
+            DatabaseException: If raise_on_missing is True and database doesn't exist
+        """
+        if not self.database_path.exists():
+            if raise_on_missing:
+                raise DatabaseException(
+                    f"{EMOJI_UNEXPECTED_ERROR} Database file not found"
+                )
+            return False
+        
+        df = self._read_csv_safe(self.database_path, nrows=0)
+        if df is None:
+            if raise_on_missing:
+                raise DatabaseException(
+                    f"{EMOJI_UNEXPECTED_ERROR} Database is empty or corrupted"
+                )
+            return False
+        return True
 
     async def __aenter__(self):
         """Async context manager entry point"""
@@ -139,16 +187,10 @@ class UserDatabase:
         Returns:
             bool: True if user is registered, False if not
         """
-        if not os.path.exists(self.database_path):
+        df = self._read_csv_safe(self.database_path)
+        if df is None:
             return False
-        try:
-            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        except (FileNotFoundError, pd.errors.EmptyDataError):
-            return False
-        val = False
-        if str(discord_id) in df["discordId"].values:
-            val = True
-        return val
+        return str(discord_id) in df["discordId"].values
 
     async def check_if_platform_registered(
         self, platform: Literal["mal", "anilist", "lastfm", "shikimori"], value: Any
@@ -164,19 +206,10 @@ class UserDatabase:
             bool: True if user is registered, False if not
         """
         column_name = f"{platform}Username"
-        # check if column exists
-        if not os.path.exists(self.database_path):
+        df = self._read_csv_safe(self.database_path)
+        if df is None or column_name not in df.columns:
             return False
-        try:
-            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        except (FileNotFoundError, pd.errors.EmptyDataError):
-            return False
-        if column_name not in df.columns:
-            return False
-        # check if value exists
-        if str(value) in df[column_name].values:
-            return True
-        return False
+        return str(value) in df[column_name].values
 
     async def save_to_database(self, user_data: UserDatabaseClass):
         """
@@ -253,11 +286,8 @@ class UserDatabase:
         Returns:
             bool: True if user is updated, False if not
         """
-        if not os.path.exists(self.database_path):
-            return False
-        try:
-            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        except (FileNotFoundError, pd.errors.EmptyDataError):
+        df = self._read_csv_safe(self.database_path)
+        if df is None:
             return False
         df.loc[df["discordId"] == str(discord_id), row] = modified_input
         df.to_csv(self.database_path, sep="\t", index=False)
@@ -273,22 +303,18 @@ class UserDatabase:
         Returns:
             bool: True if user is dropped, False if not
         """
-        if not os.path.exists(self.database_path):
-            return False
-        try:
-            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
+        df = self._read_csv_safe(self.database_path)
+        if df is not None:
             df.drop(df[df["discordId"] == str(discord_id)].index, inplace=True)
             df.to_csv(self.database_path, sep="\t", index=False)
-        except (FileNotFoundError, pd.errors.EmptyDataError):
-            pass
+        
         # drop from member settings
-        if os.path.exists("database/member.csv"):
-            try:
-                df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
-                df2.drop(df2[df2["discordId"] == str(discord_id)].index, inplace=True)
-                df2.to_csv("database/member.csv", sep="\t", index=False)
-            except (FileNotFoundError, pd.errors.EmptyDataError):
-                pass
+        member_csv = Path("database/member.csv")
+        df2 = self._read_csv_safe(member_csv)
+        if df2 is not None:
+            df2.drop(df2[df2["discordId"] == str(discord_id)].index, inplace=True)
+            df2.to_csv(member_csv, sep="\t", index=False)
+        
         # verify if its success
         verify = await self.check_if_registered(discord_id)
         return not verify
@@ -303,13 +329,9 @@ class UserDatabase:
         Returns:
             bool: True if user is verified, False if not
         """
-        if not os.path.exists(self.database_path):
-            raise DatabaseException(
-                f"{EMOJI_UNEXPECTED_ERROR} Database file not found"
-            )
-        try:
-            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        except (FileNotFoundError, pd.errors.EmptyDataError):
+        self._database_exists_check(raise_on_missing=True)
+        df = self._read_csv_safe(self.database_path)
+        if df is None:
             raise DatabaseException(
                 f"{EMOJI_UNEXPECTED_ERROR} Database is empty or corrupted"
             )
@@ -330,11 +352,8 @@ class UserDatabase:
         Returns:
             list[UserDatabaseClass]: List of dataclasses contains information about an user
         """
-        if not os.path.exists(self.database_path):
-            return []
-        try:
-            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        except (FileNotFoundError, pd.errors.EmptyDataError):
+        df = self._read_csv_safe(self.database_path)
+        if df is None:
             return []
         df.fillna("", inplace=True)
         data = df.to_dict(orient="records")
@@ -435,13 +454,9 @@ class UserDatabase:
         Returns:
             str: JSON string of the user data
         """
-        if not os.path.exists(self.database_path):
-            raise DatabaseException(
-                f"{EMOJI_UNEXPECTED_ERROR} Database file not found"
-            )
-        try:
-            df = pd.read_csv(self.database_path, sep="\t", dtype=str)
-        except (FileNotFoundError, pd.errors.EmptyDataError):
+        self._database_exists_check(raise_on_missing=True)
+        df = self._read_csv_safe(self.database_path)
+        if df is None:
             raise DatabaseException(
                 f"{EMOJI_UNEXPECTED_ERROR} Database is empty or corrupted"
             )
@@ -453,23 +468,24 @@ class UserDatabase:
             )
         data = row.to_dict(orient="records")[0]
         data["has_user_settings"] = False
+        
         # Check if user exist in database/member.csv
-        if os.path.exists("database/member.csv"):
-            try:
-                df2 = pd.read_csv("database/member.csv", sep="\t", dtype=str)
-                df2.fillna("", inplace=True)
-                row2 = df2[df2["discordId"] == str(discord_id)]
-                if not row2.empty:
-                    data2 = row2.to_dict(orient="records")[0]
-                    data2.pop("discordId")
-                    data2 = {f"settings_{key}": value for key, value in data2.items()}
-                    data["has_user_settings"] = True
-                    data.update(data2)
-            except Exception as _:
-                ...
+        member_csv = Path("database/member.csv")
+        df2 = self._read_csv_safe(member_csv)
+        if df2 is not None:
+            df2.fillna("", inplace=True)
+            row2 = df2[df2["discordId"] == str(discord_id)]
+            if not row2.empty:
+                data2 = row2.to_dict(orient="records")[0]
+                data2.pop("discordId")
+                data2 = {f"settings_{key}": value for key, value in data2.items()}
+                data["has_user_settings"] = True
+                data.update(data2)
+        
         # if user exist as a file in database/allowlist_autoembed/ directory
         # then add it to the data
-        if os.path.exists(f"database/allowlist_autoembed/{discord_id}"):
+        autoembed_path = Path(f"database/allowlist_autoembed/{discord_id}")
+        if autoembed_path.exists():
             data["has_user_settings"] = True
             data["settings_allowlist_autoembed"] = True
         if data["userBirthdate"]:
@@ -492,11 +508,7 @@ class UserDatabase:
 
     def _database_exists(self) -> bool:
         """Check if database exists"""
-        try:
-            pd.read_csv(self.database_path, sep="\t", dtype=str, nrows=0)
-        except Exception as _:
-            return False
-        return True
+        return self._database_exists_check(raise_on_missing=False)
 
     __all__ = [
         "check_if_registered",
