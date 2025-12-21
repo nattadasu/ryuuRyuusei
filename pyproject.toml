@@ -1,0 +1,73 @@
+[project]
+name = "ryuuryuusei"
+version = "0.1.0"
+description = "Find your profile and your favorite media titles with Ryuuzaki Ryuusei - A rolling release Discord bot"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "AGPL-3.0-or-later" }
+authors = [
+    { name = "nattadasu", email = "hello@nattadasu.my.id" }
+]
+keywords = ["discord", "bot", "anime", "manga", "media", "tracker"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Communications :: Chat",
+]
+
+[project.urls]
+Homepage = "https://github.com/nattadasu/ryuuRyuusei"
+Repository = "https://github.com/nattadasu/ryuuRyuusei"
+Issues = "https://github.com/nattadasu/ryuuRyuusei/issues"
+Documentation = "https://github.com/nattadasu/ryuuRyuusei#readme"
+"Support Server" = "https://nttds.my.id/discord"
+
+dependencies = [
+    "aiohttp>=3.13.2",
+    "animeapi-py>=3.7.3",
+    "audioop-lts>=0.2.2 ; python_full_version >= '3.13'",
+    "beautifulsoup4>=4.14.3",
+    "certifi>=2023.7.22",
+    "cutlet>=0.1.dev114 ; python_full_version < '3.13' and sys_platform != 'win32'",
+    "cutlet ; python_full_version >= '3.13' or sys_platform == 'win32'",
+    "dacite>=1.9.2",
+    "defusedxml>=0.7.1",
+    "fake-useragent>=2.2.0",
+    "fuzzywuzzy>=0.18.0",
+    "html5lib>=1.1",
+    "interactions-py==5.15.0",
+    "numpy>=1.22.2",
+    "pandas>=2.3.3",
+    "pillow>=12.0.0",
+    "plusminus>=0.8.1",
+    "psutil>=7.1.3",
+    "pykakasi>=2.3.0",
+    "python-dotenv>=1.2.1",
+    "python-levenshtein>=0.27.3",
+    "pyyaml>=6.0.3",
+    "regex-spm>=1.0.0",
+    "requests>=2.32.0",
+    "sentry-sdk>=2.48.0",
+    "setuptools>=78.1.1",
+    "tzdata>=2025.3",
+    "unidic>=1.1.0",
+    "urllib3>=2.2.2",
+    "validators>=0.35.0",
+    "zipp>=3.19.1",
+]
+
+[tool.uv.sources]
+cutlet = { git = "https://github.com/ryuuRyuusei/cutlet-pure", rev = "master" }
+
+[dependency-groups]
+dev = [
+    "coverage>=7.13.0",
+    "jurigged>=0.6.1",
+    "ruff>=0.14.10",
+]
