@@ -156,7 +156,7 @@ class UserDatabase:
                     f"{EMOJI_UNEXPECTED_ERROR} Database file not found"
                 )
             return False
-        
+
         df = self._read_csv_safe(self.database_path, nrows=0)
         if df is None:
             if raise_on_missing:
@@ -307,14 +307,14 @@ class UserDatabase:
         if df is not None:
             df.drop(df[df["discordId"] == str(discord_id)].index, inplace=True)
             df.to_csv(self.database_path, sep="\t", index=False)
-        
+
         # drop from member settings
         member_csv = Path("database/member.csv")
         df2 = self._read_csv_safe(member_csv)
         if df2 is not None:
             df2.drop(df2[df2["discordId"] == str(discord_id)].index, inplace=True)
             df2.to_csv(member_csv, sep="\t", index=False)
-        
+
         # verify if its success
         verify = await self.check_if_registered(discord_id)
         return not verify
@@ -468,7 +468,7 @@ class UserDatabase:
             )
         data = row.to_dict(orient="records")[0]
         data["has_user_settings"] = False
-        
+
         # Check if user exist in database/member.csv
         member_csv = Path("database/member.csv")
         df2 = self._read_csv_safe(member_csv)
@@ -481,7 +481,7 @@ class UserDatabase:
                 data2 = {f"settings_{key}": value for key, value in data2.items()}
                 data["has_user_settings"] = True
                 data.update(data2)
-        
+
         # if user exist as a file in database/allowlist_autoembed/ directory
         # then add it to the data
         autoembed_path = Path(f"database/allowlist_autoembed/{discord_id}")

@@ -554,7 +554,10 @@ class AniList:
                 raise ProviderHttpError(err_strings, response.status)
             media_data = data["data"]["Media"]
             # Handle None scoreDistribution by converting to empty list
-            if media_data.get("stats") and media_data["stats"].get("scoreDistribution") is None:
+            if (
+                media_data.get("stats")
+                and media_data["stats"].get("scoreDistribution") is None
+            ):
                 media_data["stats"]["scoreDistribution"] = []
             Cache.write_data_to_cache(media_data, cache_file_path)
             return from_dict(AniListMediaStruct, media_data)
