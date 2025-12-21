@@ -526,6 +526,7 @@ class AniList:
                 amount
             }}
         }}
+        siteUrl
         trailer {{
             id
             site
@@ -551,8 +552,12 @@ class AniList:
                     ]
                 )
                 raise ProviderHttpError(err_strings, response.status)
-            Cache.write_data_to_cache(data["data"]["Media"], cache_file_path)
-            return from_dict(AniListMediaStruct, data["data"]["Media"])
+            media_data = data["data"]["Media"]
+            # Handle None scoreDistribution by converting to empty list
+            if media_data.get("stats") and media_data["stats"].get("scoreDistribution") is None:
+                media_data["stats"]["scoreDistribution"] = []
+            Cache.write_data_to_cache(media_data, cache_file_path)
+            return from_dict(AniListMediaStruct, media_data)
 
     async def user_by_id(
         self, user_id: int, return_as_is: bool = False

@@ -266,7 +266,7 @@ class Manga(ipy.Extension):
                 ),
             )
         )
-        media_data = list[AniBrainAiMedia]
+        media_data: list[AniBrainAiMedia] = []
         try:
             async with AniBrainAI() as anibrain:
                 countries = (
@@ -296,6 +296,8 @@ class Manga(ipy.Extension):
                             filter_release_to=release_to,
                             filter_score=min_score,
                         )
+            if not media_data:
+                raise ValueError("No manga found matching the criteria")
             media_id = media_data[0].anilistId
             await send.edit(
                 embed=ipy.Embed(

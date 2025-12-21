@@ -55,6 +55,7 @@ async def search_al_anime(title: str) -> list[dict[str, Any]]:
         if item["idMal"] in ["", "0", 0, None]:
             continue
         # Extract the relevant fields and format them
+        start_date = item.get("startDate")
         formatted_item = {
             "node": {
                 "id": item["idMal"],
@@ -64,7 +65,7 @@ async def search_al_anime(title: str) -> list[dict[str, Any]]:
                     "ja": item["title"]["native"],
                 },
                 "start_season": {
-                    "year": item["startDate"]["year"],
+                    "year": start_date["year"] if start_date else None,
                     "season": item["season"].lower() if item["season"] else None,
                 },
                 "media_type": item["format"].lower() if item["format"] else None,
@@ -148,8 +149,7 @@ async def generate_anilist(
         if synonyms
         else []
     )
-    fixed_syns: list[str] = []
-    synonyms = sorted(set(fixed_syns), key=str.casefold)
+    synonyms = sorted(set(synonyms), key=str.casefold)
     synonyms_len = len(synonyms)
     syns = ""
 
