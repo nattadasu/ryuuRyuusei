@@ -76,6 +76,20 @@ class SimklRelations:
     """English Wikipedia ID"""
     wikijp: str | int | None = None
     """Japanese Wikipedia ID"""
+    crunchyroll: str | None = None
+    """Crunchyroll slug"""
+    facebook: str | None = None
+    """Facebook ID"""
+    instagram: str | None = None
+    """Instagram ID"""
+    justwatch: str | None = None
+    """JustWatch slug"""
+    letterboxd: str | None = None
+    """Letterboxd slug"""
+    trakt: str | None = None
+    """Trakt slug"""
+    twitter: str | None = None
+    """Twitter ID"""
 
     def to_dict(self) -> dict[str, Any]:
         """Convert the dataclass to a dictionary"""
@@ -603,6 +617,13 @@ class Simkl:
                 tvdbmslug=cached_data["tvdbmslug"],
                 wikien=cached_data["wikien"],
                 wikijp=cached_data["wikijp"],
+                crunchyroll=cached_data.get("crunchyroll"),
+                facebook=cached_data.get("facebook"),
+                instagram=cached_data.get("instagram"),
+                justwatch=cached_data.get("justwatch"),
+                letterboxd=cached_data.get("letterboxd"),
+                trakt=cached_data.get("trakt"),
+                twitter=cached_data.get("twitter"),
             )
             return cached_data
         if media_type == "anime":
@@ -621,19 +642,36 @@ class Simkl:
 
         nullrels = asdict(SimklRelations())
 
-        mids = {**nullrels, **data.get("ids", {})}
+        # Prepare IDs data with remapping
+        ids_data = data.get("ids", {})
+        key_mapping = {
+            "fb": "facebook",
+            "tw": "twitter",
+            "letterslug": "letterboxd",
+            "traktmslug": "trakt",
+            "jwslug": "justwatch",
+        }
+        for old_key, new_key in key_mapping.items():
+            if old_key in ids_data:
+                ids_data[new_key] = ids_data.pop(old_key)
+
+        mids = {**nullrels, **ids_data}
         for key, value in mids.items():
             if key in [
                 "title",
                 "slug",
                 "animeplanet",
                 "tvdbslug",
-                "crunchyrolll",
-                "fb",
+                "crunchyroll",
+                "facebook",
                 "instagram",
                 "twitter",
                 "wikien",
                 "wikijp",
+                "letterboxd",
+                "trakt",
+                "justwatch",
+                "tvdbmslug",
             ]:
                 continue
             if isinstance(value, str) and value.isdigit():
@@ -673,6 +711,13 @@ class Simkl:
             tvdbslug=mids["tvdbslug"],
             wikien=mids["wikien"],
             wikijp=mids["wikijp"],
+            crunchyroll=mids["crunchyroll"],
+            facebook=mids["facebook"],
+            instagram=mids["instagram"],
+            justwatch=mids["justwatch"],
+            letterboxd=mids["letterboxd"],
+            trakt=mids["trakt"],
+            twitter=mids["twitter"],
         )
         return relations
 
