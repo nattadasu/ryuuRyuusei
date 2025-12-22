@@ -723,15 +723,27 @@ class ExternalSitesRelations(ipy.Extension):
                 )
             else:
                 trakt_id_str = f"{trakt_type_str}/{anime_api.trakt}"
+        elif simkl_data.trakt:
+            trakt_type_str = (
+                "shows"
+                if simkl_data.type == "show" or simkl_data.anitype == "tv"
+                else "movies"
+            )
+            trakt_id_str = f"{trakt_type_str}/{simkl_data.trakt}"
         else:
             trakt_id_str = None
 
-        # Build letterboxd link: use slug if available, otherwise use TMDB redirect
+        # Build letterboxd link: use slug if available, otherwise use TMDB/IMDB redirect
         letterboxd_link = None
         if anime_api.letterboxd_slug:
-            letterboxd_link = anime_api.letterboxd_slug
-        elif tmdb_id and tmtyp == "movie":
-            letterboxd_link = f"tmdb/{tmdb_id}"
+            letterboxd_link = f"film/{anime_api.letterboxd_slug}"
+        elif simkl_data.letterboxd:
+            letterboxd_link = f"film/{simkl_data.letterboxd}"
+        elif tmtyp == "movie":
+            if tmdb_id:
+                letterboxd_link = f"tmdb/{tmdb_id}"
+            elif imdb_id:
+                letterboxd_link = f"imdb/{imdb_id}"
 
         # Generate fields
         fields = platforms_to_fields(
