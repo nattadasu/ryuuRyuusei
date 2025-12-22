@@ -148,10 +148,9 @@ class MoviesCog(ipy.Extension):
     @ipy.component_callback("simkl_search_select_movie")
     async def simkl_search_select_movie(self, ctx: ipy.ComponentContext):
         """Callback for the SIMKL search select menu"""
-        await ctx.defer()
+        await ctx.defer(edit_origin=True)
         entry_id: int = int(ctx.values[0])
-        await simkl_submit(ctx, entry_id, "movies")
-        await ctx.message.delete() if ctx.message else None
+        await simkl_submit(ctx, entry_id, "movies", replace=True)
 
     @movies.subcommand(
         sub_cmd_name="info",

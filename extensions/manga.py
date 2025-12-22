@@ -164,10 +164,9 @@ class Manga(ipy.Extension):
     @ipy.component_callback("anilist_manga_search")
     async def anilist_manga_search(self, ctx: ipy.ComponentContext) -> None:
         """Callback for manga search"""
-        await ctx.defer()
+        await ctx.defer(edit_origin=True)
         entry_id: int = int(ctx.values[0])
-        await anilist_submit(ctx, entry_id)
-        await ctx.message.delete() if ctx.message else None
+        await anilist_submit(ctx, entry_id, replace=True)
 
     @manga_head.subcommand(
         sub_cmd_name="info",

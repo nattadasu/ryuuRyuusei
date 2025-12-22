@@ -127,10 +127,9 @@ class TvShow(ipy.Extension):
 
     @ipy.component_callback("simkl_search_select_tv")
     async def simkl_search_select_tv(self, ctx: ipy.ComponentContext) -> None:
-        await ctx.defer()
+        await ctx.defer(edit_origin=True)
         entry_id: int = int(ctx.values[0])
-        await simkl_submit(ctx, entry_id, "tv")
-        await ctx.message.delete() if ctx.message else None
+        await simkl_submit(ctx, entry_id, "tv", replace=True)
 
     @tv.subcommand(
         sub_cmd_name="info",

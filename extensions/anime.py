@@ -169,10 +169,9 @@ class Anime(ipy.Extension):
 
     @ipy.component_callback("mal_search")
     async def anime_search_data(self, ctx: ipy.ComponentContext) -> None:
-        await ctx.defer()
+        await ctx.defer(edit_origin=True)
         ani_id: int = int(ctx.values[0])
-        await mal_submit(ctx, ani_id)
-        await ctx.message.delete() if ctx.message else None
+        await mal_submit(ctx, ani_id, replace=True)
 
     @anime_head.subcommand(
         sub_cmd_name="info",
