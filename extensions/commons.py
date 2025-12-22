@@ -1,6 +1,7 @@
 import re
 from datetime import datetime as dtime
 from datetime import timezone as tz
+from subprocess import check_output as chout
 from time import perf_counter as pc
 
 import interactions as ipy
@@ -91,6 +92,35 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER
         )
         embed.set_thumbnail(self.bot.user.avatar.url)
         embed.set_footer(text="To get uptime and other info, use /ping")
+        await ctx.send(embed=embed)
+
+    @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
+    @ipy.slash_command(name="changelog", description="Get the recent changes of the bot")
+    async def changelog(self, ctx: ipy.SlashContext):
+        log = chout(
+            [
+                "git",
+                "log",
+                "-n",
+                "10",
+                "--pretty=format:%H|%h|%s|%an|%at",
+            ]
+        ).decode("utf-8")
+
+        lines = []
+        for line in log.split("\n"):
+            full, short, msg, author, ts = line.split("|")
+            url = f"https://github.com/nattadasu/ryuuRyuusei/commit/{full}"
+            lines.append(f"* [`{short}`]({url}) - {msg} (<t:{ts}:R>) <{author}>")
+
+        description = "\n".join(lines)
+
+        embed = ipy.Embed(
+            title="Changelog",
+            description=f"Here are the recent changes of the bot:\n{description}",
+            color=0x996422,
+        )
+        embed.set_footer(text=f"Current Commit: {GT_HSH}")
         await ctx.send(embed=embed)
 
     @ipy.cooldown(ipy.Buckets.GUILD, 1, 5)
