@@ -41,6 +41,7 @@ from modules.commons import (
     platform_exception_embed,
     sanitize_markdown,
     save_traceback_to_file,
+    send_or_edit_message,
     trim_synopsis,
 )
 from modules.const import MESSAGE_WARN_CONTENTS, MYANIMELIST_CLIENT_ID
@@ -525,7 +526,9 @@ async def generate_mal(
 
 
 async def mal_submit(
-    ctx: SlashContext | ComponentContext | Message, ani_id: int
+    ctx: SlashContext | ComponentContext | Message,
+    ani_id: int,
+    replace: bool = False,
 ) -> None:
     """
     Send anime information from MAL to the channel
@@ -533,6 +536,7 @@ async def mal_submit(
     Args:
         ctx (SlashContext | ComponentContext | Message): The context of the command
         ani_id (int): The anime ID
+        replace (bool, optional): Whether to replace the original message. Defaults to False.
 
     Raises:
         *None*
@@ -580,12 +584,7 @@ async def mal_submit(
             final_buttons.append(ActionRow(*unlabeled_buttons[i : i + 5]))
         for i in range(0, len(labeled_buttons), 5):
             final_buttons.append(ActionRow(*labeled_buttons[i : i + 5]))
-        if isinstance(ctx, Message):
-            # type: ignore
-            # type: ignore
-            await ctx.reply(embeds=embed, components=final_buttons)
-        else:
-            await ctx.send(embed=embed, components=final_buttons)
+        await send_or_edit_message(ctx, embed, final_buttons, replace)
         return
 
     except MediaIsNsfw as err:
@@ -595,10 +594,7 @@ async def mal_submit(
             error="Media is NSFW",
             error_type=PlatformErrType.NSFW,
         )
-        if isinstance(ctx, Message):
-            await ctx.reply(embed=embed)
-        else:
-            await ctx.send(embed=embed)
+        await send_or_edit_message(ctx, embed, None, replace)
         save_traceback_to_file("anilist", ctx.author, err)
     # pylint: disable=broad-exception-caught
     except Exception as err:
@@ -606,8 +602,5 @@ async def mal_submit(
             description="We are unable to get the anime information from MyAnimeList via Jikan",
             error=f"{err}",
         )
-        if isinstance(ctx, Message):
-            await ctx.reply(embed=embed)
-        else:
-            await ctx.send(embed=embed)
+        await send_or_edit_message(ctx, embed, None, replace)
         save_traceback_to_file("jikan", ctx.author, err)

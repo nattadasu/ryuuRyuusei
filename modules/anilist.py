@@ -26,6 +26,7 @@ from modules.commons import (
     platform_exception_embed,
     sanitize_markdown,
     save_traceback_to_file,
+    send_or_edit_message,
     trim_synopsis,
 )
 from modules.const import BANNED_TAGS, MESSAGE_WARN_CONTENTS
@@ -412,6 +413,7 @@ async def anilist_submit(
     ctx: SlashContext | ComponentContext | Message,
     media_id: int,
     from_mal: bool = False,
+    replace: bool = False,
 ) -> None:
     """
     Submit a query to AniList API and send the result to the channel.
@@ -420,6 +422,7 @@ async def anilist_submit(
         ctx (SlashContext | ComponentContext | Message): The context of the command.
         media_id (int): The media ID to query.
         from_mal (bool, optional): Whether the media ID is from MAL. Defaults to False.
+        replace (bool, optional): Whether to replace the original message. Defaults to False.
 
     Raises:
         MediaIsNsfw: If the media is NSFW and the channel is not NSFW enabled.
@@ -437,10 +440,7 @@ async def anilist_submit(
             from_mal=from_mal,
         )
         buttons.extend(button_2)
-        if isinstance(ctx, Message):
-            await ctx.reply(embed=embed, components=buttons)  # type: ignore
-        else:
-            await ctx.send(embed=embed, components=buttons)
+        await send_or_edit_message(ctx, embed, buttons, replace)
         return
 
     except MediaIsNsfw as err:
@@ -450,10 +450,7 @@ async def anilist_submit(
             error="Media is NSFW\n" + notice,
             error_type=PlatformErrType.NSFW,
         )
-        if isinstance(ctx, Message):
-            await ctx.reply(embed=embed)
-        else:
-            await ctx.send(embed=embed)
+        await send_or_edit_message(ctx, embed, None, replace)
         save_traceback_to_file("anilist", ctx.author, err)
 
     except ProviderHttpError as err:
@@ -464,8 +461,5 @@ async def anilist_submit(
             error=f"{message}",
             error_type=PlatformErrType.SYSTEM,
         )
-        if isinstance(ctx, Message):
-            await ctx.reply(embed=embed)
-        else:
-            await ctx.send(embed=embed)
+        await send_or_edit_message(ctx, embed, None, replace)
         save_traceback_to_file("anilist", ctx.author, err)
