@@ -540,6 +540,36 @@ def custom_datetime_converter(time: str, zone: str = "Z", remove_millis: bool = 
     return datetime.fromisoformat(time)
 
 
+async def send_or_edit_message(
+    ctx: SlashContext | ComponentContext | Message,
+    embed: Embed,
+    components: list[Any] | None = None,
+    replace: bool = False,
+) -> None:
+    """
+    Send or edit a message based on context and replace flag.
+
+    Args:
+        ctx (SlashContext | ComponentContext | Message): The context.
+        embed (Embed): The embed to send/edit.
+        components (list[Any], optional): Components to attach. Defaults to None.
+        replace (bool, optional): Whether to replace the original message. Defaults to False.
+    """
+    if isinstance(ctx, Message):
+        if replace:
+            await ctx.edit(embed=embed, components=components)
+        else:
+            await ctx.reply(embeds=embed, components=components)
+    else:
+        if replace:
+            if isinstance(ctx, ComponentContext):
+                await ctx.edit_origin(embed=embed, components=components)
+            else:
+                await ctx.edit(embed=embed, components=components)
+        else:
+            await ctx.send(embed=embed, components=components)
+
+
 __all__ = [
     "convert_float_to_time",
     "convert_html_to_markdown",
@@ -557,4 +587,5 @@ __all__ = [
     "save_traceback_to_file",
     "snowflake_to_datetime",
     "trim_synopsis",
+    "send_or_edit_message",
 ]
