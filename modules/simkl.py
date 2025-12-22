@@ -12,6 +12,7 @@ from modules.commons import (
     get_nsfw_status,
     platform_exception_embed,
     save_traceback_to_file,
+    send_or_edit_message,
     trim_synopsis,
 )
 from modules.const import MESSAGE_WARN_CONTENTS
@@ -304,7 +305,7 @@ async def create_simkl_embed(
             "url": f"https://www.thetvdb.com/series/{ids.get('tvdbslug', '')}"
             if ids.get("tvdbslug", None)
             else f"https://www.thetvdb.com/movies/{ids.get('tvdbmslug', '')}"
-            if ids.get("tvdbslug", None)
+            if ids.get("tvdbmslug", None)
             else None,
         },
         {
@@ -315,9 +316,21 @@ async def create_simkl_embed(
         },
         {
             "name": "trakt",
-            # use IMDB's for auto-redirect from Trakt end, and media type from SIMKL
-            "url": f"search/imdb/{ids.get('imdb', '')}?type={'shows' if media_type == 'tv' else 'movies'}"
+            # use traktmslug if available, otherwise search by imdb
+            "url": f"{'shows' if media_type == 'tv' else 'movies'}/{ids.get('traktmslug')}"
+            if ids.get("traktmslug")
+            else f"search/imdb/{ids.get('imdb', '')}?type={'shows' if media_type == 'tv' else 'movies'}"
             if ids.get("imdb", None)
+            else None,
+        },
+        {
+            "name": "letterboxd",
+            "url": f"film/{ids.get('letterslug')}"
+            if ids.get("letterslug")
+            else f"tmdb/{ids.get('tmdb', '')}"
+            if ids.get("tmdb", None) and media_type == "movies"
+            else f"imdb/{ids.get('imdb', '')}"
+            if ids.get("imdb", None) and media_type == "movies"
             else None,
         },
     ]
@@ -339,12 +352,24 @@ async def create_simkl_embed(
             "tmdb": "tmdb",
             "tvdb": "tvdb",
             "trakt": "trakt",
+            "letterboxd": "Letterboxd",
         }
+
+        emoji = None
+        label = None
+        if pf.emoid and pf.emoid != "0":
+            emoji = ipy.PartialEmoji(
+                id=pf.emoid, name=pfn.get(platform_name, platform_name)
+            )
+        else:
+            label = pfn.get(platform_name, platform_name)
+
         buttons.append(
             ipy.Button(
                 style=ipy.ButtonStyle.LINK,
                 url=pf.uid,
-                emoji=ipy.PartialEmoji(id=pf.emoid, name=pfn[platform_name]),
+                emoji=emoji,
+                label=label,
             )
         )
 
@@ -364,6 +389,7 @@ async def simkl_submit(
     ctx: ipy.SlashContext | ipy.ComponentContext | ipy.Message,
     media_id: int | str,
     media_type: Literal["tv", "movies"] = "tv",
+    replace: bool = False,
 ) -> None:
     """
     Smbit a query to SIMKL and send the result to the channel
@@ -372,8 +398,8 @@ async def simkl_submit(
         ctx (ipy.SlashContext | ipy.ComponentContext | ipy.Message): The context of the command
         media_id (int | str): The ID of the media
         media_type (Literal['tv', 'movies'], optional): The type of the media. Defaults to 'tv'.
+        replace (bool, optional): Whether to replace the original message. Defaults to False.
     """
-    buttons = []
     try:
         async with Simkl() as simkl:
             if media_type == "tv":
@@ -397,17 +423,14 @@ async def simkl_submit(
             media_nsfw = False
 
         channel_nsfw = await get_nsfw_status(ctx)
-        embed, button_2 = await create_simkl_embed(
+        embed, buttons = await create_simkl_embed(
             data=data,
             media_type=media_type,
             is_channel_nsfw=channel_nsfw,
             is_media_nsfw=media_nsfw,
         )
-        buttons.append(button_2)
-        if isinstance(ctx, ipy.Message):
-            await ctx.reply(embed=embed, components=buttons)  # type: ignore
-        else:
-            await ctx.send(embed=embed, components=buttons)
+        components = ipy.spread_to_rows(*buttons)
+        await send_or_edit_message(ctx, embed, components, replace)
         return
 
     except MediaIsNsfw as err:
@@ -417,10 +440,7 @@ async def simkl_submit(
             error="Media is NSFW\n" + notice,
             error_type=PlatformErrType.NSFW,
         )
-        if isinstance(ctx, ipy.Message):
-            await ctx.reply(embed=embed)
-        else:
-            await ctx.send(embed=embed)
+        await send_or_edit_message(ctx, embed, None, replace)
         save_traceback_to_file("simkl", ctx.author, err)
 
     except ProviderHttpError as err:
@@ -432,8 +452,5 @@ async def simkl_submit(
             error=f"HTTP Error {status}\n{message}",
             error_type=PlatformErrType.SYSTEM,
         )
-        if isinstance(ctx, ipy.Message):
-            await ctx.reply(embed=embed)
-        else:
-            await ctx.send(embed=embed)
+        await send_or_edit_message(ctx, embed, None, replace)
         save_traceback_to_file("simkl", ctx.author, err)
