@@ -225,7 +225,7 @@ PLATFORM_CONFIGS = {
         "Last.fm", 0xD51007, "0", "https://www.last.fm/user/{media_id}"
     ),
     "letterboxd": PlatformConfig(
-        "Letterboxd", 0x202830, "0", "https://letterboxd.com/film/{media_id}"
+        "Letterboxd", 0x202830, "1452522238875013293", "https://letterboxd.com/{media_id}"
     ),
     "livechart": PlatformConfig(
         "LiveChart",
