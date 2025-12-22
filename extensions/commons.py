@@ -95,7 +95,9 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER
         await ctx.send(embed=embed)
 
     @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
-    @ipy.slash_command(name="changelog", description="Get the recent changes of the bot")
+    @ipy.slash_command(
+        name="changelog", description="Get the recent changes of the bot"
+    )
     async def changelog(self, ctx: ipy.SlashContext):
         log = chout(
             [
