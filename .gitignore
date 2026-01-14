@@ -11,6 +11,7 @@ errors/
 modules/old/
 app.config
 private_*.py
+extensions/private_*.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
