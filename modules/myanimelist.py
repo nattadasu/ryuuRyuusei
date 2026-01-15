@@ -283,7 +283,18 @@ async def generate_mal(
                 ).total_seconds()
             ast = int(ast)
             tsa = f"(<t:{ast}:R>)"
-            ast = f"<t:{ast}:D>"
+            # Check conditions for detailed timestamp format
+            use_detailed_format = (
+                astn.year >= 2010
+                and jk_dat.type in ["TV", "ONA"]
+                and jk_dat.members is not None
+                and jk_dat.members >= 750
+                and bcast.time is not None
+                and bcast.string not in ["Unknown", None]
+                and jk_dat.status not in ["Not yet aired", "Cancelled"]
+            )
+            timestamp_format = "F" if use_detailed_format else "D"
+            ast = f"<t:{ast}:{timestamp_format}>"
     else:
         ast, tsa = "TBA", ""
 
