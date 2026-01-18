@@ -466,121 +466,50 @@ async def generate_mal(
         embed.set_thumbnail(url=poster)
     if background is not None:
         embed.set_image(url=background)
+
     buttons: list[Button] = []
     if anime_api is not None:
-        # Anime-only platforms (alphabetical order)
-        # AniDB
-        if anime_api.anidb is not None:
-            ext_id = media_id_to_platform(f"{anime_api.anidb}", Platform.ANIDB)
-            buttons.append(
-                Button(
-                    style=ButtonStyle.URL,
-                    url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="anidb"),
-                )
-            )
-        # AniList
-        if anime_api.anilist is not None:
-            ext_id = media_id_to_platform(f"{anime_api.anilist}", Platform.ANILIST)
-            buttons.append(
-                Button(
-                    style=ButtonStyle.URL,
-                    url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="aniList"),
-                )
-            )
-        # Anime-Planet
-        if anime_api.animeplanet is not None:
-            ext_id = media_id_to_platform(
-                f"{anime_api.animeplanet}", Platform.ANIMEPLANET
-            )
-            buttons.append(
-                Button(
-                    style=ButtonStyle.URL,
-                    url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="animePlanet"),
-                )
-            )
-        # AnimeNewsNetwork
-        if anime_api.animenewsnetwork is not None:
-            ext_id = media_id_to_platform(
-                f"{anime_api.animenewsnetwork}", Platform.ANIMENEWSNETWORK
-            )
-            buttons.append(
-                Button(
-                    style=ButtonStyle.URL,
-                    url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="animenewsnetwork"),
-                )
-            )
-        # Kitsu
-        if anime_api.kitsu is not None:
-            ext_id = media_id_to_platform(f"{anime_api.kitsu}", Platform.KITSU)
-            buttons.append(
-                Button(
-                    style=ButtonStyle.URL,
-                    url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="kitsu"),
-                )
-            )
-        # LiveChart
-        if anime_api.livechart is not None:
-            ext_id = media_id_to_platform(f"{anime_api.livechart}", Platform.LIVECHART)
-            buttons.append(
-                Button(
-                    style=ButtonStyle.URL,
-                    url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="liveChart"),
-                )
-            )
-        # Shikimori
-        if anime_api.shikimori is not None:
-            ext_id = media_id_to_platform(f"{anime_api.shikimori}", Platform.SHIKIMORI)
-            buttons.append(
-                Button(
-                    style=ButtonStyle.URL,
-                    url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="shikimori"),
-                )
-            )
+        # Platform mapping: (attr_name, Platform enum, emoji_name, simkl_type)
+        platform_map = [
+            # Anime-only platforms (alphabetical)
+            ("anidb", Platform.ANIDB, "anidb", None),
+            ("anilist", Platform.ANILIST, "aniList", None),
+            ("animeplanet", Platform.ANIMEPLANET, "animePlanet", None),
+            ("animenewsnetwork", Platform.ANIMENEWSNETWORK, "animenewsnetwork", None),
+            ("kitsu", Platform.KITSU, "kitsu", None),
+            ("livechart", Platform.LIVECHART, "liveChart", None),
+            ("shikimori", Platform.SHIKIMORI, "shikimori", None),
+            # Multi-media platforms
+            ("imdb", Platform.IMDB, "imdb", None),
+            ("simkl", Platform.SIMKL, "simkl", "anime"),
+        ]
 
-        # Multi-media platforms
-        # IMDb
-        if anime_api.imdb is not None:
-            ext_id = media_id_to_platform(f"{anime_api.imdb}", Platform.IMDB)
-            buttons.append(
-                Button(
-                    style=ButtonStyle.URL,
-                    url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="imdb"),
+        # Generate buttons from platform map
+        for attr, platform, emoji, simkl_type in platform_map:
+            media_id = getattr(anime_api, attr, None)
+            if media_id is not None:
+                ext_id = media_id_to_platform(f"{media_id}", platform, simkl_type)
+                buttons.append(
+                    Button(
+                        style=ButtonStyle.URL,
+                        url=ext_id.uid,
+                        emoji=PartialEmoji(id=ext_id.emoid, name=emoji),
+                    )
                 )
-            )
-        # SIMKL
-        if anime_api.simkl is not None:
-            ext_id = media_id_to_platform(f"{anime_api.simkl}", Platform.SIMKL, "anime")
-            buttons.append(
-                Button(
-                    style=ButtonStyle.URL,
-                    url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="simkl"),
-                )
-            )
-        # Trakt
+
+        # Trakt (special case with custom URL logic)
         if (
             anime_api.trakt is not None
             and not anime_api.trakt_may_invalid
             and anime_api.trakt_type is not None
         ):
-            # Build Trakt URL: https://trakt.tv/{type}/{id_or_slug}[/seasons/{season}]
-            trakt_type = (
-                str(anime_api.trakt_type).split(".")[-1].lower()
-            )  # Extract from enum
+            trakt_type = str(anime_api.trakt_type).split(".")[-1].lower()
             trakt_id_or_slug = anime_api.trakt_slug or str(anime_api.trakt)
             trakt_url = f"https://trakt.tv/{trakt_type}/{trakt_id_or_slug}"
             if anime_api.trakt_season is not None:
                 trakt_url += f"/seasons/{anime_api.trakt_season}"
 
-            ext_id = media_id_to_platform("0", Platform.TRAKT)  # Just for emoji
+            ext_id = media_id_to_platform("0", Platform.TRAKT)
             buttons.append(
                 Button(
                     style=ButtonStyle.URL,
