@@ -12,7 +12,11 @@ from modules.commons import (
     sanitize_markdown,
     save_traceback_to_file,
 )
-from modules.const import EMOJI_UNEXPECTED_ERROR, STR_RECOMMEND_NATIVE_TITLE
+from modules.const import (
+    EMOJI_ATTENTIVE,
+    EMOJI_UNEXPECTED_ERROR,
+    STR_RECOMMEND_NATIVE_TITLE,
+)
 
 
 class Manga(ipy.Extension):
@@ -164,9 +168,20 @@ class Manga(ipy.Extension):
     @ipy.component_callback("anilist_manga_search")
     async def anilist_manga_search(self, ctx: ipy.ComponentContext) -> None:
         """Callback for manga search"""
-        await ctx.defer(edit_origin=True)
+        # Show loading message by editing the origin
+        emoji_id = EMOJI_ATTENTIVE.split(":")[2].split(">")[0]
+        loading_embed = ipy.Embed(
+            title="Loading...",
+            description="Please wait while we fetch the manga information.\n-# If this takes more than 30 seconds, please report to the developer.",
+            color=0xFFAA00,
+        )
+        loading_embed.set_thumbnail(
+            url=f"https://cdn.discordapp.com/emojis/{emoji_id}.png?v=1"
+        )
+        msg = await ctx.edit_origin(embed=loading_embed, components=[])
+
         entry_id: int = int(ctx.values[0])
-        await anilist_submit(ctx, entry_id, replace=True)
+        await anilist_submit(msg, entry_id, replace=True)
 
     @manga_head.subcommand(
         sub_cmd_name="info",
