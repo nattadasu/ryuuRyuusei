@@ -468,24 +468,8 @@ async def generate_mal(
         embed.set_image(url=background)
     buttons: list[Button] = []
     if anime_api is not None:
-        if anime_api.anilist is not None:
-            ext_id = media_id_to_platform(f"{anime_api.anilist}", Platform.ANILIST)
-            buttons.append(
-                Button(
-                    style=ButtonStyle.URL,
-                    url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="aniList"),
-                )
-            )
-        if anime_api.kitsu is not None:
-            ext_id = media_id_to_platform(f"{anime_api.kitsu}", Platform.KITSU)
-            buttons.append(
-                Button(
-                    style=ButtonStyle.URL,
-                    url=ext_id.uid,
-                    emoji=PartialEmoji(id=ext_id.emoid, name="kitsu"),
-                )
-            )
+        # Anime-only platforms (alphabetical order)
+        # AniDB
         if anime_api.anidb is not None:
             ext_id = media_id_to_platform(f"{anime_api.anidb}", Platform.ANIDB)
             buttons.append(
@@ -495,6 +479,29 @@ async def generate_mal(
                     emoji=PartialEmoji(id=ext_id.emoid, name="anidb"),
                 )
             )
+        # AniList
+        if anime_api.anilist is not None:
+            ext_id = media_id_to_platform(f"{anime_api.anilist}", Platform.ANILIST)
+            buttons.append(
+                Button(
+                    style=ButtonStyle.URL,
+                    url=ext_id.uid,
+                    emoji=PartialEmoji(id=ext_id.emoid, name="aniList"),
+                )
+            )
+        # Anime-Planet
+        if anime_api.animeplanet is not None:
+            ext_id = media_id_to_platform(
+                f"{anime_api.animeplanet}", Platform.ANIMEPLANET
+            )
+            buttons.append(
+                Button(
+                    style=ButtonStyle.URL,
+                    url=ext_id.uid,
+                    emoji=PartialEmoji(id=ext_id.emoid, name="animePlanet"),
+                )
+            )
+        # AnimeNewsNetwork
         if anime_api.animenewsnetwork is not None:
             ext_id = media_id_to_platform(
                 f"{anime_api.animenewsnetwork}", Platform.ANIMENEWSNETWORK
@@ -506,6 +513,49 @@ async def generate_mal(
                     emoji=PartialEmoji(id=ext_id.emoid, name="animenewsnetwork"),
                 )
             )
+        # Kitsu
+        if anime_api.kitsu is not None:
+            ext_id = media_id_to_platform(f"{anime_api.kitsu}", Platform.KITSU)
+            buttons.append(
+                Button(
+                    style=ButtonStyle.URL,
+                    url=ext_id.uid,
+                    emoji=PartialEmoji(id=ext_id.emoid, name="kitsu"),
+                )
+            )
+        # LiveChart
+        if anime_api.livechart is not None:
+            ext_id = media_id_to_platform(f"{anime_api.livechart}", Platform.LIVECHART)
+            buttons.append(
+                Button(
+                    style=ButtonStyle.URL,
+                    url=ext_id.uid,
+                    emoji=PartialEmoji(id=ext_id.emoid, name="liveChart"),
+                )
+            )
+        # Shikimori
+        if anime_api.shikimori is not None:
+            ext_id = media_id_to_platform(f"{anime_api.shikimori}", Platform.SHIKIMORI)
+            buttons.append(
+                Button(
+                    style=ButtonStyle.URL,
+                    url=ext_id.uid,
+                    emoji=PartialEmoji(id=ext_id.emoid, name="shikimori"),
+                )
+            )
+
+        # Multi-media platforms
+        # IMDb
+        if anime_api.imdb is not None:
+            ext_id = media_id_to_platform(f"{anime_api.imdb}", Platform.IMDB)
+            buttons.append(
+                Button(
+                    style=ButtonStyle.URL,
+                    url=ext_id.uid,
+                    emoji=PartialEmoji(id=ext_id.emoid, name="imdb"),
+                )
+            )
+        # SIMKL
         if anime_api.simkl is not None:
             ext_id = media_id_to_platform(f"{anime_api.simkl}", Platform.SIMKL, "anime")
             buttons.append(
@@ -515,6 +565,41 @@ async def generate_mal(
                     emoji=PartialEmoji(id=ext_id.emoid, name="simkl"),
                 )
             )
+        # Trakt
+        if (
+            anime_api.trakt is not None
+            and not anime_api.trakt_may_invalid
+            and anime_api.trakt_type is not None
+        ):
+            # Build Trakt URL: https://trakt.tv/{type}/{id_or_slug}[/seasons/{season}]
+            trakt_type = (
+                str(anime_api.trakt_type).split(".")[-1].lower()
+            )  # Extract from enum
+            trakt_id_or_slug = anime_api.trakt_slug or str(anime_api.trakt)
+            trakt_url = f"https://trakt.tv/{trakt_type}/{trakt_id_or_slug}"
+            if anime_api.trakt_season is not None:
+                trakt_url += f"/seasons/{anime_api.trakt_season}"
+
+            ext_id = media_id_to_platform("0", Platform.TRAKT)  # Just for emoji
+            buttons.append(
+                Button(
+                    style=ButtonStyle.URL,
+                    url=trakt_url,
+                    emoji=PartialEmoji(id=ext_id.emoid, name="trakt"),
+                )
+            )
+
+    # Fallback Shikimori button if not in AnimeAPI data
+    if anime_api is None or anime_api.shikimori is None:
+        ext_id = media_id_to_platform(f"{mal_id}", Platform.SHIKIMORI)
+        buttons.append(
+            Button(
+                style=ButtonStyle.URL,
+                url=ext_id.uid,
+                emoji=PartialEmoji(id=ext_id.emoid, name="shikimori"),
+            )
+        )
+
     anime_stats: Button = Button(
         style=ButtonStyle.URL,
         label="Anime Stats",
@@ -525,13 +610,7 @@ async def generate_mal(
         label="AnimeThemes",
         url=f"https://animethemes.moe/anime/{generate_animethemes_slug(rot)}",
     )
-    ext_id = media_id_to_platform(f"{mal_id}", Platform.SHIKIMORI)
-    shiki_button = Button(
-        style=ButtonStyle.URL,
-        url=ext_id.uid,
-        emoji=PartialEmoji(id=ext_id.emoid, name="shikimori"),
-    )
-    buttons.extend([shiki_button, anime_stats, themes_moe])
+    buttons.extend([anime_stats, themes_moe])
 
     return (embed, buttons)
 
