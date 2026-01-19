@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import json
+from io import StringIO
 from typing import Any
 
 import aiohttp
@@ -8,32 +8,30 @@ import pandas as pd
 
 from classes.cache import Caching
 
-MAIN_SITE = r"https://animeapi.my.id/myanimelist%28%29.json"
+MAIN_SITE = r"https://animeapi.my.id/animeapi.tsv"
 CACHE_PATH = "cache/"
-FILE_NAME = "mal.json"
+FILE_NAME = "mal.remote.tsv"
 
 Cache = Caching(cache_directory=CACHE_PATH, cache_expiration_time=86400)
 FILE_PATH = Cache.get_cache_path(FILE_NAME)
 
 
 async def mal_get_data() -> None:
-    """Fetches data from MAIN_SITE and saves it to a JSON file."""
+    """Fetches data from MAIN_SITE and saves it to a TSV file."""
     async with aiohttp.ClientSession() as session, session.get(MAIN_SITE) as response:
         if response.status not in [200, 302, 304]:
             print(f"Error fetching data: HTTP {response.status}: {response.reason}")
             return
         data = await response.text()
-    # save data to json file
-    data = json.loads(data)
     Cache.write_cache(FILE_PATH, data)
 
 
-def mal_load_data() -> dict[str, Any]:
+def mal_load_data() -> str:
     """
-    Loads data from the JSON file and returns it as a dictionary.
+    Loads data from the TSV file and returns it as a string.
 
     Returns:
-        dict: Loaded data.
+        str: Loaded data.
     """
     return Cache.read_cache(FILE_PATH)
 
@@ -44,10 +42,14 @@ async def mal_run() -> None:
     if is_valid is None:
         await mal_get_data()
     data = mal_load_data()
-    df = pd.DataFrame(data)
-    # only select title and myAnimeList columns
+    df = pd.read_csv(StringIO(data), sep="\t")
+    # only select title and myAnimelist columns
     df = df[["myanimelist", "title"]]
-    # rename myAnimeList to mal_id
+    # drop rows with null myanimelist values
+    df = df.dropna(subset=["myanimelist"])
+    # convert myanimelist to int
+    df["myanimelist"] = df["myanimelist"].astype(int)
+    # rename myanimelist to mal_id
     df.rename(columns={"myanimelist": "mal_id"}, inplace=True)
     # sort by mal_id
     df.sort_values(by="mal_id", inplace=True)
