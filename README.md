@@ -118,9 +118,9 @@ By inviting this bot to your server or using it, you agree to the
     src="https://discordbotlist.com/api/v1/bots/811887256368840744/widget"
     height="150">
 </a>
-<a href="https://infinitybots.gg/bot/ryuuzaki-ryuusei">
+<a href="https://omniplex.gg/bot/ryuuzaki-ryuusei">
   <img
-    src="https://widgets.infinitybots.gg/bot/811887256368840744/?size=large&theme=dark&accent=rose"
+    src="https://widgets.omniplex.gg/bot/811887256368840744/?size=large&theme=dark&accent=rose"
     height="150">
 </a>
 </p>

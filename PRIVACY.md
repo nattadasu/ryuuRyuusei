@@ -622,7 +622,7 @@ Data Controller.
 [discord]: https://discord.com
 [gdpr]: https://gdpr.eu
 [gh-nattadasu]: https://github.com/nattadasu
-[ibl]: https://infinitybots.gg
+[ibl]: https://omniplex.gg
 [jikan]: https://jikan.moe/
 [lastfm]: https://last.fm
 [mal]: https://myanimelist.net

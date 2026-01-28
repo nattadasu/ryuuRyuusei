@@ -334,7 +334,7 @@ class Stats(ipy.Extension):
                     ProviderVoteStruct(
                         name="Infinity Bots",
                         bot_id=bot_id,
-                        base_url="https://infinitybots.gg/bot/",
+                        base_url="https://omniplex.gg/bot/",
                         total_votes=ibl_info.votes,
                     )
                 )

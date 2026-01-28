@@ -1,7 +1,7 @@
 """
 # Infinity Bots API Wrapper
 
-A lite wrapper for the infinitybots.gg API.
+A lite wrapper for the omniplex.gg API.
 """
 
 from dataclasses import dataclass
@@ -281,7 +281,7 @@ class InfinityBots:
             bot_id (int, optional): Bot's client ID. Defaults to BOT_CLIENT_ID.
         """
         self.token = token
-        self.base_url = "https://spider.infinitybots.gg"
+        self.base_url = "https://spider.omniplex.gg"
         self.session = None
         self.headers = None
         self.bot_id = bot_id
@@ -349,7 +349,7 @@ class InfinityBots:
         shard_count: int | None = None,
     ) -> int:
         """
-        Post bot stats to infinitybots.gg
+        Post bot stats to omniplex.gg
 
         Args:
             guild_count (int | list[int]): Guild count or list of guild counts.
@@ -359,7 +359,7 @@ class InfinityBots:
 
         Raises:
             RuntimeError: Session is not initialized
-            ProviderHttpError: Failed to post stats to infinitybots.gg
+            ProviderHttpError: Failed to post stats to omniplex.gg
 
         Returns:
             int: HTTP status code
@@ -389,7 +389,7 @@ class InfinityBots:
         ) as resp:
             if resp.status not in [200, 204]:
                 raise ProviderHttpError(
-                    f"Failed to post stats to infinitybots.gg: {resp.status}",
+                    f"Failed to post stats to omniplex.gg: {resp.status}",
                     resp.status,
                 )
             return resp.status
