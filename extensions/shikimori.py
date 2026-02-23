@@ -61,7 +61,7 @@ class ShikimoriCog(ipy.Extension):
     ) -> None:
         await ctx.defer()
         user_data: ShikimoriUserStruct | None
-        base_url = "https://shikimori.one"
+        base_url = "https://shikimori.io"
 
         if shikimori_username and user:
             embed = platform_exception_embed(

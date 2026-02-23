@@ -252,7 +252,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 media_id = ids["mediaid"]
                 source = "rawg"
             case (
-                r"(?:https?://)?(?:www\.)?shikimori\.(one|me|org)/animes/(?P<mediaid>\d+)" as ids
+                r"(?:https?://)?(?:www\.)?(?:shiki\.one|shikimori\.(io|one|me|org))/animes/(?P<mediaid>\d+)" as ids
             ):
                 send_to = "mal"
                 send_type = "anime"
@@ -262,7 +262,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                     media_id = media_id[1:]
                 source = "myanimelist"
             case (
-                r"(?:https?://)?(?:www\.)?shikimori\.(one|me|org)/ranobe/(?P<mediaid>\d+)" as ids
+                r"(?:https?://)?(?:www\.)?(?:shiki\.one|shikimori\.(io|one|me|org))/ranobe/(?P<mediaid>\d+)" as ids
             ):
                 send_to = "anilist"
                 send_type = "manga"
@@ -272,7 +272,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                     media_id = media_id[1:]
                 source = "myanimelist"
             case (
-                r"(?:https?://)?(?:www\.)?shikimori\.(one|me|org)/mangas/(?P<mediaid>\d+)" as ids
+                r"(?:https?://)?(?:www\.)?(?:shiki\.one|shikimori\.(io|one|me|org))/mangas/(?P<mediaid>\d+)" as ids
             ):
                 send_to = "anilist"
                 send_type = "manga"

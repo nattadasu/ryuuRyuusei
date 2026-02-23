@@ -264,7 +264,7 @@ PLATFORM_CONFIGS = {
         "Shikimori (Шикимори)",
         0x2E2E2E,
         "1073441855645155468",
-        "https://shikimori.one/animes/{media_id}",
+        "https://shikimori.io/animes/{media_id}",
     ),
     "shoboi": PlatformConfig(
         "Shoboi Calendar (しょぼいカレンダー)",

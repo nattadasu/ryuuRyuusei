@@ -629,7 +629,7 @@ Data Controller.
 [malh]: https://malheatmap.com
 [pdb]: https://pronoundb.org
 [pdp]: https://jdih.setkab.go.id/PUUdoc/176837/Salinan_UU_Nomor_27_Tahun_2022.pdf
-[shiki]: https://shikimori.one
+[shiki]: https://shikimori.io
 [simkl]: https://simkl.com
 [tmdb]: https://www.themoviedb.org
 [topgg]: https://top.gg
