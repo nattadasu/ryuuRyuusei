@@ -1,6 +1,9 @@
 .env
+.env.bak
+*.tar.gz.enc
 cache/
 database/
+database_backup/
 errors/
 !cache/.gitkeep
 !database/.gitkeep
@@ -10,8 +13,8 @@ errors/
 *.old.py
 modules/old/
 app.config
-private_*.py
-extensions/private_*.py
+**private_*.py
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

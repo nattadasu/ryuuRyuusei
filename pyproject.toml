@@ -26,6 +26,7 @@ dependencies = [
     "audioop-lts>=0.2.2 ; python_full_version >= '3.13'",
     "beautifulsoup4>=4.14.3",
     "certifi>=2023.7.22",
+    "cryptography>=42.0.0",
     "cutlet>=0.1.dev114 ; python_full_version < '3.13' and sys_platform != 'win32'",
     "cutlet @ git+https://github.com/ryuuRyuusei/cutlet-pure@master ; python_full_version >= '3.13' or sys_platform == 'win32'",
     "dacite>=1.9.2",
