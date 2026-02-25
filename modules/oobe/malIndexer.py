@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from io import StringIO
-from typing import Any
 
 import aiohttp
 import pandas as pd

@@ -172,7 +172,7 @@ class Temperature:
             "kelvin": lambda t: (t * 5 / 4) + 273.15,
             "fahrenheit": lambda t: (t * 9 / 4) + 32,
             "romer": lambda t: (t * 21 / 32) + 7.5,
-            "newton": lambda t: (t * 33 / 80),
+            "newton": lambda t: t * 33 / 80,
             "delisle": lambda t: (80 - t) * 15 / 8,
         },
         "romer": {
