@@ -1,6 +1,7 @@
 .env
 .env.bak
 *.tar.gz.enc
+*.tar.gz.key
 cache/
 database/
 database_backup/
@@ -14,6 +15,7 @@ errors/
 modules/old/
 app.config
 **private_*.py
+**.py.save
 
 
 # Byte-compiled / optimized / DLL files
