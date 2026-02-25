@@ -110,6 +110,22 @@ async def first_run(py_bin: str = py_bin_path()):
     print("Migrating database to new schema...")
     await migrate()
 
+    # Import backup option
+    print("\nDo you have a backup to import? (y/N) ")
+    choice = input().lower()
+    if choice == "y":
+        print("Please enter the path/url to the backup file (.enc):")
+        backup_file = input().strip()
+        print("Please enter the encryption key:")
+        backup_key = input().strip()
+
+        if backup_file and backup_key:
+            from import_backup import import_backup as import_func
+
+            await import_func(backup_file, backup_key)
+        else:
+            print("Invalid input, skipping backup import...")
+
     # Check if .env exists, if not, copy .env.example
     if not os.path.exists(".env"):
         print("Copying .env.example to .env...")
