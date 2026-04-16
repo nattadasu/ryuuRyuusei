@@ -37,7 +37,7 @@ dependencies = [
     "interactions-py==5.15.0",
     "numpy>=1.22.2",
     "pandas>=2.3.3",
-    "pillow>=12.1.0",
+    "pillow>=12.2.0",
     "plusminus>=0.8.1",
     "psutil>=7.2.1",
     "pykakasi>=2.3.0",
