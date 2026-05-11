@@ -50,7 +50,7 @@ dependencies = [
     "setuptools>=78.1.1",
     "tzdata>=2025.3",
     "unidic>=1.1.0",
-    "urllib3>=2.2.2",
+    "urllib3>=2.7.0",
     "validators>=0.35.0",
     "zipp>=3.19.1",
 ]
