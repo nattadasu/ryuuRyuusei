@@ -9,7 +9,7 @@ from typing import Any, Literal
 from aiohttp import ClientSession
 
 from classes.cache import Caching
-from modules.const import USER_AGENT
+from modules.const import USER_AGENT, JIKAN_URL
 
 Cache = Caching(cache_directory="cache/jikan", cache_expiration_time=86400)
 
@@ -548,7 +548,7 @@ class JikanApi:
 
     def __init__(self):
         """Init"""
-        self.base_url = "https://api.jikan.moe/v4"
+        self.base_url = JIKAN_URL
         self.session = None
         self.user_agent = ""
 
