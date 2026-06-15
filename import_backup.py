@@ -65,10 +65,98 @@ async def import_backup(file_path: str, key: str):
             temp_enc_path.unlink()
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Import an encrypted backup.")
-    parser.add_argument("file", help="The encrypted backup file (.enc)")
-    parser.add_argument("key", help="The encryption key")
+async def export_backup(output_path: str):
+    import tempfile
 
-    args = parser.parse_args()
-    asyncio.run(import_backup(args.file, args.key))
+    try:
+        print("Packaging files...")
+        with tempfile.TemporaryDirectory() as tmpdir:
+            temp_dir_to_archive = Path(tmpdir) / "backup_content"
+            temp_dir_to_archive.mkdir()
+
+            # Add database directory
+            if os.path.exists("database"):
+                shutil.copytree(
+                    "database", temp_dir_to_archive / "database", dirs_exist_ok=True
+                )
+                print("Added 'database' folder to backup.")
+
+            # Add .env file
+            if os.path.exists(".env"):
+                shutil.copy2(".env", temp_dir_to_archive / ".env")
+                print("Added '.env' file to backup.")
+
+            # Add any private_ files/folders (e.g., extensions/private_seasonal.py)
+            private_count = 0
+            for path in Path(".").rglob("private_*"):
+                if (
+                    "__pycache__" in str(path)
+                    or ".mypy_cache" in str(path)
+                    or ".ruff_cache" in str(path)
+                ):
+                    continue
+
+                relative_path = path.relative_to(".")
+                dest_path = temp_dir_to_archive / relative_path
+
+                if path.is_dir():
+                    shutil.copytree(path, dest_path, dirs_exist_ok=True)
+                else:
+                    dest_path.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(path, dest_path)
+                private_count += 1
+
+            if private_count > 0:
+                print(f"Added {private_count} private files/folders to backup.")
+
+            # Create tar archive
+            archive_path_base = Path(tmpdir) / "backup"
+            archive_path = Path(
+                shutil.make_archive(
+                    str(archive_path_base), "tar", root_dir=temp_dir_to_archive
+                )
+            )
+
+            print("Compressing and encrypting backup...")
+            enc_path, key = CryptoUtils.encrypt_and_package(archive_path)
+
+            final_path = Path(output_path)
+            final_path.parent.mkdir(parents=True, exist_ok=True)
+            if final_path.exists():
+                final_path.unlink()
+            shutil.move(enc_path, final_path)
+
+            print(f"Backup exported successfully to {final_path}")
+            print(f"Encryption Key: {key}")
+            print("Please save this key in a secure place. It is required to decrypt/import the backup.")
+
+    except Exception as e:
+        print(f"An error occurred during export: {e}")
+
+
+if __name__ == "__main__":
+    import sys
+
+    parser = argparse.ArgumentParser(description="Backup utility for import and export.")
+    subparsers = parser.add_subparsers(dest="action", help="Action to perform")
+
+    # Import parser
+    import_parser = subparsers.add_parser("import", help="Import an encrypted backup")
+    import_parser.add_argument("file", help="The encrypted backup file (.enc)")
+    import_parser.add_argument("key", help="The encryption key")
+
+    # Export parser
+    export_parser = subparsers.add_parser("export", help="Export an encrypted backup")
+    export_parser.add_argument(
+        "-o", "--output", default="backup.tar.gz.enc", help="The output encrypted backup file path"
+    )
+
+    if len(sys.argv) == 3 and sys.argv[1] not in ("import", "export"):
+        asyncio.run(import_backup(sys.argv[1], sys.argv[2]))
+    else:
+        subparsers.required = True
+        args = parser.parse_args()
+        if args.action == "import":
+            asyncio.run(import_backup(args.file, args.key))
+        elif args.action == "export":
+            asyncio.run(export_backup(args.output))
