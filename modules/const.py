@@ -93,7 +93,7 @@ BIRTHDAY_WEBHOOK: Final[str] = cast(str, ge("BIRTHDAY_WEBHOOK"))
 VERIFIED_ROLE: Final[int] = cast(int, ge("VERIFIED_ROLE"))
 """Verified role ID"""
 
-JIKAN_URL: Final[str] = cast(str, ge("JIKAN_URL") or "https://api.jikan.moe/v4")
+JIKAN_URL: Final[str] = cast(str, (ge("JIKAN_URL") or "https://api.jikan.moe/v4").rstrip("/"))
 """Jikan API URL"""
 
 EMOJI_ATTENTIVE: Final[str] = cast(str, ge("EMOJI_ATTENTIVE"))
