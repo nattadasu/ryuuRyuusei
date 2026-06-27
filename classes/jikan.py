@@ -9,7 +9,7 @@ from typing import Any, Literal
 from aiohttp import ClientSession
 
 from classes.cache import Caching
-from modules.const import USER_AGENT, JIKAN_URL
+from modules.const import JIKAN_URL, USER_AGENT
 
 Cache = Caching(cache_directory="cache/jikan", cache_expiration_time=86400)
 

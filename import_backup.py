@@ -128,7 +128,9 @@ async def export_backup(output_path: str):
 
             print(f"Backup exported successfully to {final_path}")
             print(f"Encryption Key: {key}")
-            print("Please save this key in a secure place. It is required to decrypt/import the backup.")
+            print(
+                "Please save this key in a secure place. It is required to decrypt/import the backup."
+            )
 
     except Exception as e:
         print(f"An error occurred during export: {e}")
@@ -137,7 +139,9 @@ async def export_backup(output_path: str):
 if __name__ == "__main__":
     import sys
 
-    parser = argparse.ArgumentParser(description="Backup utility for import and export.")
+    parser = argparse.ArgumentParser(
+        description="Backup utility for import and export."
+    )
     subparsers = parser.add_subparsers(dest="action", help="Action to perform")
 
     # Import parser
@@ -148,7 +152,10 @@ if __name__ == "__main__":
     # Export parser
     export_parser = subparsers.add_parser("export", help="Export an encrypted backup")
     export_parser.add_argument(
-        "-o", "--output", default="backup.tar.gz.enc", help="The output encrypted backup file path"
+        "-o",
+        "--output",
+        default="backup.tar.gz.enc",
+        help="The output encrypted backup file path",
     )
 
     if len(sys.argv) == 3 and sys.argv[1] not in ("import", "export"):
