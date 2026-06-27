@@ -47,6 +47,8 @@ class MediaStatus(Enum):
     DROPPED = "Dropped"
     PLAN_TO_WATCH = "Plan to Watch"
     PLAN_TO_READ = "Plan to Read"
+    RE_WATCHING = "Re-watching"
+    RE_READING = "Re-reading"
 
 
 @dataclass
@@ -123,7 +125,7 @@ class MyAnimeListRss:
         return datetime.strptime(date, "%a, %d %b %Y %H:%M:%S %z")
 
     @staticmethod
-    def _parse_status(status: str) -> MediaStatus:
+    def _parse_status(status: str, is_manga: bool = False) -> MediaStatus:
         """Parse status from string to MediaStatus enum"""
         match status:
             case "Watching":
@@ -140,6 +142,8 @@ class MyAnimeListRss:
                 return MediaStatus.PLAN_TO_WATCH
             case "Plan to Read":
                 return MediaStatus.PLAN_TO_READ
+            case "":
+                return MediaStatus.RE_READING if is_manga else MediaStatus.RE_WATCHING
             case _:
                 ...
 
@@ -167,7 +171,7 @@ class MyAnimeListRss:
             url = self._parse_url(data.find("link").text)
             # get CDATA from description
             description = data.find("description").text
-            status = self._parse_status(description.split(" - ")[0])
+            status = self._parse_status(description.split(" - ")[0], ("manga" in url))
             progress_from, progress_to = self._parse_progress(description)
             updated = self._parse_date(data.find("pubDate").text)
             item.append(

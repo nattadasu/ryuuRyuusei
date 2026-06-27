@@ -422,6 +422,8 @@ Use `/register` to register, or use `/myanimelist profile mal_username:<username
                                 status = "🗑️"
                             case MediaStatus.PLAN_TO_WATCH:
                                 status = "⏰"
+                            case MediaStatus.RE_WATCHING:
+                                status = "🔁"
                         anime.progress_to = (
                             "*Unknown*"
                             if anime.progress_to is None
@@ -471,6 +473,8 @@ Use `/register` to register, or use `/myanimelist profile mal_username:<username
                                 status = "⏸️"
                             case MediaStatus.DROPPED:
                                 status = "🗑️"
+                            case MediaStatus.RE_READING:
+                                status = "🔁"
                         manga.progress_to = (
                             "*Unknown*"
                             if manga.progress_to is None
