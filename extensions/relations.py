@@ -271,13 +271,6 @@ class RelationsViewBuilder:
         elif tvdb_raw:
             tvdb_url = f"https://www.thetvdb.com/deferrer/{tvtyp}/{tvdb_raw}"
 
-        # TVTime
-        tvtime_url = (
-            f"{'show' if tvtyp == 'series' else 'movie'}/{tvdb_raw}"
-            if tvdb_raw
-            else None
-        )
-
         # TMDB
         tmdb_url = f"{tmtyp}/{tmdb_id}" if tmdb_id else None
 
