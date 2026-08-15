@@ -3,6 +3,16 @@ import platform
 import sys
 
 
+def is_uv() -> bool:
+    """
+    Check if the script is running via uv run.
+
+    Returns:
+        bool: True if running via uv run, False otherwise.
+    """
+    return os.environ.get("UV") is not None
+
+
 def current_os() -> str:
     """
     Return the name of the current operating system.

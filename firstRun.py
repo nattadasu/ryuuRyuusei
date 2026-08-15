@@ -4,9 +4,11 @@ A script to run first-time setup for a Discord bot.
 This script installs dependencies, prepares the database, fetches data from GitHub,
 indexes MyAnimeList data from AnimeAPI, and copies .env.example to .env.
 
-Usage: python3 firstRun.py
+No manual venv setup required - just run the script and it will handle everything:
+    uv run firstRun.py     # Recommended
+    python3 firstRun.py    # Fallback (requires pip)
 
-Example: python3 firstRun.py
+Example: uv run firstRun.py
 """
 
 import asyncio
@@ -14,10 +16,12 @@ import os
 import shlex
 import subprocess
 
-from modules.oobe.commons import check_termux, current_os, prepare_database, py_bin_path
-from modules.oobe.getNekomimi import nk_run
-from modules.oobe.malIndexer import mal_run
-from modules.oobe.migrate import migrate
+from modules.oobe.commons import (
+    check_termux,
+    current_os,
+    is_uv,
+    py_bin_path,
+)
 
 
 class FirstRunError(Exception):
@@ -45,33 +49,48 @@ async def first_run(py_bin: str = py_bin_path()):
             safe_path = py_bin
         case _:
             safe_path = shlex.quote(py_bin)
+
+    # Install/upgrade dependencies
     try:
         # Check if Termux is used
-        env = {"MATHLAB": "m"} if check_termux() else {}
-        # Install dependencies
+        env = os.environ.copy()
+        if check_termux():
+            env["MATHLAB"] = "m"
         print(
             "Installing and upgrading dependencies for the next step and the bot itself..."
         )
-        proc_args = [
-            safe_path,
-            "-m",
-            "pip",
-            "install",
-            "-U",
-            "-r",
-            "requirements.txt",
-        ]
+        if is_uv():
+            proc_args = ["uv", "sync", "--upgrade"]
+        else:
+            proc_args = [
+                safe_path,
+                "-m",
+                "pip",
+                "install",
+                "-U",
+                "-r",
+                "requirements.txt",
+            ]
         if current_os() == "Windows":
             subprocess.run(proc_args, check=True)
         else:
             subprocess.run(proc_args, check=True, env=env)
 
     except subprocess.CalledProcessError:
-        print("\033[31mError installing packages, please run frollowing command:")
-        command = "pip install -U -r requirements.txt"
+        print("\033[31mError installing packages, please run following command:")
+        if is_uv():
+            command = "uv sync --upgrade"
+        else:
+            command = "pip install -U -r requirements.txt"
         if check_termux():
             command = "MATHLAB=m " + command
         print(f"{command}\033[0m")
+
+    # Import modules that depend on installed packages
+    from modules.oobe.commons import prepare_database
+    from modules.oobe.getNekomimi import nk_run
+    from modules.oobe.malIndexer import mal_run
+    from modules.oobe.migrate import migrate
 
     # create a dummy file named cache/dict_installed, if it doesn't exist
     if not os.path.exists("cache/dict_installed"):
@@ -90,9 +109,9 @@ async def first_run(py_bin: str = py_bin_path()):
                 file.write("")
         except subprocess.CalledProcessError:
             print(
-                "\033[31mError installing unidic dictionary, please run frollowing command:"
+                "\033[31mError installing unidic dictionary, please run following command:"
             )
-            print(f"{py_bin} -m unidic download\033[0m")
+            print(f"{safe_path} -m unidic download\033[0m")
 
     # Prepare the database
     print("Preparing the database as database.csv in tabbed format...")
