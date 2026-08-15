@@ -9,7 +9,6 @@ from classes.animeapi import AnimeApi, AnimeApiAnime
 from classes.excepts import ProviderHttpError, SimklTypeError
 from classes.kitsu import Kitsu
 from classes.simkl import Simkl, SimklMediaTypes, SimklRelations
-from classes.trakt import Trakt, TraktMediaStruct
 from modules.commons import save_traceback_to_file
 from modules.const import EMOJI_UNEXPECTED_ERROR
 from modules.platforms import (
@@ -45,23 +44,12 @@ EXTERNAL_PLATFORM_MAP: dict[str, AnimeApi.AnimeApiPlatforms] = {
 
 
 @dataclass
-class TraktSessionInfo:
-    """Session details parsed from or related to Trakt"""
-
-    type: str | None = None
-    id: str | None = None
-    season: int | None = None
-
-
-@dataclass
 class ResolvedRelationState:
     """Unified container storing resolution output across platforms"""
 
     anime_api: AnimeApiAnime = field(default_factory=lambda: AnimeApiAnime(title=""))
     simkl_data: SimklRelations = field(default_factory=SimklRelations)
     simkl_id: int | None = None
-    trakt_data: TraktMediaStruct | None = None
-    trakt_info: TraktSessionInfo = field(default_factory=TraktSessionInfo)
 
 
 class RelationsFetcher:
@@ -106,29 +94,6 @@ class RelationsFetcher:
         except (SimklTypeError, ProviderHttpError):
             pass
         return None
-
-    @staticmethod
-    async def get_trakt_data(media_id: str, media_type: str) -> TraktMediaStruct:
-        """Fetch Trakt media info"""
-        async with Trakt() as api:
-            return await api.get_title_data(
-                media_id=media_id, media_type=api.MediaType(media_type)
-            )
-
-    @staticmethod
-    async def lookup_trakt(
-        media_id: str, platform: str, media_type: str
-    ) -> TraktMediaStruct | None:
-        """Lookup Trakt entry by external ID"""
-        try:
-            async with Trakt() as api:
-                return await api.lookup(
-                    media_id=media_id,
-                    platform=api.Platform(platform),
-                    media_type=api.MediaType(media_type),
-                )
-        except ProviderHttpError:
-            return None
 
 
 class PlatformHandler:
@@ -217,34 +182,6 @@ class PlatformHandler:
 
         return anime_api, simkl_data, simkl_id
 
-    async def handle_trakt(
-        self, media_id: str
-    ) -> tuple[AnimeApiAnime, TraktMediaStruct, TraktSessionInfo]:
-        """Resolve Trakt platform input"""
-        pattern = (
-            r"^(?P<type>show|movie)s?/(?P<slug>[^/]+)(?:/seasons?/(?P<season>\d+))?$"
-        )
-        matching = re.match(pattern, media_id)
-        if not matching:
-            raise ValueError(
-                "Invalid Trakt ID format. Format: <show|movie>/<slug>[/seasons/<season>]"
-            )
-
-        trakt_type = matching.group("type")
-        trakt_slug = matching.group("slug")
-        trakt_season = int(matching.group("season") or 1)
-
-        trakt_data = await self.fetcher.get_trakt_data(trakt_slug, f"{trakt_type}s")
-        anime_api = await self.fetcher.get_anime_api(
-            f"{trakt_type}/{trakt_slug}/seasons/{trakt_season}",
-            AnimeApi.AnimeApiPlatforms.TRAKT,
-        )
-
-        trakt_info = TraktSessionInfo(
-            type=trakt_type, id=f"{trakt_type}/{trakt_slug}", season=trakt_season
-        )
-        return anime_api, trakt_data, trakt_info
-
 
 class RelationsEnricher:
     """Cross-platform enrichment pipeline"""
@@ -254,7 +191,7 @@ class RelationsEnricher:
 
     async def enrich_simkl(self, state: ResolvedRelationState, platform: str) -> None:
         """Cross-reference SIMKL database"""
-        if state.simkl_id or platform in ("simkl", "trakt", "tmdb", "tvdb", "imdb"):
+        if state.simkl_id or platform in ("simkl", "tmdb", "tvdb", "imdb"):
             return
 
         if state.anime_api.simkl:
@@ -274,58 +211,6 @@ class RelationsEnricher:
                 state.simkl_id = simkl_id
                 state.simkl_data = await self.fetcher.get_simkl_by_id(simkl_id)
 
-    async def enrich_trakt(self, state: ResolvedRelationState, platform: str) -> None:
-        """Cross-reference Trakt database"""
-        if state.trakt_info.id or platform == "trakt":
-            return
-
-        if state.anime_api.trakt:
-            t_type = (
-                state.anime_api.trakt_type.value
-                if hasattr(state.anime_api.trakt_type, "value")
-                else str(state.anime_api.trakt_type)
-            )
-            t_season = state.anime_api.trakt_season or 1
-            state.trakt_info = TraktSessionInfo(
-                type=t_type,
-                id=f"{t_type}/{state.anime_api.trakt}/seasons/{t_season}",
-                season=t_season,
-            )
-            return
-
-        imdb_id = state.anime_api.imdb or state.simkl_data.imdb
-        tmdb_id = state.anime_api.themoviedb or state.simkl_data.tmdb
-
-        if imdb_id or tmdb_id:
-            lookup_id = str(imdb_id or tmdb_id)
-            lookup_platform = "imdb" if imdb_id else "tmdb"
-
-            if state.anime_api.themoviedb_type:
-                tm_str = (
-                    state.anime_api.themoviedb_type.value
-                    if hasattr(state.anime_api.themoviedb_type, "value")
-                    else str(state.anime_api.themoviedb_type)
-                )
-                m_type = "movies" if tm_str == "movie" else "shows"
-            elif (
-                state.simkl_data.anitype == "movie" or state.simkl_data.type == "movie"
-            ):
-                m_type = "movies"
-            else:
-                m_type = "shows"
-
-            trakt_lookup = await self.fetcher.lookup_trakt(
-                lookup_id, lookup_platform, m_type
-            )
-            if trakt_lookup:
-                t_type = trakt_lookup.type
-                trakt_obj = (
-                    trakt_lookup.show if t_type == "show" else trakt_lookup.movie
-                )
-                state.trakt_info = TraktSessionInfo(
-                    type=t_type, id=f"{t_type}/{trakt_obj.ids.trakt}", season=1
-                )
-
 
 class RelationsViewBuilder:
     """Builds interactive Discord Embed visual representations"""
@@ -334,7 +219,6 @@ class RelationsViewBuilder:
     def derive_media_types(
         anime_api: AnimeApiAnime,
         simkl_data: SimklRelations,
-        trakt_type: str | None,
     ) -> tuple[str, str]:
         """Derive (tv_type, tmdb_type) string identifiers"""
         if anime_api.themoviedb_type:
@@ -350,9 +234,6 @@ class RelationsViewBuilder:
         elif simkl_data.type:
             tvtyp = "series" if simkl_data.type == "show" else "movies"
             tmtyp = "tv" if simkl_data.type == "show" else "movie"
-        elif trakt_type:
-            tvtyp = "series" if trakt_type == "show" else "movies"
-            tmtyp = "tv" if trakt_type == "show" else "movie"
         else:
             tvtyp, tmtyp = "series", "tv"
 
@@ -368,10 +249,9 @@ class RelationsViewBuilder:
         """Construct the complete relations Embed component"""
         anime_api = state.anime_api
         simkl_data = state.simkl_data
-        trakt_info = state.trakt_info
 
         title = anime_api.title or simkl_data.title or "Unknown"
-        tvtyp, tmtyp = cls.derive_media_types(anime_api, simkl_data, trakt_info.type)
+        tvtyp, tmtyp = cls.derive_media_types(anime_api, simkl_data)
 
         tmdb_id = (
             raw_media_id
@@ -382,28 +262,14 @@ class RelationsViewBuilder:
             raw_media_id if platform == "imdb" else (anime_api.imdb or simkl_data.imdb)
         )
 
-        tvdb_raw = (
-            anime_api.thetvdb
-            or simkl_data.tvdb
-            or (
-                state.trakt_data.ids.tvdb
-                if state.trakt_data and state.trakt_data.ids
-                else None
-            )
-        )
+        tvdb_raw = anime_api.thetvdb or simkl_data.tvdb
 
         # Build TVDB URL
         tvdb_url = None
-        if trakt_info.season:
-            if simkl_data.tvdbslug:
-                tvdb_url = f"https://www.thetvdb.com/{tvtyp}/{simkl_data.tvdbslug}/seasons/official/{trakt_info.season}"
-            elif tvdb_raw:
-                tvdb_url = f"https://www.thetvdb.com/deferrer/{tvtyp}/{tvdb_raw}"
-        else:
-            if simkl_data.tvdbslug:
-                tvdb_url = f"https://www.thetvdb.com/{tvtyp}/{simkl_data.tvdbslug}"
-            elif tvdb_raw:
-                tvdb_url = f"https://www.thetvdb.com/deferrer/{tvtyp}/{tvdb_raw}"
+        if simkl_data.tvdbslug:
+            tvdb_url = f"https://www.thetvdb.com/{tvtyp}/{simkl_data.tvdbslug}"
+        elif tvdb_raw:
+            tvdb_url = f"https://www.thetvdb.com/deferrer/{tvtyp}/{tvdb_raw}"
 
         # TVTime
         tvtime_url = (
@@ -413,28 +279,17 @@ class RelationsViewBuilder:
         )
 
         # TMDB
-        tmdb_url = None
-        if tmdb_id:
-            tmdb_url = (
-                f"{tmtyp}/{tmdb_id}/season/{trakt_info.season}"
-                if trakt_info.season
-                else f"{tmtyp}/{tmdb_id}"
-            )
+        tmdb_url = f"{tmtyp}/{tmdb_id}" if tmdb_id else None
 
         # Trakt String
-        if trakt_info.id:
-            trakt_str = trakt_info.id
-        elif anime_api.trakt:
-            t_type = (
-                anime_api.trakt_type.value
-                if hasattr(anime_api.trakt_type, "value")
-                else str(anime_api.trakt_type)
-            )
-            trakt_str = (
-                f"{t_type}/{anime_api.trakt}/seasons/{anime_api.trakt_season or 1}"
-                if t_type == "shows"
-                else f"{t_type}/{anime_api.trakt}"
-            )
+        if anime_api.trakt:
+            if hasattr(anime_api.trakt_type, "value"):
+                t_type = anime_api.trakt_type.value
+            elif anime_api.trakt_type:
+                t_type = str(anime_api.trakt_type)
+            else:
+                t_type = "shows" if simkl_data.type in ("show", "tv") else "movies"
+            trakt_str = f"{t_type}/{anime_api.trakt}"
         elif simkl_data.trakt:
             t_type = "shows" if simkl_data.type in ("show", "tv") else "movies"
             trakt_str = f"{t_type}/{simkl_data.trakt}"
@@ -490,8 +345,6 @@ class RelationsViewBuilder:
                 if re.match(r"^\d+$", raw_media_id)
                 else f"https://www.thetvdb.com/{tvtyp}/{raw_media_id}"
             )
-        elif platform == "trakt":
-            display_media_id = f"{trakt_info.type}/{trakt_info.id}"
         elif platform == "tmdb":
             display_media_id = f"{tmtyp}/{raw_media_id}"
 
@@ -541,12 +394,12 @@ class RelationsViewBuilder:
             url=pfs.uid,
             description=(
                 "Data might be inaccurate, especially for sequels of the title "
-                "(as IMDb, TVDB, TMDB, and Trakt rely on per-title entries rather than season entries)"
+                "(as IMDb, TVDB, and TMDB rely on per-title entries rather than season entries)"
             ),
             color=get_platform_color(platform),
             fields=fields,
             footer=ipy.EmbedFooter(
-                text=f"Powered by nattadasu's AnimeAPI, Trakt, and SIMKL.{poster_text}"
+                text=f"Powered by nattadasu's AnimeAPI and SIMKL.{poster_text}"
             ),
         )
         if poster:
@@ -610,10 +463,6 @@ class ExternalSitesRelations(ipy.Extension):
                     ipy.SlashCommandChoice(name="SIMKL", value="simkl"),
                     ipy.SlashCommandChoice(name="The Movie Database", value="tmdb"),
                     ipy.SlashCommandChoice(name="The TVDB", value="tvdb"),
-                    ipy.SlashCommandChoice(
-                        name="Trakt (requires <type>/<slug>/seasons/<season>)",
-                        value="trakt",
-                    ),
                 ],
                 required=True,
             ),
@@ -654,7 +503,6 @@ class ExternalSitesRelations(ipy.Extension):
             "simkl",
             "tmdb",
             "tvdb",
-            "trakt",
         ],
         media_type: Literal["show", "movie"] | None = None,
     ) -> None:
@@ -678,21 +526,13 @@ class ExternalSitesRelations(ipy.Extension):
                     media_id, platform, media_type
                 )
 
-            elif platform == "trakt":
-                (
-                    state.anime_api,
-                    state.trakt_data,
-                    state.trakt_info,
-                ) = await self.handler.handle_trakt(media_id)
-
             else:
                 state.anime_api = await self.handler.handle_anime_platform(
                     media_id, platform
                 )
 
-            # Cross-enrich state with SIMKL & Trakt data
+            # Cross-enrich state with SIMKL data
             await self.enricher.enrich_simkl(state, platform)
-            await self.enricher.enrich_trakt(state, platform)
 
             # Render Embed
             embed = RelationsViewBuilder.build_embed(platform, media_id, state)
