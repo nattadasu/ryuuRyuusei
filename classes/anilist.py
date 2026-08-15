@@ -723,6 +723,92 @@ class AniList:
                 Cache.write_data_to_cache(user_data, cache_file_path)
             return from_dict(AniListUserStruct, user_data, config=config)
 
+    async def random_media(
+        self,
+        media_type: Literal["ANIME", "MANGA"] | MediaType = MediaType.ANIME,
+        format_in: list[str] | None = None,
+        country: str | None = None,
+        minimum_score: int | None = None,
+        year_from: int | None = None,
+        year_to: int | None = None,
+        per_page: int = 50,
+    ) -> dict[str, Any] | None:
+        """
+        Get a random anime or manga with high entropy using AniList GraphQL API
+
+        Args:
+            media_type (Literal['ANIME', 'MANGA'] | MediaType): Media type
+            format_in (list[str] | None): Format list (e.g. ['TV', 'MOVIE'])
+            country (str | None): Country of origin code (e.g. 'JP', 'KR', 'CN')
+            minimum_score (int | None): Minimum average score (1-100)
+            year_from (int | None): Start year
+            year_to (int | None): End year
+            per_page (int): Items per page
+
+        Returns:
+            dict[str, Any] | None: Random media item dictionary or None
+        """
+        import random
+
+        if isinstance(media_type, self.MediaType):
+            media_type = media_type.value
+
+        variables: dict[str, Any] = {
+            "mediaType": media_type,
+            "page": random.randint(1, 100),
+            "perPage": per_page,
+            "sort": random.choice(
+                ["POPULARITY_DESC", "SCORE_DESC", "FAVOURITES_DESC", "ID_DESC"]
+            ),
+        }
+
+        filters = ["type: $mediaType"]
+        if format_in:
+            variables["formatIn"] = format_in
+            filters.append("format_in: $formatIn")
+        if country:
+            variables["country"] = country
+            filters.append("countryOfOrigin: $country")
+        if minimum_score:
+            variables["minScore"] = minimum_score
+            filters.append("averageScore_greater: $minScore")
+        if year_from:
+            variables["yearFrom"] = year_from * 10000
+            filters.append("startDate_greater: $yearFrom")
+        if year_to:
+            variables["yearTo"] = (year_to + 1) * 10000
+            filters.append("startDate_less: $yearTo")
+
+        filter_str = ", ".join(filters)
+        gqlquery = f"""query ($page: Int, $perPage: Int, $mediaType: MediaType{", $formatIn: [MediaFormat]" if format_in else ""}{", $country: CountryCode" if country else ""}{", $minScore: Int" if minimum_score else ""}{", $yearFrom: FuzzyDateInt" if year_from else ""}{", $yearTo: FuzzyDateInt" if year_to else ""}, $sort: [MediaSort]) {{
+    Page(page: $page, perPage: $perPage) {{
+        media({filter_str}, sort: $sort) {{
+            id
+            idMal
+            title {{
+                romaji
+                english
+                native
+            }}
+            format
+            isAdult
+        }}
+    }}
+}}"""
+        async with self.session.post(
+            self.base_url, json={"query": gqlquery, "variables": variables}
+        ) as response:
+            try:
+                data: dict[str, Any] = await response.json()
+            except Exception as err:
+                raise ProviderHttpError(str(err), response.status) from err
+            results = data.get("data", {}).get("Page", {}).get("media", [])
+            if media_type == "ANIME":
+                results = [item for item in results if item.get("idMal")]
+            if results:
+                return random.choice(results)
+            return None
+
     async def search_media(
         self,
         query: str,

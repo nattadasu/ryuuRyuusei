@@ -2,7 +2,6 @@ from typing import Literal
 
 import interactions as ipy
 
-from classes.anibrain import AniBrainAI, AniBrainAiMedia
 from classes.anilist import AniList
 from classes.excepts import ProviderHttpError
 from modules.anilist import anilist_submit
@@ -280,39 +279,31 @@ class Manga(ipy.Extension):
                 ),
             )
         )
-        media_data: list[AniBrainAiMedia] = []
         try:
-            async with AniBrainAI() as anibrain:
-                countries = (
-                    [i for i in anibrain.CountryOfOrigin]
-                    if country == "any"
-                    else [anibrain.CountryOfOrigin(country)]
+            country_map = {
+                "Japan": "JP",
+                "South Korea": "KR",
+                "China": "CN",
+                "Taiwan": "TW",
+            }
+            format_map = {
+                "manga": ["MANGA"],
+                "one_shot": ["ONE_SHOT"],
+                "light_novel": ["NOVEL"],
+            }
+            async with AniList() as anilist:
+                res = await anilist.random_media(
+                    media_type=anilist.MediaType.MANGA,
+                    format_in=format_map.get(media_type),
+                    country=country_map.get(country),
+                    minimum_score=min_score if min_score > 0 else None,
+                    year_from=release_from if release_from > 1930 else None,
+                    year_to=release_to,
                 )
-                match media_type:
-                    case "manga":
-                        media_data = await anibrain.get_manga(
-                            filter_country=countries,
-                            filter_release_from=release_from,
-                            filter_release_to=release_to,
-                            filter_score=min_score,
-                        )
-                    case "one_shot":
-                        media_data = await anibrain.get_one_shot(
-                            filter_country=countries,
-                            filter_release_from=release_from,
-                            filter_release_to=release_to,
-                            filter_score=min_score,
-                        )
-                    case "light_novel":
-                        media_data = await anibrain.get_light_novel(
-                            filter_country=countries,
-                            filter_release_from=release_from,
-                            filter_release_to=release_to,
-                            filter_score=min_score,
-                        )
-            if not media_data:
+            if not res or "id" not in res:
                 raise ValueError("No manga found matching the criteria")
-            media_id = media_data[0].anilistId
+
+            media_id = res["id"]
             await send.edit(
                 embed=ipy.Embed(
                     title="Random manga",

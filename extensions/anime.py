@@ -2,7 +2,7 @@ from typing import Literal
 
 import interactions as ipy
 
-from classes.anibrain import AniBrainAI
+from classes.anilist import AniList
 from classes.excepts import ProviderHttpError
 from modules.anilist import search_al_anime
 from modules.commons import (
@@ -282,36 +282,41 @@ class Anime(ipy.Extension):
                 ),
             )
         )
+        anime = None
+        sauce = "AniList"
+        country_map = {
+            "Japan": "JP",
+            "South Korea": "KR",
+            "China": "CN",
+            "Taiwan": "TW",
+        }
+        format_map = {
+            "TV": ["TV"],
+            "Movie": ["MOVIE"],
+            "OVA": ["OVA"],
+            "ONA": ["ONA"],
+            "Special": ["SPECIAL"],
+            "TV Short": ["TV_SHORT"],
+        }
         try:
-            async with AniBrainAI() as ai:
-                countries = (
-                    [i for i in ai.CountryOfOrigin]
-                    if country == "any"
-                    else [ai.CountryOfOrigin(country)]
+            async with AniList() as anilist:
+                res = await anilist.random_media(
+                    media_type=anilist.MediaType.ANIME,
+                    format_in=format_map.get(media_type),
+                    country=country_map.get(country),
+                    minimum_score=min_score if min_score > 0 else None,
+                    year_from=release_from if release_from > 1930 else None,
+                    year_to=release_to,
                 )
-                if media_type != "any":
-                    target_media_type = [ai.AnimeMediaType(media_type.lower())]
-                else:
-                    target_media_type = "[]"
-                media_data = await ai.get_anime(
-                    filter_country=countries,
-                    filter_format=target_media_type,
-                    filter_score=min_score,
-                    filter_release_from=release_from,
-                    filter_release_to=release_to,
-                )
-                # find the first anime with a valid MAL ID
-                for ani in media_data:
-                    if ani.myanimelistId:
-                        anime = ani.myanimelistId
-                        sauce = "AniBrain"
-                        break
-                else:
-                    raise RuntimeError("No result")
+                if res and res.get("idMal"):
+                    anime = res["idMal"]
         except Exception as err:  # noqa: BLE001
             save_traceback_to_file("anime_random", ctx.author, err, True)
+
+        if not anime:
             anime = lookup_random_anime()
             sauce = "AnimeAPI"
+
         found = ipy.Embed(
             title="Random Anime",
             description=f"We've found MAL ID [`{anime}`](https://myanimelist.net/anime/{anime}) from {sauce}. Fetching info...",
