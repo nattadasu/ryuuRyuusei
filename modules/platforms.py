@@ -294,9 +294,6 @@ PLATFORM_CONFIGS = {
         "Trakt", 0xED1C24, "1081612822175305788", "https://trakt.tv/{media_id}"
     ),
     "tvdb": PlatformConfig("The TVDB", 0x6CD491, "1079378495064510504", "{media_id}"),
-    "tvtime": PlatformConfig(
-        "TV Time", 0xFFD80A, "1091550459023605790", "https://tvtime.com/en/{media_id}"
-    ),
 }
 
 
@@ -396,7 +393,7 @@ def platforms_to_fields(currPlatform: str, **k: str | None) -> list[EmbedField]:
         try:
             if value is not None and currPlatform != platform:
                 pin = media_id_to_platform(
-                    value, platform_mappings[platform], simkl_type=k["simkl_type"]
+                    value, platform_mappings[platform], simkl_type=k.get("simkl_type")
                 )
                 if platform == "tvdb":
                     value = str(value).removeprefix("https://www.thetvdb.com/")
@@ -409,17 +406,6 @@ def platforms_to_fields(currPlatform: str, **k: str | None) -> list[EmbedField]:
                 )
         except KeyError:
             continue
-
-    if k["tvtime"] is not None:
-        media_id = k["tvtime"]
-        pin = media_id_to_platform(media_id=media_id, platform="tvtime")
-        relsEm.append(
-            {
-                "name": f"<:tvTime:{pin.emoid}> {pin.pf}",
-                "value": f"[{media_id}](<{pin.uid}>)",
-                "inline": True,
-            }
-        )
 
     # sort the list by platform name
     relsEm = sorted(relsEm, key=lambda k: k["name"])
