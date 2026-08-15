@@ -14,9 +14,8 @@ class CryptoUtils:
 
         # Compress
         gz_path = file_path.with_suffix(file_path.suffix + ".gz")
-        with open(file_path, "rb") as f_in:
-            with gzip.open(gz_path, "wb") as f_out:
-                shutil.copyfileobj(f_in, f_out)
+        with open(file_path, "rb") as f_in, gzip.open(gz_path, "wb") as f_out:
+            shutil.copyfileobj(f_in, f_out)
 
         # Encrypt
         with open(gz_path, "rb") as f_in:
@@ -46,9 +45,8 @@ class CryptoUtils:
             f_out.write(decrypted_data)
 
         # Decompress
-        with gzip.open(gz_path, "rb") as f_in:
-            with open(output_path, "wb") as f_out:
-                shutil.copyfileobj(f_in, f_out)
+        with gzip.open(gz_path, "rb") as f_in, open(output_path, "wb") as f_out:
+            shutil.copyfileobj(f_in, f_out)
 
         # Clean up intermediate file
         gz_path.unlink()

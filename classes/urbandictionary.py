@@ -40,6 +40,8 @@ class UrbanDictionaryEntry:
     """Example of the word"""
     thumbs_down: int
     """Number of thumbs down"""
+    udimg_url: str | None = None
+    """Optional image URL from Urban Dictionary API response"""
     current: int = 1
     """Current page of embed"""
     total_pages: int = 1
@@ -189,13 +191,16 @@ class UrbanDictionary:
             date: datetime = datetime.strptime(
                 entry["written_on"],  # type: ignore
                 "%Y-%m-%dT%H:%M:%S.%fZ",
-            )
-            # fix timezone to UTC
-            date = date.replace(tzinfo=timezone.utc)
+            ).replace(tzinfo=timezone.utc)
             entry["written_on"] = date
             entry["current"] = pg
             entry["total_pages"] = total_data
-            listed += [UrbanDictionaryEntry(**entry)]  # type: ignore
+            fields = {
+                k: v
+                for k, v in entry.items()
+                if k in UrbanDictionaryEntry.__dataclass_fields__
+            }
+            listed += [UrbanDictionaryEntry(**fields)]
             pg += 1
 
         return listed
@@ -211,7 +216,7 @@ class UrbanDictionary:
             list[UrbanDictionaryEntry]: List of UrbanDictionaryEntry
         """
         if self.session is None:
-            raise Exception("Urban Dictionary session not initialized")
+            raise RuntimeError("Urban Dictionary session not initialized")
         params = {"term": term}
         async with self.session.get(
             f"{self.base_url}/define", headers=self.header, params=params
@@ -237,7 +242,7 @@ class UrbanDictionary:
             str: Raw HTML of Urban Dictionary
         """
         if self.session is None:
-            raise Exception("Urban Dictionary session not initialized")
+            raise RuntimeError("Urban Dictionary session not initialized")
         async with self.session.get(
             f"https://www.urbandictionary.com/{path}", headers=self.header
         ) as resp:
@@ -283,7 +288,7 @@ class UrbanDictionary:
             list[UrbanDictionaryEntry]: Random word
         """
         if self.session is None:
-            raise Exception("Urban Dictionary session not initialized")
+            raise RuntimeError("Urban Dictionary session not initialized")
         async with self.session.get(
             f"{self.base_url}/random", headers=self.header
         ) as resp:

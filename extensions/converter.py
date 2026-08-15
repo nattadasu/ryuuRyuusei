@@ -1,5 +1,6 @@
 import re
 from datetime import datetime, timezone
+from typing import ClassVar
 
 import interactions as ipy
 import pandas as pd
@@ -110,7 +111,7 @@ class ConverterCog(ipy.Extension):
         description="Converts units",
     )
 
-    length_units: list[ipy.SlashCommandChoice] = [
+    length_units: ClassVar[list[ipy.SlashCommandChoice]] = [
         ipy.SlashCommandChoice("American football field", "football_field"),
         ipy.SlashCommandChoice("Banana (as a scale)", "banana"),
         ipy.SlashCommandChoice("Centimeter (cm)", "centimeter"),
@@ -136,7 +137,7 @@ class ConverterCog(ipy.Extension):
         ipy.SlashCommandChoice("Yard (yd)", "yard"),
     ]
 
-    length_units_extended = length_units + [
+    length_units_extended: ClassVar[list[ipy.SlashCommandChoice]] = length_units + [
         ipy.SlashCommandChoice("Astronomical unit (au)", "astronomical_unit"),
         ipy.SlashCommandChoice("Light year (ly)", "light_year"),
     ]
@@ -180,7 +181,7 @@ class ConverterCog(ipy.Extension):
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
-    mass_units: list[ipy.SlashCommandChoice] = [
+    mass_units: ClassVar[list[ipy.SlashCommandChoice]] = [
         ipy.SlashCommandChoice("Centigram (cg)", "centigram"),
         ipy.SlashCommandChoice("Decagram (dag)", "decagram"),
         ipy.SlashCommandChoice("Decigram (dg)", "decigram"),
@@ -235,7 +236,7 @@ class ConverterCog(ipy.Extension):
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
-    temperature_units: list[ipy.SlashCommandChoice] = [
+    temperature_units: ClassVar[list[ipy.SlashCommandChoice]] = [
         ipy.SlashCommandChoice("Celsius (°C)", "celsius"),
         ipy.SlashCommandChoice("Delisle (°De)", "delisle"),
         ipy.SlashCommandChoice("Fahrenheit (°F)", "fahrenheit"),
@@ -285,7 +286,7 @@ class ConverterCog(ipy.Extension):
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
-    volume_units: list[ipy.SlashCommandChoice] = [
+    volume_units: ClassVar[list[ipy.SlashCommandChoice]] = [
         ipy.SlashCommandChoice("Centiliter (cl)", "centiliter"),
         ipy.SlashCommandChoice("Milliliter (ml)/Cubic centimeter (cm³)", "milliliter"),
         ipy.SlashCommandChoice("Deciliter (dl)", "deciliter"),
@@ -340,7 +341,7 @@ class ConverterCog(ipy.Extension):
         embed = result_embed(value, from_unit, to_unit, convert)
         await ctx.send(embed=embed)
 
-    time_units: list[ipy.SlashCommandChoice] = [
+    time_units: ClassVar[list[ipy.SlashCommandChoice]] = [
         ipy.SlashCommandChoice("Second (s)", "second"),
         ipy.SlashCommandChoice("Minute (min)", "minute"),
         ipy.SlashCommandChoice("Hour (h)", "hour"),

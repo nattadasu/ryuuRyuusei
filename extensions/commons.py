@@ -1,3 +1,4 @@
+import asyncio
 import re
 from datetime import datetime as dtime
 from datetime import timezone as tz
@@ -24,17 +25,17 @@ class CommonCommands(ipy.Extension):
     """Common commands"""
 
     def __init__(
-        self, bot: ipy.Client | ipy.AutoShardedClient, now: dtime = dtime.now(tz=tz.utc)
+        self, bot: ipy.Client | ipy.AutoShardedClient, now: dtime | None = None
     ):
         """
         Initialize the extension
 
         Args:
             bot (ipy.Client | ipy.AutoShardedClient): The bot client
-            now (dtime, optional): The current time. Defaults to dtime.now(tz=tz.utc).
+            now (dtime, optional): The current time. Defaults to None (dtime.now(tz=tz.utc)).
         """
         self.bot = bot
-        self.now = now
+        self.now = now if now is not None else dtime.now(tz=tz.utc)
 
     @ipy.cooldown(ipy.Buckets.GUILD, 1, 60)
     @ipy.slash_command(name="about", description="Get information about the bot")
@@ -99,15 +100,17 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER
         name="changelog", description="Get the recent changes of the bot"
     )
     async def changelog(self, ctx: ipy.SlashContext):
-        log = chout(
+        log_bytes = await asyncio.to_thread(
+            chout,
             [
                 "git",
                 "log",
                 "-n",
                 "10",
                 "--pretty=format:%H|%h|%s|%an|%at",
-            ]
-        ).decode("utf-8")
+            ],
+        )
+        log = log_bytes.decode("utf-8")
 
         lines = []
         for line in log.split("\n"):
@@ -155,9 +158,13 @@ If you want to contact the author, send a DM to [{AUTHOR_USERNAME}]({AUTHOR_USER
                 inline=True,
             ),
         ]
+
+        def _read_db():
+            with open(DATABASE_PATH, "r", encoding="utf-8"):
+                pass
+
         readLat_start = pc()
-        with open(DATABASE_PATH, "r", encoding="utf-8"):
-            pass
+        await asyncio.to_thread(_read_db)
         readLat_end = pc()
         # uptime = dtime.now(tz=tz.utc) - self.bot.start_time
         # uptime_epoch = uptime.total_seconds()

@@ -122,7 +122,7 @@ class MoviesCog(ipy.Extension):
                 components=components,
             )
         # pylint: disable=broad-except
-        except Exception as _:
+        except Exception as _:  # noqa: BLE001
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             embed = ipy.Embed(
                 title="Error",

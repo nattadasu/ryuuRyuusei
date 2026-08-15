@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import ClassVar, Literal
 
 from plusminus import BaseArithmeticParser as BAP
 
@@ -10,7 +10,7 @@ evaluate = BAP()
 class Length:
     """Class to convert length units"""
 
-    imperial_units: dict[str, float] = {
+    imperial_units: ClassVar[dict[str, float]] = {
         "thou": 0.001,
         "inch": 1,
         "foot": 12,
@@ -25,7 +25,7 @@ class Length:
     }
     """Dictionary of imperial units and their conversion to inches"""
 
-    metric_units: dict[str, float] = {
+    metric_units: ClassVar[dict[str, float]] = {
         "millimeter": 0.001,
         "centimeter": 0.01,
         "decimeter": 0.1,
@@ -142,7 +142,7 @@ class Length:
 class Temperature:
     """Class to convert temperature units"""
 
-    conversions: dict[str, dict[str, float | int]] = {
+    conversions: ClassVar[dict[str, dict[str, float | int]]] = {
         "celsius": {
             "kelvin": lambda t: t + 273.15,
             "fahrenheit": lambda t: (t * 9 / 5) + 32,
@@ -239,7 +239,7 @@ class Temperature:
 class Mass:
     """Class to convert mass units"""
 
-    imperial_units: dict[str, float] = {
+    imperial_units: ClassVar[dict[str, float]] = {
         "ounce": 0.0625,
         "pound": 1,
         "stone": 14,
@@ -249,7 +249,7 @@ class Mass:
     }
     """Dictionary of imperial units and their conversion to pounds"""
 
-    metric_units: dict[str, float] = {
+    metric_units: ClassVar[dict[str, float]] = {
         "milligram": 0.000001,
         "centigram": 0.00001,
         "decigram": 0.0001,
@@ -326,7 +326,7 @@ class Mass:
 class Volume:
     """Class to convert volume units"""
 
-    imperial_units: dict[str, float] = {
+    imperial_units: ClassVar[dict[str, float]] = {
         "teaspoon": 1,
         "tablespoon": 3,
         "fluid_ounce": 6,
@@ -338,7 +338,7 @@ class Volume:
     }
     """Dictionary of imperial units and their conversion to teaspoons"""
 
-    metric_units: dict[str, float] = {
+    metric_units: ClassVar[dict[str, float]] = {
         "milliliter": 1,
         "centiliter": 10,
         "deciliter": 100,
@@ -416,7 +416,7 @@ class Volume:
 class Time:
     """Class to convert time units"""
 
-    conversion_factors = {
+    conversion_factors: ClassVar[dict[str, int | float]] = {
         "second": 1,
         "minute": 60,
         "hour": 3600,
@@ -481,7 +481,7 @@ class Time:
 class Data:
     """Class to convert data units"""
 
-    data_units = {
+    data_units: ClassVar[dict[str, float]] = {
         "bit": 1,
         "byte": 8,
         "kilobit": 1000,

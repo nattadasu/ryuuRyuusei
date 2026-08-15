@@ -1,6 +1,5 @@
 import os
 import time
-from typing import Union
 
 from interactions import (
     Activity,
@@ -43,7 +42,7 @@ class BotTasker(Extension):
         a_week = a_day * 7
         a_month = a_day * 30
 
-        known_caches: dict[str, Union[dict[str, int], int]] = {
+        known_caches: dict[str, dict[str, int] | int] = {
             "anilist": {"base": a_day, "user": half_day, "nsfw": a_week},
             "animeapi": a_day,
             "exchangerateapi": a_day,
@@ -110,7 +109,7 @@ class BotTasker(Extension):
                     guild_count=server_count,
                     shard_count=shard_count,
                 )
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001
             print(f"[Tsk] [Stats] Failed to poll to Top.gg: {error}")
             save_traceback_to_file(
                 "tasker_topgg", self.bot.user, error, mute_error=True
@@ -123,7 +122,7 @@ class BotTasker(Extension):
                     guild_count=server_count,
                     shard_count=shard_count,
                 )
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001
             print(f"[Tsk] [Stats] Failed to poll to DiscordBots.gg: {error}")
             save_traceback_to_file("tasker_dbgg", self.bot.user, error, mute_error=True)
             show_msg.append("DiscordBots.gg")
@@ -134,7 +133,7 @@ class BotTasker(Extension):
                     guild_count=server_count,
                     members=0,
                 )
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001
             print(f"[Tsk] [Stats] Failed to poll to DiscordBotList: {error}")
             save_traceback_to_file("tasker_dbl", self.bot.user, error, mute_error=True)
             show_msg.append("DiscordBotList.com")
@@ -146,7 +145,7 @@ class BotTasker(Extension):
                     shard_count=shard_count,
                     members=0,
                 )
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001
             print(f"[Tsk] [Stats] Failed to poll to InfinityBots: {error}")
             save_traceback_to_file("tasker_ibgg", self.bot.user, error, mute_error=True)
             show_msg.append("InfinityBots")
@@ -175,7 +174,7 @@ class BotTasker(Extension):
                     type=ActivityType.WATCHING,
                 ),
             )
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001
             print(f"[Tsk] [Activity] Failed to update bot activity: {error}")
             save_traceback_to_file(
                 "tasker_activity", self.bot.user, error, mute_error=True
@@ -200,10 +199,12 @@ class BotTasker(Extension):
             for file_name in files:
                 file_path = os.path.join(root, file_name)
                 modification_time = os.path.getmtime(file_path)
-                if file_name.endswith(".json") or file_name.endswith(".txt"):
-                    if current_time - modification_time > duration:
-                        os.remove(file_path)
-                        return_as += 1
+                if (
+                    file_name.endswith((".json", ".txt"))
+                    and current_time - modification_time > duration
+                ):
+                    os.remove(file_path)
+                    return_as += 1
             # delete empty folders, except the base folder
             if root != folder_path and len(os.listdir(root)) == 0:
                 os.rmdir(root)
@@ -219,7 +220,7 @@ class BotTasker(Extension):
 
             await nk_run()
             await mal_run()
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001
             print(f"[Tsk] [Database] Failed to update dependencies database: {error}")
             save_traceback_to_file(
                 "tasker_update_deps", self.bot.user, error, mute_error=True

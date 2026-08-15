@@ -41,7 +41,6 @@ class HtmlMyAnimeList:
         """Close the session"""
         if self.session:
             await self.session.close()
-        return
 
     async def get_user(self, username: str) -> JikanUserStruct:
         """
@@ -65,7 +64,7 @@ class HtmlMyAnimeList:
         soup = BeautifulSoup(html, "html5lib")
         report_link = soup.find("a", {"class": "header-right mt4 mr0"})
         if not isinstance(report_link, Tag):
-            raise RuntimeError("Could not find user information")
+            raise TypeError("Could not find user information")
         report_link = report_link.get("href")
         if not report_link:
             raise RuntimeError("Could not find user information")
@@ -103,7 +102,7 @@ class HtmlMyAnimeList:
                         today_str = datetime.now(timezone.utc).strftime("%b %d, %Y")
                         last_online = datetime.strptime(
                             f"{today_str} {activity[1]}", date_format
-                        )
+                        ).replace(tzinfo=timezone.utc)
                         # last_online -= timedelta(days=1)
                     case "Yesterday":
                         yesterday_str = (
@@ -111,7 +110,7 @@ class HtmlMyAnimeList:
                         ).strftime("%b %d, %Y")
                         last_online = datetime.strptime(
                             f"{yesterday_str} {activity[1]}", date_format
-                        )
+                        ).replace(tzinfo=timezone.utc)
                         # last_online -= timedelta(days=1)
                     case _:
                         if len(activity) == 2:
@@ -120,13 +119,13 @@ class HtmlMyAnimeList:
                             if re.match(r"\d{4}", date_split[0]) is not None:
                                 last_online = datetime.strptime(
                                     f"{activity[0]}, {activity[1]}", date_format
-                                )
+                                ).replace(tzinfo=timezone.utc)
                             else:
                                 current_year = datetime.now(timezone.utc).year
                                 last_online = datetime.strptime(
                                     f"{activity[0]}, {current_year} {activity[1]}",
                                     date_format,
-                                )
+                                ).replace(tzinfo=timezone.utc)
                         else:
                             # handle relative time like 1 hour ago
                             regex = r"(\d+) (\w+) ago"

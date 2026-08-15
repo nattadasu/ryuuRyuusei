@@ -136,7 +136,7 @@ class Manga(ipy.Extension):
                 components=components,
             )
         # pylint: disable-next=broad-except
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             embed_description: str = f"I couldn't find any manga with the title `{query}` on `AniList`. Please check your query and try again."
             embed = ipy.Embed(
@@ -324,7 +324,7 @@ class Manga(ipy.Extension):
                 )
             )
             await anilist_submit(ctx, media_id)
-        except Exception as err:
+        except Exception as err:  # noqa: BLE001
             err_embed = platform_exception_embed(
                 description="We couldn't get a random manga. Please try again.",
                 error=f"{err}",

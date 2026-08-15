@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Union
+from typing import Any
 
 from interactions import EmbedField
 
@@ -333,7 +333,7 @@ def get_platform_name(pf: str | Platform) -> str:
 
 
 def media_id_to_platform(
-    media_id: str, platform: str | Platform, simkl_type: Union[str, None] = None
+    media_id: str, platform: str | Platform, simkl_type: str | None = None
 ) -> PlatformLink:
     """
     Convert a media ID to a platform-specific ID

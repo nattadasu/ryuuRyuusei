@@ -89,16 +89,18 @@ pip install -U -r requirements-dev.txt
    ```python
    import interactions as ipy
 
+
    class Example(ipy.Extension):
        def __init__(self, bot):
            self.bot = bot
 
        @ipy.slash_command(
-        name="example",
-        description="Example command",
+           name="example",
+           description="Example command",
        )
        async def example(self, ctx: ipy.SlashContext) -> None:
            await ctx.send("Example")
+
 
    def setup(bot):
        Example(bot)

@@ -18,7 +18,7 @@ class CacheModel:
 class Caching:
     """Interface to cache data received from 3rd party APIs"""
 
-    def __init__(self, cache_directory: str, cache_expiration_time: int | float):
+    def __init__(self, cache_directory: str, cache_expiration_time: float):
         """
         Args:
             cache_directory (str): The directory to store cache files
@@ -46,7 +46,7 @@ class Caching:
     def read_cache(
         self,
         cache_path: str,
-        override_expiration_time: int | float | None = None,
+        override_expiration_time: float | None = None,
         as_raw: bool = False,
     ) -> Any | None:
         """

@@ -288,7 +288,7 @@ class Trakt:
         url = f"{self.base_url}search/{platform.value}/{media_id}"
         async with self.session.get(url, params=params) as resp:
             if resp.status != 200:
-                raise ProviderHttpError(resp.text(), resp.status)
+                raise ProviderHttpError(await resp.text(), resp.status)
             jsonText = await resp.text()
             jsonFinal = json.loads(jsonText)
         Cache.write_cache(cache_file_path, jsonFinal)
@@ -319,7 +319,7 @@ class Trakt:
         param = {"extended": "full"}
         async with self.session.get(url, params=param) as resp:
             if resp.status != 200:
-                raise ProviderHttpError(resp.text(), resp.status)
+                raise ProviderHttpError(await resp.text(), resp.status)
             jsonText = await resp.text()
             jsonFinal = json.loads(jsonText)
         Cache.write_cache(cache_file_path, jsonFinal)

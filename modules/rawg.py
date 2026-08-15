@@ -198,4 +198,3 @@ async def rawg_submit(
         else:
             await ctx.send(embed=embed)
         save_traceback_to_file("rawg", ctx.author, err)
-    return

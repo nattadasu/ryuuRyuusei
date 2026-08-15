@@ -31,7 +31,7 @@ class UpdateDaemon(Extension):
     @staticmethod
     def _check_upstream_commit() -> str:
         """Check if there is any new commit in the upstream"""
-        sub_run("git fetch", shell=True)
+        sub_run("git fetch", shell=True, check=False)
         upstream_commit = (
             chout(["git", "rev-parse", "origin"], shell=True).decode("utf-8").strip()
         )
@@ -42,7 +42,7 @@ class UpdateDaemon(Extension):
         try:
             sub_run("git pull", shell=True, check=True)
             return True
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             save_traceback_to_file(
                 command="update_host",
                 author=self.bot_client,
@@ -59,9 +59,7 @@ class UpdateDaemon(Extension):
             "utf-8"
         )
         # check if the dependencies are updated
-        if "Successfully installed" in deps:
-            return True
-        return False
+        return "Successfully installed" in deps
 
     async def _change_presence(self, context: str = "update") -> None:
         """Change presence to announce if the bot will do a reboot"""
@@ -100,9 +98,14 @@ class UpdateDaemon(Extension):
         upstream = None
         try:
             upstream = self._check_upstream_commit()
-        except Exception:
+        except Exception as e:  # noqa: BLE001
             # Force to continue if the upstream is not reachable
-            pass
+            save_traceback_to_file(
+                command="update_host",
+                author=self.bot_client,
+                error=e,
+                mute_error=True,
+            )
         return self.GITHUB_COMMIT != upstream
 
     @Task.create(IntervalTrigger(days=7))

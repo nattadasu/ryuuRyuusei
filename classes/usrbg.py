@@ -28,7 +28,7 @@ class UsrBgDataStruct:
 
         if str(user_id) in self.users:
             loc = self.users[str(user_id)]
-            return f"{self.endpoint}/{self.bucket}/{self.prefix}{str(user_id)}?{loc}"
+            return f"{self.endpoint}/{self.bucket}/{self.prefix}{user_id!s}?{loc}"
 
         raise ValueError(
             "User not found in the UsrBG Database. Either is cache is old, or the user has no background."
@@ -60,13 +60,15 @@ class UsrBg:
         if self.database:
             return self.database
 
-        async with aiohttp.ClientSession(headers=self.headers) as session:
-            async with session.get(f"{BASE_URL}/users") as resp:
-                if resp.status == 200:
-                    self.database = await resp.json()
-                    Cache.write_cache(cache_path, self.database)
-                    return self.database
-                resp.raise_for_status()
+        async with (
+            aiohttp.ClientSession(headers=self.headers) as session,
+            session.get(f"{BASE_URL}/users") as resp,
+        ):
+            if resp.status == 200:
+                self.database = await resp.json()
+                Cache.write_cache(cache_path, self.database)
+                return self.database
+            resp.raise_for_status()
 
     async def get_background(self, user_id: Snowflake) -> str:
         """Get the user's background from the API"""

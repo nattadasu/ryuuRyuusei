@@ -156,7 +156,7 @@ class HostSettings(ipy.Extension):
                     file=file,
                 )
                 enc_path.unlink()
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 embed = self.generate_error_embed(
                     header="Error!",
                     message=f"An error occurred during export: {e}",
@@ -191,15 +191,17 @@ class HostSettings(ipy.Extension):
 
         try:
             # Download the file
-            async with aiohttp.ClientSession() as session:
-                async with session.get(file.url) as resp:
-                    if resp.status == 200:
-                        data = await resp.read()
-                        temp_enc_path.write_bytes(data)
-                    else:
-                        raise Exception(
-                            f"Failed to download attachment: HTTP {resp.status}"
-                        )
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(file.url) as resp,
+            ):
+                if resp.status == 200:
+                    data = await resp.read()
+                    temp_enc_path.write_bytes(data)
+                else:
+                    raise RuntimeError(
+                        f"Failed to download attachment: HTTP {resp.status}"
+                    )
 
             # Decrypt and decompress to tar
             CryptoUtils.decrypt_and_extract(temp_enc_path, key, temp_tar_path)
@@ -244,7 +246,7 @@ class HostSettings(ipy.Extension):
                 pid = os.getpid()
                 os.kill(pid, 9)
 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             embed = self.generate_error_embed(
                 header="Error!",
                 message=f"An error occurred during import: {e}",

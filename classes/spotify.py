@@ -2,7 +2,6 @@
 
 import base64 as b64
 from enum import Enum
-from typing import List, Union
 
 import aiohttp
 
@@ -79,7 +78,7 @@ class SpotifyApi:
     async def search(
         self,
         query: str,
-        media_type: Union[List[MediaType], MediaType, str] = MediaType.TRACK,
+        media_type: list[MediaType] | MediaType | str = MediaType.TRACK,
         limit: int = 10,
         offset: int = 0,
     ) -> dict:

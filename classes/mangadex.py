@@ -7,6 +7,7 @@ from typing import Any, Literal
 
 import aiohttp
 from dacite import Config, from_dict
+from typing_extensions import Self
 
 from classes.cache import Caching
 from classes.excepts import ProviderHttpError
@@ -154,7 +155,7 @@ class Mangadex:
         self.session = None
         self.headers = {"User-Agent": USER_AGENT}
 
-    async def __aenter__(self) -> "Mangadex":
+    async def __aenter__(self) -> Self:
         self.session = aiohttp.ClientSession(headers=self.headers)
         return self
 

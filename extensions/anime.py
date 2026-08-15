@@ -73,7 +73,7 @@ class Anime(ipy.Extension):
             elif provider == "mal":
                 res = await search_mal_anime(title=query)
             if not res:
-                raise Exception("No result")
+                raise RuntimeError("No result")
             f: list[ipy.EmbedField] = []
             so: list[ipy.StringSelectOption] = []
             for a in res:
@@ -132,7 +132,7 @@ class Anime(ipy.Extension):
                 embed=result,
                 components=components,
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             emoji = EMOJI_UNEXPECTED_ERROR.split(":")[2].split(">")[0]
             al_notice = "Ryuusei uses AniList as the default anime search provider for best match experience, although the media info will be fetched from MyAnimeList."
             err_msg = f"I couldn't able to find any results for `{query}` on `{platform}`. Please check your query and try again."
@@ -307,8 +307,8 @@ class Anime(ipy.Extension):
                         sauce = "AniBrain"
                         break
                 else:
-                    raise Exception("No result")
-        except Exception as err:
+                    raise RuntimeError("No result")
+        except Exception as err:  # noqa: BLE001
             save_traceback_to_file("anime_random", ctx.author, err, True)
             anime = lookup_random_anime()
             sauce = "AnimeAPI"

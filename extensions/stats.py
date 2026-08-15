@@ -193,7 +193,7 @@ def get_pkg_license(pkg_name: str) -> str:
 
         meta = metadata(pkg_name)
         return meta.get("License", "*Licence not found*")
-    except Exception:
+    except Exception:  # noqa: BLE001
         return "*Licence not found*"
 
 
@@ -225,17 +225,17 @@ class Stats(ipy.Extension):
     def __init__(
         self,
         bot: ipy.Client | ipy.AutoShardedClient,
-        now: datetime = datetime.now(tz=timezone.utc),
+        now: datetime | None = None,
     ):
         """
         Initialize the extension
 
         Args:
             bot (ipy.Client | ipy.AutoShardedClient): The bot client
-            now (datetime, optional): The current time. Defaults to datetime.now(tz=tz.utc).
+            now (datetime, optional): The current time. Defaults to None (datetime.now(tz=timezone.utc)).
         """
-        self.bot: ipy.Client | ipy.AutoShardedClient = bot
-        self.now = now
+        self.bot = bot
+        self.now = now if now is not None else datetime.now(tz=timezone.utc)
 
     base = ipy.SlashCommand(
         name="stats",
@@ -307,7 +307,7 @@ class Stats(ipy.Extension):
                         total_votes=tgg_info.points,
                     )
                 )
-        except Exception as err:
+        except Exception as err:  # noqa: BLE001
             save_traceback_to_file("stats_general-tgg", ctx.author, err, True)
 
         try:
@@ -324,7 +324,7 @@ class Stats(ipy.Extension):
                         time_limit=12,
                     )
                 )
-        except Exception as err:
+        except Exception as err:  # noqa: BLE001
             save_traceback_to_file("stats_general-dbl", ctx.author, err, True)
 
         try:
@@ -338,7 +338,7 @@ class Stats(ipy.Extension):
                         total_votes=ibl_info.votes,
                     )
                 )
-        except Exception as err:
+        except Exception as err:  # noqa: BLE001
             save_traceback_to_file("stats_general-ibl", ctx.author, err, True)
 
         provider_votes.sort(key=lambda x: x.name)

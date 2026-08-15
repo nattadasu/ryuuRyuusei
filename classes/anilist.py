@@ -115,9 +115,6 @@ class AniListMediaStruct:
     """Media format"""
     description: str | None = None
     """Media description"""
-    # pylint: disable-next=invalid-name
-    isAdult: bool | None = None
-    """Whether the media is 18+"""
     synonyms: list[str | None] | None = None
     """Media synonyms"""
     # pylint: disable-next=invalid-name

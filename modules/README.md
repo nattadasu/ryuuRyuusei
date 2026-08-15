@@ -60,6 +60,7 @@ of a module:
 
 from typing import Any
 
+
 def foo(bar: str) -> Any:
     """This function does something.
 
@@ -86,6 +87,7 @@ import. that's it.
 """This script contains the `bar` function."""
 
 from modules.foo import foo
+
 
 def bar(baz: str) -> str:
     """This function does something.

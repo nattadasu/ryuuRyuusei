@@ -186,7 +186,7 @@ class Random(ipy.Extension):
                     color=0x1F1F1F,
                 )
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             embed = ipy.Embed(
                 title="Unexpected error",
                 description="An unexpected error has occurred while trying to get a random number from random.org",
@@ -267,7 +267,7 @@ class Random(ipy.Extension):
                     color=0x1F1F1F,
                 )
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             embed = ipy.Embed(
                 title="Unexpected error",
                 description="An unexpected error has occurred while trying to get a random number from random.org",

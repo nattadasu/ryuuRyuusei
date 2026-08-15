@@ -99,7 +99,7 @@ def load_core_extensions() -> None:
                 filter=None,
                 traces_sample_rate=0.3,
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             print_status("[Ext]", f"Error loading Sentry: {e}")
             print_status("[Ext]", "Continuing without Sentry integration...")
 
@@ -136,7 +136,7 @@ def load_custom_extensions() -> None:
 
             loaded_count += 1
 
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             print_status("[Cog]", f"Error loading {ext_name}: {e}")
             print_status("[Cog]", "Traceback:", indent=True)
             traceback.print_exc()
@@ -187,7 +187,7 @@ if __name__ == "__main__":
         print_status("[Sys]", "Bot stopped due to connection error.")
         print_uptime(bot_run_time)
         sys.exit(1)
-    except Exception as ex:
+    except Exception as ex:  # noqa: BLE001
         print_status("[Sys]", "Bot stopped due to error.")
         print_status("[Sys]", str(ex), indent=True)
         print_status("[Err]", "Traceback:")

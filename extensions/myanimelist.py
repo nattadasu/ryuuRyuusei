@@ -101,7 +101,7 @@ class MyAnimeListCog(ipy.Extension):
         await ctx.defer()
         user_data: JikanUserStruct | None = None
         extended: JikanUserStruct = JikanUserStruct(
-            mal_id=0, username="", url="", joined=dtime.now()
+            mal_id=0, username="", url="", joined=dtime.now(tz=tz.utc)
         )
 
         if mal_username and user:

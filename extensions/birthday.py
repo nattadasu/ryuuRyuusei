@@ -1,8 +1,8 @@
 import zoneinfo as zinf
 from asyncio import sleep
+from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import datetime, timedelta
-from typing import Iterable, Optional
+from datetime import datetime, timedelta, timezone
 
 import interactions as ipy
 import numpy as np
@@ -271,7 +271,7 @@ class Birthday(ipy.Extension):
                 ),
                 # Randomize the color
                 color=np.random.randint(0, 0xFFFFFF),
-                timestamp=ipy.Timestamp.fromdatetime(datetime.now()),
+                timestamp=ipy.Timestamp.fromdatetime(datetime.now(timezone.utc)),
             )
             if http_data and http_data.accent_color:
                 msg_embed.color = http_data.accent_color.value
@@ -306,7 +306,7 @@ class Birthday(ipy.Extension):
                         },
                     )
                 await sleep(1)
-            except Exception as ex:
+            except Exception as ex:  # noqa: BLE001
                 save_traceback_to_file("tasker_birthday", self.bot, ex)
             announced.append(int(user.discord_id))
         # Remove yesterday_cached entries from announced
@@ -372,7 +372,7 @@ class Birthday(ipy.Extension):
             )
             return
         try:
-            _ = datetime.strptime(date, "%Y-%m-%d")
+            _ = datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
         except ValueError:
             await ctx.send(
                 embed=ipy.Embed(
@@ -483,8 +483,8 @@ class Birthday(ipy.Extension):
     async def birthday_edit(
         self,
         ctx: ipy.SlashContext,
-        date: Optional[str] = None,
-        timezone: Optional[str] = None,
+        date: str | None = None,
+        timezone: str | None = None,
         show_year: bool = False,
         show_age: bool = False,
         korean_age: bool = False,
@@ -512,7 +512,7 @@ class Birthday(ipy.Extension):
             user = await udb.get_user_data(ctx.author.id)
             if date:
                 try:
-                    _ = datetime.strptime(date, "%Y-%m-%d")
+                    _ = datetime.strptime(date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
                 except ValueError:
                     await ctx.send(
                         embed=ipy.Embed(
@@ -641,10 +641,10 @@ class Birthday(ipy.Extension):
         async with UserDatabase() as udb:
             users = await udb.get_all_users()
         result: dict[str, list[dict[str, str | int]]] = {}
-        today = datetime.now()
+        today = datetime.now(timezone.utc)
         # automatically generate value-empty months
         for month in range(1, 13):
-            result[datetime(2000, month, 1).strftime("%B")] = []
+            result[datetime(2000, month, 1, tzinfo=timezone.utc).strftime("%B")] = []
         for user in users:
             if user.user_birthdate is None:
                 continue
@@ -707,7 +707,7 @@ class Birthday(ipy.Extension):
                 for user in data:
                     usr_month = datetime.strptime(
                         f"{user['birthdate']} {month} {today.year}", "%d %B %Y"
-                    )
+                    ).replace(tzinfo=timezone.utc)
                     if user["userid"] == "TODAY" and i < today.day <= i + 7:
                         context = (
                             f"* {today.strftime('%d')}: **\\>\\>\\> TODAY \\<\\<\\<**"
@@ -737,8 +737,7 @@ class Birthday(ipy.Extension):
                 mnend = today.replace(day=1, month=today.month % 12 + 1) - timedelta(
                     days=1
                 )
-                if day_limit > mnend.day:
-                    day_limit = mnend.day
+                day_limit = min(day_limit, mnend.day)
                 index = (
                     f"{day_from} to {day_limit}"
                     if day_from < day_limit

@@ -616,7 +616,7 @@ async def mal_submit(
         await send_or_edit_message(ctx, embed, None, replace)
         save_traceback_to_file("anilist", ctx.author, err)
     # pylint: disable=broad-exception-caught
-    except Exception as err:
+    except Exception as err:  # noqa: BLE001
         embed = generate_commons_except_embed(
             description="We are unable to get the anime information from MyAnimeList via Jikan",
             error=f"{err}",

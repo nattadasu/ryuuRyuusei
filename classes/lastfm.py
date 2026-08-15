@@ -168,8 +168,7 @@ class LastFM:
         nowplaying = data["@attr"]["nowplaying"] == "true" if "@attr" in data else False
         data["nowplaying"] = nowplaying
         # drop @attr key if any
-        if "@attr" in data:
-            del data["@attr"]
+        data.pop("@attr", None)
         return LastFMTrackStruct(**data)
 
     @staticmethod

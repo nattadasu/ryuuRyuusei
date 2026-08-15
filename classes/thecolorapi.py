@@ -295,8 +295,7 @@ class TheColorApi:
         Returns:
             dict: Color information
         """
-        if color["hex"].startswith("#"):
-            color["hex"] = color["hex"][1:]
+        color["hex"] = color["hex"].removeprefix("#")
         filename = "-".join([f"{k}_{v}" for k, v in color.items()]) + ".json"
         cache_file_path = Cache.get_cache_file_path(filename)
         cached_data = Cache.read_cached_data(cache_file_path)

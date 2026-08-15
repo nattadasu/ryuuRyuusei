@@ -18,6 +18,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 import aiohttp
+from typing_extensions import Self
 
 from classes.cache import Caching
 from classes.excepts import ProviderHttpError
@@ -242,7 +243,7 @@ class ExchangeRateAPI:
         self.api_key = api_key
         self.headers = {"User-Agent": USER_AGENT}
 
-    async def __aenter__(self) -> "ExchangeRateAPI":
+    async def __aenter__(self) -> Self:
         """Enter the async context manager"""
         self.session = aiohttp.ClientSession(headers=self.headers)
         return self

@@ -33,7 +33,6 @@ def print_file(path_name: str) -> None:
         None
     """
     print(f"Formatting file: {path_name}")
-    return None
 
 
 def format_scripts():
@@ -85,33 +84,27 @@ async def loop_test():
     Returns:
         None
     """
-    sub = subprocess.Popen(
-        [
-            sys.executable,
-            "-m",
-            "coverage",
-            "run",
-        ]
+    sub = await asyncio.create_subprocess_exec(
+        sys.executable,
+        "-m",
+        "coverage",
+        "run",
     )
-    sub.wait()
-    sub = subprocess.Popen(
-        [
-            sys.executable,
-            "-m",
-            "coverage",
-            "report",
-        ]
+    await sub.wait()
+    sub = await asyncio.create_subprocess_exec(
+        sys.executable,
+        "-m",
+        "coverage",
+        "report",
     )
-    sub.wait()
-    sub = subprocess.Popen(
-        [
-            sys.executable,
-            "-m",
-            "coverage",
-            "xml",
-        ]
+    await sub.wait()
+    sub = await asyncio.create_subprocess_exec(
+        sys.executable,
+        "-m",
+        "coverage",
+        "xml",
     )
-    sub.wait()
+    await sub.wait()
 
 
 async def main():

@@ -49,7 +49,7 @@ class Utilities(ipy.Extension):
             font = ImageFont.truetype(
                 "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 32
             )
-        except (OSError, IOError):
+        except OSError:
             font = ImageFont.load_default()
 
         # Calculate text position to center it
@@ -110,7 +110,7 @@ class Utilities(ipy.Extension):
                     ],
                 )
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             await ctx.send(
                 embed=generate_utils_except_embed(
                     description="An error occurred while evaluating the expression",
@@ -167,7 +167,7 @@ class Utilities(ipy.Extension):
                     ],
                 )
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             await ctx.send(
                 embed=generate_utils_except_embed(
                     description=f"An error occurred while {mode}ing the string",
@@ -300,7 +300,7 @@ class Utilities(ipy.Extension):
                 embed=embed,
                 file=ipy.File(color_swatch, file_name="color_swatch.png"),
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             await ctx.send(
                 embed=generate_utils_except_embed(
                     description="An error occurred while getting information about the color from TheColorApi",
@@ -364,7 +364,7 @@ class Utilities(ipy.Extension):
             await ctx.send(
                 embed=embed,
             )
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             await ctx.send(
                 embed=generate_utils_except_embed(
                     description="An error occurred while generating the QR code",
@@ -402,7 +402,7 @@ class Utilities(ipy.Extension):
                     "Snowflake is too small, did you randomly generate it?"
                 )
             tmsp = int(snowflake_to_datetime(int(snowflake)))
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             await ctx.send(
                 embed=generate_utils_except_embed(
                     description="An error occurred while converting the snowflake to a timestamp",
@@ -462,7 +462,7 @@ class Utilities(ipy.Extension):
                 lt = domain[0]
         except validators.ValidationFailure:
             err_msg = "Invalid URL"
-        except BaseException as e:
+        except Exception as e:  # noqa: BLE001
             err_msg = str(e)
 
         if err_msg:

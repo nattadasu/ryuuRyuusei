@@ -5,7 +5,7 @@ A lite wrapper for the top.gg API.
 """
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import aiohttp
@@ -124,7 +124,9 @@ class TopGG:
             data = await resp.json()
             dacite_config = Config(
                 type_hooks={
-                    datetime: lambda x: datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ")
+                    datetime: lambda x: datetime.strptime(
+                        x, "%Y-%m-%dT%H:%M:%S.%fZ"
+                    ).replace(tzinfo=timezone.utc)
                 }
             )
             return from_dict(data_class=TopGGBotStruct, data=data, config=dacite_config)

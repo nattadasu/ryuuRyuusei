@@ -96,8 +96,8 @@ class MessageListen(ipy.Extension):
 
         msg_content = ctx.content
         mentioned = msg_content.startswith(
-            f"<@!{self.bot.user.id}>"
-        ) or msg_content.startswith(f"<@{self.bot.user.id}>")
+            (f"<@!{self.bot.user.id}>", f"<@{self.bot.user.id}>")
+        )
 
         # do not process if the message explicitly says not to
         if re.search(r"no bot", msg_content, re.IGNORECASE) or msg_content.startswith(
@@ -350,7 +350,7 @@ If you can't see the slash commands, please re-invite the bot to your server, an
                 case _:
                     return
         # pylint: disable=broad-exception-caught
-        except Exception as err:
+        except Exception as err:  # noqa: BLE001
             save_traceback_to_file("message_listen", ctx.author, err)
         return
 

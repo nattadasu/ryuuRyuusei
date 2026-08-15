@@ -2,8 +2,9 @@ from datetime import datetime as dt
 from typing import Literal
 
 from animeapi import AsyncAnimeAPI, Platform
-from animeapi.models import AnimeRelation
+from animeapi.models import AnimeRelation, TmdbMediaType, TraktMediaType
 
+from classes.excepts import ProviderHttpError
 from modules.commons import save_traceback_to_file
 
 
@@ -34,6 +35,8 @@ class AnimeApi:
         await self.api.close()
 
     AnimeApiPlatforms = Platform
+    AnimeApiTraktMediaType = TraktMediaType
+    AnimeApiTmdbMediaType = TmdbMediaType
 
     async def get_update_time(self) -> dt:
         """
@@ -44,11 +47,11 @@ class AnimeApi:
         try:
             resp = await self.api.get_updated_time()
             return resp.datetime()
-        except BaseException as e:
-            raise Exception(
+        except Exception as e:
+            raise ProviderHttpError(
                 "Failed to get the last update time of AnimeAPI's database, reason: "
                 + str(e)
-            )
+            ) from e
 
     async def get_relation(
         self,
@@ -76,26 +79,39 @@ class AnimeApi:
             "thetvdb",
             "trakt",
         ],
-        media_type: str | None = None,
+        media_type: TraktMediaType | TmdbMediaType | str | None = None,
         title_season: int | None = None,
     ) -> AnimeRelation:
         """
-        Get a relation between anime and other platform via Natsu's AniAPI
+        Get relation between anime and other platform
         Args:
-            media_id (str | int): Anime ID
-            platform (Platform | Literal["anisearch", "anidb", "anilist", "animeplanet", "annict", "kaize", "kitsu", "livechart", "myanimelist", "notify", "otakotaku", "shikimori", "shoboi", "silveryasha", "themoviedb", "thetvdb", "trakt" ]): Platform to get the relation
-            media_type (str | None): Media type for TMDB ("movie"/"tv") or Trakt ("movies"/"shows")
-            title_season (int | None): Season number for Trakt
+            media_id (str | int): ID of the media
+            platform (Platform): Platform to get relation from
+            media_type (TraktMediaType | TmdbMediaType | str, optional): Type of the media. Defaults to None.
+            title_season (int, optional): Season number of the media. Defaults to None.
+
         Returns:
             AnimeRelation: Relation between anime and other platform
         """
         if not isinstance(platform, Platform):
             platform = Platform(platform)
+        if isinstance(media_type, str):
+            try:
+                media_type = (
+                    TmdbMediaType(media_type)
+                    if platform == Platform.THEMOVIEDB
+                    else TraktMediaType(media_type)
+                    if platform == Platform.TRAKT
+                    else media_type
+                )
+            except ValueError:
+                pass
+
         try:
             return await self.api.get_anime_relations(
                 media_id, platform, media_type, title_season
             )
-        except BaseException as e:
+        except Exception as e:  # noqa: BLE001
             save_traceback_to_file(
                 f"animeapi_{platform.value}_{media_id}",
                 _SystemUser(),

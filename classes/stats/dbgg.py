@@ -5,7 +5,7 @@ A lite wrapper for the discord.bots.gg API.
 """
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 
 import aiohttp
 from dacite import Config, from_dict
@@ -149,7 +149,7 @@ class DiscordBotsGG:
                     type_hooks={
                         datetime: lambda x: datetime.strptime(
                             x, "%Y-%m-%dT%H:%M:%S.%fZ"
-                        )
+                        ).replace(tzinfo=timezone.utc)
                     }
                 ),
             )

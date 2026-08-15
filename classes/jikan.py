@@ -9,6 +9,7 @@ from typing import Any, Literal
 from aiohttp import ClientSession
 
 from classes.cache import Caching
+from classes.excepts import ProviderHttpError
 from modules.const import JIKAN_URL, USER_AGENT
 
 Cache = Caching(cache_directory="cache/jikan", cache_expiration_time=86400)
@@ -77,7 +78,6 @@ class JikanTitlesStruct:
             "Synonym",
             "English",
             "Japanese",
-            "Synonym",
             "German",
             "Spanish",
             "Italian",
@@ -85,7 +85,6 @@ class JikanTitlesStruct:
             "Korean",
             "Portuguese",
             "Chinese",
-            "Korean",
         ]
         | None
     )
@@ -537,7 +536,7 @@ Full message:```
             case _:
                 err_ = f"HTTP error code: {error_code}\n{error_message}"
     # pylint: disable-next=broad-except
-    except Exception:
+    except Exception:  # noqa: BLE001
         err_ = "Unknown error. Full traceback:\n" + traceback.format_exc()
 
     raise JikanException(err_, error_code)
@@ -880,7 +879,7 @@ class JikanApi:
                             define_jikan_exception(resp.status, resp.reason)
             return clubs
         # pylint: disable-next=broad-except
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001
             define_jikan_exception(601, error)
 
     async def get_user_data(self, username: str) -> JikanUserStruct:
@@ -951,8 +950,8 @@ class JikanApi:
                 res = await resp.json()
                 res: str = res["data"]["username"]
             else:
-                # pylint: disable-next=broad-exception-raised
-                raise Exception(await resp.json())
+                data = await resp.json()
+                raise ProviderHttpError(str(data), resp.status)
         gud = await self.get_user_data(res)
         return gud
 
@@ -984,7 +983,7 @@ class JikanApi:
             Cache.write_data_to_cache(res, cache_file_path)
             return self.anime_dict_to_dataclass(res)
         # pylint: disable-next=broad-except
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001
             errcode: int = error.status_code if hasattr(error, "status_code") else 418
             errmsg: str | dict = error.message if hasattr(error, "message") else error
             define_jikan_exception(errcode, errmsg)

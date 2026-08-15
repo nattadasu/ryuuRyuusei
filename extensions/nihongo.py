@@ -158,7 +158,7 @@ class JapaneseCog(ipy.Extension):
                 timestamp=datetime.now(tz=timezone.utc),
             )
             await send.edit(embed=embed)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             embed = generate_commons_except_embed(
                 description="Failed to convert Japanese script to romaji",
                 error=e,

@@ -1,11 +1,12 @@
 import re
 from dataclasses import dataclass
-from typing import Optional
 
 import aiohttp
 import validators
 from bs4 import BeautifulSoup
 from fake_useragent import FakeUserAgent as UserAgent
+
+from classes.excepts import ProviderHttpError
 
 
 @dataclass
@@ -18,9 +19,9 @@ class WebsiteStatus:
     """The URL of the website."""
     response_time: str
     """The response time of the website."""
-    last_down: Optional[str]
+    last_down: str | None
     """The last time the website was down."""
-    status_message: Optional[str]
+    status_message: str | None
     """The status message of the website."""
 
 
@@ -31,7 +32,7 @@ class WebsiteChecker:
         """Initialize the WebsiteChecker class."""
         self.err_msg: str = ""
         self.headers: dict = {}
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
     async def __aenter__(self):
         """Enter the async context manager."""
@@ -58,7 +59,7 @@ class WebsiteChecker:
         ua = UserAgent(browsers=["chrome", "firefox", "edge"])
         return ua.random
 
-    async def check_website(self, url: str) -> Optional[WebsiteStatus]:
+    async def check_website(self, url: str) -> WebsiteStatus | None:
         """
         Check the status of a website.
 
@@ -75,7 +76,7 @@ class WebsiteChecker:
         if re.match(r"^https?://", url) is None:
             url = "https://" + url
         validators.url(url)
-        if url.startswith("http://") or url.startswith("https://"):
+        if url.startswith(("http://", "https://")):
             url = url.split("//")[1]
         if url.startswith("www."):
             url = re.sub(r"^www.", "", url)
@@ -85,7 +86,9 @@ class WebsiteChecker:
             "https://www.isitdownrightnow.com/check.php", params=params
         ) as resp:
             if resp.status != 200:
-                raise Exception(f"HTTP error {resp.status}: {resp.reason}")
+                raise ProviderHttpError(
+                    f"HTTP error {resp.status}: {resp.reason}", resp.status
+                )
 
             html_response = await resp.text()
 

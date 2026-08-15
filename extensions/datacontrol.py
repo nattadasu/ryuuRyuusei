@@ -6,6 +6,7 @@ This extension is responsible for handling user data, such as registering,
 updating, and deleting user data.
 """
 
+import asyncio
 import json
 import os
 import re
@@ -436,7 +437,7 @@ To complete your registration, please follow the instructions below:""",
             await ctx.send(embed=embed)
             save_traceback_to_file("platform_link", ctx.author, error)
         # pylint: disable-next=broad-except
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001
             embed = self.generate_error_embed(
                 header="Error!",
                 message=f"Something went wrong: {error}",
@@ -611,22 +612,25 @@ To complete your registration, please follow the instructions below:""",
 
         filename = f"cache/export_{ctx.author.id}_{int(datetime.now(tz=timezone.utc).timestamp())}"
 
-        match file_format:
-            case "json":
-                with open(f"{filename}.json", "w", encoding="utf-8") as file:
-                    json.dump(user_data, file, indent=4)
-            case "csv":
-                dataframe = pd.DataFrame([user_data])
-                dataframe.to_csv(
-                    f"{filename}.csv",
-                    index=False,
-                    sep="\t",
-                    encoding="utf-8",
-                    header=True,
-                )
-            case "yaml":
-                with open(f"{filename}.yaml", "w", encoding="utf-8") as file:
-                    yaml.dump(user_data, file, indent=4)
+        def _write_file():
+            match file_format:
+                case "json":
+                    with open(f"{filename}.json", "w", encoding="utf-8") as file:
+                        json.dump(user_data, file, indent=4)
+                case "csv":
+                    dataframe = pd.DataFrame([user_data])
+                    dataframe.to_csv(
+                        f"{filename}.csv",
+                        index=False,
+                        sep="\t",
+                        encoding="utf-8",
+                        header=True,
+                    )
+                case "yaml":
+                    with open(f"{filename}.yaml", "w", encoding="utf-8") as file:
+                        yaml.dump(user_data, file, indent=4)
+
+        await asyncio.to_thread(_write_file)
 
         filename_formatted = f"{filename}.{file_format}"
 

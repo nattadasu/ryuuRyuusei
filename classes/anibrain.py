@@ -5,17 +5,17 @@ Get a random anime/manga using AniList ID
 """
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from time import time
-from typing import Dict, List, Literal, TypedDict
+from typing import Literal, TypedDict
 
 import aiohttp
 
 from classes.excepts import ProviderHttpError
 from modules.const import USER_AGENT
 
-today = datetime.now().year
+today = datetime.now(tz=timezone.utc).year
 
 
 @dataclass
@@ -36,11 +36,11 @@ class AniBrainAiMedia:
     """Native title"""
     description: str | None
     """Description"""
-    imgURLs: List[str] | None
+    imgURLs: list[str] | None
     """Image URLs"""
-    imgPrimaryColors: List[str] | None = None
+    imgPrimaryColors: list[str] | None = None
     """Primary colors from images"""
-    backgroundImgURLs: List[str] | None = None
+    backgroundImgURLs: list[str] | None = None
     """Background image URLs"""
     format: (
         Literal[
@@ -58,11 +58,11 @@ class AniBrainAiMedia:
         | None
     ) = None
     """Format"""
-    genres: List[str] | None = None
+    genres: list[str] | None = None
     """Genres"""
     trailerURL: str | None = None
     """Trailer URL"""
-    externalLinks: List[Dict[Literal["url", "site"], str]] | None = None
+    externalLinks: list[dict[Literal["url", "site"], str]] | None = None
     """External links"""
     franchise: str | None = None
     """Parent franchise media ID"""
@@ -70,7 +70,7 @@ class AniBrainAiMedia:
     """Franchise size"""
     kitsuId: int | None = None
     """Kitsu ID"""
-    studios: List[str] | None = None
+    studios: list[str] | None = None
     """Studios"""
 
 
@@ -211,7 +211,7 @@ class AniBrainAI:
             return count
 
     def _format_country_list(
-        self, filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal["[]"]
+        self, filter_country: list[CountryOfOrigin] | CountryOfOrigin | Literal["[]"]
     ) -> list[str]:
         """Convert country filter to list of country strings"""
         if isinstance(filter_country, list):
@@ -223,7 +223,7 @@ class AniBrainAI:
     def _format_media_format(
         self,
         media_type: Literal["ANIME", "MANGA", "NOVEL", "ONE_SHOT"],
-        filter_format: List[AnimeMediaType] | AnimeMediaType | str | None = None,
+        filter_format: list[AnimeMediaType] | AnimeMediaType | str | None = None,
     ) -> list[str]:
         """Convert format filter to list of format strings"""
         if media_type == "ANIME":
@@ -237,7 +237,7 @@ class AniBrainAI:
         # For manga/novel/one-shot, format must be the media type itself
         return [media_type]
 
-    def _format_genres(self, filter_genres: Dict[str, IncExc] | None) -> dict:
+    def _format_genres(self, filter_genres: dict[str, IncExc] | None) -> dict:
         """Convert genre filter to dict with integer values"""
         if isinstance(filter_genres, dict):
             return {k: v.value for k, v in filter_genres.items()}
@@ -282,12 +282,12 @@ class AniBrainAI:
     async def _do_query(
         self,
         media_type: Literal["ANIME", "MANGA", "NOVEL", "ONE_SHOT"] = "ANIME",
-        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
+        filter_country: list[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
         filter_score: int = 0,
-        filter_genres: Dict[str, IncExc] | None = None,
+        filter_genres: dict[str, IncExc] | None = None,
         filter_release_from: int = 1917,
         filter_release_to: int | None = today,
-        filter_format: List[AnimeMediaType] | AnimeMediaType | str | None = None,
+        filter_format: list[AnimeMediaType] | AnimeMediaType | str | None = None,
         adult: bool = False,
     ) -> list[AniBrainAiMedia]:
         """
@@ -375,11 +375,11 @@ class AniBrainAI:
 
     async def get_anime(
         self,
-        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
+        filter_country: list[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
         filter_score: int = 0,
-        filter_genres: Dict[str, IncExc] | None = None,
+        filter_genres: dict[str, IncExc] | None = None,
         filter_release_from: int = 1917,
-        filter_format: List[AnimeMediaType] | AnimeMediaType | str | None = None,
+        filter_format: list[AnimeMediaType] | AnimeMediaType | str | None = None,
         filter_release_to: int | None = today,
         adult: bool = False,
     ) -> list[AniBrainAiMedia]:
@@ -411,9 +411,9 @@ class AniBrainAI:
 
     async def get_manga(
         self,
-        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
+        filter_country: list[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
         filter_score: int = 0,
-        filter_genres: Dict[str, IncExc] | None = None,
+        filter_genres: dict[str, IncExc] | None = None,
         filter_release_from: int = 1930,
         filter_release_to: int | None = today,
         adult: bool = False,
@@ -444,9 +444,9 @@ class AniBrainAI:
 
     async def get_light_novel(
         self,
-        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
+        filter_country: list[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
         filter_score: int = 0,
-        filter_genres: Dict[str, IncExc] | None = None,
+        filter_genres: dict[str, IncExc] | None = None,
         filter_release_from: int = 1979,
         filter_release_to: int | None = today,
         adult: bool = False,
@@ -477,9 +477,9 @@ class AniBrainAI:
 
     async def get_one_shot(
         self,
-        filter_country: List[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
+        filter_country: list[CountryOfOrigin] | CountryOfOrigin | Literal["[]"] = "[]",
         filter_score: int = 0,
-        filter_genres: Dict[str, IncExc] | None = None,
+        filter_genres: dict[str, IncExc] | None = None,
         filter_release_from: int = 1954,
         filter_release_to: int | None = today,
         adult: bool = False,

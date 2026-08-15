@@ -53,7 +53,7 @@ class DiscordCog(ipy.Extension):
                 user=user,
             )
             await ctx.send(embed=embed)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             embed = generate_commons_except_embed(
                 description="An error occurred while getting information about the user",
                 error=f"{e}",
@@ -103,13 +103,13 @@ class DiscordCog(ipy.Extension):
             try:
                 async with UsrBg() as usrbg:
                     banner = await usrbg.get_background(user.id)
-            except Exception as _:
+            except Exception as _:  # noqa: BLE001
                 banner = None
         else:
             try:
                 banner = udict.banner.url if udict.banner else None
                 banner = None if "None" in banner else banner  # type: ignore
-            except Exception as _:
+            except Exception as _:  # noqa: BLE001
                 banner = None
 
         source = "Global" if scope == "user" else "UsrBG"

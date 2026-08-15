@@ -390,27 +390,58 @@ class RawgApi:
             upd = f"{data['updated']}+0000"
             data["updated"] = datetime.strptime(upd, "%Y-%m-%dT%H:%M:%S%z")
         if data.get("ratings", None):
-            data["ratings"] = [Ratings(**x) for x in data["ratings"]]
+            data["ratings"] = [
+                Ratings(
+                    **{k: v for k, v in x.items() if k in Ratings.__dataclass_fields__}
+                )
+                for x in data["ratings"]
+            ]
         if data.get("added_by_status", None):
-            data["added_by_status"] = AddedByStatus(**data["added_by_status"])
+            data["added_by_status"] = AddedByStatus(
+                **{
+                    k: v
+                    for k, v in data["added_by_status"].items()
+                    if k in AddedByStatus.__dataclass_fields__
+                }
+            )
         if data.get("playtime", None):
             data["playtime"] = timedelta(hours=data["playtime"])
         if data.get("parent_platforms", None):
             data["parent_platforms"] = [
-                ParentPlatform(PlatformData(**x["platform"]))
+                ParentPlatform(
+                    PlatformData(
+                        **{
+                            k: v
+                            for k, v in x["platform"].items()
+                            if k in PlatformData.__dataclass_fields__
+                        }
+                    )
+                )
                 for x in data["parent_platforms"]
             ]
         if data.get("platforms", None):
             data["platforms"] = [
                 Platforms(
-                    platform=PlatformData(**x["platform"]),
+                    platform=PlatformData(
+                        **{
+                            k: v
+                            for k, v in x["platform"].items()
+                            if k in PlatformData.__dataclass_fields__
+                        }
+                    ),
                     released_at=datetime.strptime(
                         f"{x['released_at']}T00:00:00+0000", "%Y-%m-%dT%H:%M:%S%z"
                     )
-                    if x["released_at"]
+                    if x.get("released_at")
                     else None,
-                    requirements=Requirements(**x["requirements"])
-                    if x["requirements"]
+                    requirements=Requirements(
+                        **{
+                            k: v
+                            for k, v in x["requirements"].items()
+                            if k in Requirements.__dataclass_fields__
+                        }
+                    )
+                    if x.get("requirements") and isinstance(x["requirements"], dict)
                     else None,
                 )
                 for x in data["platforms"]
@@ -418,26 +449,75 @@ class RawgApi:
         if data.get("stores", None):
             data["stores"] = [
                 Stores(
-                    store=StoreData(**x["store"]),
-                    url=x["url"],
-                    id=x["id"],
+                    store=StoreData(
+                        **{
+                            k: v
+                            for k, v in x["store"].items()
+                            if k in StoreData.__dataclass_fields__
+                        }
+                    )
+                    if isinstance(x.get("store"), dict)
+                    else None,
+                    url=x.get("url"),
+                    id=x.get("id"),
                 )
                 for x in data["stores"]
             ]
         if data.get("developers", None):
-            data["developers"] = [StudioData(**x) for x in data["developers"]]
+            data["developers"] = [
+                StudioData(
+                    **{
+                        k: v
+                        for k, v in x.items()
+                        if k in StudioData.__dataclass_fields__
+                    }
+                )
+                for x in data["developers"]
+            ]
         if data.get("publishers", None):
-            data["publishers"] = [StudioData(**x) for x in data["publishers"]]
+            data["publishers"] = [
+                StudioData(
+                    **{
+                        k: v
+                        for k, v in x.items()
+                        if k in StudioData.__dataclass_fields__
+                    }
+                )
+                for x in data["publishers"]
+            ]
         if data.get("genres", None):
-            data["genres"] = [GenreData(**x) for x in data["genres"]]
+            data["genres"] = [
+                GenreData(
+                    **{
+                        k: v
+                        for k, v in x.items()
+                        if k in GenreData.__dataclass_fields__
+                    }
+                )
+                for x in data["genres"]
+            ]
         if data.get("tags", None):
-            data["tags"] = [TagData(**x) for x in data["tags"]]
+            data["tags"] = [
+                TagData(
+                    **{k: v for k, v in x.items() if k in TagData.__dataclass_fields__}
+                )
+                for x in data["tags"]
+            ]
         if data.get("esrb_rating", None):
-            data["esrb_rating"] = EsrbRating(**data["esrb_rating"])
+            data["esrb_rating"] = EsrbRating(
+                **{
+                    k: v
+                    for k, v in data["esrb_rating"].items()
+                    if k in EsrbRating.__dataclass_fields__
+                }
+            )
         if data.get("description_raw", None):
             data["description_raw"] = data["description_raw"].replace("<br>", "\n")
 
-        return RawgGameData(**data)
+        valid_fields = {
+            k: v for k, v in data.items() if k in RawgGameData.__dataclass_fields__
+        }
+        return RawgGameData(**valid_fields)
 
     async def search(self, query: str) -> list[dict[str, Any]]:
         """
@@ -461,7 +541,8 @@ class RawgApi:
                 rawg_resp = await resp.json()
                 return rawg_resp["results"]
             raise ProviderHttpError(
-                f"RAWG API returned {resp.status}. Reason: {resp.text()}", resp.status
+                f"RAWG API returned {resp.status}. Reason: {await resp.text()}",
+                resp.status,
             )
 
     async def get_data(self, slug: str) -> RawgGameData:
@@ -490,7 +571,7 @@ class RawgApi:
                 Cache.write_data_to_cache(rawg_resp, cache_file_path)
             else:
                 raise ProviderHttpError(
-                    f"RAWG API returned {resp.status}. Reason: {resp.reason}",
+                    f"RAWG API returned {resp.status}. Reason: {await resp.text()}",
                     resp.status,
                 )
         if len(rawg_resp) == 0:

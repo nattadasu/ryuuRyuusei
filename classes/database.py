@@ -2,7 +2,7 @@ import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Literal, Optional
+from typing import Any, ClassVar, Literal
 
 import pandas as pd
 from interactions.models import Snowflake
@@ -85,25 +85,25 @@ class UserDatabaseClass:
     """Guild's Snowflake ID where the user registered"""
     registered_by: Snowflake
     """User's Snowflake ID who registered the user"""
-    registered_guild_name: Optional[str] = None
+    registered_guild_name: str | None = None
     """Guild's name where the user registered"""
-    anilist_id: Optional[int] = None
+    anilist_id: int | None = None
     """User's AniList ID"""
-    anilist_username: Optional[str] = None
+    anilist_username: str | None = None
     """User's AniList username, as a fallback if ID is unreachable"""
-    lastfm_username: Optional[str] = None
+    lastfm_username: str | None = None
     """User's Last.fm username"""
-    mal_username: Optional[str] = None
+    mal_username: str | None = None
     """User's MyAnimeList username, as a fallback if ID is unreachable"""
-    shikimori_id: Optional[int] = None
+    shikimori_id: int | None = None
     """User's Shikimori ID"""
-    shikimori_username: Optional[str] = None
+    shikimori_username: str | None = None
     """User's Shikimori username, as a fallback if ID is unreachable"""
-    user_birthdate: Optional[datetime] = None
+    user_birthdate: datetime | None = None
     """User's birthdate"""
-    user_timezone: Optional[str] = None
+    user_timezone: str | None = None
     """User's timezone"""
-    birthday_permissions: Optional[UserBirthdayPermission] = None
+    birthday_permissions: UserBirthdayPermission | None = None
     """User's birthday permissions"""
 
 
@@ -401,7 +401,9 @@ class UserDatabase:
                     "default": None,
                 },
                 "user_birthdate": {
-                    "type": lambda x: datetime.strptime(x, "%Y-%m-%d"),
+                    "type": lambda x: datetime.strptime(x, "%Y-%m-%d").replace(
+                        tzinfo=timezone.utc
+                    ),
                     "key": "userBirthdate",
                     "default": None,
                 },
@@ -421,7 +423,7 @@ class UserDatabase:
                 try:
                     if row[value["key"]]:
                         setattr(user, key, value["type"](row[value["key"]]))
-                except Exception as _:
+                except (ValueError, TypeError, KeyError):
                     ...
             users.append(user)
         return users
@@ -510,7 +512,7 @@ class UserDatabase:
         """Check if database exists"""
         return self._database_exists_check(raise_on_missing=False)
 
-    __all__ = [
+    __all__: ClassVar[list[str]] = [
         "check_if_registered",
         "save_to_database",
         "drop_user",
@@ -524,4 +526,4 @@ class DatabaseException(Exception):
     """Exception raised for errors in the database."""
 
 
-__all__ = ["UserDatabase", "DatabaseException"]
+__all__ = ["DatabaseException", "UserDatabase"]

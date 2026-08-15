@@ -18,15 +18,17 @@ async def import_backup(file_path: str, key: str):
     try:
         if is_url:
             print(f"Downloading backup from {file_path}...")
-            async with aiohttp.ClientSession() as session:
-                async with session.get(file_path) as resp:
-                    if resp.status == 200:
-                        data = await resp.read()
-                        temp_enc_path.write_bytes(data)
-                    else:
-                        raise Exception(
-                            f"Failed to download attachment: HTTP {resp.status}"
-                        )
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(file_path) as resp,
+            ):
+                if resp.status == 200:
+                    data = await resp.read()
+                    temp_enc_path.write_bytes(data)
+                else:
+                    raise RuntimeError(
+                        f"Failed to download attachment: HTTP {resp.status}"
+                    )
             print("Download complete.")
         else:
             temp_enc_path = Path(file_path)
@@ -56,7 +58,7 @@ async def import_backup(file_path: str, key: str):
 
         print("Backup imported successfully!")
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"An error occurred during import: {e}")
     finally:
         if temp_tar_path.exists():
@@ -132,7 +134,7 @@ async def export_backup(output_path: str):
                 "Please save this key in a secure place. It is required to decrypt/import the backup."
             )
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"An error occurred during export: {e}")
 
 

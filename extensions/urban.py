@@ -149,7 +149,7 @@ class UrbanDictionaryCog(ipy.Extension):
         try:
             async with Urban() as ud:
                 entry = await ud.get_random_word()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             await ctx.send(
                 embed=platform_exception_embed(
                     description="Failed to get random word from Urban Dictionary.",
@@ -195,7 +195,7 @@ class UrbanDictionaryCog(ipy.Extension):
         try:
             async with Urban() as ud:
                 entry = await ud.lookup_definition(term)
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             await ctx.send(
                 embed=platform_exception_embed(
                     description=f"Failed to search Urban Dictionary for `{term}`.",
@@ -221,24 +221,26 @@ class UrbanDictionaryCog(ipy.Extension):
             "value": f"{ctx.input_text}",
         }
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(
+            async with (
+                aiohttp.ClientSession() as session,
+                session.get(
                     f"https://api.urbandictionary.com/v0/autocomplete-extra?term={ctx.input_text}"
-                ) as resp:
-                    if resp.status == 200:
-                        data = await resp.json()
-                        results: list[dict[str, str]] = []
-                        for d in data["results"][:25]:
-                            results.append(
-                                {
-                                    "name": d["term"][:80],
-                                    "value": d["term"],
-                                }
-                            )
-                        await ctx.send(choices=results)  # type: ignore
-                    else:
-                        await ctx.send(choices=[invalid])  # type: ignore
-        except Exception:  # pylint: disable=broad-except
+                ) as resp,
+            ):
+                if resp.status == 200:
+                    data = await resp.json()
+                    results: list[dict[str, str]] = []
+                    for d in data["results"][:25]:
+                        results.append(
+                            {
+                                "name": d["term"][:80],
+                                "value": d["term"],
+                            }
+                        )
+                    await ctx.send(choices=results)  # type: ignore
+                else:
+                    await ctx.send(choices=[invalid])  # type: ignore
+        except Exception:  # pylint: disable=broad-except  # noqa: BLE001
             await ctx.send(choices=[invalid])  # type: ignore
 
     @urban_head.subcommand(
@@ -254,7 +256,7 @@ class UrbanDictionaryCog(ipy.Extension):
         try:
             async with Urban() as ud:
                 entry = await ud.get_word_of_the_day()
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             await ctx.send(
                 embed=platform_exception_embed(
                     description="Failed to get Urban Dictionary Word of the Day.",

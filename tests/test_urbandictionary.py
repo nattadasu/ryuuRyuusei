@@ -17,7 +17,8 @@ class UrbanDictionaryTest(unittest.IsolatedAsyncioTestCase):
         """Test getting random word"""
         async with UrbanDictionary() as ud:
             res = await ud.get_random_word()
-            self.assertIsInstance(res, UrbanDictionaryEntry)
+            self.assertIsInstance(res, list)
+            self.assertIsInstance(res[0], UrbanDictionaryEntry)
 
     async def test_get_word_of_the_day(self):
         """Test getting word of the day"""

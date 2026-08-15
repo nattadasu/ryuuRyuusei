@@ -162,9 +162,7 @@ async def create_simkl_embed(
     elif episodes != "*??*" and airing_date is not None and status == ", Ended":
         guess_date = airing_date + timedelta(weeks=episodes)
         end_date = f"<t:{int(guess_date.timestamp())}:D>\\*"
-    elif status == ", Airing":
-        end_date = "TBA"
-    elif status == ", To Be Announced":
+    elif status == ", Airing" or status == ", To Be Announced":
         end_date = "TBA"
     else:
         end_date = "*Unknown*"

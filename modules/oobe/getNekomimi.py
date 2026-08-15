@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import asyncio
 import os
 from time import time
 
@@ -30,9 +31,13 @@ async def nk_get_data() -> None:
     except aiohttp.ClientError as e:
         print(f"Error fetching data: {e}")
         return
+
     # save data to file
-    with open("database/nekomimiDb.tsv", "w") as f:
-        f.write(data)
+    def _write_tsv():
+        with open("database/nekomimiDb.tsv", "w") as f:
+            f.write(data)
+
+    await asyncio.to_thread(_write_tsv)
 
 
 async def nk_run() -> None:

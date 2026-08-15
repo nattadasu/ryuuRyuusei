@@ -7,7 +7,7 @@ This module is a wrapper for Simkl API, which is used to search for anime, shows
 from copy import deepcopy
 from dataclasses import asdict, dataclass
 from enum import Enum
-from typing import Any, List, Literal
+from typing import Any, Literal
 
 import aiohttp
 
@@ -336,6 +336,35 @@ class Simkl:
             error_message = await response.text()
             raise ProviderHttpError(error_message, response.status)
 
+    async def redirect(
+        self,
+        provider: Provider | str,
+        media_id: int | str,
+    ) -> dict[str, Any]:
+        """
+        Canonical external-ID to SIMKL resolver (/redirect endpoint)
+
+        Args:
+            provider (Provider | str): Provider name (e.g. tmdb, imdb, mal, tvdb)
+            media_id (int | str): ID on the provider platform
+
+        Returns:
+            dict: Response payload containing resolved SIMKL data
+        """
+        params: dict[str, Any] = deepcopy(self.params)
+        if isinstance(provider, self.Provider):
+            provider = provider.value
+        params[str(provider)] = media_id
+        async with self.session.get(
+            f"{self.base_url}/redirect", params=params
+        ) as response:
+            if response.status in (200, 301, 302):
+                if "application/json" in response.headers.get("Content-Type", ""):
+                    return await response.json()
+                return {"url": str(response.url)}
+            error_message = await response.text()
+            raise ProviderHttpError(error_message, response.status)
+
     async def search_by_title(
         self,
         title: str,
@@ -510,7 +539,7 @@ class Simkl:
         rating_limit: int | None = None,
         rating_from: int = 0,
         rating_to: int = 10,
-    ) -> dict[str, Any] | List[dict[str, Any]] | None:
+    ) -> dict[str, Any] | list[dict[str, Any]] | None:
         """
         Get random title, based on filters
 
@@ -589,43 +618,12 @@ class Simkl:
         cache_file_path = Cache.get_cache_file_path(f"ids/{media_type}/{media_id}.json")
         cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
-            cached_data = SimklRelations(
-                title=cached_data["title"],
-                slug=cached_data["slug"],
-                poster=cached_data["poster"],
-                fanart=cached_data["fanart"],
-                anitype=cached_data["anitype"],
-                type=cached_data["type"],
-                allcin=cached_data["allcin"],
-                anfo=cached_data["anfo"],
-                anidb=cached_data["anidb"],
-                anilist=cached_data["anilist"],
-                animeplanet=cached_data["animeplanet"],
-                anisearch=cached_data["anisearch"],
-                ann=cached_data["ann"],
-                hulu=cached_data["hulu"],
-                imdb=cached_data["imdb"],
-                kitsu=cached_data["kitsu"],
-                livechart=cached_data["livechart"],
-                mal=cached_data["mal"],
-                netflix=cached_data["netflix"],
-                offjp=cached_data["offjp"],
-                simkl=cached_data["simkl"],
-                tmdb=cached_data["tmdb"],
-                tvdb=cached_data["tvdb"],
-                tvdbslug=cached_data["tvdbslug"],
-                tvdbmslug=cached_data["tvdbmslug"],
-                wikien=cached_data["wikien"],
-                wikijp=cached_data["wikijp"],
-                crunchyroll=cached_data.get("crunchyroll"),
-                facebook=cached_data.get("facebook"),
-                instagram=cached_data.get("instagram"),
-                justwatch=cached_data.get("justwatch"),
-                letterboxd=cached_data.get("letterboxd"),
-                trakt=cached_data.get("trakt"),
-                twitter=cached_data.get("twitter"),
-            )
-            return cached_data
+            valid_cached = {
+                k: v
+                for k, v in cached_data.items()
+                if k in SimklRelations.__dataclass_fields__
+            }
+            return SimklRelations(**valid_cached)
         if media_type == "anime":
             async with Simkl(self.client_id) as simkl:
                 data = await simkl.get_anime(media_id)
@@ -683,43 +681,10 @@ class Simkl:
                 continue
             mids[key] = data.get(key, None)
         Cache.write_data_to_cache(mids, cache_file_path)
-        relations = SimklRelations(
-            title=mids["title"],
-            slug=mids["slug"],
-            poster=mids["poster"],
-            fanart=mids["fanart"],
-            anitype=mids["anitype"],
-            type=mids["type"],
-            allcin=mids["allcin"],
-            anfo=mids["anfo"],
-            anidb=mids["anidb"],
-            anilist=mids["anilist"],
-            animeplanet=mids["animeplanet"],
-            anisearch=mids["anisearch"],
-            ann=mids["ann"],
-            hulu=mids["hulu"],
-            imdb=mids["imdb"],
-            kitsu=mids["kitsu"],
-            livechart=mids["livechart"],
-            mal=mids["mal"],
-            netflix=mids["netflix"],
-            offjp=mids["offjp"],
-            simkl=mids["simkl"],
-            tmdb=mids["tmdb"],
-            tvdb=mids["tvdb"],
-            tvdbmslug=mids["tvdbmslug"],
-            tvdbslug=mids["tvdbslug"],
-            wikien=mids["wikien"],
-            wikijp=mids["wikijp"],
-            crunchyroll=mids["crunchyroll"],
-            facebook=mids["facebook"],
-            instagram=mids["instagram"],
-            justwatch=mids["justwatch"],
-            letterboxd=mids["letterboxd"],
-            trakt=mids["trakt"],
-            twitter=mids["twitter"],
-        )
-        return relations
+        valid_mids = {
+            k: v for k, v in mids.items() if k in SimklRelations.__dataclass_fields__
+        }
+        return SimklRelations(**valid_mids)
 
 
 __all__ = ["Simkl"]

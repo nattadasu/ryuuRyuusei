@@ -142,9 +142,10 @@ You can use the wrapper like this:
 ```py
 from classes.some_wrapper import SomeWrapper
 
+
 async def main():
-  async with SomeWrapper() as some_wrapper:
-    some_dataclass = await some_wrapper.some_method("some_argument")
-    print(some_dataclass.some_dataclass_field)
-    print(some_dataclass.enums)
+    async with SomeWrapper() as some_wrapper:
+        some_dataclass = await some_wrapper.some_method("some_argument")
+        print(some_dataclass.some_dataclass_field)
+        print(some_dataclass.enums)
 ```

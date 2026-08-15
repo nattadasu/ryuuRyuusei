@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 import interactions as ipy
@@ -68,7 +69,7 @@ class UserSettings(ipy.Extension):
                     ctx.author.id, row="malUsername", modified_input=jusr_.username
                 )
                 success.append("MyAnimeList")
-        except Exception as _:
+        except Exception as _:  # noqa: BLE001
             await ctx.send(
                 (
                     "Failed to refresh MyAnimeList account by looking up through user ID. "
@@ -89,7 +90,7 @@ class UserSettings(ipy.Extension):
                         ctx.author.id, row="anilistUsername", modified_input=ausr_.name
                     )
                     success.append("AniList")
-            except Exception as err:
+            except Exception as err:  # noqa: BLE001
                 fails.append(f"AniList (`{err}`)")
 
         if usr_.lastfm_username:
@@ -108,7 +109,7 @@ class UserSettings(ipy.Extension):
                         modified_input=susr_.nickname,
                     )
                     success.append("Shikimori")
-            except Exception as err:
+            except Exception as err:  # noqa: BLE001
                 fails.append(f"Shikimori (`{err}`)")
 
         final = "We've refreshed your account informations.\n"
@@ -173,8 +174,12 @@ class UserSettings(ipy.Extension):
             return
 
         if state_:
-            with open(file_path, "w", encoding="utf-8") as file:
-                file.write("")
+
+            def _write_empty():
+                with open(file_path, "w", encoding="utf-8") as file:
+                    file.write("")
+
+            await asyncio.to_thread(_write_empty)
             await ctx.send(
                 """Feature enabled, now Ryuusei will automatically respond to your message with supported sites.
 

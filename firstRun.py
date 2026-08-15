@@ -72,9 +72,9 @@ async def first_run(py_bin: str = py_bin_path()):
                 "requirements.txt",
             ]
         if current_os() == "Windows":
-            subprocess.run(proc_args, check=True)
+            await asyncio.to_thread(subprocess.run, proc_args, check=True)
         else:
-            subprocess.run(proc_args, check=True, env=env)
+            await asyncio.to_thread(subprocess.run, proc_args, check=True, env=env)
 
     except subprocess.CalledProcessError:
         print("\033[31mError installing packages, please run following command:")
@@ -96,7 +96,8 @@ async def first_run(py_bin: str = py_bin_path()):
     if not os.path.exists("cache/dict_installed"):
         print("Installing unidic dictionary from NINJAL...")
         try:
-            subprocess.run(
+            await asyncio.to_thread(
+                subprocess.run,
                 [
                     safe_path,
                     "-m",
@@ -105,8 +106,12 @@ async def first_run(py_bin: str = py_bin_path()):
                 ],
                 check=True,
             )
-            with open("cache/dict_installed", "w", encoding="utf8") as file:
-                file.write("")
+
+            def _create_dict_installed():
+                with open("cache/dict_installed", "w", encoding="utf8") as file:
+                    file.write("")
+
+            await asyncio.to_thread(_create_dict_installed)
         except subprocess.CalledProcessError:
             print(
                 "\033[31mError installing unidic dictionary, please run following command:"
@@ -151,10 +156,9 @@ async def first_run(py_bin: str = py_bin_path()):
     # Check if .env exists, if not, copy .env.example
     if not os.path.exists(".env"):
         print("Copying .env.example to .env...")
-        if current_os() == "Windows":
-            os.system("copy .env.example .env")
-        else:
-            os.system("cp .env.example .env")
+        import shutil
+
+        await asyncio.to_thread(shutil.copy, ".env.example", ".env")
     else:
         print(".env already exists, skipping...")
 

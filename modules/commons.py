@@ -343,7 +343,7 @@ async def get_nsfw_status(
     return nsfw_bool  # type: ignore
 
 
-def pluralize(amount: float | int, word: str | None = None):
+def pluralize(amount: float, word: str | None = None):
     """
     Add an "s" to the end of a word if the number is greater than 1.
 
@@ -360,7 +360,7 @@ def pluralize(amount: float | int, word: str | None = None):
 
 
 def convert_float_to_time(
-    time_float: float | int,
+    time_float: float,
     use_seconds: bool = False,
     show_weeks: bool = False,
     show_milliseconds: bool = False,
@@ -571,6 +571,7 @@ async def send_or_edit_message(
 
 
 __all__ = [
+    "PlatformErrType",
     "convert_float_to_time",
     "convert_html_to_markdown",
     "generate_commons_except_embed",
@@ -581,11 +582,10 @@ __all__ = [
     "get_nsfw_status",
     "get_random_seed",
     "platform_exception_embed",
-    "PlatformErrType",
     "pluralize",
     "sanitize_markdown",
     "save_traceback_to_file",
+    "send_or_edit_message",
     "snowflake_to_datetime",
     "trim_synopsis",
-    "send_or_edit_message",
 ]

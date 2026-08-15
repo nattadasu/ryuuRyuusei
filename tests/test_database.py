@@ -2,8 +2,9 @@ import os
 import sys
 import unittest
 from asyncio import sleep
+from collections.abc import Coroutine
 from datetime import datetime, timezone
-from typing import Any, Coroutine
+from typing import Any
 
 from interactions import Snowflake
 
@@ -48,7 +49,7 @@ class DatabaseTest(unittest.IsolatedAsyncioTestCase):
             try:
                 await ud.verify_user(Snowflake(1234567890))
                 resp = True
-            except BaseException:
+            except Exception:  # noqa: BLE001
                 resp = False
         self.assertTrue(resp is not None)
 
