@@ -37,7 +37,8 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
 
     # Process alternative names
     syns = sorted(
-        set(data.alternative_names or []) - {data.name, data.name_original},
+        {s for s in (data.alternative_names or []) if s}
+        - {data.name, data.name_original},
         key=str.casefold,
     )
     syns = syns[:8] if len(syns) > 8 else syns
@@ -46,8 +47,15 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
         syns_text += f", *and {len(data.alternative_names or []) - len(syns)} more*"
 
     # Process platforms
-    pfs = sorted({pf.platform.name for pf in data.platforms}, key=str.casefold)
-    pfs_text = ", ".join(pfs)
+    pfs = sorted(
+        {
+            pf.platform.name
+            for pf in data.platforms or []
+            if pf.platform and pf.platform.name
+        },
+        key=str.casefold,
+    )
+    pfs_text = ", ".join(pfs) if pfs else "*None*"
 
     # Process ratings
     scr = data.rating or 0
@@ -57,11 +65,11 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
     rte = data.esrb_rating.name if data.esrb_rating else "Unknown Rating"
 
     # Process developers
-    devs = sorted({d.name for d in data.developers or []}, key=str.casefold)
+    devs = sorted({d.name for d in data.developers or [] if d.name}, key=str.casefold)
     devs_text = ", ".join(devs) if devs else "*None*"
 
     # Process publishers
-    pubs = sorted({p.name for p in data.publishers or []}, key=str.casefold)
+    pubs = sorted({p.name for p in data.publishers or [] if p.name}, key=str.casefold)
     pubs_text = ", ".join(pubs) if pubs else "*None*"
 
     # Process game description
@@ -97,7 +105,10 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
             cyno += desc_attr
 
     # Process genres and tags
-    tgs = sorted({g.name.title() for g in data.genres + data.tags}, key=str.casefold)
+    tgs = sorted(
+        {g.name.title() for g in (data.genres or []) + (data.tags or []) if g.name},
+        key=str.casefold,
+    )
     tgs_text = (
         ", ".join(tgs[:20]) if len(tgs) > 20 else ", ".join(tgs) if tgs else "*None*"
     )
@@ -108,6 +119,7 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
 
     # Process release date
     rel = "Unknown year"
+    year = "Unknown"
     if not data.tba and data.released is not None:
         year = data.released.strftime("%Y")
         rel = f"<t:{int(data.released.timestamp())}:D> (<t:{int(data.released.timestamp())}:R>)"
@@ -147,7 +159,9 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
         color=0x1F1F1F,
         fields=[
             EmbedField(name="English Title", value=data.name, inline=True),
-            EmbedField(name="Native Title", value=data.name_original, inline=True),
+            EmbedField(
+                name="Native Title", value=data.name_original or "*None*", inline=True
+            ),
             EmbedField(name="Synonyms", value=syns_text, inline=False),
             EmbedField(name="Genres and Tags", value=tgs_text, inline=False),
             EmbedField(name="Platforms", value=pfs_text, inline=False),
@@ -156,7 +170,8 @@ async def generate_rawg(data: RawgGameData) -> tuple[Embed, list[Button]]:
             EmbedField(name="Release Date", value=rel, inline=True),
         ],
     )
-    embed.set_image(url=data.background_image)
+    if data.background_image:
+        embed.set_image(url=data.background_image)
     return [embed, components]
 
 

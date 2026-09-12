@@ -42,7 +42,9 @@ async def create_simkl_embed(
     if is_media_nsfw is True and is_channel_nsfw is False:
         raise MediaIsNsfw(notice)
 
-    media_id = str(data["ids"]["simkl"])
+    media_id = str(data.get("ids", {}).get("simkl") or data.get("simkl_id") or "")
+    if not media_id:
+        raise ProviderHttpError("SIMKL response is missing its ID", 500)
     title = data.get("title", None)
     synonyms = data.get("alt_titles", None)
     status: str | None = data.get("status", None)
@@ -64,7 +66,7 @@ async def create_simkl_embed(
     if synonyms is None:
         synonyms = "*None*"
     else:
-        synonyms = [x["name"] for x in synonyms if x["name"] != title]
+        synonyms = [name for x in synonyms if (name := x.get("name")) and name != title]
         synonyms = sorted(set(synonyms), key=str.casefold)
         len_synonyms = len(synonyms)
 
@@ -139,7 +141,7 @@ async def create_simkl_embed(
                 eps_data: list[
                     dict[str, str | int | dict[str, str | int]]
                 ] = await simkl.get_show_episodes(media_id)
-            eps_data = [x for x in eps_data if x["type"] != "special"]
+            eps_data = [x for x in eps_data if x.get("type") != "special"]
             eps_data.reverse()
             if len(eps_data) > 0:
                 season = eps_data[0].get("season", 1)  # type: ignore
@@ -199,7 +201,11 @@ async def create_simkl_embed(
                 trimmed_description += "\n> \n> "
                 for line in description[1:]:
                     if line not in ("", None):
+                        if len(trimmed_description) >= 3500:
+                            break
                         trimmed_description += trim_synopsis(line)
+                if len(trimmed_description) > 3500:
+                    trimmed_description = trimmed_description[:3500].rstrip() + "..."
         else:
             trimmed_description = first_line
 
@@ -227,10 +233,11 @@ async def create_simkl_embed(
     if len(genres) == 0:
         genres = "*None*"
     elif len(genres) > 20:
+        leftover = len(genres) - 20
         sorted_genres = sorted(set(genres[:20]), key=str.casefold)
         genres = ", ".join(sorted_genres)
-        if (len(genres) - 20) >= 1:
-            genres += f", and {len(genres - 20)} more"
+        if leftover >= 1:
+            genres += f", and {leftover} more"
     else:
         sorted_genres = sorted(set(genres), key=str.casefold)
         genres = ", ".join(sorted_genres)
@@ -374,7 +381,7 @@ async def create_simkl_embed(
     if data.get("trailers", None) is not None:
         try:
             trailer = generate_trailer(data["trailers"][0], is_mal=False)
-        except IndexError:
+        except (IndexError, ValueError):
             trailer = None
 
         if trailer is not None:
@@ -427,7 +434,7 @@ async def simkl_submit(
             is_channel_nsfw=channel_nsfw,
             is_media_nsfw=media_nsfw,
         )
-        components = ipy.spread_to_rows(*buttons)
+        components = ipy.spread_to_rows(*buttons) if buttons else []
         await send_or_edit_message(ctx, embed, components, replace)
         return
 
