@@ -3,12 +3,23 @@ import re
 import shutil
 import tarfile
 import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 
 import aiohttp
 import interactions as ipy
 
+from classes.anilist import AniList
 from classes.database import UserDatabase
+from classes.excepts import ProviderHttpError
+from modules.anilist_token import (
+    REFRESH_THRESHOLD,
+    clear_token,
+    exchange_pin,
+    get_authorize_url,
+    load_token,
+    save_token,
+)
 from modules.const import (
     AUTHOR_USERID,
     EMOJI_SUCCESS,
@@ -19,6 +30,13 @@ from modules.const import (
 )
 from modules.crypto_utils import CryptoUtils
 from modules.discord import format_username
+
+ANILIST_PIN_MODAL = "hostsettings_anilist_pin"
+"""Custom ID of the AniList PIN modal"""
+ANILIST_PIN_INPUT = "anilist_pin"
+"""Custom ID of the PIN text input inside the modal"""
+ANILIST_PIN_BUTTON = "hostsettings_anilist_pin_button"
+"""Custom ID of the button that opens the PIN modal"""
 
 hostsettings_head = ipy.SlashCommand(
     name="hostsettings",
@@ -41,6 +59,11 @@ class HostSettings(ipy.Extension):
     database = hostsettings_head.group(
         name="database",
         description="Manage database settings, for self-hosted bot only",
+    )
+
+    anilist = hostsettings_head.group(
+        name="anilist",
+        description="Manage AniList host authentication, for self-hosted bot only",
     )
 
     @member.subcommand(
@@ -258,6 +281,161 @@ class HostSettings(ipy.Extension):
                 temp_enc_path.unlink()
             if temp_tar_path.exists():
                 temp_tar_path.unlink()
+
+    @anilist.subcommand(
+        sub_cmd_name="status",
+        sub_cmd_description="Show AniList host login status",
+    )
+    async def hostsettings_anilist_status(self, ctx: ipy.SlashContext):
+        await ctx.defer(ephemeral=True)
+        token = load_token()
+        if token is None:
+            embed = self.generate_error_embed(
+                header="Not logged in",
+                message="No AniList token stored. Use `/hostsettings anilist login` to authenticate.",
+                is_user_error=True,
+            )
+            await ctx.send(embed=embed)
+            return
+        try:
+            async with AniList() as anilist:
+                viewer = await anilist.viewer()
+        except ProviderHttpError as e:
+            embed = self.generate_error_embed(
+                header="Error!",
+                message=f"Stored token was rejected by AniList: {e.message}\nUse `/hostsettings anilist login` to re-authenticate or `/hostsettings anilist logout` to clear it.",
+                is_user_error=False,
+            )
+            await ctx.send(embed=embed)
+            return
+        adult = (viewer.get("options") or {}).get("displayAdultContent")
+        if token.expires_at is None:
+            expiry_value = "Unknown"
+        else:
+            stamp = int(token.expires_at)
+            expiry_value = f"<t:{stamp}:F> (<t:{stamp}:R>)"
+        threshold_days = REFRESH_THRESHOLD / 86400
+        avatar = (viewer.get("avatar") or {}).get("large")
+        embed = ipy.Embed(
+            title="AniList Host Status",
+            description=f"Logged in as [{viewer.get('name')}]({viewer.get('siteUrl')})",
+            color=0x0AA4F5,
+            timestamp=datetime.now(tz=timezone.utc),
+        )
+        if avatar:
+            embed.set_thumbnail(url=avatar)
+        embed.add_fields(
+            ipy.EmbedField(name="User ID", value=str(viewer.get("id")), inline=True),
+            ipy.EmbedField(
+                name="Adult content",
+                value="Enabled" if adult else "Disabled",
+                inline=True,
+            ),
+            ipy.EmbedField(name="Token expires", value=expiry_value, inline=False),
+            ipy.EmbedField(
+                name="Auto-refresh",
+                value=f"Enabled (checks every 12 hours, refreshes below {threshold_days:.0f} days left)",
+                inline=False,
+            ),
+        )
+        await ctx.send(embed=embed)
+
+    @anilist.subcommand(
+        sub_cmd_name="login",
+        sub_cmd_description="Log in to AniList via PIN code",
+    )
+    async def hostsettings_anilist_login(self, ctx: ipy.SlashContext):
+        url = get_authorize_url()
+        embed = ipy.Embed(
+            title="AniList Login",
+            description=(
+                "1. Open the link below and authorize the bot\n"
+                f"{url}\n"
+                "2. Copy the PIN shown by AniList\n"
+                "3. Press **Enter PIN** and paste it"
+            ),
+            color=0x0AA4F5,
+        )
+        components = [
+            ipy.Button(
+                style=ipy.ButtonStyle.BLURPLE,
+                label="Enter PIN",
+                custom_id=ANILIST_PIN_BUTTON,
+            )
+        ]
+        await ctx.send(embed=embed, components=components, ephemeral=True)
+
+    @ipy.component_callback(ANILIST_PIN_BUTTON)
+    async def anilist_pin_button(self, ctx: ipy.ComponentContext):
+        """Open the modal to paste the AniList PIN"""
+        modal = ipy.Modal(
+            ipy.ShortText(
+                label="AniList PIN",
+                custom_id=ANILIST_PIN_INPUT,
+                placeholder="Paste the PIN from the AniList page",
+                required=True,
+                min_length=1,
+                max_length=1000,
+            ),
+            title="AniList Login",
+            custom_id=ANILIST_PIN_MODAL,
+        )
+        await ctx.send_modal(modal=modal)
+
+    @ipy.modal_callback(ANILIST_PIN_MODAL)
+    async def anilist_pin_modal(self, ctx: ipy.ModalContext):
+        """Exchange the pasted PIN for tokens and store them"""
+        pin = (ctx.responses.get(ANILIST_PIN_INPUT) or "").strip()
+        await ctx.defer(ephemeral=True)
+        if not pin:
+            embed = self.generate_error_embed(
+                header="Error!",
+                message="Empty PIN. Press **Enter PIN** and paste the code from AniList.",
+                is_user_error=True,
+            )
+            await ctx.send(embed=embed)
+            return
+        try:
+            token = await exchange_pin(pin)
+        except ProviderHttpError as e:
+            embed = self.generate_error_embed(
+                header="Login failed!",
+                message=f"AniList rejected the PIN: {e.message}",
+                is_user_error=True,
+            )
+            await ctx.send(embed=embed)
+            return
+        save_token(token)
+        try:
+            async with AniList() as anilist:
+                viewer = await anilist.viewer()
+            account = f"[{viewer.get('name')}]({viewer.get('siteUrl')})"
+        except ProviderHttpError:
+            account = "your account"
+        embed = self.generate_success_embed(
+            header="Logged in!",
+            message=f"Authenticated as {account}. Token stored securely and will refresh automatically.",
+        )
+        await ctx.send(embed=embed)
+
+    @anilist.subcommand(
+        sub_cmd_name="logout",
+        sub_cmd_description="Log out of AniList (delete stored token)",
+    )
+    async def hostsettings_anilist_logout(self, ctx: ipy.SlashContext):
+        await ctx.defer(ephemeral=True)
+        if clear_token():
+            embed = self.generate_success_embed(
+                header="Logged out!",
+                message="AniList token deleted. The bot now runs anonymously.",
+            )
+        else:
+            embed = self.generate_error_embed(
+                header="Error!",
+                message="Not logged in, nothing to clear.",
+                is_user_error=True,
+            )
+        await ctx.send(embed=embed)
 
     @staticmethod
     def generate_error_embed(

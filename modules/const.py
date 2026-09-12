@@ -28,12 +28,6 @@ ANILIST_CLIENT_SECRET: Final[str] = cast(str, ge("ANILIST_CLIENT_SECRET"))
 """AniList client secret"""
 ANILIST_REDIRECT_URI: Final[str] = cast(str, ge("ANILIST_REDIRECT_URI"))
 """AniList redirect URI"""
-ANILIST_ACCESS_TOKEN: Final[str] = cast(str, ge("ANILIST_ACCESS_TOKEN"))
-"""AniList access token"""
-ANILIST_OAUTH_REFRESH: Final[str] = cast(str, ge("ANILIST_OAUTH_REFRESH"))
-"""AniList OAuth refresh token"""
-ANILIST_OAUTH_EXPIRY: Final[int] = cast(int, ge("ANILIST_OAUTH_EXPIRY"))
-"""AniList OAuth expiry time, in seconds"""
 AUTHOR_USERID: Final[int] = cast(int, ge("AUTHOR_USERID"))
 """The bot author's user ID"""
 AUTHOR_USERNAME: Final[str] = cast(str, ge("AUTHOR_USERNAME"))

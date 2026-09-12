@@ -163,6 +163,36 @@ async def first_run(py_bin: str = py_bin_path()):
     else:
         print(".env already exists, skipping...")
 
+    # AniList host authentication, only when needed: interactive terminal,
+    # client details configured, and no usable (or self-refreshing) token
+    if os.isatty(0):
+        from modules.anilist_token import load_token, token_needs_refresh
+        from modules.const import ANILIST_CLIENT_ID, ANILIST_CLIENT_SECRET
+
+        stored = load_token()
+        needs_login = stored is None or (
+            token_needs_refresh(stored) and not stored.refresh_token
+        )
+        if not needs_login:
+            print("AniList host token already stored, skipping login...")
+        elif not ANILIST_CLIENT_ID or not ANILIST_CLIENT_SECRET:
+            print("AniList client details missing in .env, skipping host login...")
+            print(
+                "Fill ANILIST_CLIENT_ID/SECRET, then use /hostsettings anilist login later."
+            )
+        else:
+            print("\nLog in to AniList now for NSFW results? (y/N) ")
+            if input().lower() == "y":
+                from modules.oobe.anilistAuth import main as anilist_login
+
+                await anilist_login()
+            else:
+                print(
+                    "Skipping AniList login, you can do it later via /hostsettings anilist login."
+                )
+    else:
+        print("Non-interactive mode, skipping AniList login...")
+
     print("Initialization finished. You should be able to run the bot safely now.")
 
 

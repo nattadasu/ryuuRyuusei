@@ -513,11 +513,34 @@ pip install aiohttp pyyaml pandas
 
 3. Fill in the required credentials in the `.env` file.
 
+   Only the AniList client details (`ANILIST_CLIENT_ID`,
+   `ANILIST_CLIENT_SECRET`, `ANILIST_REDIRECT_URI`) go here. Host
+   authentication tokens are no longer stored in `.env`.
+
 4. Finally, execute the following command to run the bot:
 
    ```bash
    python main.py
    ```
+
+5. Log the bot host in to AniList (enables NSFW results and higher rate
+   limits). On Discord, run:
+
+   ```text
+   /hostsettings anilist login
+   ```
+
+   then open the shown link, authorize, and paste the PIN when prompted.
+   Prefer the terminal instead? Run:
+
+   ```bash
+   python -m modules.oobe.anilistAuth
+   ```
+
+   Tokens are stored in `database/anilist_token.json` and refreshed
+   automatically. Check the state anytime with
+   `/hostsettings anilist status`. `firstRun.py` offers this login
+   automatically when no usable token is stored yet.
 
 Congratulations! You have successfully set up and launched the Discord bot.
 

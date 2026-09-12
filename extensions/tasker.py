@@ -15,6 +15,7 @@ from classes.stats.dbgg import DiscordBotsGG
 from classes.stats.dbl import DiscordBotList
 from classes.stats.infinity import InfinityBots
 from classes.stats.topgg import TopGG
+from modules.anilist_token import ensure_fresh_token, load_token
 from modules.commons import save_traceback_to_file
 from modules.prints import print  # pylint: disable=redefined-builtin
 
@@ -29,6 +30,7 @@ class BotTasker(Extension):
         self.delete_cache.start()
         self.delete_error_logs.start()
         self.poll_stats.start()
+        self.refresh_anilist_token.start()
         self.update_bot_activity.start()
         self.update_deps_database.start()
         # pylint: enable=no-member
@@ -211,6 +213,21 @@ class BotTasker(Extension):
                 os.rmdir(root)
 
         return return_as
+
+    @Task.create(IntervalTrigger(hours=12))
+    async def refresh_anilist_token(self) -> None:
+        """Proactively refresh the AniList host token before it expires"""
+        try:
+            if load_token() is None:
+                return
+            refreshed, message = await ensure_fresh_token()
+            if refreshed:
+                print(f"[Tsk] [AniList] {message}")
+        except Exception as error:  # noqa: BLE001
+            print(f"[Tsk] [AniList] Failed to refresh AniList token: {error}")
+            save_traceback_to_file(
+                "tasker_anilist", self.bot.user, error, mute_error=True
+            )
 
     @Task.create(IntervalTrigger(days=1))
     async def update_deps_database(self) -> None:

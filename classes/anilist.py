@@ -10,7 +10,8 @@ from dacite import Config, from_dict
 
 from classes.cache import Caching
 from classes.excepts import ProviderHttpError, ProviderTypeError
-from modules.const import ANILIST_ACCESS_TOKEN, ANILIST_OAUTH_EXPIRY, USER_AGENT
+from modules.anilist_token import get_valid_access_token
+from modules.const import USER_AGENT
 from modules.prints import print  # pylint: disable=redefined-builtin
 
 Cache = Caching(cache_directory="cache/anilist", cache_expiration_time=86400)
@@ -288,7 +289,7 @@ class AniList:
         self.base_url = "https://graphql.anilist.co"
         self.session = ClientSession()
         self.headers = None
-        self.access_token = ANILIST_ACCESS_TOKEN
+        self.access_token = None
 
     async def __aenter__(self):
         """Create the session"""
@@ -297,12 +298,14 @@ class AniList:
             "Accept": "application/json",
             "User-Agent": USER_AGENT,
         }
-        if int(ANILIST_OAUTH_EXPIRY) > datetime.now(tz=timezone.utc).timestamp():
+        self.access_token = await get_valid_access_token()
+        if self.access_token:
             self.headers["Authorization"] = f"Bearer {self.access_token}"
         else:
             print(
-                "[API] [AniList] [WARNING] Access token has expired, please refresh it, otherwise bot won't show NSFW content"
+                "[API] [AniList] [WARNING] No valid access token, running anonymous; log in via /hostsettings anilist login to show NSFW content"
             )
+        self.session.headers.update(self.headers)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:  # type: ignore
@@ -312,6 +315,52 @@ class AniList:
     async def close(self) -> None:
         """Close aiohttp session"""
         await self.session.close()  # type: ignore
+
+    async def viewer(self) -> dict[str, Any]:
+        """
+        Get the currently authenticated user (requires a host token)
+
+        Raises:
+            ProviderHttpError: Raised when the HTTP request fails or no user is authenticated
+
+        Returns:
+            dict[str, Any]: Viewer id, name, siteUrl, avatar and adult-content option
+        """
+        gqlquery = """query {
+    Viewer {
+        id
+        name
+        siteUrl
+        avatar {
+            large
+        }
+        options {
+            displayAdultContent
+        }
+    }
+}"""
+        async with self.session.post(
+            self.base_url, json={"query": gqlquery}
+        ) as response:
+            try:
+                data: dict[str, Any] = await response.json()
+            except Exception as err:
+                raise ProviderHttpError(str(err), response.status) from err
+            errors: list[dict[str, Any]] | None = data.get("errors", None)
+            if errors:
+                err_strings: str = "\n".join(
+                    [
+                        f"- [{err['status']}] {err['message']}{' Hint:' + err['hint'] if err.get('hint', None) else ''}"
+                        for err in errors
+                    ]
+                )
+                raise ProviderHttpError(err_strings, response.status)
+            viewer_data = (data.get("data") or {}).get("Viewer")
+            if not viewer_data:
+                raise ProviderHttpError(
+                    "No authenticated AniList user", response.status
+                )
+            return viewer_data
 
     class MediaType(Enum):
         """Media type enum for AniList"""
