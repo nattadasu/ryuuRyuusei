@@ -312,6 +312,15 @@ class AniList:
         """Close the session"""
         await self.close()
 
+    @staticmethod
+    def _drop_null_tags(media_data: dict[str, Any]) -> None:
+        """Drop nameless tags so strict parsing never sees them"""
+        tags = media_data.get("tags")
+        if isinstance(tags, list):
+            media_data["tags"] = [
+                tag for tag in tags if isinstance(tag, dict) and tag.get("name")
+            ]
+
     async def close(self) -> None:
         """Close aiohttp session"""
         await self.session.close()  # type: ignore
@@ -438,6 +447,7 @@ class AniList:
         cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
             # return self._media_dict_to_dataclass(cached_data)
+            self._drop_null_tags(cached_data)
             return from_dict(AniListMediaStruct, cached_data)
         gqlquery = f"""query {{
     Media(id: {media_id}, type: ANIME) {{
@@ -508,6 +518,7 @@ class AniList:
                     ]
                 )
                 raise ProviderHttpError(err_strings, response.status)
+            self._drop_null_tags(data["data"]["Media"])
             Cache.write_data_to_cache(data["data"]["Media"], cache_file_path)
             return from_dict(AniListMediaStruct, data["data"]["Media"])
 
@@ -525,6 +536,7 @@ class AniList:
         cache_file_path = Cache.get_cache_file_path(f"manga/{media_id}.json")
         cached_data = Cache.read_cached_data(cache_file_path)
         if cached_data is not None:
+            self._drop_null_tags(cached_data)
             return from_dict(AniListMediaStruct, cached_data)
         gqlquery = f"""query {{
     Media(id: {media_id}, type: MANGA) {{
@@ -606,6 +618,7 @@ class AniList:
                 and media_data["stats"].get("scoreDistribution") is None
             ):
                 media_data["stats"]["scoreDistribution"] = []
+            self._drop_null_tags(media_data)
             Cache.write_data_to_cache(media_data, cache_file_path)
             return from_dict(AniListMediaStruct, media_data)
 

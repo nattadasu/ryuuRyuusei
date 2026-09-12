@@ -173,7 +173,7 @@ async def generate_mal(
 
     if not is_nsfw and jk_dat.genres is not None:
         for genre in jk_dat.genres:
-            genre_name = genre.name
+            genre_name = genre.name or ""
             if "Hentai" in genre_name:
                 raise MediaIsNsfw(
                     f"Only NSFW channels are allowed to search NSFW content.{msg_for_thread}"
@@ -207,6 +207,7 @@ async def generate_mal(
         ):
             cyno += cynmo
 
+    jjpg = None
     if jk_dat.images is not None and jk_dat.images.jpg is not None:
         jjpg = jk_dat.images.jpg
     note = "Images from "
@@ -227,7 +228,7 @@ async def generate_mal(
     kts_bg = kts["data"]["attributes"].get("coverImage")
     kts_bg: str | None = kts_bg.get("original") if kts_bg else None
 
-    mal_post = jjpg.large_image_url or jjpg.image_url
+    mal_post = (jjpg.large_image_url or jjpg.image_url) if jjpg else None
     mal_bg = ""
 
     poster = next((img for img in (al_post, kts_post, mal_post) if img), None)
@@ -246,12 +247,14 @@ async def generate_mal(
 
     # Build sendMessages
     tgs = []
-    tgs.extend(genre.name for genre in jk_dat.genres)
-    tgs.extend(genre.name for genre in jk_dat.themes)
-    tgs.extend(genre.name for genre in jk_dat.demographics)
+    tgs.extend(genre.name for genre in jk_dat.genres or [] if genre.name)
+    tgs.extend(genre.name for genre in jk_dat.themes or [] if genre.name)
+    tgs.extend(genre.name for genre in jk_dat.demographics or [] if genre.name)
     content_warning = False
-    tgs.extend(f"{genre.name} **!**" for genre in jk_dat.explicit_genres)
-    if len(jk_dat.explicit_genres) > 0:
+    tgs.extend(
+        f"{genre.name} **!**" for genre in jk_dat.explicit_genres or [] if genre.name
+    )
+    if len(jk_dat.explicit_genres or []) > 0:
         content_warning = True
 
     ssonn = jk_dat.season
@@ -259,13 +262,19 @@ async def generate_mal(
     tgs = sorted(set(tgs), key=str.casefold)
     tgs = ", ".join(tgs) if tgs else "*None*"
 
-    astn, aenn = jk_dat.aired.from_, jk_dat.aired.to
-    year = str(astn.year) if astn else "year?"
-    astr = jk_dat.aired.string
+    aired = jk_dat.aired
+    astn, aenn = (aired.from_, aired.to) if aired else (None, None)
+    year = str(astn.year) if astn and astn.year else "year?"
+    astr = (aired.string if aired else None) or ""
     bcast = jk_dat.broadcast
+    bcast_string = bcast.string if bcast else None
+    bcast_time = bcast.time if bcast else None
+    bcast_zone = bcast.timezone if bcast else None
 
     # Grab studio names on jk_dat['studios'][n]['name']
-    studio_names = [stud.name for stud in jk_dat.studios] if jk_dat.studios else None
+    studio_names = (
+        [stud.name for stud in jk_dat.studios if stud.name] if jk_dat.studios else None
+    )
     stdio = ", ".join(studio_names) if studio_names else "*None*"
 
     # start date logic
@@ -274,18 +283,22 @@ async def generate_mal(
             ast = astr.split(" to ")[0]
             tsa = ""
         elif re.match(r"^([a-zA-Z]{3} [\d]{1,2}, [\d]{4})", astr):
-            if bcast.string in ["Unknown", None] or bcast.time is None:
+            if (
+                bcast_string in ["Unknown", None]
+                or bcast_time is None
+                or bcast_zone is None
+            ):
                 ast = (astn - daten).total_seconds()
             else:
                 # Split bcast.time into hours and minutes
-                bct = bcast.time.split(":")
+                bct = bcast_time.split(":")
                 prop = jk_dat.aired.from_
                 # Convert bct to datetime
                 ast = (
                     prop.replace(
                         hour=int(bct[0]),
                         minute=int(bct[1]),
-                        tzinfo=ZoneInfo(bcast.timezone),
+                        tzinfo=ZoneInfo(bcast_zone),
                     )
                     - daten
                 ).total_seconds()
@@ -297,12 +310,15 @@ async def generate_mal(
                 and jk_dat.type in ["TV", "ONA"]
                 and jk_dat.members is not None
                 and jk_dat.members >= 750
-                and bcast.time is not None
-                and bcast.string not in ["Unknown", None]
+                and bcast_time is not None
+                and bcast_string not in ["Unknown", None]
                 and jk_dat.status not in ["Not yet aired", "Cancelled"]
             )
             timestamp_format = "F" if use_detailed_format else "D"
             ast = f"<t:{ast}:{timestamp_format}>"
+        else:
+            ast = astn.strftime("%Y-%m-%d")
+            tsa = ""
     else:
         ast, tsa = "TBA", ""
 
@@ -310,19 +326,23 @@ async def generate_mal(
     # Check airing dates
     if aenn is not None:
         if re.match(r"^([a-zA-Z]{3} [\d]{1,2}, [\d]{4})", astr):
-            if (bcast.string in ["Unknown", None]) or bcast.time is None:
+            if (
+                (bcast_string in ["Unknown", None])
+                or bcast_time is None
+                or bcast_zone is None
+            ):
                 # Calculate time delta
                 aen = (aenn - daten).total_seconds()
             else:
                 # Split bcast.time into hours and minutes
-                bct = bcast.time.split(":")
+                bct = bcast_time.split(":")
                 prop = jk_dat.aired.to
                 # Convert bct to datetime
                 aen = (
                     prop.replace(
                         hour=int(bct[0]),
                         minute=int(bct[1]),
-                        tzinfo=ZoneInfo(bcast.timezone),
+                        tzinfo=ZoneInfo(bcast_zone),
                     )
                     - daten
                 ).total_seconds()
@@ -346,12 +366,18 @@ async def generate_mal(
         date = f"{ast} - {aen}{tsa}"
 
     # Set season
+    sson = "Unknown"
     if ssonn is not None:
         sson = str(ssonn).capitalize()
     elif re.match("^[0-9]{4}$", ast):
         sson = "Unknown"
-    elif jk_dat.aired.prop.from_.month is not None:
-        sson = astn.strftime("%m")
+    elif (
+        aired is not None
+        and aired.prop is not None
+        and aired.prop.from_ is not None
+        and aired.prop.from_.month is not None
+    ):
+        sson = astn.strftime("%m") if astn else "Unknown"
         if sson in ["01", "02", "03"]:
             sson = "Winter"
         elif sson in ["04", "05", "06"]:

@@ -2,17 +2,23 @@
 
 import asyncio
 import traceback
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from datetime import datetime
 from typing import Any, Literal
 
-from aiohttp import ClientSession
+from aiohttp import ClientError, ClientSession, ClientTimeout
 
 from classes.cache import Caching
 from classes.excepts import ProviderHttpError
 from modules.const import JIKAN_URL, USER_AGENT
 
 Cache = Caching(cache_directory="cache/jikan", cache_expiration_time=86400)
+
+REQUEST_TIMEOUT = ClientTimeout(total=30)
+"""Per-request timeout so a dead endpoint cannot hang tasks"""
+
+_RETRYABLE_STATUS = {408, 429, 500, 502, 503, 504}
+"""HTTP statuses worth retrying with backoff"""
 
 
 class JikanException(Exception):
@@ -545,11 +551,16 @@ Full message:```
 class JikanApi:
     """Jikan API wrapper"""
 
-    def __init__(self):
-        """Init"""
-        self.base_url = JIKAN_URL
+    def __init__(self, base_url: str = JIKAN_URL):
+        """
+        Init
+
+        Args:
+            base_url (str, optional): Jikan-compatible API base URL.
+                Defaults to JIKAN_URL.
+        """
+        self.base_url = base_url.rstrip("/")
         self.session = None
-        self.user_agent = ""
 
     async def __aenter__(self):
         """Enter the session"""
@@ -562,12 +573,279 @@ class JikanApi:
 
     async def close(self):
         """Close the session"""
-        await self.session.close()
+        if self.session is not None:
+            await self.session.close()
+            self.session = None
+
+    async def _request_json(
+        self, path: str, params: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        """
+        GET a JSON envelope, mapping HTTP failures to JikanException.
+
+        Args:
+            path (str): URL path starting with "/"
+            params (dict[str, Any] | None, optional): Query parameters
+
+        Raises:
+            JikanException: When the endpoint answers with an error status
+                or an unparsable body
+
+        Returns:
+            dict[str, Any]: The decoded response envelope
+        """
+        async with self.session.get(
+            f"{self.base_url}{path}", params=params, timeout=REQUEST_TIMEOUT
+        ) as resp:
+            try:
+                body = await resp.json()
+            except Exception:  # noqa: BLE001
+                body = None
+            if resp.status not in (200, 304) or not isinstance(body, dict):
+                if isinstance(body, dict):
+                    define_jikan_exception(
+                        body.get("status", resp.status),
+                        body.get("message", resp.reason),
+                    )
+                define_jikan_exception(resp.status, resp.reason)
+            return body
 
     @staticmethod
-    def anime_dict_to_dataclass(data: dict) -> JikanAnimeStruct:
+    def _parse_dt(value: Any) -> datetime | None:
         """
-        Convert anime dict to dataclass
+        Parse a Jikan datetime string, tolerating format variance.
+
+        Args:
+            value (Any): The raw value
+
+        Returns:
+            datetime | None: The parsed datetime or None when unparsable
+        """
+        if not isinstance(value, str) or not value:
+            return None
+        try:
+            return datetime.strptime(value, "%Y-%m-%dT%H:%M:%S%z")
+        except ValueError:
+            pass
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError:
+            return None
+
+    @staticmethod
+    def _field_names(klass: type) -> set[str]:
+        """
+        Dataclass field names of a struct.
+
+        Args:
+            klass (type): The dataclass
+
+        Returns:
+            set[str]: Field names, used to drop unknown API keys
+        """
+        return {field.name for field in fields(klass)}
+
+    @classmethod
+    def _build(cls, klass: type, data: Any) -> Any:
+        """
+        Build a struct from a mapping, dropping unknown keys.
+
+        Args:
+            klass (type): The dataclass to build
+            data (Any): The raw mapping
+
+        Returns:
+            Any: The struct, or None when data is not a mapping
+        """
+        if not isinstance(data, dict):
+            return None
+        known = cls._field_names(klass)
+        return klass(**{key: data[key] for key in data if key in known})
+
+    @classmethod
+    def _convert_image(cls, data: Any) -> JikanImageStruct | None:
+        """
+        Convert an image entry, tolerating missing variants.
+
+        Args:
+            data (Any): The raw image entry
+
+        Returns:
+            JikanImageStruct | None: The struct or None
+        """
+        if not isinstance(data, dict):
+            return None
+        return JikanImageStruct(
+            image_url=data.get("image_url") or "",
+            small_image_url=data.get("small_image_url"),
+            large_image_url=data.get("large_image_url"),
+            medium_image_url=data.get("medium_image_url"),
+            maximum_image_url=data.get("maximum_image_url"),
+        )
+
+    @classmethod
+    def _convert_images(cls, data: Any) -> JikanImages | None:
+        """
+        Convert an images block, tolerating missing variants.
+
+        Args:
+            data (Any): The raw images block
+
+        Returns:
+            JikanImages | None: The struct or None
+        """
+        if not isinstance(data, dict):
+            return None
+        jpg = cls._convert_image(data.get("jpg"))
+        webp = cls._convert_image(data.get("webp"))
+        if jpg is None and webp is None:
+            return None
+        return JikanImages(jpg=jpg, webp=webp)
+
+    @classmethod
+    def _convert_trailer(cls, data: Any) -> JikanTrailerStruct | None:
+        """
+        Convert a trailer entry.
+
+        Args:
+            data (Any): The raw trailer entry
+
+        Returns:
+            JikanTrailerStruct | None: The struct or None
+        """
+        if not isinstance(data, dict):
+            return None
+        return JikanTrailerStruct(
+            youtube_id=data.get("youtube_id") or "",
+            url=data.get("url") or "",
+            embed_url=data.get("embed_url") or "",
+            images=cls._convert_images(data.get("images")),
+        )
+
+    @classmethod
+    def _convert_titles(cls, data: Any) -> list[JikanTitlesStruct] | None:
+        """
+        Convert title entries, skipping malformed ones.
+
+        Args:
+            data (Any): The raw titles list
+
+        Returns:
+            list[JikanTitlesStruct] | None: The structs or None
+        """
+        if not isinstance(data, list):
+            return None
+        titles = [
+            JikanTitlesStruct(type=title.get("type"), title=title.get("title") or "")
+            for title in data
+            if isinstance(title, dict)
+        ]
+        return titles or None
+
+    @staticmethod
+    def _convert_prop(data: Any) -> JikanPropStruct:
+        """
+        Convert a date property entry.
+
+        Args:
+            data (Any): The raw property entry
+
+        Returns:
+            JikanPropStruct: The struct (all None when missing)
+        """
+        if not isinstance(data, dict):
+            data = {}
+        return JikanPropStruct(
+            day=data.get("day"), month=data.get("month"), year=data.get("year")
+        )
+
+    @classmethod
+    def _convert_aired(cls, data: Any) -> JikanDateStruct | None:
+        """
+        Convert an aired block without mutating the input.
+
+        Args:
+            data (Any): The raw aired block
+
+        Returns:
+            JikanDateStruct | None: The struct or None
+        """
+        if not isinstance(data, dict):
+            return None
+        prop = data.get("prop") or {}
+        return JikanDateStruct(
+            from_=cls._parse_dt(data.get("from")),
+            to=cls._parse_dt(data.get("to")),
+            prop=JikanPropParentStruct(
+                from_=cls._convert_prop(prop.get("from")),
+                to=cls._convert_prop(prop.get("to")),
+            ),
+            string=data.get("string"),
+        )
+
+    @classmethod
+    def _convert_broadcast(cls, data: Any) -> JikanBroadcastStruct | None:
+        """
+        Convert a broadcast block.
+
+        Args:
+            data (Any): The raw broadcast block
+
+        Returns:
+            JikanBroadcastStruct | None: The struct or None
+        """
+        if not isinstance(data, dict):
+            return None
+        return JikanBroadcastStruct(
+            day=data.get("day"),
+            time=data.get("time"),
+            timezone=data.get("timezone"),
+            string=data.get("string"),
+        )
+
+    @staticmethod
+    def _convert_other(data: Any) -> JikanOtherStruct | None:
+        """
+        Convert an ID/name reference entry.
+
+        Args:
+            data (Any): The raw entry
+
+        Returns:
+            JikanOtherStruct | None: The struct or None when not a mapping
+        """
+        if not isinstance(data, dict):
+            return None
+        return JikanOtherStruct(
+            mal_id=data.get("mal_id"),
+            type=data.get("type") or "",
+            name=data.get("name") or "",
+            url=data.get("url") or "",
+        )
+
+    @classmethod
+    def _convert_others(cls, data: Any) -> list[JikanOtherStruct] | None:
+        """
+        Convert a list of reference entries, skipping malformed ones.
+
+        Args:
+            data (Any): The raw list
+
+        Returns:
+            list[JikanOtherStruct] | None: The structs or None
+        """
+        if not isinstance(data, list):
+            return None
+        items = [cls._convert_other(entry) for entry in data]
+        items = [entry for entry in items if entry is not None]
+        return items or None
+
+    @classmethod
+    def anime_dict_to_dataclass(cls, data: dict) -> JikanAnimeStruct:
+        """
+        Convert anime dict to dataclass without mutating the input.
+
+        Unknown keys are dropped so endpoint variance cannot break parsing.
 
         Args:
             data (dict): Anime dict
@@ -575,154 +853,206 @@ class JikanApi:
         Returns:
             JikanAnimeStruct: Anime dataclass
         """
-        if data.get("images", None):
-            data["images"]["jpg"] = JikanImageStruct(**data["images"]["jpg"])
-            data["images"]["webp"] = JikanImageStruct(**data["images"]["webp"])
-            data["images"] = JikanImages(**data["images"])
-
-        if data.get("trailer", None):
-            data["trailer"]["images"] = JikanImageStruct(**data["trailer"]["images"])
-            data["trailer"] = JikanTrailerStruct(**data["trailer"])
-
-        if data.get("titles", None):
-            data["titles"] = [
-                JikanTitlesStruct(
-                    type=title["type"],
-                    title=title["title"],
+        payload = dict(data) if isinstance(data, dict) else {}
+        payload["images"] = cls._convert_images(payload.get("images"))
+        payload["trailer"] = cls._convert_trailer(payload.get("trailer"))
+        payload["titles"] = cls._convert_titles(payload.get("titles"))
+        payload["aired"] = cls._convert_aired(payload.get("aired"))
+        payload["broadcast"] = cls._convert_broadcast(payload.get("broadcast"))
+        for key in (
+            "producers",
+            "licensors",
+            "studios",
+            "genres",
+            "explicit_genres",
+            "themes",
+            "demographics",
+        ):
+            payload[key] = cls._convert_others(payload.get(key))
+        relations = payload.get("relations")
+        if isinstance(relations, list):
+            converted = []
+            for rel in relations:
+                if not isinstance(rel, dict):
+                    continue
+                entries = cls._convert_others(rel.get("entry")) or []
+                converted.append(
+                    JikanRelationStruct(
+                        relation=rel.get("relation") or "", entry=entries
+                    )
                 )
-                for title in data["titles"]
-            ]
+            payload["relations"] = converted or None
+        else:
+            payload["relations"] = None
+        theme = payload.get("theme")
+        payload["theme"] = cls._build(JikanThemeSongStruct, theme)
+        payload["external"] = cls._convert_externals(payload.get("external"))
+        payload["streaming"] = cls._convert_externals(payload.get("streaming"))
+        return cls._build(JikanAnimeStruct, payload)
 
-        if data.get("aired", None):
-            data["aired"]["prop"]["from_"] = data["aired"]["prop"]["from"]
-            data["aired"]["prop"]["from_"] = JikanPropStruct(
-                **data["aired"]["prop"]["from_"]
-            )
-            del data["aired"]["prop"]["from"]
-            data["aired"]["prop"]["to"] = data["aired"]["prop"]["to"]
-            data["aired"]["prop"]["to"] = JikanPropStruct(**data["aired"]["prop"]["to"])
-            data["aired"]["prop"] = JikanPropParentStruct(**data["aired"]["prop"])
-            if data["aired"].get("from", None):
-                data["aired"]["from_"] = datetime.strptime(
-                    data["aired"]["from"], "%Y-%m-%dT%H:%M:%S%z"
-                )
-            del data["aired"]["from"]
-            if data["aired"].get("to", None):
-                data["aired"]["to"] = datetime.strptime(
-                    data["aired"]["to"], "%Y-%m-%dT%H:%M:%S%z"
-                )
-            data["aired"] = JikanDateStruct(**data["aired"])
-
-        if data.get("broadcast", None):
-            data["broadcast"] = JikanBroadcastStruct(**data["broadcast"])
-
-        if data.get("producers", None):
-            data["producers"] = [
-                JikanOtherStruct(
-                    mal_id=producer["mal_id"],
-                    type=producer["type"],
-                    name=producer["name"],
-                    url=producer["url"],
-                )
-                for producer in data["producers"]
-            ]
-        if data.get("licensors", None):
-            data["licensors"] = [
-                JikanOtherStruct(
-                    mal_id=licensor["mal_id"],
-                    type=licensor["type"],
-                    name=licensor["name"],
-                    url=licensor["url"],
-                )
-                for licensor in data["licensors"]
-            ]
-        if data.get("studios", None):
-            data["studios"] = [
-                JikanOtherStruct(
-                    mal_id=studio["mal_id"],
-                    type=studio["type"],
-                    name=studio["name"],
-                    url=studio["url"],
-                )
-                for studio in data["studios"]
-            ]
-        if data.get("genres", None):
-            data["genres"] = [
-                JikanOtherStruct(
-                    mal_id=genre["mal_id"],
-                    type=genre["type"],
-                    name=genre["name"],
-                    url=genre["url"],
-                )
-                for genre in data["genres"]
-            ]
-        if data.get("explicit_genres", None):
-            data["explicit_genres"] = [
-                JikanOtherStruct(
-                    mal_id=genre["mal_id"],
-                    type=genre["type"],
-                    name=genre["name"],
-                    url=genre["url"],
-                )
-                for genre in data["explicit_genres"]
-            ]
-        if data.get("themes", None):
-            data["themes"] = [
-                JikanOtherStruct(
-                    mal_id=theme["mal_id"],
-                    type=theme["type"],
-                    name=theme["name"],
-                    url=theme["url"],
-                )
-                for theme in data["themes"]
-            ]
-        if data.get("demographics", None):
-            data["demographics"] = [
-                JikanOtherStruct(
-                    mal_id=demographic["mal_id"],
-                    type=demographic["type"],
-                    name=demographic["name"],
-                    url=demographic["url"],
-                )
-                for demographic in data["demographics"]
-            ]
-
-        if data.get("relations", None):
-            data["relations"] = [
-                JikanRelationStruct(
-                    relation=rel["relation"],
-                    entry=[
-                        JikanOtherStruct(
-                            mal_id=entry["mal_id"],
-                            type=entry["type"],
-                            name=entry["name"],
-                            url=entry["url"],
-                        )
-                        for entry in rel["entry"]
-                    ],
-                )
-                for rel in data["relations"]
-            ]
-
-        if data.get("theme", None):
-            data["theme"] = JikanThemeSongStruct(**data["theme"])
-
-        if data.get("external", None):
-            data["external"] = [
-                JikanExternalStruct(**external) for external in data["external"]
-            ]
-
-        if data.get("streaming", None):
-            data["streaming"] = [
-                JikanExternalStruct(**stream) for stream in data["streaming"]
-            ]
-
-        return JikanAnimeStruct(**data)
-
-    @staticmethod
-    def user_dict_to_dataclass(data: dict) -> JikanUserStruct:
+    @classmethod
+    def _convert_externals(cls, data: Any) -> list[JikanExternalStruct] | None:
         """
-        Convert user dict to dataclass
+        Convert external/streaming entries, skipping unusable ones.
+
+        Args:
+            data (Any): The raw list
+
+        Returns:
+            list[JikanExternalStruct] | None: The structs or None
+        """
+        if not isinstance(data, list):
+            return None
+        entries = [cls._build(JikanExternalStruct, item) for item in data]
+        entries = [
+            entry for entry in entries if entry is not None and entry.name and entry.url
+        ]
+        return entries or None
+
+    @classmethod
+    def _convert_user_title(cls, data: Any, klass: type) -> Any:
+        """
+        Convert a user favorites/updates title entry.
+
+        Args:
+            data (Any): The raw entry
+            klass (type): The struct to build
+
+        Returns:
+            Any: The struct or None when unusable
+        """
+        if not isinstance(data, dict):
+            return None
+        payload = {
+            key: data[key]
+            for key in data
+            if key in cls._field_names(klass) and key != "images"
+        }
+        payload["images"] = cls._convert_images(data.get("images"))
+        try:
+            return klass(**payload)
+        except TypeError:
+            return None
+
+    @classmethod
+    def _convert_user_titles(cls, data: Any, klass: type) -> list | None:
+        """
+        Convert a list of user title entries, skipping malformed ones.
+
+        Args:
+            data (Any): The raw list
+            klass (type): The struct to build per entry
+
+        Returns:
+            list | None: The structs or None
+        """
+        if not isinstance(data, list):
+            return None
+        items = [cls._convert_user_title(entry, klass) for entry in data]
+        items = [entry for entry in items if entry is not None]
+        return items or None
+
+    @classmethod
+    def _convert_user_updates(cls, data: Any, klass: type) -> list | None:
+        """
+        Convert a list of user update entries, skipping malformed ones.
+
+        Args:
+            data (Any): The raw list
+            klass (type): The update struct to build per entry
+
+        Returns:
+            list | None: The structs or None
+        """
+        if not isinstance(data, list):
+            return None
+        items = []
+        for update in data:
+            if not isinstance(update, dict):
+                continue
+            entry = cls._convert_user_title(
+                update.get("entry"), JikanUserAniMangaStruct
+            )
+            if entry is None:
+                continue
+            payload = {
+                key: update[key]
+                for key in update
+                if key in cls._field_names(klass) and key != "entry"
+            }
+            payload["entry"] = entry
+            payload["date"] = cls._parse_dt(update.get("date"))
+            try:
+                items.append(klass(**payload))
+            except TypeError:
+                continue
+        return items or None
+
+    @classmethod
+    def _convert_user_statistics(cls, data: Any) -> JikanStatistics | None:
+        """
+        Convert a user statistics block.
+
+        Args:
+            data (Any): The raw block
+
+        Returns:
+            JikanStatistics | None: The struct or None
+        """
+        if not isinstance(data, dict):
+            return None
+        return JikanStatistics(
+            anime=cls._build(JikanAnimeStatisticStruct, data.get("anime")),
+            manga=cls._build(JikanMangaStatisticStruct, data.get("manga")),
+        )
+
+    @classmethod
+    def _convert_user_favorites(cls, data: Any) -> JikanUserFavorite | None:
+        """
+        Convert a user favorites block.
+
+        Args:
+            data (Any): The raw block
+
+        Returns:
+            JikanUserFavorite | None: The struct or None
+        """
+        if not isinstance(data, dict):
+            return None
+        return JikanUserFavorite(
+            anime=cls._convert_user_titles(data.get("anime"), JikanUserAniMangaStruct),
+            manga=cls._convert_user_titles(data.get("manga"), JikanUserAniMangaStruct),
+            characters=cls._convert_user_titles(
+                data.get("characters"), JikanUserCastStruct
+            ),
+            people=cls._convert_user_titles(data.get("people"), JikanUserCastStruct),
+        )
+
+    @classmethod
+    def _convert_user_status(cls, data: Any) -> JikanUserStatus | None:
+        """
+        Convert a user updates block.
+
+        Args:
+            data (Any): The raw block
+
+        Returns:
+            JikanUserStatus | None: The struct or None
+        """
+        if not isinstance(data, dict):
+            return None
+        return JikanUserStatus(
+            anime=cls._convert_user_updates(data.get("anime"), JikanAnimeUpdateEntry),
+            manga=cls._convert_user_updates(data.get("manga"), JikanMangaUpdateEntry),
+        )
+
+    @classmethod
+    def user_dict_to_dataclass(cls, data: dict) -> JikanUserStruct:
+        """
+        Convert user dict to dataclass without mutating the input.
+
+        Unknown keys are dropped and malformed entries skipped so endpoint
+        variance cannot break parsing.
 
         Args:
             data (dict): User dict
@@ -730,119 +1060,15 @@ class JikanApi:
         Returns:
             JikanUserStruct: User dataclass
         """
-        if data["images"]:
-            data["images"]["jpg"] = JikanImageStruct(**data["images"]["jpg"])
-            data["images"]["webp"] = JikanImageStruct(**data["images"]["webp"])
-            data["images"] = JikanImages(**data["images"])
-
-        if data["last_online"]:
-            data["last_online"] = datetime.strptime(
-                data["last_online"], "%Y-%m-%dT%H:%M:%S%z"
-            )
-
-        if data["birthday"]:
-            data["birthday"] = datetime.strptime(
-                data["birthday"], "%Y-%m-%dT%H:%M:%S%z"
-            )
-
-        if data["joined"]:
-            data["joined"] = datetime.strptime(data["joined"], "%Y-%m-%dT%H:%M:%S%z")
-
-        if data["statistics"]:
-            if data["statistics"]["anime"]:
-                data["statistics"]["anime"] = JikanAnimeStatisticStruct(
-                    **data["statistics"]["anime"]
-                )
-            if data["statistics"]["manga"]:
-                data["statistics"]["manga"] = JikanMangaStatisticStruct(
-                    **data["statistics"]["manga"]
-                )
-            data["statistics"] = JikanStatistics(**data["statistics"])
-
-        if data["favorites"]:
-            if data["favorites"]["anime"]:
-                for anime in data["favorites"]["anime"]:
-                    anime["images"]["jpg"] = JikanImageStruct(**anime["images"]["jpg"])
-                    anime["images"]["webp"] = JikanImageStruct(
-                        **anime["images"]["webp"]
-                    )
-                    anime["images"] = JikanImages(**anime["images"])
-                data["favorites"]["anime"] = [
-                    JikanUserAniMangaStruct(**anime)
-                    for anime in data["favorites"]["anime"]
-                ]
-            if data["favorites"]["manga"]:
-                for manga in data["favorites"]["manga"]:
-                    manga["images"]["jpg"] = JikanImageStruct(**manga["images"]["jpg"])
-                    manga["images"]["webp"] = JikanImageStruct(
-                        **manga["images"]["webp"]
-                    )
-                    manga["images"] = JikanImages(**manga["images"])
-                data["favorites"]["manga"] = [
-                    JikanUserAniMangaStruct(**manga)
-                    for manga in data["favorites"]["manga"]
-                ]
-            if data["favorites"]["characters"]:
-                for character in data["favorites"]["characters"]:
-                    character["images"]["jpg"] = JikanImageStruct(
-                        **character["images"]["jpg"]
-                    )
-                    character["images"]["webp"] = JikanImageStruct(
-                        **character["images"]["webp"]
-                    )
-                    character["images"] = JikanImages(**character["images"])
-                data["favorites"]["characters"] = [
-                    JikanUserCastStruct(**character)
-                    for character in data["favorites"]["characters"]
-                ]
-            if data["favorites"]["people"]:
-                for person in data["favorites"]["people"]:
-                    person["images"]["jpg"] = JikanImageStruct(
-                        **person["images"]["jpg"]
-                    )
-                    person["images"] = JikanImages(**person["images"])
-                data["favorites"]["people"] = [
-                    JikanUserCastStruct(**person)
-                    for person in data["favorites"]["people"]
-                ]
-            data["favorites"] = JikanUserFavorite(**data["favorites"])
-
-        if data["updates"]:
-            if data["updates"]["anime"]:
-                for anime in data["updates"]["anime"]:
-                    anime["entry"]["images"]["jpg"] = JikanImageStruct(
-                        **anime["entry"]["images"]["jpg"]
-                    )
-                    anime["entry"]["images"]["webp"] = JikanImageStruct(
-                        **anime["entry"]["images"]["webp"]
-                    )
-                    anime["entry"]["images"] = JikanImages(**anime["entry"]["images"])
-                    anime["entry"] = JikanUserAniMangaStruct(**anime["entry"])
-                    anime["date"] = datetime.strptime(
-                        anime["date"], "%Y-%m-%dT%H:%M:%S%z"
-                    )
-                data["updates"]["anime"] = [
-                    JikanAnimeUpdateEntry(**anime) for anime in data["updates"]["anime"]
-                ]
-            if data["updates"]["manga"]:
-                for manga in data["updates"]["manga"]:
-                    manga["entry"]["images"]["jpg"] = JikanImageStruct(
-                        **manga["entry"]["images"]["jpg"]
-                    )
-                    manga["entry"]["images"]["webp"] = JikanImageStruct(
-                        **manga["entry"]["images"]["webp"]
-                    )
-                    manga["entry"]["images"] = JikanImages(**manga["entry"]["images"])
-                    manga["entry"] = JikanUserAniMangaStruct(**manga["entry"])
-                    manga["date"] = datetime.strptime(
-                        manga["date"], "%Y-%m-%dT%H:%M:%S%z"
-                    )
-                data["updates"]["manga"] = [
-                    JikanMangaUpdateEntry(**manga) for manga in data["updates"]["manga"]
-                ]
-            data["updates"] = JikanUserStatus(**data["updates"])
-
-        return JikanUserStruct(**data)
+        payload = dict(data) if isinstance(data, dict) else {}
+        payload["images"] = cls._convert_images(payload.get("images"))
+        payload["last_online"] = cls._parse_dt(payload.get("last_online"))
+        payload["birthday"] = cls._parse_dt(payload.get("birthday"))
+        payload["joined"] = cls._parse_dt(payload.get("joined"))
+        payload["statistics"] = cls._convert_user_statistics(payload.get("statistics"))
+        payload["favorites"] = cls._convert_user_favorites(payload.get("favorites"))
+        payload["updates"] = cls._convert_user_status(payload.get("updates"))
+        return cls._build(JikanUserStruct, payload)
 
     async def get_user_clubs(self, username: str) -> list[dict]:
         """
@@ -855,31 +1081,23 @@ class JikanApi:
             list[dict]: List of clubs
         """
         try:
-            resp_data: dict = {}
-            async with self.session.get(
-                f"{self.base_url}/users/{username}/clubs"
-            ) as resp:
-                if resp.status in [200, 304]:
-                    resp_data = await resp.json()
-                else:
-                    define_jikan_exception(resp.status, resp.reason)
-            clubs: list = resp_data["data"]
-            paging: int = resp_data["pagination"]["last_visible_page"]
+            resp_data = await self._request_json(f"/users/{username}/clubs")
+            clubs: list = resp_data.get("data") or []
+            paging: int = (resp_data.get("pagination") or {}).get(
+                "last_visible_page", 1
+            )
             if paging > 1:
                 for i in range(2, paging + 1):
-                    params = {"page": i}
-                    async with self.session.get(
-                        f"{self.base_url}/users/{username}/clubs", params=params
-                    ) as resp:
-                        if resp.status in [200, 304]:
-                            respd2: dict = await resp.json()
-                            clubs.extend(respd2["data"])
-                            await asyncio.sleep(2)
-                        else:
-                            define_jikan_exception(resp.status, resp.reason)
+                    page_data = await self._request_json(
+                        f"/users/{username}/clubs", params={"page": i}
+                    )
+                    clubs.extend(page_data.get("data") or [])
+                    await asyncio.sleep(2)
             return clubs
         # pylint: disable-next=broad-except
-        except Exception as error:  # noqa: BLE001
+        except Exception as error:
+            if isinstance(error, JikanException):
+                raise
             define_jikan_exception(601, error)
 
     async def get_user_data(self, username: str) -> JikanUserStruct:
@@ -900,35 +1118,30 @@ class JikanApi:
         if cached_file:
             return self.user_dict_to_dataclass(cached_file)
 
-        retries = 0
-        res = {}
-        while retries < 3:
+        last_error: Exception | None = None
+        for attempt in range(3):
             try:
-                async with self.session.get(
-                    f"{self.base_url}/users/{username}/full"
-                ) as resp:
-                    res = await resp.json()
-                    status_code = res.get("status", 200)
-                    if status_code != 200 or resp.status not in [200, 304]:
-                        raise JikanException(
-                            res.get("message", "Unknown error"), status_code
-                        )
-                    res: dict = res["data"]
+                body = await self._request_json(f"/users/{username}/full")
+                res = body.get("data")
+                if not isinstance(res, dict):
+                    raise JikanException("Unexpected user payload", 418)
+                try:
+                    user = self.user_dict_to_dataclass(res)
+                except Exception as error:  # noqa: BLE001
+                    define_jikan_exception(418, error)
                 Cache.write_data_to_cache(res, cache_file_path)
-                return self.user_dict_to_dataclass(res)
+                return user
             except JikanException as error:
-                retries += 1
-                if retries == 3:
-                    errcode: int = (
-                        error.status_code if hasattr(error, "status_code") else 418
-                    )
-                    errmsg: str | dict = (
-                        error.message if hasattr(error, "message") else error
-                    )
-                    define_jikan_exception(errcode, errmsg)
-                else:
-                    backoff_time = 3**retries
-                    await asyncio.sleep(backoff_time)
+                if error.status_code not in _RETRYABLE_STATUS:
+                    raise
+                last_error = error
+            except (asyncio.TimeoutError, ClientError) as error:
+                last_error = error
+            if attempt < 2:
+                await asyncio.sleep(3 ** (attempt + 1))
+        if isinstance(last_error, JikanException):
+            raise last_error
+        define_jikan_exception(601, last_error)
 
     async def get_user_by_id(self, user_id: int) -> JikanUserStruct:
         """
@@ -944,15 +1157,27 @@ class JikanApi:
             JikanUserStruct: User data
         """
         async with self.session.get(
-            f"{self.base_url}/users/userbyid/{user_id}"
+            f"{self.base_url}/users/userbyid/{user_id}", timeout=REQUEST_TIMEOUT
         ) as resp:
             if resp.status in [200, 304]:
-                res = await resp.json()
-                res: str = res["data"]["username"]
+                try:
+                    res = await resp.json()
+                except Exception:  # noqa: BLE001
+                    res = None
+                username = (
+                    (res.get("data") or {}).get("username")
+                    if isinstance(res, dict)
+                    else None
+                )
+                if not username:
+                    raise ProviderHttpError("Unexpected userbyid payload", resp.status)
             else:
-                data = await resp.json()
+                try:
+                    data = await resp.json()
+                except Exception:  # noqa: BLE001
+                    data = resp.reason
                 raise ProviderHttpError(str(data), resp.status)
-        gud = await self.get_user_data(res)
+        gud = await self.get_user_data(username)
         return gud
 
     async def get_anime_data(self, anime_id: int) -> JikanAnimeStruct:
@@ -970,20 +1195,15 @@ class JikanApi:
         if cached_file:
             return self.anime_dict_to_dataclass(cached_file)
         try:
-            async with self.session.get(
-                f"{self.base_url}/anime/{anime_id}/full"
-            ) as resp:
-                res = await resp.json()
-                status_code = res.get("status", 200)
-                if status_code != 200 or resp.status not in [200, 304]:
-                    raise JikanException(
-                        res.get("message", "Unknown error"), status_code
-                    )
-                res: dict = res["data"]
+            body = await self._request_json(f"/anime/{anime_id}/full")
+            res = body.get("data")
+            if not isinstance(res, dict):
+                raise JikanException("Unexpected anime payload", 418)
+            anime = self.anime_dict_to_dataclass(res)
             Cache.write_data_to_cache(res, cache_file_path)
-            return self.anime_dict_to_dataclass(res)
+            return anime
         # pylint: disable-next=broad-except
-        except Exception as error:  # noqa: BLE001
-            errcode: int = error.status_code if hasattr(error, "status_code") else 418
-            errmsg: str | dict = error.message if hasattr(error, "message") else error
-            define_jikan_exception(errcode, errmsg)
+        except Exception as error:
+            if isinstance(error, JikanException):
+                raise
+            define_jikan_exception(418, error)

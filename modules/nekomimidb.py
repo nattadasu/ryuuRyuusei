@@ -23,8 +23,10 @@ def determine_domain(url: str) -> str:
         str: The domain of the URL
     """
     # split the url by the slashes
-    urls = url.split("/")
-    domain = urls[2]
+    parts = (url or "").split("/")
+    if len(parts) < 3 or not parts[2]:
+        return "Unknown"
+    domain = parts[2]
     subs = domain.split(".")
     for sub in subs:
         try:

@@ -206,7 +206,10 @@ async def generate_anilist(
     hex_color = 0x2E51A2
     if poster:
         cols = poster.color if poster.color else "#2E51A2"
-        hex_color = int(cols.replace("#", ""), 16)
+        try:
+            hex_color = int(cols.replace("#", ""), 16)
+        except ValueError:
+            pass
         poster = poster.extraLarge
     banner = alm.bannerImage
 
@@ -400,7 +403,7 @@ async def generate_anilist(
             emoji=PartialEmoji(id=shiki.emoid, name="shikimori"),
         )
         buttons.extend([mal_button, shikimori_button])
-    if alm.trailer and alm.trailer.site == "youtube":
+    if alm.trailer and alm.trailer.site == "youtube" and alm.trailer.id:
         trailer = generate_trailer(
             data=alm.trailer,
         )
