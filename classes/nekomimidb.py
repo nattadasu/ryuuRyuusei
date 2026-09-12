@@ -5,7 +5,16 @@ from typing import Literal
 import pandas as pd
 
 from modules.commons import get_random_seed
+from modules.filecache import cached_file
 from modules.platforms import Platform
+
+NEKOMIMI_DB_PATH = "database/nekomimiDb.tsv"
+"""Path to the nekomimiDb TSV source file"""
+
+
+def _load_nekomimi_db() -> pd.DataFrame:
+    """Parse the nekomimiDb TSV once (NaNs filled once, not per command)."""
+    return pd.read_csv(NEKOMIMI_DB_PATH, sep="\t").fillna("")
 
 
 class NekomimiGender(Enum):
@@ -69,7 +78,7 @@ class NekomimiDb:
         else:
             self.gender = gender
         self.seed = get_random_seed()
-        self.nmDb = pd.read_csv("database/nekomimiDb.tsv", sep="\t").fillna("")
+        self.nmDb = cached_file(NEKOMIMI_DB_PATH, _load_nekomimi_db)
 
     def get_random_nekomimi(self) -> NekomimiDbStruct:
         """

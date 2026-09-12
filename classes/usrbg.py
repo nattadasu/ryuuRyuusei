@@ -6,6 +6,7 @@ from interactions import Snowflake
 
 from classes.cache import Caching
 from modules.const import USER_AGENT
+from modules.filecache import cached_file
 
 # 2 days and half
 day2h = 60 * 60 * 60
@@ -56,7 +57,11 @@ class UsrBg:
     async def _fetch_background(self) -> Any:
         """Get the user's background from the API"""
         cache_path = Cache.get_cache_path("usrbg.json")
-        self.database = Cache.read_cache(cache_path)
+        self.database = cached_file(
+            cache_path,
+            lambda: Cache.read_cache(cache_path),
+            max_age=Cache.cache_expiration_time,
+        )
         if self.database:
             return self.database
 

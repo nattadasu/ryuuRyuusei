@@ -4,14 +4,15 @@
 This module contains modules that are related to MyAnimeList or Jikan API.
 """
 
+import csv
 import html
+import random
 import re
 from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import quote
 from zoneinfo import ZoneInfo
 
-import pandas as pd
 from interactions import (
     ActionRow,
     Button,
@@ -45,7 +46,18 @@ from modules.commons import (
     trim_synopsis,
 )
 from modules.const import MESSAGE_WARN_CONTENTS, MYANIMELIST_CLIENT_ID
+from modules.filecache import cached_file
 from modules.platforms import Platform, media_id_to_platform
+
+MAL_CSV_PATH = "database/mal.csv"
+"""Path to the indexed MyAnimeList ID/title CSV (~30k rows)"""
+
+
+def _load_mal_ids() -> list[int]:
+    """Parse only the mal_id column once (no per-call 30k-row DataFrame)."""
+    with open(MAL_CSV_PATH, encoding="utf-8") as f:
+        reader = csv.DictReader(f, delimiter="\t")
+        return [int(row["mal_id"]) for row in reader if row.get("mal_id")]
 
 
 def generate_animethemes_slug(title: str) -> str:
@@ -83,12 +95,8 @@ def lookup_random_anime() -> int:
         int: MAL ID of a random anime
     """
     seed = get_random_seed()
-    # open database/mal.csv
-    dataframe = pd.read_csv("database/mal.csv", sep="\t")
-    # get random anime
-    rand_anime = dataframe.sample(n=1, random_state=seed)
-    # get anime id
-    rand_anime_id: int = rand_anime["mal_id"].values[0]
+    mal_ids = cached_file(MAL_CSV_PATH, _load_mal_ids)
+    rand_anime_id: int = random.Random(seed).choice(mal_ids)
     return rand_anime_id
 
 

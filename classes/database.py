@@ -110,6 +110,40 @@ class UserDatabaseClass:
 class UserDatabase:
     """User Database Wrapper"""
 
+    _migration: ClassVar[dict[str, dict[str, Any]]] = {
+        "anilist_id": {"type": int, "key": "anilistId", "default": None},
+        "anilist_username": {
+            "type": str,
+            "key": "anilistUsername",
+            "default": None,
+        },
+        "lastfm_username": {
+            "type": str,
+            "key": "lastfmUsername",
+            "default": None,
+        },
+        "shikimori_id": {"type": int, "key": "shikimoriId", "default": None},
+        "shikimori_username": {
+            "type": str,
+            "key": "shikimoriUsername",
+            "default": None,
+        },
+        "user_birthdate": {
+            "type": lambda x: datetime.strptime(x, "%Y-%m-%d").replace(
+                tzinfo=timezone.utc
+            ),
+            "key": "userBirthdate",
+            "default": None,
+        },
+        "user_timezone": {"type": str, "key": "userTimezone", "default": None},
+        "birthday_permissions": {
+            "type": lambda x: UserBirthdayPermission(int(x)),
+            "key": "userBirthdayPermission",
+            "default": None,
+        },
+    }
+    """Column migration map shared by all row conversions"""
+
     def __init__(self, database_path: str = DATABASE_PATH):
         """Initialize the database
 
@@ -190,7 +224,7 @@ class UserDatabase:
         df = self._read_csv_safe(self.database_path)
         if df is None:
             return False
-        return str(discord_id) in df["discordId"].values
+        return bool((df["discordId"] == str(discord_id)).any())
 
     async def check_if_platform_registered(
         self, platform: Literal["mal", "anilist", "lastfm", "shikimori"], value: Any
@@ -209,7 +243,7 @@ class UserDatabase:
         df = self._read_csv_safe(self.database_path)
         if df is None or column_name not in df.columns:
             return False
-        return str(value) in df[column_name].values
+        return bool((df[column_name] == str(value)).any())
 
     async def save_to_database(self, user_data: UserDatabaseClass):
         """
@@ -345,6 +379,39 @@ class UserDatabase:
         verified = await check_club_membership(username)
         return verified
 
+    @classmethod
+    def _row_to_user(cls, row: dict[str, Any]) -> UserDatabaseClass:
+        """
+        Convert a single database record into a dataclass
+
+        Args:
+            row (dict[str, Any]): A single record from the database
+
+        Returns:
+            UserDatabaseClass: Dataclass contains information about an user
+        """
+        user = UserDatabaseClass(
+            discord_id=Snowflake(row["discordId"]),
+            discord_username=row["discordUsername"],
+            mal_id=int(row["malId"]),
+            mal_username=row["malUsername"],
+            mal_joined=datetime.fromtimestamp(int(row["malJoined"]), tz=timezone.utc),
+            registered_at=datetime.fromtimestamp(
+                int(row["registeredAt"]), tz=timezone.utc
+            ),
+            registered_guild_id=Snowflake(row["registeredGuildId"]),
+            registered_guild_name=row["registeredGuildName"],
+            registered_by=Snowflake(row["registeredBy"]),
+        )
+        for key, value in cls._migration.items():
+            setattr(user, key, value["default"])
+            try:
+                if row[value["key"]]:
+                    setattr(user, key, value["type"](row[value["key"]]))
+            except (ValueError, TypeError, KeyError):
+                ...
+        return user
+
     async def get_all_users(self) -> list[UserDatabaseClass]:
         """
         Get all users from the database
@@ -357,76 +424,7 @@ class UserDatabase:
             return []
         df.fillna("", inplace=True)
         data = df.to_dict(orient="records")
-        users: list[UserDatabaseClass] = []
-        for row in data:
-            user = UserDatabaseClass(
-                discord_id=Snowflake(row["discordId"]),
-                discord_username=row["discordUsername"],
-                mal_id=int(row["malId"]),
-                mal_username=row["malUsername"],
-                mal_joined=datetime.fromtimestamp(
-                    int(row["malJoined"]), tz=timezone.utc
-                ),
-                registered_at=datetime.fromtimestamp(
-                    int(row["registeredAt"]), tz=timezone.utc
-                ),
-                registered_guild_id=Snowflake(row["registeredGuildId"]),
-                registered_guild_name=row["registeredGuildName"],
-                registered_by=Snowflake(row["registeredBy"]),
-            )
-            migration: dict[str, dict[str, Any]] = {
-                "anilist_id": {
-                    "type": int,
-                    "key": "anilistId",
-                    "default": None,
-                },
-                "anilist_username": {
-                    "type": str,
-                    "key": "anilistUsername",
-                    "default": None,
-                },
-                "lastfm_username": {
-                    "type": str,
-                    "key": "lastfmUsername",
-                    "default": None,
-                },
-                "shikimori_id": {
-                    "type": int,
-                    "key": "shikimoriId",
-                    "default": None,
-                },
-                "shikimori_username": {
-                    "type": str,
-                    "key": "shikimoriUsername",
-                    "default": None,
-                },
-                "user_birthdate": {
-                    "type": lambda x: datetime.strptime(x, "%Y-%m-%d").replace(
-                        tzinfo=timezone.utc
-                    ),
-                    "key": "userBirthdate",
-                    "default": None,
-                },
-                "user_timezone": {
-                    "type": str,
-                    "key": "userTimezone",
-                    "default": None,
-                },
-                "birthday_permissions": {
-                    "type": lambda x: UserBirthdayPermission(int(x)),
-                    "key": "userBirthdayPermission",
-                    "default": None,
-                },
-            }
-            for key, value in migration.items():
-                setattr(user, key, value["default"])
-                try:
-                    if row[value["key"]]:
-                        setattr(user, key, value["type"](row[value["key"]]))
-                except (ValueError, TypeError, KeyError):
-                    ...
-            users.append(user)
-        return users
+        return [self._row_to_user(row) for row in data]
 
     async def get_user_data(self, discord_id: Snowflake) -> UserDatabaseClass:
         """
@@ -438,10 +436,12 @@ class UserDatabase:
         Returns:
             UserDatabaseClass: Dataclass contains information about an user
         """
-        dbs = await self.get_all_users()
-        for db in dbs:
-            if db.discord_id == discord_id:
-                return db
+        df = self._read_csv_safe(self.database_path)
+        if df is not None:
+            df.fillna("", inplace=True)
+            match = df[df["discordId"] == str(discord_id)]
+            if not match.empty:
+                return self._row_to_user(match.to_dict(orient="records")[0])
         raise DatabaseException(
             f"{EMOJI_UNEXPECTED_ERROR} User may not be registered to the bot, or there's unknown error"
         )

@@ -1,9 +1,9 @@
+import csv
 import re
 from datetime import datetime, timezone
 from typing import ClassVar
 
 import interactions as ipy
-import pandas as pd
 from fuzzywuzzy import fuzz
 
 from classes.converter import Length, Mass, Temperature, Time, Volume
@@ -15,6 +15,7 @@ from modules.commons import (
     save_traceback_to_file,
 )
 from modules.const import EMOJI_SUCCESS, EMOJI_UNEXPECTED_ERROR
+from modules.filecache import cached_file
 
 emoji_err = re.sub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_UNEXPECTED_ERROR)
 emoji_success = re.sub(r"(<:.*:)(\d+)(>)", r"\2", EMOJI_SUCCESS)
@@ -76,6 +77,20 @@ def result_embed(
     return embed
 
 
+CURRENCIES_PATH = "database/supported_currencies.tsv"
+"""Path to the supported currencies TSV (162 rows, parsed once, cached)"""
+
+
+def _load_currencies() -> list[tuple[str, str, str]]:
+    """Parse the currencies TSV into (code, name, country) tuples."""
+    with open(CURRENCIES_PATH, encoding="utf-8") as f:
+        reader = csv.DictReader(f, delimiter="\t")
+        return [
+            (row["Currency Code"], row["Currency Name"], row["Country Name"])
+            for row in reader
+        ]
+
+
 def search_currency(query: str) -> list[dict[str, str]]:
     """
     Search for a currency using fuzzy search
@@ -86,18 +101,18 @@ def search_currency(query: str) -> list[dict[str, str]]:
     Returns:
         list[dict[str, str]]: The list of currencies that match the query
     """
-    currencies = pd.read_csv("database/supported_currencies.tsv", delimiter="\t")
+    currencies = cached_file(CURRENCIES_PATH, _load_currencies)
     results = []
-    for _, currency in currencies.iterrows():
-        code_ratio = fuzz.token_set_ratio(query, currency["Currency Code"])
-        name_ratio = fuzz.token_set_ratio(query, currency["Currency Name"])
-        country_ratio = fuzz.token_set_ratio(query, currency["Country Name"])
+    for code, name, country in currencies:
+        code_ratio = fuzz.token_set_ratio(query, code)
+        name_ratio = fuzz.token_set_ratio(query, name)
+        country_ratio = fuzz.token_set_ratio(query, country)
         max_ratio = max(code_ratio, name_ratio, country_ratio)
         if max_ratio >= 70:  # minimum similarity threshold of 70%
             results.append(
                 {
-                    "name": f"{currency['Currency Name']} ({currency['Currency Code']})",
-                    "value": currency["Currency Code"],
+                    "name": f"{name} ({code})",
+                    "value": code,
                 }
             )
     return results[:25]

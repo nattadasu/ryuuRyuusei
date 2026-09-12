@@ -6,7 +6,6 @@ from datetime import datetime, timedelta, timezone
 
 import interactions as ipy
 import numpy as np
-import pandas as pd
 from aiohttp import ClientSession
 from fuzzywuzzy import fuzz  # type: ignore
 from interactions.ext.paginators import Paginator
@@ -56,19 +55,15 @@ def iana_to_dict(iana: str) -> dict[str, str]:
     }
 
 
+TIMEZONE_TABLE: list[TimeZoneInfo] = [iana_to_dataclass(tz) for tz in knowns]
+
+
 def lookup_timezone(query: str) -> Iterable[dict[str, str]]:
-    lookup_table: list[TimeZoneInfo] = []
     result: list[dict[str, str]] = []
-    # use pandas to create a timezone lookup table
-    for tz in knowns:
-        lookup_table.append(iana_to_dataclass(tz))
-    # create a dataframe
-    df = pd.DataFrame(lookup_table)
-    # fuzzy search
-    for _, row in df.iterrows():  # type: ignore
-        iana_score = fuzz.partial_ratio(query, row.iana)  # type: ignore
-        aka_score = fuzz.partial_ratio(query, row.aka)  # type: ignore
-        offset_score = fuzz.partial_ratio(query, row.offset)  # type: ignore
+    for row in TIMEZONE_TABLE:
+        iana_score = fuzz.partial_ratio(query, row.iana)
+        aka_score = fuzz.partial_ratio(query, row.aka)
+        offset_score = fuzz.partial_ratio(query, row.offset)
         score = max(iana_score, aka_score, offset_score)
         if score >= 70:
             result.append(
