@@ -11,6 +11,7 @@ from dacite import Config, from_dict
 from classes.cache import Caching
 from classes.excepts import ProviderHttpError, ProviderTypeError
 from modules.const import ANILIST_ACCESS_TOKEN, ANILIST_OAUTH_EXPIRY, USER_AGENT
+from modules.prints import print  # pylint: disable=redefined-builtin
 
 Cache = Caching(cache_directory="cache/anilist", cache_expiration_time=86400)
 

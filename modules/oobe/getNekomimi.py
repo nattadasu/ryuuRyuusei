@@ -6,6 +6,8 @@ from time import time
 
 import aiohttp
 
+from modules.prints import print  # pylint: disable=redefined-builtin
+
 MAIN_SITE = "https://raw.githubusercontent.com/nattadasu/nekomimiDb/main/index.tsv"
 
 

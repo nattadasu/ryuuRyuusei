@@ -16,6 +16,7 @@ from classes.stats.dbl import DiscordBotList
 from classes.stats.infinity import InfinityBots
 from classes.stats.topgg import TopGG
 from modules.commons import save_traceback_to_file
+from modules.prints import print  # pylint: disable=redefined-builtin
 
 
 class BotTasker(Extension):

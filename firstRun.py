@@ -22,6 +22,7 @@ from modules.oobe.commons import (
     is_uv,
     py_bin_path,
 )
+from modules.prints import print  # pylint: disable=redefined-builtin
 
 
 class FirstRunError(Exception):

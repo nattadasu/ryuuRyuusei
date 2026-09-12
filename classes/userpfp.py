@@ -5,6 +5,7 @@ from fake_useragent import FakeUserAgent  # type: ignore
 from interactions import Snowflake
 
 from classes.cache import Caching
+from modules.prints import print  # pylint: disable=redefined-builtin
 
 USER_AGENT = FakeUserAgent(browsers=["chrome", "edge", "opera"]).random
 Cache = Caching(cache_directory="cache/userpfp", cache_expiration_time=216000)

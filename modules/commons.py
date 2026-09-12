@@ -31,6 +31,13 @@ from interactions import (
 from classes.anilist import AniListTrailerStruct
 from modules.const import EMOJI_FORBIDDEN, EMOJI_USER_ERROR
 from modules.const import EMOJI_UNEXPECTED_ERROR as EUNER
+from modules.prints import (
+    disable_auto_flush,
+    enable_auto_flush,
+    flush_print,
+    fprint,
+    print,  # pylint: disable=redefined-builtin
+)
 
 
 def snowflake_to_datetime(snowflake: int) -> int:
@@ -574,6 +581,10 @@ __all__ = [
     "PlatformErrType",
     "convert_float_to_time",
     "convert_html_to_markdown",
+    "disable_auto_flush",
+    "enable_auto_flush",
+    "flush_print",
+    "fprint",
     "generate_commons_except_embed",
     "generate_delete_button",
     "generate_search_embed",
@@ -583,6 +594,7 @@ __all__ = [
     "get_random_seed",
     "platform_exception_embed",
     "pluralize",
+    "print",
     "sanitize_markdown",
     "save_traceback_to_file",
     "send_or_edit_message",

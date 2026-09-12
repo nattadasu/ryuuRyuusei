@@ -6,6 +6,7 @@ import aiohttp
 import pandas as pd
 
 from classes.cache import Caching
+from modules.prints import print  # pylint: disable=redefined-builtin
 
 MAIN_SITE = r"https://animeapi.my.id/animeapi.tsv"
 CACHE_PATH = "cache/"

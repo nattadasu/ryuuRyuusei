@@ -29,6 +29,7 @@ from datetime import datetime, timezone
 import aiohttp
 
 from modules.const import ANILIST_CLIENT_ID, ANILIST_CLIENT_SECRET, ANILIST_REDIRECT_URI
+from modules.prints import print  # pylint: disable=redefined-builtin
 
 
 async def get_auth_code():

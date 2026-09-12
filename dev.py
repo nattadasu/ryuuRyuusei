@@ -8,6 +8,8 @@ import sys
 
 import isort
 
+from modules.prints import print  # pylint: disable=redefined-builtin
+
 # for each py files exclude from specific folders, sort import
 excluded_folders = [
     "venv",

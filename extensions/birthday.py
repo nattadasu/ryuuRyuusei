@@ -19,6 +19,7 @@ from modules.commons import (
     save_traceback_to_file,
 )
 from modules.const import BIRTHDAY_SERVER, BIRTHDAY_WEBHOOK
+from modules.prints import print  # pylint: disable=redefined-builtin
 
 Cache = Caching("cache/birthday", 86400)
 

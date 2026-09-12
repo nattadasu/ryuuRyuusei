@@ -8,6 +8,7 @@ from pathlib import Path
 import aiohttp
 
 from modules.crypto_utils import CryptoUtils
+from modules.prints import print  # pylint: disable=redefined-builtin
 
 
 async def import_backup(file_path: str, key: str):
