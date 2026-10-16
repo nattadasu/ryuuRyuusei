@@ -54,7 +54,7 @@ class TvShow(ipy.Extension):
             if not results:
                 raise ValueError("No results found")
             for res in results:
-                rhel = res["year"]
+                rhel = res.get("year") or "Unknown"
                 first_aired = f"First aired on: {rhel}"
                 media_id = res["ids"]["simkl_id"]
                 title = res["title"]
