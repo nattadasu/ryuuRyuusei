@@ -3,7 +3,7 @@ name = "ryuuryuusei"
 version = "0.1.0"
 description = "Find your profile and your favorite media titles with Ryuuzaki Ryuusei - A rolling release Discord bot"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.14"
 license = { text = "AGPL-3.0-or-later" }
 authors = [
     { name = "nattadasu", email = "hello@nattadasu.my.id" }
